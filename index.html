@@ -1,16 +1,6 @@
 <!DOCTYPE html>
 <html lang="el">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#f59e0b">
-<title>Stand PRO - EL/EN/DE/RU</title>
-
-<!-- PWA Manifest embedded via Data URL -->
-<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogIlN0YW5kIE1hbmFnZXIgUFJPIC0gTXVsdGkgTGFuZ3VhZ2UiLCAic2hvcnRfbmFtZSI6ICJTdGFuZCBQUk8iLCAiZGVzY3JpcHRpb24iOiAiRUwvRU4vREUvUlUgLSBcdTAzYTZcdTAzYzVcdTAzYmJcdTAzYmJcdTAzYWNcdTAzYmRcdTAzYjlcdTAzYjEgXHUwM2EwXHUwM2I1XHUwM2MxXHUwM2I5XHUwM2JmXHUwM2I0XHUwM2I5XHUwM2JhXHUwM2FjIFx1MDM5Mlx1MDNiOVx1MDNiMlx1MDNiYlx1MDNiOVx1MDNhY1x1MDNjMVx1MDNiOVx1MDNiMSIsICJzdGFydF91cmwiOiAiLiIsICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLCAiYmFja2dyb3VuZF_jb2xvciI6ICIjMGYwZjBmIiwgInRoZW1lX2NvbG9yIjogIiNmNTllMGIiLCAib3JpZW50YXRpb24iOiAicG9ydHJhaXQiLCAiaWNvbnMiOiBbeyJzcmMiOiAiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvMzM0Mi8zMzQyMDE5LnBuZyIsICJzaXplcyI6ICI1MTJ4NTEyIiwgInR5cGUiOiAiaW1hZ2UvcG5nIiwgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIn1dfQ==">
-<link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3342/3342019.png">
-
-<style>
+<head><style>
 @font-face {
   font-family: "Optimistic";
   font-style: normal;
@@ -25,275 +15,362 @@
   font-display: swap;
   src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
 }
-:where(html) { font-family: "Optimistic", system-ui, sans-serif; }
-:where(code, pre, kbd, samp) { font-family: "Optimistic Mono", ui-monospace, monospace; }
-
-*{box-sizing:border-box} body{margin:0;padding:0;background:#0f0f0f;color:#fff;font-family:Arial,sans-serif}
+:where(html) {
+  font-family: "Optimistic", system-ui, sans-serif;
+}
+:where(code, pre, kbd, samp) {
+  font-family: "Optimistic Mono", ui-monospace, monospace;
+}
+</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#f59e0b">
+<title>Stand PRO - Fixed</title>
+<style>
+:root{--fs:15px; --ff:Arial,sans-serif}
+*{box-sizing:border-box} body{margin:0;padding:0;background:#0f0f0f;color:#fff;font-family:var(--ff);font-size:var(--fs)}
 .header{background:#1a1a1a;padding:10px;text-align:center;border-bottom:3px solid #f59e0b;position:sticky;top:0;z-index:10}
-h1{color:#f59e0b;margin:0;font-size:18px} .small{font-size:11px;color:#999}
-.lang{display:flex;gap:4px;justify-content:center;margin:6px 0} .lang button{padding:5px 10px;font-size:12px} .lang button.active{background:#f59e0b;color:#000;border:2px solid #fff}
-.wrap{padding:8px;max-width:650px;margin:0 auto}
+h1{color:#f59e0b;margin:0;font-size:1.3em} .small{font-size:0.75em;color:#999}
+.lang{display:flex;gap:4px;justify-content:center;margin:6px 0;flex-wrap:wrap} .lang button{padding:5px 10px;font-size:0.8em} .lang button.active{background:#f59e0b;color:#000;border:2px solid #fff}
+.wrap{padding:8px;max-width:680px;margin:0 auto}
 .card{background:#1e1e1e;border:1px solid #333;border-radius:12px;padding:12px;margin:8px 0}
-label{color:#f59e0b;font-size:11px;font-weight:bold;display:block;margin:7px 0 3px}
-input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid #555;background:#2a2a2a;color:#fff;font-size:15px}
-button{padding:10px 12px;border-radius:8px;border:0;background:#f59e0b;color:#000;font-weight:bold;font-size:13px;cursor:pointer;margin:2px}
+label{color:#f59e0b;font-size:0.8em;font-weight:bold;display:block;margin:7px 0 3px}
+input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #555;background:#2a2a2a;color:#fff;font-size:1em;font-family:var(--ff)}
+button{padding:10px 12px;border-radius:8px;border:0;background:#f59e0b;color:#000;font-weight:bold;font-size:0.9em;cursor:pointer;margin:2px}
 button.sec{background:#333;color:#fff} button.red{background:#ef4444;color:#fff}
-button.typebtn{flex:1;padding:7px;font-size:11px} button.typebtn.active{background:#f59e0b;color:#000;border:2px solid #fff}
+button.typebtn{flex:1;padding:7px;font-size:0.75em} button.typebtn.active{background:#f59e0b;color:#000;border:2px solid #fff}
 .item{background:#252525;padding:10px;border-radius:8px;margin:6px 0;display:flex;justify-content:space-between;align-items:center}
-.badge{padding:3px 8px;border-radius:99px;font-size:10px;font-weight:bold} .bad{background:#ef4444} .good{background:#22c55e;color:#000}
-.type-label{font-size:9px;padding:2px 6px;border-radius:99px;font-weight:bold;margin-right:4px}
+.badge{padding:3px 8px;border-radius:99px;font-size:0.7em;font-weight:bold} .bad{background:#ef4444} .good{background:#22c55e;color:#000}
+.type-label{font-size:0.65em;padding:2px 6px;border-radius:99px;font-weight:bold;margin-right:4px}
 .t-flyer{background:#06b6d4;color:#000} .t-mag{background:#f59e0b;color:#000} .t-booklet{background:#22c55e;color:#000} .t-book{background:#a855f7;color:#fff}
 .row{display:flex;gap:6px} .row>div{flex:1}
 .stats{display:flex;gap:5px;flex-wrap:wrap} .stat{flex:1;min-width:55px;text-align:center;background:#252525;border-radius:8px;padding:5px}
+.range{width:100%} .fontPrev{background:#252525;padding:8px;border-radius:8px;margin-top:6px;text-align:center}
 </style>
 </head>
 <body>
-
 <div class="header">
-  <h1>STAND MANAGER PRO</h1>
-  <div class="small" id="subTitle">Για συνεργάτες - μόνο καταμέτρηση</div>
-  <div class="lang">
-    <button onclick="setL('el')" id="bl-el" class="active">EL</button>
-    <button onclick="setL('en')" id="bl-en" class="sec">EN</button>
-    <button onclick="setL('de')" id="bl-de" class="sec">DE</button>
-    <button onclick="setL('ru')" id="bl-ru" class="sec">RU</button>
-    <button onclick="openAdmin()" style="background:#222;color:#f59e0b;border:1px solid #f59e0b">🔐 Admin</button>
-  </div>
-  <div style="display:flex;gap:3px;justify-content:center;flex-wrap:wrap;margin-top:6px">
-    <button onclick="filterType('all')" id="f-all" class="typebtn active">Όλα</button>
-    <button onclick="filterType('Φυλλάδιο')" id="f-flyer" class="typebtn sec">📄 Φυλλάδια</button>
-    <button onclick="filterType('Περιοδικό')" id="f-mag" class="typebtn sec">📚 Περιοδικά</button>
-    <button onclick="filterType('Βιβλιάριο')" id="f-booklet" class="typebtn sec">📖 Βιβλιάρια</button>
-  </div>
+<h1>STAND MANAGER PRO</h1>
+<div class="small" id="subTitle">Για συνεργάτες - μόνο καταμέτρηση</div>
+<div class="lang">
+<button onclick="setL('el')" id="bl-el" class="active">EL 🇬🇷</button>
+<button onclick="setL('en')" id="bl-en" class="sec">EN 🇬🇧</button>
+<button onclick="setL('de')" id="bl-de" class="sec">DE 🇩🇪</button>
+<button onclick="setL('ru')" id="bl-ru" class="sec">RU 🇷🇺</button>
+<button onclick="openAdmin()" style="background:#222;color:#f59e0b;border:1px solid #f59e0b">🔐 Admin</button>
+</div>
+<div style="display:flex;gap:3px;justify-content:center;flex-wrap:wrap;margin-top:6px">
+<button onclick="filterType('all')" id="f-all" class="typebtn active">Όλα</button>
+<button onclick="filterType('Φυλλάδιο')" id="f-flyer" class="typebtn sec">📄 Φυλλάδια</button>
+<button onclick="filterType('Περιοδικό')" id="f-mag" class="typebtn sec">📚 Περιοδικά</button>
+<button onclick="filterType('Βιβλιάριο')" id="f-booklet" class="typebtn sec">📖 Βιβλιάρια</button>
+</div>
 </div>
 
 <div class="wrap">
-  <div class="stats">
-    <div class="stat"><div id="tot" style="font-size:16px;font-weight:bold">0</div><div class="small" id="lTot">Τεμάχια</div></div>
-    <div class="stat"><div id="tit" style="font-size:16px;font-weight:bold">0</div><div class="small" id="lTitles">Τίτλοι</div></div>
-    <div class="stat"><div id="cnt-flyer" style="font-size:14px;font-weight:bold;color:#06b6d4">0</div><div class="small" id="lFlyer">Φυλλάδια</div></div>
-    <div class="stat"><div id="cnt-mag" style="font-size:14px;font-weight:bold;color:#f59e0b">0</div><div class="small" id="lMag">Περιοδικά</div></div>
-    <div class="stat"><div id="cnt-booklet" style="font-size:14px;font-weight:bold;color:#22c55e">0</div><div class="small" id="lBooklet">Βιβλιάρια</div></div>
-    <div class="stat"><div id="need" style="font-size:14px;font-weight:bold;color:#ef4444">0</div><div class="small" id="lNeed">Παραγγελία</div></div>
-  </div>
 
-  <div class="card" style="background:#1a2a1a;border:1px solid #22c55e">
-    <b style="color:#22c55e" id="lPre">✅ Προ-φορτωμένοι τίτλοι:</b> <span class="small" id="lPreDesc">8 Φυλλάδια, 6 Περιοδικά, 8 Βιβλιάρια/Βιβλία</span>
-    <div style="margin-top:6px"><button class="sec" onclick="loadPresets()" style="width:100%" id="bRestore">🔄 Επαναφορά στους 22 αρχικούς</button></div>
-  </div>
+<div class="card" style="border:1px solid #f59e0b">
+<b style="color:#f59e0b" id="lFont">🎨 Εμφάνιση - Γραμματοσειρά & Μέγεθος</b>
+<label id="lFontSize">Μέγεθος γραμμάτων: <span id="fsVal">15</span>px</label>
+<input type="range" id="fsRange" min="12" max="24" value="15" class="range" oninput="setFontSize(this.value)">
+<div class="row">
+<div><label id="lFontFamily">Γραμματοσειρά</label>
+<select id="ffSelect" onchange="setFontFamily(this.value)">
+<option value="Arial, sans-serif">Arial</option>
+<option value="Verdana, sans-serif">Verdana</option>
+<option value="Tahoma, sans-serif">Tahoma</option>
+<option value="Georgia, serif">Georgia</option>
+<option value="'Times New Roman', serif">Times New Roman</option>
+<option value="'Courier New', monospace">Courier</option>
+<option value="'Comic Sans MS', cursive">Comic Sans</option>
+<option value="'Trebuchet MS', sans-serif">Trebuchet</option>
+</select></div>
+<div><label>Προεπισκόπηση</label><div class="fontPrev" id="fontPrev">Αα Bb Γγ - Sample Text</div></div>
+</div>
+</div>
 
-  <div class="card">
-    <label id="lSearch">🔍 Αναζήτηση</label>
-    <input id="search" placeholder="Γράψε τίτλο..." oninput="render()">
-  </div>
 
-  <div class="card">
-    <div style="display:flex;justify-content:space-between"><b id="listTitle">📦 Όλα τα είδη</b><span class="small" id="lHint">Πάτα + / - για καταμέτρηση</span></div>
-    <div id="list" style="margin-top:8px"></div>
-  </div>
+<div class="card" style="border:2px solid #06b6d4;background:#0a1a2a">
+<b style="color:#06b6d4" id="lCloud">☁️ Cloud Sync - Συγχρονισμός</b>
+<div class="small" id="lCloudDesc" style="margin:4px 0">Όταν το ενεργοποιείς, ό,τι αλλάζεις το βλέπουν όλοι οι άλλοι χρήστες LIVE!</div>
+<div style="margin-top:8px">
+<label id="lCloudEnable">Ενεργοποίηση Cloud</label>
+<div style="display:flex;gap:6px;align-items:center">
+<label style="display:flex;align-items:center;gap:6px;color:#fff"><input type="checkbox" id="cloudEnabled" onchange="toggleCloud()" style="width:auto"> <span id="lCloudOn">Ενεργό Cloud Sync</span></label>
+<span id="cloudStatus" style="padding:3px 8px;border-radius:99px;font-size:10px;background:#333">Offline</span>
+</div>
+</div>
+<label id="lCloudId">ID Σταντ (ίδιο για όλους τους χρήστες του ίδιου σταντ)</label>
+<div style="display:flex;gap:4px"><input id="cloudId" value="stand-athens-1" placeholder="π.χ. stand-athens-1" style="flex:1"><button onclick="saveCloudId()" class="sec" id="bSaveCloudId">Save</button></div>
+<div class="small" id="lCloudIdHint" style="margin-top:4px">Όλοι βάζουν το ίδιο ID για να δουν τα ίδια δεδομένα (π.χ. stand-pireas)</div>
 
-  <div class="card" style="border:2px solid #f59e0b">
-    <b style="color:#f59e0b" id="lAdd">➕ Προσθήκη νέου είδους</b>
-    <div style="margin:8px 0;display:flex;gap:3px;flex-wrap:wrap">
-      <button onclick="setAddType('Φυλλάδιο')" id="a-flyer" class="typebtn sec">📄 Φυλλάδιο</button>
-      <button onclick="setAddType('Περιοδικό')" id="a-mag" class="typebtn active">📚 Περιοδικό</button>
-      <button onclick="setAddType('Βιβλιάριο')" id="a-booklet" class="typebtn sec">📖 Βιβλιάριο</button>
-      <button onclick="setAddType('Βιβλίο')" id="a-book" class="typebtn sec">📘 Βιβλίο</button>
-    </div>
-    <label id="lFieldType">Τύπος</label>
-    <select id="addType" onchange="updateAddButtons()">
-      <option value="Φυλλάδιο">📄 Φυλλάδιο / Τρακτ</option>
-      <option value="Περιοδικό" selected>📚 Περιοδικό</option>
-      <option value="Βιβλιάριο">📖 Βιβλιάριο</option>
-      <option value="Βιβλίο">📘 Βιβλίο</option>
-      <option value="Φυλλάδιο-Διαφημιστικό">📃 Φυλλάδιο Διαφημιστικό</option>
-    </select>
-    <label id="lFieldTitle">Τίτλος *</label>
-    <input id="title" placeholder="π.χ. Σκοπιά...">
-    <div class="row">
-      <div><label id="lFieldCat">Κατηγορία</label><input id="cat" placeholder="π.χ. Σκοπιά"></div>
-      <div><label id="lFieldQty">Πόσα έχει</label><input id="qty" type="number" value="10"></div>
-    </div>
-    <div class="row">
-      <div><label id="lFieldMin">Ελάχιστο όριο</label><input id="min" type="number" value="3"></div>
-      <div><label id="lFieldBar">Barcode</label><input id="bar" placeholder="προαιρετικό"></div>
-    </div>
-    <button onclick="addItem()" style="width:100%;margin-top:10px" id="bAdd">➕ Προσθήκη</button>
-    <div style="margin-top:10px;border-top:1px solid #333;padding-top:8px">
-      <label id="lBulk">⚡ Προσθήκη πολλών μαζί</label>
-      <textarea id="bulk" placeholder="ένας τίτλος ανά γραμμή..." style="height:60px"></textarea>
-      <button class="sec" onclick="addBulk()" style="width:100%;margin-top:4px" id="bBulk">📋 Προσθήκη όλων</button>
-    </div>
-  </div>
+<div id="cloudConfigBox" style="margin-top:10px;border-top:1px solid #333;padding-top:8px">
+<label id="lCloudConfig">Firebase Config - ήδη έτοιμο με το δικό σου project!</label>
+<textarea id="fbConfig" style="height:90px;font-size:10px">{"apiKey":"AIzaSyCKoGOE84zPuc4t6UQrDYMbooCR43p0FyQ","authDomain":"stand-management-a46a7.firebaseapp.com","projectId":"stand-management-a46a7","storageBucket":"stand-management-a46a7.firebasestorage.app","messagingSenderId":"304875768432","appId":"1:304875768432:web:470adb4707b8a3680482b5","measurementId":"G-EHC9FEP1FX"}</textarea>
+<div style="display:flex;gap:4px;margin-top:4px">
+<button onclick="saveFbConfig()" class="sec" id="bSaveFbConfig" style="flex:1">Αποθήκευση Config</button>
+<button onclick="testCloud()" class="sec" id="bTestCloud" style="flex:1">Test Σύνδεσης</button>
+</div>
+</div>
 
-  <div class="card" id="orderBox" style="display:none;border:2px solid #ef4444;background:#2a1515">
-    <b style="color:#ef4444" id="lOrder">⚠️ ΛΙΣΤΑ ΠΑΡΑΓΓΕΛΙΑΣ</b>
-    <div id="orderList" style="margin-top:8px"></div>
-    <div style="margin-top:8px;display:flex;gap:4px">
-      <button onclick="copyOrder()" id="bCopy">Αντιγραφή</button>
-      <button class="sec" onclick="exportOrder()" id="bExportOrder">Export</button>
-    </div>
-  </div>
+<div style="display:flex;gap:4px;margin-top:10px">
+<button onclick="pushToCloud()" id="bPushCloud" style="flex:1;background:#06b6d4;color:#000">☁️ Αποστολή στο Cloud</button>
+<button onclick="pullFromCloud()" id="bPullCloud" style="flex:1" class="sec">⬇️ Λήψη από Cloud</button>
+</div>
+<div style="margin-top:8px">
+<div class="small" id="lOnline">Χρήστες online:</div>
+<div id="onlineUsers" style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px"></div>
+<div class="small" id="lastSync" style="margin-top:4px;color:#999">Τελευταίος συγχρονισμός: ποτέ</div>
+</div>
+</div>
+
+<div class="stats">
+<div class="stat"><div id="tot" style="font-size:1.2em;font-weight:bold">0</div><div class="small" id="lTot">Τεμάχια</div></div>
+<div class="stat"><div id="tit" style="font-size:1.2em;font-weight:bold">0</div><div class="small" id="lTitles">Τίτλοι</div></div>
+<div class="stat"><div id="cnt-flyer" style="font-size:1em;font-weight:bold;color:#06b6d4">0</div><div class="small" id="lFlyer">Φυλλάδια</div></div>
+<div class="stat"><div id="cnt-mag" style="font-size:1em;font-weight:bold;color:#f59e0b">0</div><div class="small" id="lMag">Περιοδικά</div></div>
+<div class="stat"><div id="cnt-booklet" style="font-size:1em;font-weight:bold;color:#22c55e">0</div><div class="small" id="lBooklet">Βιβλιάρια</div></div>
+<div class="stat"><div id="need" style="font-size:1em;font-weight:bold;color:#ef4444">0</div><div class="small" id="lNeed">Παραγγελία</div></div>
+</div>
+
+<div class="card" style="background:#1a2a1a;border:1px solid #22c55e">
+<b style="color:#22c55e" id="lPre">✅ Προ-φορτωμένοι τίτλοι (μεταφράζονται):</b> <span class="small" id="lPreDesc">Οι τίτλοι αλλάζουν γλώσσα όταν αλλάζεις γλώσσα πάνω</span>
+<div style="margin-top:6px"><button class="sec" onclick="loadPresets()" style="width:100%" id="bRestore">🔄 Επαναφορά 22 τίτλων</button></div>
+</div>
+
+<div class="card">
+<label id="lSearch">🔍 Αναζήτηση</label>
+<input id="search" placeholder="Γράψε τίτλο..." oninput="render()">
+</div>
+
+<div class="card">
+<div style="display:flex;justify-content:space-between"><b id="listTitle">📦 Όλα τα είδη</b><span class="small" id="lHint">Πάτα + / - για καταμέτρηση</span></div>
+<div id="list" style="margin-top:8px"></div>
+</div>
+
+<div class="card" style="border:2px solid #f59e0b">
+<b style="color:#f59e0b" id="lAdd">➕ Προσθήκη νέου είδους</b>
+<div style="margin:8px 0;display:flex;gap:3px;flex-wrap:wrap">
+<button onclick="setAddType('Φυλλάδιο')" id="a-flyer" class="typebtn sec">📄 Φυλλάδιο</button>
+<button onclick="setAddType('Περιοδικό')" id="a-mag" class="typebtn active">📚 Περιοδικό</button>
+<button onclick="setAddType('Βιβλιάριο')" id="a-booklet" class="typebtn sec">📖 Βιβλιάριο</button>
+<button onclick="setAddType('Βιβλίο')" id="a-book" class="typebtn sec">📘 Βιβλίο</button>
+</div>
+<label id="lFieldType">Τύπος</label>
+<select id="addType" onchange="updateAddButtons()">
+<option value="Φυλλάδιο">📄 Φυλλάδιο / Τρακτ</option>
+<option value="Περιοδικό" selected>📚 Περιοδικό</option>
+<option value="Βιβλιάριο">📖 Βιβλιάριο</option>
+<option value="Βιβλίο">📘 Βιβλίο</option>
+<option value="Φυλλάδιο-Διαφημιστικό">📃 Φυλλάδιο Διαφημιστικό</option>
+</select>
+<label id="lFieldTitle">Τίτλος * (θα μεταφραστεί αυτόματα αν είναι από τους 22, αλλιώς μένει όπως το γράφεις)</label>
+<input id="title" placeholder="π.χ. Νέος τίτλος...">
+<div class="row">
+<div><label id="lFieldCat">Κατηγορία</label><input id="cat" placeholder=""></div>
+<div><label id="lFieldQty">Πόσα έχει</label><input id="qty" type="number" value="10"></div>
+</div>
+<div class="row">
+<div><label id="lFieldMin">Ελάχιστο όριο</label><input id="min" type="number" value="3"></div>
+<div><label id="lFieldBar">Barcode</label><input id="bar" placeholder=""></div>
+</div>
+<button onclick="addItem()" style="width:100%;margin-top:10px" id="bAdd">➕ Προσθήκη</button>
+<div style="margin-top:10px;border-top:1px solid #333;padding-top:8px">
+<label id="lBulk">⚡ Προσθήκη πολλών μαζί</label>
+<textarea id="bulk" placeholder="ένας τίτλος ανά γραμμή..." style="height:60px"></textarea>
+<button class="sec" onclick="addBulk()" style="width:100%;margin-top:4px" id="bBulk">📋 Προσθήκη όλων</button>
+</div>
+</div>
+
+<div class="card" id="orderBox" style="display:none;border:2px solid #ef4444;background:#2a1515">
+<b style="color:#ef4444" id="lOrder">⚠️ ΛΙΣΤΑ ΠΑΡΑΓΓΕΛΙΑΣ</b>
+<div id="orderList" style="margin-top:8px"></div>
+<div style="margin-top:8px;display:flex;gap:4px"><button onclick="copyOrder()" id="bCopy">Αντιγραφή</button><button class="sec" onclick="exportOrder()" id="bExportOrder">Export</button></div>
 </div>
 
 <div id="adminScreen" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:999;overflow:auto;padding:10px">
-  <div class="card" style="max-width:550px;margin:10px auto;border:2px solid #f59e0b">
-    <h2 style="color:#f59e0b;text-align:center" id="aTitle">👑 ADMIN PANEL</h2>
-    <div style="text-align:center"><button class="sec" onclick="closeAdmin()" id="bClose">✕ Κλείσιμο</button></div>
-    <div style="margin-top:12px">
-      <label>PIN (1234)</label>
-      <input id="pinCheck" type="password" placeholder="1234">
-      <button onclick="checkAdmin()" style="width:100%" id="bLogin">Είσοδος</button>
-    </div>
-    <div id="adminContent" style="display:none">
-      <div class="card" style="background:#252525">
-        <b id="lUsers">👥 Χρήστες</b>
-        <label id="lUName">Όνομα</label><input id="uName">
-        <label id="lUEmail">Email</label><input id="uEmail">
-        <label id="lURole">Ρόλος</label>
-        <select id="uRole"><option>Editor</option><option>Viewer</option><option>Admin</option></select>
-        <button onclick="addUser()" style="width:100%;margin-top:6px" id="bAddUser">Προσθήκη</button>
-        <div id="usersList" style="margin-top:10px"></div>
-        <button class="red" onclick="clearUsers()" style="width:100%;margin-top:8px" id="bClearUsers">Διαγραφή ΟΛΩΝ</button>
-      </div>
-      <div class="card" style="background:#2a1515;border:1px solid #ef4444">
-        <b style="color:#ef4444" id="lDelByType">🗑️ Διαγραφή ανά τύπο</b>
-        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:8px">
-          <button class="red" onclick="deleteByType('Φυλλάδιο')" id="bDelFlyer" style="flex:1">Διαγραφή Φυλλαδίων</button>
-          <button class="red" onclick="deleteByType('Περιοδικό')" id="bDelMag" style="flex:1">Διαγραφή Περιοδικών</button>
-          <button class="red" onclick="deleteByType('Βιβλιάριο')" id="bDelBooklet" style="flex:1">Διαγραφή Βιβλιαρίων</button>
-          <button class="red" onclick="deleteByType('Βιβλίο')" id="bDelBook" style="flex:1">Διαγραφή Βιβλίων</button>
-        </div>
-      </div>
-      <div class="card" style="background:#252525">
-        <b id="lStats">📊 Στατιστικά</b>
-        <div id="adminStats" class="small"></div>
-        <button class="sec" onclick="exportCSV()" style="width:100%;margin-top:6px" id="bExportCSV">📊 Export CSV</button>
-        <button class="sec" onclick="backup()" style="width:100%;margin-top:6px" id="bBackup">💾 Backup</button>
-        <input type="file" id="restoreFile" onchange="restore(event)" style="margin-top:8px">
-        <button class="red" onclick="clearAll()" style="width:100%;margin-top:8px" id="bClearAll">⚠️ Διαγραφή ΟΛΩΝ</button>
-      </div>
-    </div>
-  </div>
+<div class="card" style="max-width:580px;margin:10px auto;border:2px solid #f59e0b">
+<h2 style="color:#f59e0b;text-align:center" id="aTitle">👑 ADMIN PANEL</h2>
+<div style="text-align:center"><button class="sec" onclick="closeAdmin()" id="bClose">✕ Κλείσιμο</button></div>
+
+<div style="margin-top:12px" id="loginBox">
+<label id="lLoginLabel">Κωδικός / Password Διαχειριστή (προεπιλογή 1234)</label>
+<div style="display:flex;gap:4px"><input id="pinCheck" type="password" placeholder="1234" style="flex:1"><button onclick="togglePin()" class="sec" id="bShow">👁️</button></div>
+<button onclick="checkAdmin()" style="width:100%;margin-top:6px" id="bLogin">Είσοδος</button>
+<div style="display:flex;gap:4px;margin-top:6px"><button onclick="resetAdminPass()" class="sec" style="flex:1;font-size:0.7em">🔄 Reset σε 1234</button></div>
+<div class="small" id="lCurrentPin" style="margin-top:6px"></div>
+</div>
+
+<div id="adminContent" style="display:none">
+
+<div class="card" style="background:#252525;border:2px solid #f59e0b">
+<b style="color:#f59e0b" id="lChangePass">🔐 Αλλαγή κωδικού</b>
+<label id="lNewPass">Νέος κωδικός</label>
+<div style="display:flex;gap:4px"><input id="newPass" type="text" placeholder="π.χ. Admin2026" style="flex:1"><button onclick="toggleNewPass()" class="sec">👁️</button></div>
+<button onclick="saveNewPass()" style="width:100%;margin-top:8px;background:#22c55e;color:#000" id="bSavePass">💾 Αποθήκευση</button>
+<div class="small" id="passMsg" style="margin-top:6px;color:#22c55e"></div>
+</div>
+
+<div class="card" style="background:#252525">
+<b style="color:#f59e0b" id="lFontAdmin">🎨 Εμφάνιση</b>
+<label id="lFontSizeA">Μέγεθος: <span id="fsValA">15</span>px</label>
+<input type="range" id="fsRangeA" min="12" max="24" value="15" class="range" oninput="setFontSize(this.value)">
+<label id="lFontFamilyA">Γραμματοσειρά</label>
+<select id="ffSelectA" onchange="setFontFamily(this.value)">
+<option value="Arial, sans-serif">Arial</option>
+<option value="Verdana, sans-serif">Verdana</option>
+<option value="Tahoma, sans-serif">Tahoma</option>
+<option value="Georgia, serif">Georgia</option>
+</select>
+</div>
+
+<div class="card" style="background:#2a1515;border:1px solid #ef4444">
+<b style="color:#ef4444" id="lDelByType">🗑️ Διαγραφή ανά τύπο</b>
+<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:8px">
+<button class="red" onclick="deleteByType('Φυλλάδιο')" id="bDelFlyer" style="flex:1">Φυλλαδίων</button>
+<button class="red" onclick="deleteByType('Περιοδικό')" id="bDelMag" style="flex:1">Περιοδικών</button>
+<button class="red" onclick="deleteByType('Βιβλιάριο')" id="bDelBooklet" style="flex:1">Βιβλιαρίων</button>
+<button class="red" onclick="deleteByType('Βιβλίο')" id="bDelBook" style="flex:1">Βιβλίων</button>
+</div>
+</div>
+
+<div class="card" style="background:#252525"><b id="lUsers">👥 Χρήστες</b><label id="lUName">Όνομα</label><input id="uName"><label id="lUEmail">Email</label><input id="uEmail"><label id="lURole">Ρόλος</label><select id="uRole"><option>Editor</option><option>Viewer</option><option>Admin</option></select><button onclick="addUser()" style="width:100%;margin-top:6px" id="bAddUser">Προσθήκη</button><div id="usersList" style="margin-top:10px"></div><button class="red" onclick="clearUsers()" style="width:100%;margin-top:8px" id="bClearUsers">Διαγραφή ΟΛΩΝ</button></div>
+<div class="card" style="background:#252525"><b id="lStats">📊 Στατιστικά</b><div id="adminStats" class="small"></div><button class="sec" onclick="exportCSV()" style="width:100%;margin-top:6px" id="bExportCSV">📊 Export CSV</button><button class="sec" onclick="backup()" style="width:100%;margin-top:6px" id="bBackup">💾 Backup</button><input type="file" id="restoreFile" onchange="restore(event)" style="margin-top:8px"><button class="red" onclick="clearAll()" style="width:100%;margin-top:8px" id="bClearAll">⚠️ Διαγραφή ΟΛΩΝ</button></div>
+</div>
+</div>
+</div>
+
 </div>
 
 <script>
-const PRESETS = [{"name": "Μπορείτε να ζήσετε για πάντα σε έναν παράδεισο στη γη;", "type": "Φυλλάδιο", "cat": "Φυλλάδιο", "qty": 20, "min": 5}, {"name": "Τι είναι η Βασιλεία του Θεού;", "type": "Φυλλάδιο", "cat": "Φυλλάδιο", "qty": 20, "min": 5}, {"name": "Ποιος ελέγχει πραγματικά τον κόσμο;", "type": "Φυλλάδιο", "cat": "Φυλλάδιο", "qty": 20, "min": 5}, {"name": "Θα τελειώσει ποτέ ο πόνος;", "type": "Φυλλάδιο", "cat": "Φυλλάδιο", "qty": 20, "min": 5}, {"name": "Τι ελπίδα υπάρχει για τους νεκρούς;", "type": "Φυλλάδιο", "cat": "Φυλλάδιο", "qty": 20, "min": 5}, {"name": "Πώς βλέπει ο Θεός τον πόλεμο;", "type": "Φυλλάδιο", "cat": "Φυλλάδιο", "qty": 15, "min": 3}, {"name": "Απολαμβάνετε μια ευτυχισμένη οικογενειακή ζωή;", "type": "Φυλλάδιο", "cat": "Οικογένεια", "qty": 15, "min": 3}, {"name": "Πώς θα είναι η ζωή στον Παράδεισο;", "type": "Φυλλάδιο", "cat": "Φυλλάδιο", "qty": 15, "min": 3}, {"name": "Σκοπιά - Ιανουάριος 2026", "type": "Περιοδικό", "cat": "Σκοπιά", "qty": 15, "min": 3}, {"name": "Σκοπιά - Φεβρουάριος 2026", "type": "Περιοδικό", "cat": "Σκοπιά", "qty": 15, "min": 3}, {"name": "Σκοπιά - Μάρτιος 2026", "type": "Περιοδικό", "cat": "Σκοπιά", "qty": 15, "min": 3}, {"name": "Ξύπνα! - 2026 No1", "type": "Περιοδικό", "cat": "Ξύπνα", "qty": 15, "min": 3}, {"name": "Ξύπνα! - 2026 No2", "type": "Περιοδικό", "cat": "Ξύπνα", "qty": 15, "min": 3}, {"name": "Ξύπνα! - 2026 No3", "type": "Περιοδικό", "cat": "Ξύπνα", "qty": 15, "min": 3}, {"name": "Καλά Νέα από τον Θεό!", "type": "Βιβλιάριο", "cat": "Βιβλιάριο", "qty": 10, "min": 3}, {"name": "Τι λέει η Αγία Γραφή;", "type": "Βιβλιάριο", "cat": "Βιβλιάριο", "qty": 10, "min": 3}, {"name": "Ποιος είναι ο Ιησούς Χριστός;", "type": "Βιβλιάριο", "cat": "Βιβλιάριο", "qty": 10, "min": 2}, {"name": "Μάθετε από τον Μεγάλο Διδάσκαλο", "type": "Βιβλίο", "cat": "Παιδικό", "qty": 5, "min": 2}, {"name": "Το μονοπάτι για αιώνια ζωή", "type": "Βιβλιάριο", "cat": "Βιβλιάριο", "qty": 8, "min": 2}, {"name": "Να αγαπάτε ο ένας τον άλλον", "type": "Βιβλιάριο", "cat": "Οικογένεια", "qty": 8, "min": 2}, {"name": "Ακούστε τον Θεό και ζήστε για πάντα", "type": "Βιβλιάριο", "cat": "Μελέτη", "qty": 10, "min": 3}, {"name": "Ακούστε τον Θεό - Φυλλάδιο μαθήματος", "type": "Φυλλάδιο-Διαφημιστικό", "cat": "Μελέτη", "qty": 20, "min": 5}];
+const PRESETS = [{"id": 1, "type": "Φυλλάδιο", "cat": {"el": "Φυλλάδιο", "en": "Tract", "de": "Traktat", "ru": "Трактат"}, "names": {"el": "Μπορείτε να ζήσετε για πάντα σε έναν παράδεισο στη γη;", "en": "Can You Live Forever in Paradise on Earth?", "de": "Können Sie für immer im Paradies auf Erden leben?", "ru": "Можете ли вы жить вечно в раю на земле?"}, "qty": 20, "min": 5}, {"id": 2, "type": "Φυλλάδιο", "cat": {"el": "Φυλλάδιο", "en": "Tract", "de": "Traktat", "ru": "Трактат"}, "names": {"el": "Τι είναι η Βασιλεία του Θεού;", "en": "What Is God's Kingdom?", "de": "Was ist Gottes Königreich?", "ru": "Что такое Царство Бога?"}, "qty": 20, "min": 5}, {"id": 3, "type": "Φυλλάδιο", "cat": {"el": "Φυλλάδιο", "en": "Tract", "de": "Traktat", "ru": "Трактат"}, "names": {"el": "Ποιος ελέγχει πραγματικά τον κόσμο;", "en": "Who Really Controls the World?", "de": "Wer herrscht wirklich über die Welt?", "ru": "Кто на самом деле правит миром?"}, "qty": 20, "min": 5}, {"id": 4, "type": "Φυλλάδιο", "cat": {"el": "Φυλλάδιο", "en": "Tract", "de": "Traktat", "ru": "Трактат"}, "names": {"el": "Θα τελειώσει ποτέ ο πόνος;", "en": "Will Suffering Ever End?", "de": "Wird es jemals ein Ende des Leidens geben?", "ru": "Закончатся ли когда-нибудь страдания?"}, "qty": 20, "min": 5}, {"id": 5, "type": "Φυλλάδιο", "cat": {"el": "Φυλλάδιο", "en": "Tract", "de": "Traktat", "ru": "Трактат"}, "names": {"el": "Τι ελπίδα υπάρχει για τους νεκρούς;", "en": "What Hope Is There for the Dead?", "de": "Welche Hoffnung gibt es für die Toten?", "ru": "Какая надежда есть для умерших?"}, "qty": 20, "min": 5}, {"id": 6, "type": "Φυλλάδιο", "cat": {"el": "Φυλλάδιο", "en": "Tract", "de": "Traktat", "ru": "Трактат"}, "names": {"el": "Πώς βλέπει ο Θεός τον πόλεμο;", "en": "How Does God View War?", "de": "Wie denkt Gott über Krieg?", "ru": "Как Бог относится к войне?"}, "qty": 15, "min": 3}, {"id": 7, "type": "Φυλλάδιο", "cat": {"el": "Οικογένεια", "en": "Family", "de": "Familie", "ru": "Семья"}, "names": {"el": "Απολαμβάνετε μια ευτυχισμένη οικογενειακή ζωή;", "en": "Do You Enjoy a Happy Family Life?", "de": "Genießen Sie ein glückliches Familienleben?", "ru": "Счастливая семейная жизнь — это возможно?"}, "qty": 15, "min": 3}, {"id": 8, "type": "Φυλλάδιο", "cat": {"el": "Φυλλάδιο", "en": "Tract", "de": "Traktat", "ru": "Трактат"}, "names": {"el": "Πώς θα είναι η ζωή στον Παράδεισο;", "en": "What Will Life Be Like in Paradise?", "de": "Wie wird das Leben im Paradies sein?", "ru": "Какой будет жизнь в Раю?"}, "qty": 15, "min": 3}, {"id": 9, "type": "Περιοδικό", "cat": {"el": "Σκοπιά", "en": "Watchtower", "de": "Wachtturm", "ru": "Сторожевая башня"}, "names": {"el": "Σκοπιά - Ιανουάριος 2026", "en": "Watchtower - January 2026", "de": "Wachtturm - Januar 2026", "ru": "Сторожевая башня - Январь 2026"}, "qty": 15, "min": 3}, {"id": 10, "type": "Περιοδικό", "cat": {"el": "Σκοπιά", "en": "Watchtower", "de": "Wachtturm", "ru": "Сторожевая башня"}, "names": {"el": "Σκοπιά - Φεβρουάριος 2026", "en": "Watchtower - February 2026", "de": "Wachtturm - Februar 2026", "ru": "Сторожевая башня - Февраль 2026"}, "qty": 15, "min": 3}, {"id": 11, "type": "Περιοδικό", "cat": {"el": "Σκοπιά", "en": "Watchtower", "de": "Wachtturm", "ru": "Сторожевая башня"}, "names": {"el": "Σκοπιά - Μάρτιος 2026", "en": "Watchtower - March 2026", "de": "Wachtturm - März 2026", "ru": "Сторожевая башня - Март 2026"}, "qty": 15, "min": 3}, {"id": 12, "type": "Περιοδικό", "cat": {"el": "Ξύπνα", "en": "Awake", "de": "Erwachet", "ru": "Пробудитесь"}, "names": {"el": "Ξύπνα! - 2026 No1", "en": "Awake! - 2026 No1", "de": "Erwachet! - 2026 Nr.1", "ru": "Пробудитесь! - 2026 №1"}, "qty": 15, "min": 3}, {"id": 13, "type": "Περιοδικό", "cat": {"el": "Ξύπνα", "en": "Awake", "de": "Erwachet", "ru": "Пробудитесь"}, "names": {"el": "Ξύπνα! - 2026 No2", "en": "Awake! - 2026 No2", "de": "Erwachet! - 2026 Nr.2", "ru": "Пробудитесь! - 2026 №2"}, "qty": 15, "min": 3}, {"id": 14, "type": "Περιοδικό", "cat": {"el": "Ξύπνα", "en": "Awake", "de": "Erwachet", "ru": "Пробудитесь"}, "names": {"el": "Ξύπνα! - 2026 No3", "en": "Awake! - 2026 No3", "de": "Erwachet! - 2026 Nr.3", "ru": "Пробудитесь! - 2026 №3"}, "qty": 15, "min": 3}, {"id": 15, "type": "Βιβλιάριο", "cat": {"el": "Βιβλιάριο", "en": "Booklet", "de": "Broschüre", "ru": "Брошюра"}, "names": {"el": "Καλά Νέα από τον Θεό!", "en": "Good News From God!", "de": "Gute Botschaft von Gott!", "ru": "Благая весть от Бога!"}, "qty": 10, "min": 3}, {"id": 16, "type": "Βιβλιάριο", "cat": {"el": "Βιβλιάριο", "en": "Booklet", "de": "Broschüre", "ru": "Брошюра"}, "names": {"el": "Τι λέει η Αγία Γραφή;", "en": "What Does the Bible Really Teach?", "de": "Was lehrt die Bibel wirklich?", "ru": "Чему на самом деле учит Библия?"}, "qty": 10, "min": 3}, {"id": 17, "type": "Βιβλιάριο", "cat": {"el": "Βιβλιάριο", "en": "Booklet", "de": "Broschüre", "ru": "Брошюра"}, "names": {"el": "Ποιος είναι ο Ιησούς Χριστός;", "en": "Who Is Jesus Christ?", "de": "Wer ist Jesus Christus?", "ru": "Кто такой Иисус Христос?"}, "qty": 10, "min": 2}, {"id": 18, "type": "Βιβλίο", "cat": {"el": "Παιδικό", "en": "Children", "de": "Kinder", "ru": "Детская"}, "names": {"el": "Μάθετε από τον Μεγάλο Διδάσκαλο", "en": "Learn From the Great Teacher", "de": "Lerne vom großen Lehrer", "ru": "Учись у Великого Учителя"}, "qty": 5, "min": 2}, {"id": 19, "type": "Βιβλιάριο", "cat": {"el": "Βιβλιάριο", "en": "Booklet", "de": "Broschüre", "ru": "Брошюра"}, "names": {"el": "Το μονοπάτι για αιώνια ζωή", "en": "The Road to Everlasting Life", "de": "Der Weg zum ewigen Leben", "ru": "Дорога к вечной жизни"}, "qty": 8, "min": 2}, {"id": 20, "type": "Βιβλιάριο", "cat": {"el": "Οικογένεια", "en": "Family", "de": "Familie", "ru": "Семья"}, "names": {"el": "Να αγαπάτε ο ένας τον άλλον", "en": "Love One Another", "de": "Liebt einander", "ru": "Любите друг друга"}, "qty": 8, "min": 2}, {"id": 21, "type": "Βιβλιάριο", "cat": {"el": "Μελέτη", "en": "Study", "de": "Studium", "ru": "Изучение"}, "names": {"el": "Ακούστε τον Θεό και ζήστε για πάντα", "en": "Listen to God and Live Forever", "de": "Auf Gott hören und ewig leben", "ru": "Слушай Бога и живи вечно"}, "qty": 10, "min": 3}, {"id": 22, "type": "Φυλλάδιο-Διαφημιστικό", "cat": {"el": "Μελέτη", "en": "Study", "de": "Studium", "ru": "Изучение"}, "names": {"el": "Ακούστε τον Θεό - Φυλλάδιο μαθήματος", "en": "Listen to God - Lesson Brochure", "de": "Auf Gott hören - Lektion", "ru": "Слушай Бога - брошюра для изучения"}, "qty": 20, "min": 5}];
+
+const TYPE_TRANS = {
+  "Φυλλάδιο": {el:"Φυλλάδιο", en:"Tract", de:"Traktat", ru:"Трактат"},
+  "Περιοδικό": {el:"Περιοδικό", en:"Magazine", de:"Zeitschrift", ru:"Журнал"},
+  "Βιβλιάριο": {el:"Βιβλιάριο", en:"Booklet", de:"Broschüre", ru:"Брошюра"},
+  "Βιβλίο": {el:"Βιβλίο", en:"Book", de:"Buch", ru:"Книга"},
+  "Φυλλάδιο-Διαφημιστικό": {el:"Φυλλάδιο Διαφημιστικό", en:"Study Tract", de:"Studium Traktat", ru:"Брошюра для изучения"}
+};
+function getTypeDisplay(tp){ if(TYPE_TRANS[tp] && TYPE_TRANS[tp][curLang]) return TYPE_TRANS[tp][curLang]; for(var k in TYPE_TRANS){ if(tp.indexOf(k)>=0 && TYPE_TRANS[k][curLang]) return TYPE_TRANS[k][curLang]; } return tp; }
 
 const LANGS = {
- el: { subTitle:"Για συνεργάτες - μόνο καταμέτρηση", lTot:"Τεμάχια", lTitles:"Τίτλοι", lFlyer:"Φυλλάδια", lMag:"Περιοδικά", lBooklet:"Βιβλιάρια", lNeed:"Παραγγελία", lPre:"✅ Προ-φορτωμένοι τίτλοι:", lPreDesc:"8 Φυλλάδια, 6 Περιοδικά, 8 Βιβλιάρια/Βιβλία", bRestore:"🔄 Επαναφορά στους 22 αρχικούς", lSearch:"🔍 Αναζήτηση", listTitle:"📦 Όλα τα είδη", lHint:"Πάτα + / - για καταμέτρηση", lAdd:"➕ Προσθήκη νέου είδους", lFieldType:"Τύπος", lFieldTitle:"Τίτλος *", lFieldCat:"Κατηγορία", lFieldQty:"Πόσα έχει", lFieldMin:"Ελάχιστο όριο", lFieldBar:"Barcode", bAdd:"➕ Προσθήκη", lBulk:"⚡ Προσθήκη πολλών μαζί", bBulk:"📋 Προσθήκη όλων", lOrder:"⚠️ ΛΙΣΤΑ ΠΑΡΑΓΓΕΛΙΑΣ", bCopy:"Αντιγραφή", bExportOrder:"Export", aTitle:"👑 ADMIN PANEL", bClose:"✕ Κλείσιμο", bLogin:"Είσοδος", lUsers:"👥 Χρήστες", lUName:"Όνομα", lUEmail:"Email", lURole:"Ρόλος", bAddUser:"Προσθήκη", bClearUsers:"Διαγραφή ΟΛΩΝ", lStats:"📊 Στατιστικά", bExportCSV:"📊 Export CSV", bBackup:"💾 Backup", bClearAll:"⚠️ Διαγραφή ΟΛΩΝ", fAll:"Όλα", fFlyer:"📄 Φυλλάδια", fMag:"📚 Περιοδικά", fBooklet:"📖 Βιβλιάρια", aFlyer:"📄 Φυλλάδιο", aMag:"📚 Περιοδικό", aBooklet:"📖 Βιβλιάριο", aBook:"📘 Βιβλίο", order:"ΠΑΡΑΓΓΕΛΙΑ", ok:"ΟΚ", has:"έχει" },
- en: { subTitle:"For partners - counting only", lTot:"Pieces", lTitles:"Titles", lFlyer:"Tracts", lMag:"Magazines", lBooklet:"Booklets", lNeed:"Need order", lPre:"✅ Pre-loaded titles:", lPreDesc:"8 Tracts, 6 Magazines, 8 Booklets/Books", bRestore:"🔄 Restore 22 initial", lSearch:"🔍 Search", listTitle:"📦 All items", lHint:"Tap + / - to count", lAdd:"➕ Add new item", lFieldType:"Type", lFieldTitle:"Title *", lFieldCat:"Category", lFieldQty:"Qty now", lFieldMin:"Min limit", lFieldBar:"Barcode", bAdd:"➕ Add", lBulk:"⚡ Bulk add (one per line)", bBulk:"📋 Add all", lOrder:"⚠️ ORDER LIST", bCopy:"Copy", bExportOrder:"Export", aTitle:"👑 ADMIN PANEL", bClose:"✕ Close", bLogin:"Login", lUsers:"👥 Users", lUName:"Name", lUEmail:"Email", lURole:"Role", bAddUser:"Add", bClearUsers:"Delete ALL", lStats:"📊 Stats", bExportCSV:"📊 Export CSV", bBackup:"💾 Backup", bClearAll:"⚠️ Delete ALL", fAll:"All", fFlyer:"📄 Tracts", fMag:"📚 Magazines", fBooklet:"📖 Booklets", aFlyer:"📄 Tract", aMag:"📚 Magazine", aBooklet:"📖 Booklet", aBook:"📘 Book", order:"ORDER", ok:"OK", has:"has" },
- de: { subTitle:"Für Partner - nur Zählung", lTot:"Stücke", lTitles:"Titel", lFlyer:"Traktate", lMag:"Zeitschriften", lBooklet:"Broschüren", lNeed:"Bestellung", lPre:"✅ Vorgeladene Titel:", lPreDesc:"8 Traktate, 6 Zeitschriften, 8 Broschüren/Bücher", bRestore:"🔄 22 wiederherstellen", lSearch:"🔍 Suche", listTitle:"📦 Alle Artikel", lHint:"Tippe + / - zum Zählen", lAdd:"➕ Neuen Artikel hinzufügen", lFieldType:"Typ", lFieldTitle:"Titel *", lFieldCat:"Kategorie", lFieldQty:"Menge jetzt", lFieldMin:"Min Limit", lFieldBar:"Barcode", bAdd:"➕ Hinzufügen", lBulk:"⚡ Mehrere auf einmal", bBulk:"📋 Alle hinzufügen", lOrder:"⚠️ BESTELLLISTE", bCopy:"Kopieren", bExportOrder:"Export", aTitle:"👑 ADMIN PANEL", bClose:"✕ Schließen", bLogin:"Login", lUsers:"👥 Benutzer", lUName:"Name", lUEmail:"Email", lURole:"Rolle", bAddUser:"Hinzufügen", bClearUsers:"Alle löschen", lStats:"📊 Statistik", bExportCSV:"📊 Export CSV", bBackup:"💾 Backup", bClearAll:"⚠️ Alle löschen", fAll:"Alle", fFlyer:"📄 Traktate", fMag:"📚 Zeitschriften", fBooklet:"📖 Broschüren", aFlyer:"📄 Traktat", aMag:"📚 Zeitschrift", aBooklet:"📖 Broschüre", aBook:"📘 Buch", order:"BESTELLUNG", ok:"OK", has:"hat" },
- ru: { subTitle:"Для партнеров - только подсчет", lTot:"Штуки", lTitles:"Названия", lFlyer:"Буклеты", lMag:"Журналы", lBooklet:"Брошюры", lNeed:"Заказ", lPre:"✅ Загруженные названия:", lPreDesc:"8 Буклетов, 6 Журналов, 8 Брошюр/Книг", bRestore:"🔄 Восстановить 22", lSearch:"🔍 Поиск", listTitle:"📦 Все издания", lHint:"Нажми + / - для подсчета", lAdd:"➕ Добавить новое", lFieldType:"Тип", lFieldTitle:"Название *", lFieldCat:"Категория", lFieldQty:"Сколько сейчас", lFieldMin:"Мин лимит", lFieldBar:"Штрихкод", bAdd:"➕ Добавить", lBulk:"⚡ Добавить много сразу", bBulk:"📋 Добавить все", lOrder:"⚠️ СПИСОК ЗАКАЗА", bCopy:"Копировать", bExportOrder:"Экспорт", aTitle:"👑 АДМИН ПАНЕЛЬ", bClose:"✕ Закрыть", bLogin:"Вход", lUsers:"👥 Пользователи", lUName:"Имя", lUEmail:"Email", lURole:"Роль", bAddUser:"Добавить", bClearUsers:"Удалить ВСЕ", lStats:"📊 Статистика", bExportCSV:"📊 Экспорт CSV", bBackup:"💾 Бэкап", bClearAll:"⚠️ Удалить ВСЕ", fAll:"Все", fFlyer:"📄 Буклеты", fMag:"📚 Журналы", fBooklet:"📖 Брошюры", aFlyer:"📄 Буклет", aMag:"📚 Журнал", aBooklet:"📖 Брошюра", aBook:"📘 Книга", order:"ЗАКАЗ", ok:"ОК", has:"есть" }
+ el: { subTitle:"Για συνεργάτες - μόνο καταμέτρηση", lFont:"🎨 Εμφάνιση", lFontSize:"Μέγεθος: ", lFontFamily:"Γραμματοσειρά", lTot:"Τεμάχια", lTitles:"Τίτλοι", lFlyer:"Φυλλάδια", lMag:"Περιοδικά", lBooklet:"Βιβλιάρια", lNeed:"Παραγγελία", lPre:"✅ Προ-φορτωμένοι τίτλοι:", lPreDesc:"Αλλάζουν γλώσσα αυτόματα", bRestore:"🔄 Επαναφορά 22 τίτλων", lSearch:"🔍 Αναζήτηση", listTitle:"📦 Όλα τα είδη", lHint:"Πάτα + / -", lAdd:"➕ Προσθήκη νέου", lFieldType:"Τύπος", lFieldTitle:"Τίτλος *", lFieldCat:"Κατηγορία", lFieldQty:"Πόσα έχει", lFieldMin:"Ελάχιστο", lFieldBar:"Barcode", bAdd:"➕ Προσθήκη", lBulk:"⚡ Πολλοί μαζί", bBulk:"📋 Προσθήκη όλων", lOrder:"⚠️ ΛΙΣΤΑ ΠΑΡΑΓΓΕΛΙΑΣ", bCopy:"Αντιγραφή", bExportOrder:"Export", aTitle:"👑 ADMIN", bClose:"✕ Κλείσιμο", bLogin:"Είσοδος", lLoginLabel:"Κωδικός (1234)", bShow:"👁️", lChangePass:"🔐 Αλλαγή κωδικού", lNewPass:"Νέος κωδικός", lFontAdmin:"🎨 Εμφάνιση", lFontSizeA:"Μέγεθος: ", lFontFamilyA:"Γραμματοσειρά", lDelByType:"🗑️ Διαγραφή ανά τύπο", bDelFlyer:"Φυλλαδίων", bDelMag:"Περιοδικών", bDelBooklet:"Βιβλιαρίων", bDelBook:"Βιβλίων", lUsers:"👥 Χρήστες", lUName:"Όνομα", lUEmail:"Email", lURole:"Ρόλος", bAddUser:"Προσθήκη", bClearUsers:"Διαγραφή ΟΛΩΝ", lStats:"📊 Στατιστικά", bExportCSV:"Export CSV", bBackup:"Backup", bClearAll:"Διαγραφή ΟΛΩΝ", fAll:"Όλα", fFlyer:"Φυλλάδια", fMag:"Περιοδικά", fBooklet:"Βιβλιάρια", aFlyer:"Φυλλάδιο", aMag:"Περιοδικό", aBooklet:"Βιβλιάριο", aBook:"Βιβλίο", order:"ΠΑΡΑΓΓΕΛΙΑ", ok:"ΟΚ", has:"έχει", current:"Κωδικός: " },
+ en: { subTitle:"For partners - counting only", lFont:"🎨 Appearance", lFontSize:"Font size: ", lFontFamily:"Font", lTot:"Pieces", lTitles:"Titles", lFlyer:"Tracts", lMag:"Magazines", lBooklet:"Booklets", lNeed:"Need", lPre:"✅ Pre-loaded titles:", lPreDesc:"Translate automatically", bRestore:"🔄 Restore 22", lSearch:"🔍 Search", listTitle:"📦 All items", lHint:"Tap + / -", lAdd:"➕ Add new", lFieldType:"Type", lFieldTitle:"Title *", lFieldCat:"Category", lFieldQty:"Qty", lFieldMin:"Min", lFieldBar:"Barcode", bAdd:"➕ Add", lBulk:"⚡ Bulk add", bBulk:"Add all", lOrder:"⚠️ ORDER LIST", bCopy:"Copy", bExportOrder:"Export", aTitle:"👑 ADMIN", bClose:"Close", bLogin:"Login", lLoginLabel:"Admin Code (1234)", bShow:"👁️", lChangePass:"Change code", lNewPass:"New code", lFontAdmin:"Appearance", lFontSizeA:"Size: ", lFontFamilyA:"Font", lDelByType:"Delete by type", bDelFlyer:"Tracts", bDelMag:"Magazines", bDelBooklet:"Booklets", bDelBook:"Books", lUsers:"Users", lUName:"Name", lUEmail:"Email", lURole:"Role", bAddUser:"Add", bClearUsers:"Delete ALL", lStats:"Stats", bExportCSV:"Export CSV", bBackup:"Backup", bClearAll:"Delete ALL", fAll:"All", fFlyer:"Tracts", fMag:"Magazines", fBooklet:"Booklets", aFlyer:"Tract", aMag:"Magazine", aBooklet:"Booklet", aBook:"Book", order:"ORDER", ok:"OK", has:"has", current:"Code: " },
+ de: { subTitle:"Für Partner - nur Zählung", lFont:"🎨 Aussehen", lFontSize:"Größe: ", lFontFamily:"Schrift", lTot:"Stücke", lTitles:"Titel", lFlyer:"Traktate", lMag:"Zeitschriften", lBooklet:"Broschüren", lNeed:"Bestellung", lPre:"✅ Vorgeladene Titel:", lPreDesc:"Übersetzen sich automatisch", bRestore:"🔄 22 wiederherstellen", lSearch:"🔍 Suche", listTitle:"📦 Alle Artikel", lHint:"+ / - zum Zählen", lAdd:"➕ Neu hinzufügen", lFieldType:"Typ", lFieldTitle:"Titel *", lFieldCat:"Kategorie", lFieldQty:"Menge", lFieldMin:"Min", lFieldBar:"Barcode", bAdd:"Hinzufügen", lBulk:"Mehrere", bBulk:"Alle hinzufügen", lOrder:"BESTELLLISTE", bCopy:"Kopieren", bExportOrder:"Export", aTitle:"ADMIN", bClose:"Schließen", bLogin:"Login", lLoginLabel:"Code (1234)", bShow:"👁️", lChangePass:"Code ändern", lNewPass:"Neuer Code", lFontAdmin:"Aussehen", lFontSizeA:"Größe: ", lFontFamilyA:"Schrift", lDelByType:"Nach Typ löschen", bDelFlyer:"Traktate", bDelMag:"Zeitschriften", bDelBooklet:"Broschüren", bDelBook:"Bücher", lUsers:"Benutzer", lUName:"Name", lUEmail:"Email", lURole:"Rolle", bAddUser:"Hinzufügen", bClearUsers:"Alle löschen", lStats:"Statistik", bExportCSV:"Export CSV", bBackup:"Backup", bClearAll:"Alle löschen", fAll:"Alle", fFlyer:"Traktate", fMag:"Zeitschriften", fBooklet:"Broschüren", aFlyer:"Traktat", aMag:"Zeitschrift", aBooklet:"Broschüre", aBook:"Buch", order:"BESTELLUNG", ok:"OK", has:"hat", current:"Code: " },
+ ru: { subTitle:"Для партнеров - только подсчет", lFont:"Внешний вид", lFontSize:"Размер: ", lFontFamily:"Шрифт", lTot:"Штуки", lTitles:"Названия", lFlyer:"Буклеты", lMag:"Журналы", lBooklet:"Брошюры", lNeed:"Заказ", lPre:"✅ Загруженные:", lPreDesc:"Переводятся автоматом", bRestore:"Восстановить 22", lSearch:"Поиск", listTitle:"Все", lHint:"+ / -", lAdd:"Добавить", lFieldType:"Тип", lFieldTitle:"Название *", lFieldCat:"Категория", lFieldQty:"Кол-во", lFieldMin:"Мин", lFieldBar:"Штрихкод", bAdd:"Добавить", lBulk:"Много сразу", bBulk:"Добавить все", lOrder:"СПИСОК ЗАКАЗА", bCopy:"Копировать", bExportOrder:"Экспорт", aTitle:"АДМИН", bClose:"Закрыть", bLogin:"Вход", lLoginLabel:"Код (1234)", bShow:"👁️", lChangePass:"Сменить код", lNewPass:"Новый код", lFontAdmin:"Внешний вид", lFontSizeA:"Размер: ", lFontFamilyA:"Шрифт", lDelByType:"Удалить по типу", bDelFlyer:"Буклеты", bDelMag:"Журналы", bDelBooklet:"Брошюры", bDelBook:"Книги", lUsers:"Пользователи", lUName:"Имя", lUEmail:"Email", lURole:"Роль", bAddUser:"Добавить", bClearUsers:"Удалить ВСЕ", lStats:"Статистика", bExportCSV:"Экспорт CSV", bBackup:"Бэкап", bClearAll:"Удалить ВСЕ", fAll:"Все", fFlyer:"Буклеты", fMag:"Журналы", fBooklet:"Брошюры", aFlyer:"Буклет", aMag:"Журнал", aBooklet:"Брошюра", aBook:"Книга", order:"ЗАКАЗ", ok:"ОК", has:"есть", current:"Код: " }
 };
 
 var curLang = localStorage.getItem("stand_lang")||"el";
+var curFS = parseInt(localStorage.getItem("stand_fs")||"15");
+var curFF = localStorage.getItem("stand_ff")||"Arial, sans-serif";
+function applyFont(){ document.documentElement.style.setProperty('--fs', curFS+'px'); document.documentElement.style.setProperty('--ff', curFF); document.body.style.fontFamily=curFF; var fsVal=document.getElementById("fsVal"); if(fsVal) fsVal.textContent=curFS; var fsValA=document.getElementById("fsValA"); if(fsValA) fsValA.textContent=curFS; var prev=document.getElementById("fontPrev"); if(prev){ prev.style.fontSize=curFS+'px'; prev.style.fontFamily=curFF; } var r=document.getElementById("fsRange"); if(r) r.value=curFS; var rA=document.getElementById("fsRangeA"); if(rA) rA.value=curFS; var sel=document.getElementById("ffSelect"); if(sel) sel.value=curFF; var selA=document.getElementById("ffSelectA"); if(selA) selA.value=curFF; }
+function setFontSize(v){ curFS=parseInt(v); localStorage.setItem("stand_fs", curFS); applyFont(); }
+function setFontFamily(v){ curFF=v; localStorage.setItem("stand_ff", curFF); applyFont(); }
 
-// Register Service Worker dynamically via Blob for full PWA offline support
-if('serviceWorker' in navigator){ 
-  const swCode = `self.addEventListener('install',e=>{self.skipWaiting()});self.addEventListener('activate',e=>{self.clients.claim()});self.addEventListener('fetch',e=>{e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)))});`; 
-  const blob=new Blob([swCode],{type:'application/javascript'}); 
-  const swUrl=URL.createObjectURL(blob); 
-  window.addEventListener('load',()=>{navigator.serviceWorker.register(swUrl).catch(()=>{})}); 
+var items=[]; var users=[]; var adminPass=localStorage.getItem("stand_pin")||localStorage.getItem("stand_pass")||"1234"; var currentFilter='all'; var currentAddType='Περιοδικό';
+try{ var s=localStorage.getItem("stand_items_v4"); items=JSON.parse(s||"[]"); users=JSON.parse(localStorage.getItem("stand_users")||"[]"); }catch(e){ items=[]; }
+if(items.length==0){ items = PRESETS.map(function(p){ return {id: Date.now()+p.id, presetId:p.id, names:p.names, type:p.type, cat:p.cat, qty:p.qty, min:p.min, barcode:''}; }); }
+
+function save(){ try{ localStorage.setItem("stand_items_v4", JSON.stringify(items)); localStorage.setItem("stand_users", JSON.stringify(users)); }catch(e){} }
+
+var cloudEnabled = localStorage.getItem("stand_cloud_enabled")==="true";
+var cloudId = localStorage.getItem("stand_cloud_id")||"stand-athens-1";
+var fbConfigStr = localStorage.getItem("stand_fb_config")||'{"apiKey":"AIzaSyCKoGOE84zPuc4t6UQrDYMbooCR43p0FyQ","authDomain":"stand-management-a46a7.firebaseapp.com","projectId":"stand-management-a46a7","storageBucket":"stand-management-a46a7.firebasestorage.app","messagingSenderId":"304875768432","appId":"1:304875768432:web:470adb4707b8a3680482b5","measurementId":"G-EHC9FEP1FX"}';
+var cloudApp=null; var cloudDb=null; var cloudUnsub=null; var cloudPushTimeout=null;
+var myUserId = localStorage.getItem("stand_my_uid")||("u_"+Math.random().toString(36).substr(2,6));
+localStorage.setItem("stand_my_uid", myUserId);
+var myUserName = localStorage.getItem("stand_my_name")||"Χρήστης-"+myUserId.substr(2,3);
+var isSyncingFromCloud=false;
+
+function initCloudElements(){ var ce=document.getElementById("cloudEnabled"); if(ce) ce.checked=cloudEnabled; var ci=document.getElementById("cloudId"); if(ci) ci.value=cloudId; var fc=document.getElementById("fbConfig"); if(fc) fc.value=fbConfigStr; updateCloudStatus(cloudEnabled?"Connecting...":"Offline", cloudEnabled?"#eab308":"#555"); }
+function saveCloudId(){ var ci=document.getElementById("cloudId"); if(!ci) return; cloudId=ci.value.trim()||"stand-athens-1"; localStorage.setItem("stand_cloud_id", cloudId); alert("Saved ID: "+cloudId); if(cloudEnabled) initFirebase(); }
+function saveFbConfig(){ var fc=document.getElementById("fbConfig"); if(!fc) return; fbConfigStr=fc.value.trim(); localStorage.setItem("stand_fb_config", fbConfigStr); alert("Config saved!"); if(cloudEnabled) initFirebase(); }
+function toggleCloud(){ var ce=document.getElementById("cloudEnabled"); cloudEnabled = ce?ce.checked:false; localStorage.setItem("stand_cloud_enabled", cloudEnabled); if(cloudEnabled){ initFirebase(); } else { if(cloudUnsub){ cloudUnsub(); cloudUnsub=null; } updateCloudStatus("Offline","#555"); } }
+function updateCloudStatus(txt, color){ var el=document.getElementById("cloudStatus"); if(el){ el.textContent=txt; el.style.background=color; } var last=document.getElementById("lastSync"); if(last && txt.indexOf("Synced")>=0) last.textContent="Τελευταίος: "+new Date().toLocaleTimeString()+" | ID: "+cloudId; }
+function getFirebaseConfig(){ try{ return JSON.parse(fbConfigStr); }catch(e){ return null; } }
+
+async function initFirebase(){
+  updateCloudStatus("Connecting...","#eab308");
+  var cfg = getFirebaseConfig(); if(!cfg){ updateCloudStatus("No config","#ef4444"); return; }
+  try{
+    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js");
+    const { getFirestore, doc, setDoc, onSnapshot, getDoc } = await import("https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js");
+    if(!cloudApp){ cloudApp = initializeApp(cfg); cloudDb = getFirestore(cloudApp); window._fb = {doc, setDoc, onSnapshot, getDoc}; }
+    if(cloudUnsub) cloudUnsub();
+    var dRef = window._fb.doc(cloudDb, "stands", cloudId);
+    cloudUnsub = window._fb.onSnapshot(dRef, function(snap){
+      if(!snap.exists()){ updateCloudStatus("No data yet - Push","#eab308"); return; }
+      var data = snap.data();
+      if(data && data.items && !isSyncingFromCloud){
+        isSyncingFromCloud=true;
+        if(JSON.stringify(data.items)!==JSON.stringify(items)){
+          items=data.items.map(function(it){ if(!it.names && it.name) it.names={el:it.name,en:it.name,de:it.name,ru:it.name}; return it; });
+          saveLocalOnly(); render(); updateCloudStatus("Synced - Updated","#22c55e");
+        } else updateCloudStatus("Synced","#22c55e");
+        if(data.onlineUsers) renderOnlineUsers(data.onlineUsers);
+        isSyncingFromCloud=false;
+      }
+    }, function(err){ updateCloudStatus("Error","#ef4444"); });
+    updateCloudStatus("Synced - Listening","#22c55e");
+  }catch(e){ updateCloudStatus("Error: "+e.message,"#ef4444"); }
 }
+function saveLocalOnly(){ try{ localStorage.setItem("stand_items_v4", JSON.stringify(items)); }catch(e){} }
+async function pushToCloud(){ if(!cloudEnabled){alert("Enable Cloud!");return;} var cfg=getFirebaseConfig(); if(cfg && cloudDb && window._fb){ try{ updateCloudStatus("Uploading...","#eab308"); var dRef=window._fb.doc(cloudDb,"stands",cloudId); await window._fb.setDoc(dRef,{items:items, users:users, updated:Date.now()},{merge:true}); updateCloudStatus("Synced - Pushed","#22c55e"); }catch(e){alert(e.message);} } else alert("No cloud"); }
+async function pullFromCloud(){ var cfg=getFirebaseConfig(); if(cfg && cloudDb && window._fb){ try{ var dRef=window._fb.doc(cloudDb,"stands",cloudId); var snap=await window._fb.getDoc(dRef); if(snap.exists() && snap.data().items){ isSyncingFromCloud=true; items=snap.data().items; save(); render(); updateCloudStatus("Pulled","#22c55e"); isSyncingFromCloud=false; } }catch(e){alert(e.message);} } }
+function renderOnlineUsers(online){ var el=document.getElementById("onlineUsers"); if(!el) return; var html=""; for(var k in online){ var isMe=k===myUserId; html+='<span style="padding:2px 8px;border-radius:99px;background:'+(isMe?'#f59e0b;color:#000':'#333')+';font-size:10px">'+(online[k].name||k)+(isMe?' (you)':'')+'</span>'; } el.innerHTML=html||'<span class="small">None</span>'; }
+function testCloud(){ if(!cloudEnabled){alert("Enable first");return;} initFirebase(); alert("Testing... check status"); }
+function autoPushCloud(){ if(!cloudEnabled || isSyncingFromCloud) return; if(cloudPushTimeout) clearTimeout(cloudPushTimeout); cloudPushTimeout=setTimeout(function(){pushToCloud();},1500); }
+var _origSave=save; save=function(){ _origSave(); autoPushCloud(); };
 
-var items=[]; var users=[]; var adminPin="1234"; var currentFilter='all'; var currentAddType='Περιοδικό';
-try{ 
-  var s=localStorage.getItem("stand_items_v3")||localStorage.getItem("stand_items_v2")||localStorage.getItem("stand_items"); 
-  items=JSON.parse(s||"[]"); 
-  users=JSON.parse(localStorage.getItem("stand_users")||"[]"); 
-  adminPin=localStorage.getItem("stand_pin")||"1234"; 
-}catch(e){}
-
-if(items.length==0){ 
-  items=PRESETS.map((p,i)=>({id:Date.now()+i, name:p.name, type:p.type, cat:p.cat, qty:p.qty, min:p.min, barcode:''})); 
-  try{localStorage.setItem("stand_items_v3", JSON.stringify(items));}catch(e){} 
-}
-
-function setL(l){ curLang=l; localStorage.setItem("stand_lang", l); applyLang(); render(); }
-function applyLang(){
-  var t=LANGS[curLang]||LANGS.el;
-  var ids=Object.keys(t);
-  for(var i=0;i<ids.length;i++){ var el=document.getElementById(ids[i]); if(el) el.textContent=t[ids[i]]; }
-  ["el","en","de","ru"].forEach(function(lg){ var b=document.getElementById("bl-"+lg); if(b){ b.className = (lg==curLang)?"active":"sec"; } });
-  document.getElementById("f-all").textContent = t.fAll+" ("+items.length+")";
-  document.getElementById("f-flyer").textContent = t.fFlyer;
-  document.getElementById("f-mag").textContent = t.fMag;
-  document.getElementById("f-booklet").textContent = t.fBooklet;
-  document.getElementById("a-flyer").textContent = t.aFlyer;
-  document.getElementById("a-mag").textContent = t.aMag;
-  document.getElementById("a-booklet").textContent = t.aBooklet;
-  document.getElementById("a-book").textContent = t.aBook;
-  var delIds=["lDelByType","bDelFlyer","bDelMag","bDelBooklet","bDelBook"];
-  for(var k=0;k<delIds.length;k++){ var e=document.getElementById(delIds[k]); if(e && t[delIds[k]]) e.textContent=t[delIds[k]]; }
-}
-
-function loadPresets(){ if(!confirm("Restore?")) return; var existing=items.map(x=>x.name); var added=0; for(var i=0;i<PRESETS.length;i++) if(existing.indexOf(PRESETS[i].name)<0){ items.push({id:Date.now()+i+Math.random(), name:PRESETS[i].name, type:PRESETS[i].type, cat:PRESETS[i].cat, qty:PRESETS[i].qty, min:PRESETS[i].min, barcode:''}); added++; } save(); render(); alert(added+" added"); }
-function save(){ try{ localStorage.setItem("stand_items_v3", JSON.stringify(items)); localStorage.setItem("stand_users", JSON.stringify(users)); }catch(e){} }
+function getDisplayName(it){ if(it.names && it.names[curLang]) return it.names[curLang]; return it.name || ""; }
+function getDisplayCat(it){ if(it.cat && typeof it.cat === 'object') return it.cat[curLang]||it.cat.el||""; return it.cat||""; }
+function setL(l){ curLang=l; localStorage.setItem("stand_lang", l); applyLang(); applyFont(); render(); }
+function applyLang(){ var t=LANGS[curLang]||LANGS.el; Object.keys(t).forEach(function(k){ var el=document.getElementById(k); if(el) el.textContent=t[k]; }); ["el","en","de","ru"].forEach(function(lg){ var b=document.getElementById("bl-"+lg); if(b) b.className=(lg==curLang)?"active":"sec"; }); document.getElementById("lCurrentPin").textContent=t.current+adminPass; var fsLabel=document.getElementById("lFontSize"); if(fsLabel) fsLabel.innerHTML=t.lFontSize+'<span id="fsVal">'+curFS+'</span>px'; var fsLabelA=document.getElementById("lFontSizeA"); if(fsLabelA) fsLabelA.innerHTML=t.lFontSizeA+'<span id="fsValA">'+curFS+'</span>px'; }
+function loadPresets(){ if(!confirm("Restore 22?")) return; var existingIds=items.filter(function(x){return x.presetId;}).map(function(x){return x.presetId;}); var added=0; PRESETS.forEach(function(p){ if(existingIds.indexOf(p.id)<0){ items.push({id:Date.now()+p.id+Math.random(), presetId:p.id, names:p.names, type:p.type, cat:p.cat, qty:p.qty, min:p.min, barcode:''}); added++; } }); save(); render(); alert(added+" added"); }
 function setAddType(t){ currentAddType=t; document.getElementById("addType").value=t; updateAddButtons(); }
-function updateAddButtons(){
-  currentAddType=document.getElementById("addType").value;
-  var map={'Φυλλάδιο':'a-flyer','Περιοδικό':'a-mag','Βιβλιάριο':'a-booklet','Βιβλίο':'a-book','Φυλλάδιο-Διαφημιστικό':'a-flyer'};
-  ["a-flyer","a-mag","a-booklet","a-book"].forEach(function(id){ document.getElementById(id).className="typebtn sec"; });
-  if(map[currentAddType]) document.getElementById(map[currentAddType]).className="typebtn active";
-}
-function addItem(){ var t=document.getElementById("title").value.trim(); if(!t){alert("Title!");return;} items.push({id:Date.now()+Math.random(), name:t, type:document.getElementById("addType").value, cat:document.getElementById("cat").value||"-", qty:parseInt(document.getElementById("qty").value)||0, min:parseInt(document.getElementById("min").value)||3, barcode:document.getElementById("bar").value||''}); save(); document.getElementById("title").value=""; render(); }
-function addBulk(){ var txt=document.getElementById("bulk").value.trim(); if(!txt){alert("Write titles");return;} var lines=txt.split("\n"); var c=0; for(var i=0;i<lines.length;i++){ var tt=lines[i].trim(); if(!tt) continue; items.push({id:Date.now()+i+Math.random(), name:tt, type:document.getElementById("addType").value, cat:document.getElementById("cat").value||"-", qty:parseInt(document.getElementById("qty").value)||0, min:parseInt(document.getElementById("min").value)||3, barcode:''}); c++; } save(); document.getElementById("bulk").value=""; render(); alert(c+" added"); }
+function updateAddButtons(){ currentAddType=document.getElementById("addType").value; ["a-flyer","a-mag","a-booklet","a-book"].forEach(function(id){ document.getElementById(id).className="typebtn sec"; }); var map={'Φυλλάδιο':'a-flyer','Περιοδικό':'a-mag','Βιβλιάριο':'a-booklet','Βιβλίο':'a-book','Φυλλάδιο-Διαφημιστικό':'a-flyer'}; if(map[currentAddType]) document.getElementById(map[currentAddType]).className="typebtn active"; }
+function addItem(){ var titleVal=document.getElementById("title").value.trim(); if(!titleVal){alert("Title!");return;} var namesObj={"el":titleVal,"en":titleVal,"de":titleVal,"ru":titleVal}; items.push({id:Date.now()+Math.random(), names:namesObj, name:titleVal, type:document.getElementById("addType").value, cat:document.getElementById("cat").value||"-", qty:parseInt(document.getElementById("qty").value)||0, min:parseInt(document.getElementById("min").value)||3, barcode:document.getElementById("bar").value||''}); save(); document.getElementById("title").value=""; render(); }
+function addBulk(){ var txt=document.getElementById("bulk").value.trim(); if(!txt) return; var lines=txt.split("\n"); var c=0; lines.forEach(function(line){ var tt=line.trim(); if(!tt) return; var namesObj={"el":tt,"en":tt,"de":tt,"ru":tt}; items.push({id:Date.now()+c+Math.random(), names:namesObj, name:tt, type:document.getElementById("addType").value, cat:document.getElementById("cat").value||"-", qty:parseInt(document.getElementById("qty").value)||0, min:parseInt(document.getElementById("min").value)||3, barcode:''}); c++; }); save(); document.getElementById("bulk").value=""; render(); alert(c+" added"); }
 function changeQty(id,d){ for(var i=0;i<items.length;i++) if(items[i].id==id){ items[i].qty=Math.max(0,items[i].qty+d); break; } save(); render(); }
 function deleteItem(id){ if(!confirm("Delete?")) return; items=items.filter(function(x){return x.id!=id;}); save(); render(); }
 function filterType(t){ currentFilter=t; ["f-all","f-flyer","f-mag","f-booklet"].forEach(function(id){ document.getElementById(id).className="typebtn sec"; }); var map={'all':'f-all','Φυλλάδιο':'f-flyer','Περιοδικό':'f-mag','Βιβλιάριο':'f-booklet'}; if(map[t]) document.getElementById(map[t]).className="typebtn active"; render(); }
 function getTypeClass(tp){ if(tp.indexOf('Φυλλάδιο')>=0) return 't-flyer'; if(tp=='Περιοδικό') return 't-mag'; if(tp=='Βιβλιάριο') return 't-booklet'; return 't-book'; }
-
-function deleteByType(tp){
-  var count = items.filter(function(x){return x.type.indexOf(tp)>=0 || x.type==tp;}).length;
-  if(count==0){ alert("Κανένα "+tp+" για διαγραφή"); return; }
-  if(!confirm("Σίγουρα διαγραφή ΟΛΩΝ των "+tp+" ("+count+" τίτλοι);")) return;
-  if(!confirm("ΔΕΝ ΓΥΡΙΖΕΙ ΠΙΣΩ! Σίγουρα;")) return;
-  items = items.filter(function(x){return !(x.type.indexOf(tp)>=0 || x.type==tp);});
-  save(); render(); alert("Διαγράφηκαν "+count+" "+tp);
-}
-
+function deleteByType(tp){ var count=items.filter(function(x){return x.type.indexOf(tp)>=0 || x.type==tp;}).length; if(count==0){alert("None");return;} if(!confirm("Delete ALL "+tp+" ("+count+")?")) return; items=items.filter(function(x){return !(x.type.indexOf(tp)>=0 || x.type==tp);}); save(); render(); }
 function render(){
   var q=document.getElementById("search").value.toLowerCase();
   var t=LANGS[curLang]||LANGS.el;
-  var filtered=[];
-  for(var i=0;i<items.length;i++){ var it=items[i]; var matchQ = it.name.toLowerCase().indexOf(q)>=0 || it.cat.toLowerCase().indexOf(q)>=0 || it.type.toLowerCase().indexOf(q)>=0; var matchType = currentFilter=='all' || it.type==currentFilter || (currentFilter=='Φυλλάδιο' && it.type.indexOf('Φυλλάδιο')>=0); if(matchQ && matchType) filtered.push(it); }
-  var total=0,cFly=0,cMag=0,cBooklet=0;
-  for(var i=0;i<items.length;i++){ total+=items[i].qty; if(items[i].type.indexOf('Φυλλάδιο')>=0) cFly+=items[i].qty; else if(items[i].type=='Περιοδικό') cMag+=items[i].qty; else cBooklet+=items[i].qty; }
+  var filtered=[]; for(var i=0;i<items.length;i++){ var it=items[i]; var dispName=getDisplayName(it).toLowerCase(); var dispCat=getDisplayCat(it).toLowerCase(); var matchQ = dispName.indexOf(q)>=0 || dispCat.indexOf(q)>=0 || it.type.toLowerCase().indexOf(q)>=0; var matchType = currentFilter=='all' || it.type==currentFilter || (currentFilter=='Φυλλάδιο' && it.type.indexOf('Φυλλάδιο')>=0); if(matchQ && matchType) filtered.push(it); }
+  var total=0,cFly=0,cMag=0,cBooklet=0; for(var i=0;i<items.length;i++){ total+=items[i].qty; if(items[i].type.indexOf('Φυλλάδιο')>=0) cFly+=items[i].qty; else if(items[i].type=='Περιοδικό') cMag+=items[i].qty; else cBooklet+=items[i].qty; }
   var need=[]; for(var i=0;i<items.length;i++) if(items[i].qty<=items[i].min) need.push(items[i]);
   document.getElementById("tot").innerHTML=total; document.getElementById("tit").innerHTML=items.length; document.getElementById("cnt-flyer").innerHTML=cFly; document.getElementById("cnt-mag").innerHTML=cMag; document.getElementById("cnt-booklet").innerHTML=cBooklet; document.getElementById("need").innerHTML=need.length;
-  document.getElementById("f-all").textContent = t.fAll+" ("+items.length+")";
-  var h="";
-  for(var i=0;i<filtered.length;i++){ var it=filtered[i]; var col=it.qty<=it.min?"bad":"good"; var lab=it.qty<=it.min?t.order:t.ok; var tcl=getTypeClass(it.type);
-    h+='<div class="item"><div><span class="type-label '+tcl+'">'+it.type+'</span><b>'+it.name+'</b><br><span class="small">'+it.cat+'</span><br><span class="badge '+col+'">'+lab+': '+it.qty+'/'+it.min+'</span></div><div><button class="sec" onclick="changeQty('+it.id+',-1)">-</button><span style="padding:0 6px;font-weight:bold">'+it.qty+'</span><button onclick="changeQty('+it.id+',1)">+</button><button class="sec" onclick="deleteItem('+it.id+')">🗑️</button></div></div>';
-  }
-  document.getElementById("list").innerHTML=h||'<span class="small">Empty</span>';
-  var ob=document.getElementById("orderBox");
-  if(need.length>0){ ob.style.display="block"; var oh=""; var gFly=[],gMag=[],gBook=[]; for(var i=0;i<need.length;i++){ if(need[i].type.indexOf('Φυλλάδιο')>=0) gFly.push(need[i]); else if(need[i].type=='Περιοδικό') gMag.push(need[i]); else gBook.push(need[i]); }
-    if(gFly.length){ oh+='<b style="color:#06b6d4">📄 '+t.fFlyer+':</b><br>'; for(var i=0;i<gFly.length;i++) oh+=gFly[i].name+" - "+t.has+" "+gFly[i].qty+"<br>"; oh+='<br>'; }
-    if(gMag.length){ oh+='<b style="color:#f59e0b">📚 '+t.fMag+':</b><br>'; for(var i=0;i<gMag.length;i++) oh+=gMag[i].name+" - "+t.has+" "+gMag[i].qty+"<br>"; oh+='<br>'; }
-    if(gBook.length){ oh+='<b style="color:#22c55e">📖 '+t.fBooklet+':</b><br>'; for(var i=0;i<gBook.length;i++) oh+=gBook[i].name+" - "+t.has+" "+gBook[i].qty+"<br>"; }
-    document.getElementById("orderList").innerHTML=oh;
-  } else ob.style.display="none";
-  var uh=""; for(var i=0;i<users.length;i++){ uh+='<div class="item"><div><b>'+users[i].name+'</b><br><span class="small">'+users[i].email+' - '+users[i].role+'</span></div><div><button class="red" onclick="deleteUser('+users[i].id+')">Del</button></div></div>'; }
-  document.getElementById("usersList").innerHTML=uh||'<span class="small">None</span>';
+  var h=""; for(var i=0;i<filtered.length;i++){ var it=filtered[i]; var col=it.qty<=it.min?"bad":"good"; var lab=it.qty<=it.min?t.order:t.ok; var tcl=getTypeClass(it.type); var dName=getDisplayName(it); var dCat=getDisplayCat(it); h+='<div class="item"><div><span class="type-label '+tcl+'">'+getTypeDisplay(it.type)+'</span><b>'+dName+'</b><br><span class="small">'+dCat+(it.barcode?' | '+it.barcode:'')+'</span><br><span class="badge '+col+'">'+lab+': '+it.qty+'/'+it.min+'</span></div><div><button class="sec" onclick="changeQty('+it.id+',-1)">-</button><span style="padding:0 6px;font-weight:bold">'+it.qty+'</span><button onclick="changeQty('+it.id+',1)">+</button><button class="sec" onclick="deleteItem('+it.id+')">🗑️</button></div></div>'; }
+  document.getElementById("list").innerHTML=h||'<span class="small">Empty - Add titles</span>';
+  var ob=document.getElementById("orderBox"); if(need.length>0){ ob.style.display="block"; var oh=""; var gFly=[],gMag=[],gBook=[]; for(var i=0;i<need.length;i++){ if(need[i].type.indexOf('Φυλλάδιο')>=0) gFly.push(need[i]); else if(need[i].type=='Περιοδικό') gMag.push(need[i]); else gBook.push(need[i]); } if(gFly.length){ oh+='<b style="color:#06b6d4">📄 '+t.fFlyer+':</b><br>'; for(var i=0;i<gFly.length;i++) oh+=getDisplayName(gFly[i])+" - "+t.has+" "+gFly[i].qty+"<br>"; oh+='<br>'; } if(gMag.length){ oh+='<b style="color:#f59e0b">📚 '+t.fMag+':</b><br>'; for(var i=0;i<gMag.length;i++) oh+=getDisplayName(gMag[i])+" - "+t.has+" "+gMag[i].qty+"<br>"; oh+='<br>'; } if(gBook.length){ oh+='<b style="color:#22c55e">📖 '+t.fBooklet+':</b><br>'; for(var i=0;i<gBook.length;i++) oh+=getDisplayName(gBook[i])+" - "+t.has+" "+gBook[i].qty+"<br>"; } document.getElementById("orderList").innerHTML=oh; } else ob.style.display="none";
+  var uh=""; for(var i=0;i<users.length;i++){ uh+='<div class="item"><div><b>'+users[i].name+'</b><br><span class="small">'+users[i].email+' - '+users[i].role+'</span></div><div><button class="red" onclick="deleteUser('+users[i].id+')">Del</button></div></div>'; } document.getElementById("usersList").innerHTML=uh||'<span class="small">None</span>';
   document.getElementById("adminStats").innerHTML='Total: '+items.length+'<br>'+t.fFlyer+': '+items.filter(function(x){return x.type.indexOf('Φυλλάδιο')>=0;}).length+' / '+cFly+'<br>'+t.fMag+': '+items.filter(function(x){return x.type=='Περιοδικό';}).length+' / '+cMag+'<br>'+t.fBooklet+': '+items.filter(function(x){return x.type=='Βιβλιάριο'||x.type=='Βιβλίο';}).length+' / '+cBooklet;
+  document.getElementById("lCurrentPin").textContent=t.current+adminPass;
 }
-
+function togglePin(){ var el=document.getElementById("pinCheck"); el.type = el.type=="password"?"text":"password"; }
+function toggleNewPass(){ var el=document.getElementById("newPass"); el.type = el.type=="text"?"password":"text"; }
+function saveNewPass(){ var np=document.getElementById("newPass").value.trim(); if(np.length<3){alert("At least 3");return;} adminPass=np; localStorage.setItem("stand_pass",adminPass); localStorage.setItem("stand_pin",adminPass); document.getElementById("passMsg").textContent="✅ Saved: "+adminPass; render(); }
+function resetAdminPass(){ localStorage.removeItem("stand_pass"); localStorage.removeItem("stand_pin"); adminPass="1234"; document.getElementById("pinCheck").value="1234"; document.getElementById("lCurrentPin").textContent=(LANGS[curLang]||LANGS.el).current+adminPass; alert("Reset σε 1234"); }
 function copyOrder(){ navigator.clipboard.writeText(document.getElementById("orderList").innerText).then(function(){alert("Copied!");}); }
 function exportOrder(){ var b=new Blob([document.getElementById("orderList").innerText],{type:"text/plain"}); var a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="order.txt"; a.click(); }
-function exportCSV(){ var csv="Type,Title,Category,Qty,Min\n"; for(var i=0;i<items.length;i++) csv+='"'+items[i].type+'","'+items[i].name+'","'+items[i].cat+'",'+items[i].qty+','+items[i].min+'\n'; var b=new Blob([csv],{type:"text/csv"}); var a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="stand.csv"; a.click(); }
-function backup(){ var b=new Blob([JSON.stringify({items:items,users:users})],{type:"application/json"}); var a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="backup.json"; a.click(); }
-function restore(e){ var f=e.target.files[0]; var r=new FileReader(); r.onload=function(){ try{ var d=JSON.parse(r.result); items=d.items||items; users=d.users||users; save(); render(); alert("OK"); }catch(err){alert("Error");} }; r.readAsText(f); }
-function addUser(){ var n=document.getElementById("uName").value.trim(); if(!n){alert("Name");return;} users.push({id:Date.now(), name:n, email:document.getElementById("uEmail").value, role:document.getElementById("uRole").value}); save(); document.getElementById("uName").value=""; document.getElementById("uEmail").value=""; render(); }
-function deleteUser(id){ if(!confirm("Delete user?")) return; users=users.filter(function(x){return x.id!=id;}); save(); render(); }
+function exportCSV(){ var csv="Type,Title_"+curLang+",Category,Qty,Min\n"; for(var i=0;i<items.length;i++){ var dn=getDisplayName(items[i]).replace(/"/g,'""'); var dc=getDisplayCat(items[i]).replace(/"/g,'""'); csv+='"'+items[i].type+'","'+dn+'","'+dc+'",'+items[i].qty+','+items[i].min+'\n'; } var b=new Blob([csv],{type:"text/csv"}); var a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="stand_"+curLang+".csv"; a.click(); }
+function backup(){ var b=new Blob([JSON.stringify({items:items,users:users,adminPass:adminPass,lang:curLang,fs:curFS,ff:curFF})],{type:"application/json"}); var a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="backup.json"; a.click(); }
+function restore(e){ var f=e.target.files[0]; var r=new FileReader(); r.onload=function(){ try{ var d=JSON.parse(r.result); if(d.items) items=d.items; if(d.users) users=d.users; if(d.adminPass){adminPass=d.adminPass; localStorage.setItem("stand_pass",adminPass);} if(d.lang){curLang=d.lang; localStorage.setItem("stand_lang",curLang);} if(d.fs){curFS=d.fs; localStorage.setItem("stand_fs",curFS);} if(d.ff){curFF=d.ff; localStorage.setItem("stand_ff",curFF);} save(); applyFont(); applyLang(); render(); alert("OK"); }catch(err){alert("Error");} }; r.readAsText(f); }
+function addUser(){ var n=document.getElementById("uName").value.trim(); if(!n) return; users.push({id:Date.now(), name:n, email:document.getElementById("uEmail").value, role:document.getElementById("uRole").value}); save(); document.getElementById("uName").value=""; document.getElementById("uEmail").value=""; render(); }
+function deleteUser(id){ users=users.filter(function(x){return x.id!=id;}); save(); render(); }
 function clearUsers(){ if(!confirm("Delete ALL users?")) return; users=[]; save(); render(); }
-function clearAll(){ if(!confirm("Delete ALL?")) return; items=[]; save(); render(); }
-function openAdmin(){ document.getElementById("adminScreen").style.display="block"; }
-function closeAdmin(){ document.getElementById("adminScreen").style.display="none"; document.getElementById("adminContent").style.display="none"; document.getElementById("pinCheck").value=""; }
-function checkAdmin(){ if(document.getElementById("pinCheck").value==adminPin) document.getElementById("adminContent").style.display="block"; else alert("Wrong PIN 1234"); }
+function clearAll(){ if(!confirm("Delete ALL items?")) return; if(!confirm("SURE?")) return; items=[]; save(); render(); }
+function openAdmin(){ document.getElementById("adminScreen").style.display="block"; document.getElementById("lCurrentPin").textContent=(LANGS[curLang]||LANGS.el).current+adminPass; initCloudElements(); }
+function closeAdmin(){ document.getElementById("adminScreen").style.display="none"; document.getElementById("adminContent").style.display="none"; document.getElementById("loginBox").style.display="block"; document.getElementById("pinCheck").value=""; document.getElementById("passMsg").textContent=""; }
+function checkAdmin(){ if(document.getElementById("pinCheck").value==adminPass){ document.getElementById("adminContent").style.display="block"; document.getElementById("loginBox").style.display="none"; initCloudElements(); } else alert("Wrong code! Default 1234"); }
 
-applyLang(); render(); updateAddButtons();
+applyFont(); applyLang(); render(); updateAddButtons();
+initCloudElements();
+if(cloudEnabled) setTimeout(initFirebase, 1000);
 </script>
-</body>
+<script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
 </html>

@@ -19,15 +19,27 @@ button.typebtn{flex:1;padding:8px;font-size:0.8em;background:#333;color:#fff} bu
 .card{background:#1e1e1e;border:1px solid #333;border-radius:12px;padding:12px;margin:8px 0}
 label{color:#f59e0b;font-size:0.85em;font-weight:bold;display:block;margin:8px 0 3px}
 input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid #555;background:#2a2a2a;color:#fff;font-size:1em}
+/* ============ LIST ITEM — ΜΙΚΡΟΤΕΡΑ ΓΡΑΜΜΑΤΑ ============ */
 .item{background:#252525;padding:10px;border-radius:8px;margin:6px 0;display:flex;justify-content:space-between;align-items:center;gap:8px}
-.badge{padding:3px 8px;border-radius:99px;font-size:0.7em;font-weight:bold} .bad{background:#ef4444} .good{background:#22c55e;color:#000}
-.type-label{font-size:0.65em;padding:2px 6px;border-radius:99px;font-weight:bold}
+.item .item-name{font-size:var(--list-font-size, 13px);font-weight:bold;line-height:1.3;word-break:break-word}
+.item .item-cat{font-size:calc(var(--list-font-size, 13px) * 0.8);color:#999;line-height:1.2}
+.item .item-badge{font-size:calc(var(--list-font-size, 13px) * 0.75);padding:3px 8px;border-radius:99px;font-weight:bold;display:inline-block;margin-top:3px}
+.item .type-label{font-size:calc(var(--list-font-size, 13px) * 0.7);padding:2px 6px;border-radius:99px;font-weight:bold}
+.item .lang-badge{display:inline-block;padding:2px 6px;border-radius:99px;font-size:calc(var(--list-font-size, 13px) * 0.7);font-weight:bold;vertical-align:middle;border:1px solid rgba(255,255,255,0.15)}
+.item .qty-display{font-size:var(--list-font-size, 13px);padding:0 6px;font-weight:bold;min-width:20px;text-align:center}
+.item .qty-btn{font-size:calc(var(--list-font-size, 13px) * 0.95);padding:6px 10px;border-radius:6px;border:0;font-weight:bold;cursor:pointer;background:#f59e0b;color:#000;margin:0 1px}
+.item .qty-btn.minus{background:#333;color:#fff}
+.item .rename-btn{background:#06b6d4!important;color:#000!important;padding:6px 8px!important;font-size:calc(var(--list-font-size, 13px) * 0.95)!important;margin-left:2px!important;border-radius:6px;border:0;font-weight:bold;cursor:pointer}
+.item .del-btn{background:#ef4444;color:#fff;padding:6px 8px;border-radius:6px;border:0;font-weight:bold;cursor:pointer;margin-left:2px}
+.badge{padding:3px 8px;border-radius:99px;font-weight:bold} .bad{background:#ef4444;color:#fff} .good{background:#22c55e;color:#000}
 .t-flyer{background:#06b6d4;color:#000} .t-mag{background:#f59e0b;color:#000} .t-booklet{background:#22c55e;color:#000} .t-book{background:#a855f7;color:#fff}
+.t-poster{background:#ec4899;color:#fff}
+.lang-el{background:#06b6d4;color:#000} .lang-en{background:#3b82f6;color:#fff} .lang-de{background:#eab308;color:#000} .lang-ru{background:#8b5cf6;color:#fff} .lang-sq{background:#dc2626;color:#fff} .lang-ro{background:#0891b2;color:#fff} .lang-ar{background:#16a34a;color:#fff} .lang-fa{background:#a855f7;color:#fff} .lang-fr{background:#2563eb;color:#fff} .lang-es{background:#f59e0b;color:#000} .lang-it{background:#22c55e;color:#000} .lang-pl{background:#e11d48;color:#fff} .lang-hr{background:#ef4444;color:#fff} .lang-bg{background:#84cc16;color:#000} .lang-uk{background:#facc15;color:#000} .lang-hu{background:#f97316;color:#fff} .lang-hy{background:#b91c1c;color:#fff} .lang-tr{background:#dc2626;color:#fff} .lang-sr{background:#1e40af;color:#fff}
 .row{display:flex;gap:6px} .row>div{flex:1}
 .stats{display:flex;gap:5px;flex-wrap:wrap} .stat{flex:1;min-width:60px;text-align:center;background:#252525;border-radius:8px;padding:8px 4px}
 #adminScreen{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:9999;overflow:auto;display:none;padding:10px}
 #scannerBox{display:none;background:#000;padding:10px;border-radius:12px;margin:8px 0;border:2px solid #06b6d4}
-.photo-thumb{width:40px;height:40px;border-radius:6px;object-fit:cover;background:#333}
+.photo-thumb{width:40px;height:40px;border-radius:6px;object-fit:cover;background:#333;flex-shrink:0}
 .voice-active{animation:pulse 1s infinite; background:#ef4444!important}
 @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
 .log-entry{font-size:0.8em;padding:4px 0;border-bottom:1px solid #333}
@@ -51,8 +63,26 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 .file-btn{display:inline-block;padding:12px 16px;background:#333;color:#fff;border-radius:8px;font-weight:bold;cursor:pointer;font-size:0.95em;margin-top:4px;border:1px solid #555;text-align:center;width:100%}
 .file-btn:active{transform:scale(0.98);background:#444}
 .file-name{display:block;font-size:0.8em;color:#22c55e;margin-top:6px;word-break:break-all}
-.sync-info{background:#0a1a2a;border:2px solid #06b6d4;border-radius:8px;padding:10px;margin-top:8px;font-size:0.85em}
-.sync-code{font-family:monospace;background:#000;padding:6px 10px;border-radius:6px;color:#22c55e;font-weight:bold;display:inline-block;letter-spacing:1px;margin-top:4px;font-size:1.1em}
+.sync-status-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:99px;font-size:0.9em;font-weight:bold;background:#333;color:#fff;margin-top:6px}
+.sync-status-badge.synced{background:#22c55e;color:#000}
+.sync-status-badge.syncing{background:#f59e0b;color:#000}
+.sync-status-badge.offline{background:#ef4444;color:#fff}
+.sync-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:currentColor;animation:pulse2 1.5s infinite}
+@keyframes pulse2{0%,100%{opacity:1}50%{opacity:0.4}}
+#rnOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99998;justify-content:center;align-items:center;padding:20px;box-sizing:border-box}
+#rnOverlay.show{display:flex}
+#rnBox{background:#1e1e1e;border:2px solid #06b6d4;border-radius:14px;padding:22px 18px;max-width:480px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,0.6)}
+#rnBox h3{color:#06b6d4;margin:0 0 14px;font-size:1.1em;text-align:center}
+.rn-lang-row{margin-bottom:10px}
+.rn-lang-row label{font-size:0.8em;color:#f59e0b;margin:0 0 3px}
+.rn-lang-row input{font-size:0.95em;padding:9px}
+.rn-actions{display:flex;gap:8px;margin-top:16px}
+.rn-actions button{flex:1;padding:12px;border-radius:8px;border:0;font-weight:bold;cursor:pointer}
+.rn-save{background:#22c55e;color:#000}
+.rn-cancel{background:#555;color:#fff}
+/* Font preview box */
+.preview-box{background:#252525;padding:10px;border-radius:8px;margin-top:8px}
+.preview-box .preview-title{font-size:0.75em;color:#f59e0b;margin-bottom:6px;font-weight:bold}
 </style>
 </head>
 <body>
@@ -69,28 +99,16 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 <button onclick="openAdmin()" data-i18n="bAdmin" style="background:#222;color:#f59e0b;border:1px solid #f59e0b">🔐 Admin</button>
 <button onclick="installPWA()" id="bInstall" data-i18n="bInstall" style="background:#06b6d4;color:#000;display:none">📲 Εγκατάσταση</button>
 </div>
-<div style="display:flex;gap:3px;justify-content:center;margin-top:8px">
-<button onclick="filterType('all')" id="f-all" class="typebtn active" data-i18n="fAll">Όλα</button>
-<button onclick="filterType('Φυλλάδιο')" id="f-flyer" class="typebtn" data-i18n="fFlyer">📄 Φυλλάδια</button>
-<button onclick="filterType('Περιοδικό')" id="f-mag" class="typebtn" data-i18n="fMag">📚 Περιοδικά</button>
-<button onclick="filterType('Βιβλιάριο')" id="f-booklet" class="typebtn" data-i18n="fBooklet">📖 Βιβλιάρια</button>
-</div>
 </div>
 
 <div class="wrap">
 
 <div class="card" style="border:1px solid #333;text-align:center">
-<div style="display:flex;gap:6px;justify-content:center;align-items:center;flex-wrap:wrap">
-<span class="small" data-i18n="lCloudLabel">☁️ Cloud:</span>
-<span id="cloudStatusMain" style="padding:3px 10px;border-radius:99px;background:#333;font-size:11px">Offline</span>
+<div style="display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px">
+<span class="sync-status-badge offline" id="syncStatusBadge"><span class="sync-dot"></span><span id="syncStatusText">Offline</span></span>
 <span class="small" id="lastSyncMain" style="color:#888"></span>
 </div>
-<div class="sync-info">
-<div>🔑 <b data-i18n="syncCodeLabel">Κωδικός Συγχρονισμού (Stand ID):</b></div>
-<div class="sync-code" id="syncCodeDisplay">stand-athens-1</div>
-<div class="small" style="color:#ccc;margin-top:6px" data-i18n="syncCodeHelp">Πες τον ίδιο κωδικό σε όλα τα κινητά για να βλέπουν τα ίδια δεδομένα.</div>
-</div>
-<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
 <button onclick="pushToCloud()" id="bPushMain" data-i18n="bPushMain" style="flex:1;background:#06b6d4;color:#000">☁️ Αποστολή</button>
 <button onclick="pullFromCloud()" id="bPullMain" data-i18n="bPullMain" style="flex:1" class="sec">⬇️ Λήψη</button>
 <button onclick="startScanner()" id="bScan" data-i18n="bScan" style="flex:1;background:#a855f7;color:#fff">📷 Scan</button>
@@ -112,6 +130,7 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 <div class="stat"><div id="cnt-flyer" style="color:#06b6d4;font-weight:bold">0</div><div class="small" data-i18n="lFlyer">Φυλλάδια</div></div>
 <div class="stat"><div id="cnt-mag" style="color:#f59e0b;font-weight:bold">0</div><div class="small" data-i18n="lMag">Περιοδικά</div></div>
 <div class="stat"><div id="cnt-booklet" style="color:#22c55e;font-weight:bold">0</div><div class="small" data-i18n="lBooklet">Βιβλιάρια</div></div>
+<div class="stat"><div id="cnt-poster" style="color:#ec4899;font-weight:bold">0</div><div class="small" data-i18n="lPoster">Πόστερ</div></div>
 <div class="stat"><div id="need" style="color:#ef4444;font-weight:bold">0</div><div class="small" data-i18n="lNeed">Παραγγελία</div></div>
 </div>
 
@@ -138,6 +157,7 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 <th data-i18n="thMag">📚 Περιοδικά</th>
 <th data-i18n="thBooklet">📖 Βιβλιάρια</th>
 <th data-i18n="thBook">📘 Βιβλία</th>
+<th data-i18n="thPoster">🖼️ Πόστερ</th>
 <th data-i18n="thCard">🃏 Κάρτες</th>
 <th data-i18n="thTotal">📦 Σύνολο</th>
 </tr></thead>
@@ -175,13 +195,14 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 </div>
 
 <div class="card" style="background:#0f1a0f;border:2px solid #22c55e">
-<b style="color:#22c55e" data-i18n="presetsTitle">📚 Τίτλοι jw.org</b>
+<b style="color:#22c55e" data-i18n="presetsTitle">📚 Τίτλοι jw.org (μόνο δημόσιες εκδόσεις)</b>
 <div class="small" data-i18n="presetsDesc" style="margin-top:4px;color:#aaa"></div>
 <div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap">
 <button onclick="filterPresetList('all')" class="sec" id="presetAllBtn" style="font-size:0.7em"></button>
 <button onclick="filterPresetList('Φυλλάδιο')" class="sec" data-i18n="fFlyer" style="font-size:0.7em">📄 Φυλλάδια</button>
 <button onclick="filterPresetList('Περιοδικό')" class="sec" data-i18n="fMag" style="font-size:0.7em">📚 Περιοδικά</button>
 <button onclick="filterPresetList('Βιβλιάριο')" class="sec" data-i18n="fBooklet" style="font-size:0.7em">📖 Βιβλιάρια</button>
+<button onclick="filterPresetList('Πόστερ')" class="sec" data-i18n="fPoster" style="font-size:0.7em">🖼️ Πόστερ</button>
 </div>
 <div id="presetList" style="max-height:350px;overflow:auto;background:#0a0a0a;border-radius:8px;padding:6px;margin-top:8px"></div>
 </div>
@@ -194,18 +215,19 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 <div class="card">
 <div style="display:flex;justify-content:space-between">
 <b data-i18n="listTitle">📦 Όλα τα είδη</b>
-<span class="small" data-i18n="lHint">Πάτα + / -</span>
+<span class="small" data-i18n="lHint">Πάτα ✏️ για μετονομασία</span>
 </div>
 <div id="list" style="margin-top:8px"></div>
 </div>
 
 <div class="card" style="border:2px solid #f59e0b">
 <b style="color:#f59e0b" data-i18n="lAdd">➕ Προσθήκη νέου</b>
-<div style="display:flex;gap:4px;margin:8px 0">
+<div style="display:flex;gap:4px;margin:8px 0;flex-wrap:wrap">
 <button onclick="setAddType('Φυλλάδιο')" id="a-flyer" class="typebtn" data-i18n="aFlyer">📄 Φυλλάδιο</button>
 <button onclick="setAddType('Περιοδικό')" id="a-mag" class="typebtn active" data-i18n="aMag">📚 Περιοδικό</button>
 <button onclick="setAddType('Βιβλιάριο')" id="a-booklet" class="typebtn" data-i18n="aBooklet">📖 Βιβλιάριο</button>
 <button onclick="setAddType('Βιβλίο')" id="a-book" class="typebtn" data-i18n="aBook">📘 Βιβλίο</button>
+<button onclick="setAddType('Πόστερ')" id="a-poster" class="typebtn" data-i18n="aPoster">🖼️ Πόστερ</button>
 </div>
 <label data-i18n="lFieldType">Τύπος</label>
 <select id="addType" onchange="updateAddButtons()">
@@ -214,6 +236,7 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 <option value="Βιβλιάριο" data-i18n="aBooklet">📖 Βιβλιάριο</option>
 <option value="Βιβλίο" data-i18n="aBook">📘 Βιβλίο</option>
 <option value="Κάρτα" data-i18n="aCard">🃏 Κάρτα</option>
+<option value="Πόστερ" data-i18n="aPoster">🖼️ Πόστερ</option>
 <option value="Φυλλάδιο-Διαφημιστικό" data-i18n="aStudyTract">📃 Φυλλάδιο Διαφημιστικό</option>
 </select>
 <label data-i18n="lFieldLang">🌍 Γλώσσα</label>
@@ -249,7 +272,8 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 <div id="jwQuickButtons" style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap">
 <button type="button" onclick="filterJwTitles('Φυλλάδιο')" class="sec" data-i18n="fFlyer" style="font-size:0.65em">📄 Φυλλάδια</button>
 <button type="button" onclick="filterJwTitles('Περιοδικό')" class="sec" data-i18n="fMag" style="font-size:0.65em">📚 Σκοπιά/Ξύπνα</button>
-<button type="button" onclick="filterJwTitles('Βιβλιάριο')" class="sec" data-i18n="fBooklet" style="font-size:0.65em">📖 Καλά Νέα</button>
+<button type="button" onclick="filterJwTitles('Βιβλιάριο')" class="sec" data-i18n="fBooklet" style="font-size:0.65em">📖 Βιβλιάρια</button>
+<button type="button" onclick="filterJwTitles('Πόστερ')" class="sec" data-i18n="fPoster" style="font-size:0.65em">🖼️ Πόστερ</button>
 <button type="button" onclick="filterJwTitles('all')" class="sec" data-i18n="fAll" style="font-size:0.65em">📦 Όλα</button>
 </div>
 <div id="jwTitlesDropdown" style="display:none;max-height:250px;overflow:auto;background:#111;border:2px solid #f59e0b;border-radius:8px;margin-top:6px;padding:6px"></div>
@@ -295,7 +319,7 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 
 <div class="card" style="border:2px solid #ef4444;background:#2a0a0a">
 <b style="color:#ef4444" data-i18n="lDangerZone">⚠️ Επικίνδυνη Ζώνη</b>
-<div class="small" data-i18n="lDangerDesc" style="margin:6px 0;color:#ccc">Διαγραφή ΟΛΩΝ των εντύπων από το σταντ. Δεν αναιρείται!</div>
+<div class="small" data-i18n="lDangerDesc" style="margin:6px 0;color:#ccc">Διαγραφή ΟΛΩΝ των εντύπων. Δεν αναιρείται!</div>
 <button onclick="deleteAllItems()" style="width:100%;margin-top:6px;background:#ef4444;color:#fff" data-i18n="bDeleteAll">🗑️ Διαγραφή ΟΛΩΝ των εντύπων</button>
 </div>
 
@@ -341,16 +365,43 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 </div>
 </div>
 
+<!-- ★ ΝΕΟ: ΡΥΘΜΙΣΗ ΓΡΑΜΜΑΤΟΣΕΙΡΑΣ -->
 <div class="card" style="border:2px solid #06b6d4;background:#0a1a2a">
-<b style="color:#06b6d4" data-i18n="lSyncSetup">🔗 Ρυθμίσεις Συγχρονισμού</b>
-<div class="small" style="color:#ccc;margin-top:6px" data-i18n="lSyncSetupDesc">Για να βλέπουν όλα τα κινητά τα ίδια δεδομένα, βάλε τον ΙΔΙΟ κωδικό σε όλα.</div>
-<label data-i18n="lCloudId">Κωδικός Συγχρονισμού (Stand ID)</label>
-<div style="display:flex;gap:4px">
-<input id="cloudId" value="stand-athens-1" style="flex:1;font-family:monospace">
-<button onclick="copyCloudId()" class="sec">📋</button>
+<b style="color:#06b6d4" data-i18n="lFontAdmin">🎨 Εμφάνιση & Γραμματοσειρά</b>
+
+<label><span data-i18n="lFontSize">Μέγεθος UI:</span> <span id="fsVal">15</span>px</label>
+<input type="range" id="fsRange" min="11" max="22" value="15" oninput="setFontSize(this.value)">
+<div class="preview-box">
+<div class="preview-title" data-i18n="lPreviewUi">Προεπισκόπηση UI</div>
+<div style="font-size:15px" id="fsPreviewText">STAND MANAGER PRO — Για συνεργάτες</div>
 </div>
-<button onclick="saveCloudId()" style="width:100%;margin-top:8px;background:#22c55e;color:#000;font-weight:bold" data-i18n="bApplySync">🔄 Εφαρμογή Συγχρονισμού</button>
-<div class="small" style="margin-top:6px;color:#f59e0b" data-i18n="lSyncWarning">⚠️ Θα συνδεθείς στο cloud. Όποιος έχει τον ίδιο κωδικό βλέπει τα ίδια δεδομένα.</div>
+
+<label style="margin-top:14px"><span data-i18n="lListFontSize">Μέγεθος Λίστας:</span> <span id="lfsVal">13</span>px</label>
+<input type="range" id="lfsRange" min="9" max="20" value="13" oninput="setListFontSize(this.value)">
+<div class="preview-box">
+<div class="preview-title" data-i18n="lPreviewList">Προεπισκόπηση λίστας</div>
+<div style="display:flex;gap:8px;align-items:center">
+<div class="photo-thumb" style="display:flex;align-items:center;justify-content:center;font-size:12px">📄</div>
+<div style="min-width:0">
+<span class="type-label t-mag" id="lfsPreviewType">Περιοδικό</span>
+<span class="lang-badge lang-el" id="lfsPreviewLang">🇬🇷 Ελληνικά</span>
+<b class="item-name" id="lfsPreviewName">Σκοπιά — Αρ. 1 2026</b>
+<div class="item-cat" id="lfsPreviewCat">Σκοπιά — Κοινό</div>
+<span class="item-badge good" id="lfsPreviewBadge">ΟΚ: 25/5</span>
+</div>
+</div>
+</div>
+
+<label style="margin-top:14px" data-i18n="lFontFamily">Γραμματοσειρά</label>
+<select id="ffSelect" onchange="setFontFamily(this.value)">
+<option value="Arial, sans-serif">Arial</option>
+<option value="Verdana">Verdana</option>
+<option value="Georgia">Georgia</option>
+<option value="'Segoe UI', sans-serif">Segoe UI</option>
+<option value="Tahoma">Tahoma</option>
+<option value="'Courier New', monospace">Courier New</option>
+</select>
+<button class="sec" onclick="resetFonts()" style="width:100%;margin-top:10px" data-i18n="bResetFonts">↺ Επαναφορά προεπιλογών</button>
 </div>
 
 <div class="card" style="border:2px solid #06b6d4;background:#0a1a2a">
@@ -359,6 +410,12 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 <label style="color:#fff"><input type="checkbox" id="cloudEnabled" onchange="toggleCloud()" style="width:auto"> <span data-i18n="lCloudOn">Ενεργό</span></label>
 <span id="cloudStatus" style="padding:3px 10px;border-radius:99px;background:#333;font-size:11px">Offline</span>
 </div>
+<label data-i18n="lCloudId">Κωδικός Συγχρονισμού (Stand ID)</label>
+<div style="display:flex;gap:4px">
+<input id="cloudId" value="stand-athens-1" style="flex:1;font-family:monospace">
+<button onclick="copyCloudId()" class="sec">📋</button>
+</div>
+<button onclick="saveCloudId()" style="width:100%;margin-top:8px;background:#22c55e;color:#000;font-weight:bold" data-i18n="bApplySync">🔄 Εφαρμογή Συγχρονισμού</button>
 <label data-i18n="lCloudConfig">Firebase Config</label>
 <textarea id="fbConfig" style="height:80px;font-size:10px"></textarea>
 <div style="display:flex;gap:4px;margin-top:4px">
@@ -370,19 +427,6 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 <button onclick="pullFromCloud()" data-i18n="bPullMain" style="flex:1" class="sec">⬇️ Λήψη</button>
 </div>
 <div class="small" id="lastSync" style="margin-top:6px;color:#999"></div>
-</div>
-
-<div class="card" style="border:1px solid #f59e0b">
-<b style="color:#f59e0b" data-i18n="lFontAdmin">🎨 Εμφάνιση</b>
-<label><span data-i18n="lFontSize">Μέγεθος:</span> <span id="fsVal">15</span>px</label>
-<input type="range" id="fsRange" min="12" max="26" value="15" oninput="setFontSize(this.value)">
-<label data-i18n="lFontFamily">Γραμματοσειρά</label>
-<select id="ffSelect" onchange="setFontFamily(this.value)">
-<option value="Arial, sans-serif">Arial</option>
-<option value="Verdana">Verdana</option>
-<option value="Georgia">Georgia</option>
-</select>
-<div id="fontPrev" style="background:#252525;padding:8px;border-radius:8px;margin-top:6px;text-align:center" data-i18n="fontPrev">Αα Bb Γγ Preview</div>
 </div>
 
 <div class="card" style="background:#252525;border:2px solid #f59e0b">
@@ -398,6 +442,17 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 </div>
 </div>
 
+<div id="rnOverlay">
+  <div id="rnBox">
+    <h3>✏️ <span data-i18n="rnTitle">Μετονομασία εντύπου</span></h3>
+    <div id="rnFields"></div>
+    <div class="rn-actions">
+      <button class="rn-cancel" onclick="closeRename()" data-i18n="rnCancel">Άκυρο</button>
+      <button class="rn-save" onclick="saveRename()" data-i18n="rnSave">💾 Αποθήκευση</button>
+    </div>
+  </div>
+</div>
+
 <div id="ccOverlay">
   <div id="ccBox">
     <div id="ccTitle" data-i18n="ccTitle">Επιβεβαίωση</div>
@@ -411,14 +466,7 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 
 <script>
 /* =========================================================================
-   STAND MANAGER PRO — ΤΕΛΙΚΗ ΕΚΔΟΣΗ
-   • 19 γλώσσες εντύπων
-   • Πλήρης μετάφραση EL/EN/DE/RU
-   • Custom modal OK/Cancel
-   • Custom file input
-   • Διαγραφή ΟΛΩΝ
-   • Sync κωδικού + ρυθμίσεων μέσω cloud
-   • Χωρίς Σκοπιά Μελέτης
+   STAND MANAGER PRO — Με ρύθμιση γραμματοσειράς λίστας
    ========================================================================= */
 
 /* ---------- 1. UTILITIES ---------- */
@@ -447,7 +495,36 @@ function printDoc(title, bodyHtml){
   w.document.close(); w.focus(); setTimeout(function(){ w.print(); },400); return true;
 }
 
-/* ---------- 2. CUSTOM CONFIRM ---------- */
+/* ---------- 2. RENAME ---------- */
+var _renamingId=null;
+function openRename(id){
+  var it=items.find(function(x){return x.id==id;});
+  if(!it) return;
+  _renamingId=id;
+  var langs=['el','en','de','ru'];
+  var langNames={el:'🇬🇷 Ελληνικά',en:'🇬🇧 English',de:'🇩🇪 Deutsch',ru:'🇷🇺 Русский'};
+  var html='';
+  langs.forEach(function(l){
+    var cur=(it.names && it.names[l]) || '';
+    html+='<div class="rn-lang-row"><label>'+langNames[l]+'</label><input id="rn-'+l+'" value="'+esc(cur)+'"></div>';
+  });
+  document.getElementById('rnFields').innerHTML=html;
+  document.getElementById('rnOverlay').classList.add('show');
+}
+function closeRename(){ document.getElementById('rnOverlay').classList.remove('show'); _renamingId=null; }
+function saveRename(){
+  if(!_renamingId){ closeRename(); return; }
+  var it=items.find(function(x){return x.id==_renamingId;});
+  if(!it){ closeRename(); return; }
+  ['el','en','de','ru'].forEach(function(l){
+    var el=document.getElementById('rn-'+l);
+    if(el && el.value.trim()){ it.names[l]=el.value.trim(); }
+  });
+  addLog('Μετονομασία', getDisplayName(it));
+  closeRename(); save(); render();
+}
+
+/* ---------- 3. CUSTOM CONFIRM ---------- */
 var _ccCallback = null;
 function customConfirm(msg, callback){
   var overlay = document.getElementById('ccOverlay');
@@ -463,23 +540,17 @@ function customConfirm(msg, callback){
   overlay.classList.add('show');
   _ccCallback = callback;
 }
-function _ccClose(){
-  var overlay = document.getElementById('ccOverlay');
-  if(overlay) overlay.classList.remove('show');
-  _ccCallback = null;
-}
+function _ccClose(){ var ov=document.getElementById('ccOverlay'); if(ov) ov.classList.remove('show'); _ccCallback=null; }
 function _ccInit(){
-  var ok = document.getElementById('ccOk');
-  var cancel = document.getElementById('ccCancel');
-  var ov = document.getElementById('ccOverlay');
-  if(ok) ok.onclick = function(){ var cb=_ccCallback; _ccClose(); if(cb) cb(); };
-  if(cancel) cancel.onclick = function(){ _ccClose(); };
-  if(ov) ov.onclick = function(e){ if(e.target===ov) _ccClose(); };
+  var ok=document.getElementById('ccOk'); var cancel=document.getElementById('ccCancel'); var ov=document.getElementById('ccOverlay');
+  if(ok) ok.onclick=function(){ var cb=_ccCallback; _ccClose(); if(cb) cb(); };
+  if(cancel) cancel.onclick=function(){ _ccClose(); };
+  if(ov) ov.onclick=function(e){ if(e.target===ov) _ccClose(); };
 }
 document.addEventListener('DOMContentLoaded', _ccInit);
 setTimeout(_ccInit, 50);
 
-/* ---------- 3. TRANSLATION DICTIONARY (T) ---------- */
+/* ---------- 4. TRANSLATIONS ---------- */
 var T = {
   subTitle:{el:"Για συνεργάτες - ULTIMATE",en:"For partners - ULTIMATE",de:"Für Partner - ULTIMATE",ru:"Для партнеров - ULTIMATE"},
   bAdmin:{el:"🔐 Admin",en:"🔐 Admin",de:"🔐 Admin",ru:"🔐 Админ"},
@@ -488,9 +559,7 @@ var T = {
   fFlyer:{el:"📄 Φυλλάδια",en:"📄 Tracts",de:"📄 Traktate",ru:"📄 Трактаты"},
   fMag:{el:"📚 Περιοδικά",en:"📚 Magazines",de:"📚 Zeitschriften",ru:"📚 Журналы"},
   fBooklet:{el:"📖 Βιβλιάρια",en:"📖 Booklets",de:"📖 Broschüren",ru:"📖 Брошюры"},
-  lCloudLabel:{el:"☁️ Cloud:",en:"☁️ Cloud:",de:"☁️ Cloud:",ru:"☁️ Облако:"},
-  syncCodeLabel:{el:"Κωδικός Συγχρονισμού (Stand ID):",en:"Sync Code (Stand ID):",de:"Sync-Code (Stand-ID):",ru:"Код синхронизации (Stand ID):"},
-  syncCodeHelp:{el:"Πες τον ίδιο κωδικό σε όλα τα κινητά για να βλέπουν τα ίδια δεδομένα.",en:"Enter the same code on all phones to see the same data.",de:"Gib denselben Code auf allen Handys ein, um dieselben Daten zu sehen.",ru:"Введи один и тот же код на всех телефонах, чтобы видеть одни данные."},
+  fPoster:{el:"🖼️ Πόστερ",en:"🖼️ Posters",de:"🖼️ Poster",ru:"🖼️ Плакаты"},
   bPushMain:{el:"☁️ Αποστολή",en:"☁️ Push",de:"☁️ Senden",ru:"☁️ Отправить"},
   bPullMain:{el:"⬇️ Λήψη",en:"⬇️ Pull",de:"⬇️ Empfangen",ru:"⬇️ Получить"},
   bScan:{el:"📷 Scan",en:"📷 Scan",de:"📷 Scan",ru:"📷 Скан"},
@@ -502,11 +571,12 @@ var T = {
   lFlyer:{el:"Φυλλάδια",en:"Tracts",de:"Traktate",ru:"Трактаты"},
   lMag:{el:"Περιοδικά",en:"Magazines",de:"Zeitschriften",ru:"Журналы"},
   lBooklet:{el:"Βιβλιάρια",en:"Booklets",de:"Broschüren",ru:"Брошюры"},
+  lPoster:{el:"Πόστερ",en:"Posters",de:"Poster",ru:"Плакаты"},
   lNeed:{el:"Παραγγελία",en:"Order",de:"Bestellung",ru:"Заказ"},
   lCountLang:{el:"📊 Καταμέτρηση ανά Γλώσσα",en:"📊 Count by Language",de:"📊 Zählung nach Sprache",ru:"📊 Подсчет по языкам"},
   lCountLangDesc:{el:"Πόσα έντυπα σε κάθε γλώσσα",en:"How many items in each language",de:"Wie viele Artikel in jeder Sprache",ru:"Сколько изданий на каждом языке"},
   lCountType:{el:"📚 Καταμέτρηση ανά Είδος",en:"📚 Count by Type",de:"📚 Zählung nach Typ",ru:"📚 Подсчет по типам"},
-  lCountTypeDesc:{el:"Πόσα φυλλάδια, περιοδικά, βιβλιάρια, βιβλία, κάρτες",en:"How many tracts, magazines, booklets, books, cards",de:"Wie viele Traktate, Zeitschriften, Broschüren, Bücher, Karten",ru:"Сколько буклетов, журналов, брошюр, книг, карточек"},
+  lCountTypeDesc:{el:"Πόσα φυλλάδια, περιοδικά, βιβλιάρια, βιβλία, πόστερ, κάρτες",en:"How many tracts, magazines, booklets, books, posters, cards",de:"Wie viele Traktate, Zeitschriften, Broschüren, Bücher, Poster, Karten",ru:"Сколько буклетов, журналов, брошюр, книг, плакатов, карточек"},
   lCountLangType:{el:"🌍 Καταμέτρηση ανά Γλώσσα και Είδος",en:"🌍 Count by Language and Type",de:"🌍 Zählung nach Sprache und Typ",ru:"🌍 Подсчет по языку и типу"},
   lCountLangTypeDesc:{el:"Πίνακας: γλώσσα × είδος",en:"Table: language × type",de:"Tabelle: Sprache × Typ",ru:"Таблица: язык × тип"},
   thLangType:{el:"Γλώσσα / Είδος",en:"Language / Type",de:"Sprache / Typ",ru:"Язык / Тип"},
@@ -514,6 +584,7 @@ var T = {
   thMag:{el:"📚 Περιοδικά",en:"📚 Magazines",de:"📚 Zeitschriften",ru:"📚 Журналы"},
   thBooklet:{el:"📖 Βιβλιάρια",en:"📖 Booklets",de:"📖 Broschüren",ru:"📖 Брошюры"},
   thBook:{el:"📘 Βιβλία",en:"📘 Books",de:"📘 Bücher",ru:"📘 Книги"},
+  thPoster:{el:"🖼️ Πόστερ",en:"🖼️ Posters",de:"🖼️ Poster",ru:"🖼️ Плакаты"},
   thCard:{el:"🃏 Κάρτες",en:"🃏 Cards",de:"🃏 Karten",ru:"🃏 Карточки"},
   thTotal:{el:"📦 Σύνολο",en:"📦 Total",de:"📦 Gesamt",ru:"📦 Всего"},
   lCountRefresh:{el:"🔄 Ανανέωση",en:"🔄 Refresh",de:"🔄 Aktualisieren",ru:"🔄 Обновить"},
@@ -527,19 +598,20 @@ var T = {
   lPre:{el:"✅ Προ-φορτωμένοι:",en:"✅ Pre-loaded:",de:"✅ Vorgeladene:",ru:"✅ Загруженные:"},
   lPreDesc:{el:"Μεταφράζονται",en:"Auto-translated",de:"Auto-übersetzt",ru:"Автоперевод"},
   bRestore:{el:"🔄 Επαναφορά",en:"🔄 Restore",de:"🔄 Wiederherstellen",ru:"🔄 Восстановить"},
-  presetsTitle:{el:"📚 Τίτλοι jw.org για σταντ (μόνο δημόσιες εκδόσεις)",en:"📚 jw.org titles (public editions only)",de:"📚 jw.org-Titel (nur öffentliche Ausgaben)",ru:"📚 Названия jw.org (только публичные издания)"},
-  presetsDesc:{el:"📅 Περιλαμβάνονται μόνο τα δημόσια τεύχη 2020-2026.",en:"📅 Includes only public issues 2020-2026.",de:"📅 Enthält nur öffentliche Ausgaben 2020-2026.",ru:"📅 Включает только публичные выпуски 2020-2026."},
+  presetsTitle:{el:"📚 Τίτλοι jw.org (μόνο δημόσιες εκδόσεις)",en:"📚 jw.org titles (public editions only)",de:"📚 jw.org-Titel (nur öffentliche Ausgaben)",ru:"📚 Названия jw.org (только публичные издания)"},
+  presetsDesc:{el:"📅 Περιλαμβάνονται μόνο τα δημόσια τεύχη 2020-2026 + Πόστερ.",en:"📅 Includes only public issues 2020-2026 + Posters.",de:"📅 Enthält nur öffentliche Ausgaben 2020-2026 + Poster.",ru:"📅 Включает только публичные выпуски 2020-2026 + Плакаты."},
   presetAll:{el:"📦 Όλα",en:"📦 All",de:"📦 Alle",ru:"📦 Все"},
   lSearch:{el:"🔍 Αναζήτηση",en:"🔍 Search",de:"🔍 Suche",ru:"🔍 Поиск"},
   phSearch:{el:"Γράψε τίτλο...",en:"Write title...",de:"Titel schreiben...",ru:"Напиши название..."},
   listTitle:{el:"📦 Όλα τα είδη",en:"📦 All items",de:"📦 Alle Artikel",ru:"📦 Все издания"},
-  lHint:{el:"Πάτα + / - ή 📷",en:"Tap + / - or 📷",de:"Tippe + / - oder 📷",ru:"Нажми + / - или 📷"},
+  lHint:{el:"Πάτα ✏️ για μετονομασία",en:"Tap ✏️ to rename",de:"Tippe ✏️ zum Umbenennen",ru:"Нажми ✏️ для переименования"},
   lAdd:{el:"➕ Προσθήκη νέου",en:"➕ Add new",de:"➕ Neu",ru:"➕ Добавить"},
   aFlyer:{el:"📄 Φυλλάδιο",en:"📄 Tract",de:"📄 Traktat",ru:"📄 Трактат"},
   aMag:{el:"📚 Περιοδικό",en:"📚 Magazine",de:"📚 Zeitschrift",ru:"📚 Журнал"},
   aBooklet:{el:"📖 Βιβλιάριο",en:"📖 Booklet",de:"📖 Broschüre",ru:"📖 Брошюра"},
   aBook:{el:"📘 Βιβλίο",en:"📘 Book",de:"📘 Buch",ru:"📘 Книга"},
   aCard:{el:"🃏 Κάρτα",en:"🃏 Card",de:"🃏 Karte",ru:"🃏 Карточка"},
+  aPoster:{el:"🖼️ Πόστερ",en:"🖼️ Poster",de:"🖼️ Poster",ru:"🖼️ Плакат"},
   aStudyTract:{el:"📃 Φυλλάδιο Διαφημιστικό",en:"📃 Study Tract",de:"📃 Studium-Traktat",ru:"📃 Трактат для изучения"},
   lFieldType:{el:"Τύπος",en:"Type",de:"Typ",ru:"Тип"},
   lFieldLang:{el:"🌍 Γλώσσα",en:"🌍 Language",de:"🌍 Sprache",ru:"🌍 Язык"},
@@ -565,7 +637,7 @@ var T = {
   bClearLog:{el:"Καθαρισμός",en:"Clear",de:"Löschen",ru:"Очистить"},
   logEmpty:{el:"Κανένα ιστορικό",en:"No history",de:"Kein Verlauf",ru:"Нет истории"},
   lDangerZone:{el:"⚠️ Επικίνδυνη Ζώνη",en:"⚠️ Danger Zone",de:"⚠️ Gefahrenzone",ru:"⚠️ Опасная зона"},
-  lDangerDesc:{el:"Διαγραφή ΟΛΩΝ των εντύπων από το σταντ. Δεν αναιρείται!",en:"Delete ALL items from the stand. Cannot be undone!",de:"ALLE Artikel vom Stand löschen. Nicht rückgängig zu machen!",ru:"Удалить ВСЕ издания со стенда. Нельзя отменить!"},
+  lDangerDesc:{el:"Διαγραφή ΟΛΩΝ των εντύπων. Δεν αναιρείται!",en:"Delete ALL items. Cannot be undone!",de:"ALLE Artikel löschen. Nicht rückgängig zu machen!",ru:"Удалить ВСЕ издания. Нельзя отменить!"},
   bDeleteAll:{el:"🗑️ Διαγραφή ΟΛΩΝ των εντύπων",en:"🗑️ Delete ALL items",de:"🗑️ ALLE Artikel löschen",ru:"🗑️ Удалить ВСЕ издания"},
   aTitle:{el:"👑 ADMIN ULTIMATE",en:"👑 ADMIN ULTIMATE",de:"👑 ADMIN ULTIMATE",ru:"👑 АДМИН ULTIMATE"},
   bClose:{el:"✕ Κλείσιμο",en:"✕ Close",de:"✕ Schließen",ru:"✕ Закрыть"},
@@ -582,12 +654,14 @@ var T = {
   bShareWA:{el:"📱 WhatsApp",en:"📱 WhatsApp",de:"📱 WhatsApp",ru:"📱 WhatsApp"},
   bExportGuidePDF:{el:"📄 PDF",en:"📄 PDF",de:"📄 PDF",ru:"📄 PDF"},
   bShareEmail:{el:"📧 Email",en:"📧 Email",de:"📧 Email",ru:"📧 Email"},
-  lFontAdmin:{el:"🎨 Εμφάνιση",en:"🎨 Appearance",de:"🎨 Aussehen",ru:"🎨 Внешний вид"},
-  lFontSize:{el:"Μέγεθος:",en:"Size:",de:"Größe:",ru:"Размер:"},
+  lFontAdmin:{el:"🎨 Εμφάνιση & Γραμματοσειρά",en:"🎨 Appearance & Font",de:"🎨 Aussehen & Schrift",ru:"🎨 Внешний вид и шрифт"},
+  lFontSize:{el:"Μέγεθος UI:",en:"UI size:",de:"UI-Größe:",ru:"Размер интерфейса:"},
+  lListFontSize:{el:"Μέγεθος Λίστας:",en:"List size:",de:"Listengröße:",ru:"Размер списка:"},
+  lPreviewUi:{el:"Προεπισκόπηση UI",en:"UI Preview",de:"UI-Vorschau",ru:"Предпросмотр интерфейса"},
+  lPreviewList:{el:"Προεπισκόπηση λίστας",en:"List preview",de:"Listenvorschau",ru:"Предпросмотр списка"},
   lFontFamily:{el:"Γραμματοσειρά",en:"Font",de:"Schrift",ru:"Шрифт"},
+  bResetFonts:{el:"↺ Επαναφορά προεπιλογών",en:"↺ Reset defaults",de:"↺ Standard wiederherstellen",ru:"↺ Сброс по умолчанию"},
   fontPrev:{el:"Αα Bb Γγ Preview",en:"Aa Bb Cc Preview",de:"Aa Bb Cc Vorschau",ru:"Аа Бб Вв Превью"},
-  lSyncSetup:{el:"🔗 Ρυθμίσεις Συγχρονισμού",en:"🔗 Sync Settings",de:"🔗 Sync-Einstellungen",ru:"🔗 Настройки синхронизации"},
-  lSyncSetupDesc:{el:"Για να βλέπουν όλα τα κινητά τα ίδια δεδομένα, βάλε τον ΙΔΙΟ κωδικό σε όλα.",en:"To see the same data on all phones, enter the SAME code on all.",de:"Um dieselben Daten auf allen Handys zu sehen, gib überall denselben Code ein.",ru:"Чтобы видеть одни данные на всех телефонах, введи ОДИН и тот же код."},
   lCloudAdmin:{el:"☁️ Cloud",en:"☁️ Cloud",de:"☁️ Cloud",ru:"☁️ Облако"},
   lCloudOn:{el:"Ενεργό",en:"Enabled",de:"Aktiv",ru:"Включено"},
   lCloudId:{el:"Κωδικός Συγχρονισμού (Stand ID)",en:"Sync Code (Stand ID)",de:"Sync-Code (Stand-ID)",ru:"Код синхронизации (Stand ID)"},
@@ -596,13 +670,21 @@ var T = {
   bSaveConfig:{el:"Save Config",en:"Save Config",de:"Konfiguration speichern",ru:"Сохранить настройки"},
   bTestCloud:{el:"Test",en:"Test",de:"Test",ru:"Тест"},
   bApplySync:{el:"🔄 Εφαρμογή Συγχρονισμού",en:"🔄 Apply Sync",de:"🔄 Sync anwenden",ru:"🔄 Применить синхронизацию"},
-  lSyncWarning:{el:"⚠️ Θα συνδεθείς στο cloud. Όποιος έχει τον ίδιο κωδικό βλέπει τα ίδια δεδομένα.",en:"⚠️ You will connect to cloud. Anyone with the same code sees the same data.",de:"⚠️ Du verbindest dich mit der Cloud. Wer denselben Code hat, sieht dieselben Daten.",ru:"⚠️ Ты подключишься к облаку. У кого тот же код — видит те же данные."},
   lChangePass:{el:"🔐 Αλλαγή κωδικού & Email",en:"🔐 Password & Email",de:"🔐 Passwort & E-Mail",ru:"🔐 Пароль и Email"},
   lPassSyncNote:{el:"Ο κωδικός συγχρονίζεται αυτόματα σε όλα τα κινητά μέσω cloud.",en:"Password syncs automatically across all phones via cloud.",de:"Passwort wird automatisch über die Cloud auf alle Handys synchronisiert.",ru:"Пароль автоматически синхронизируется на все телефоны через облако."},
   lNewPass:{el:"Νέος κωδικός",en:"New password",de:"Neues Passwort",ru:"Новый пароль"},
   lRecEmail:{el:"📧 Email",en:"📧 Email",de:"📧 E-Mail",ru:"📧 Email"},
   bSavePass:{el:"💾 Αποθήκευση",en:"💾 Save",de:"💾 Speichern",ru:"💾 Сохранить"},
-  /* Language names — 19 languages × 4 platform langs */
+  syncOffline:{el:"Εκτός σύνδεσης",en:"Offline",de:"Offline",ru:"Офлайн"},
+  syncConnecting:{el:"Σύνδεση...",en:"Connecting...",de:"Verbinden...",ru:"Подключение..."},
+  syncOn:{el:"Συγχρονισμένο",en:"Synced",de:"Synchronisiert",ru:"Синхронизировано"},
+  syncPushing:{el:"Αποστολή...",en:"Pushing...",de:"Sende...",ru:"Отправка..."},
+  syncPulling:{el:"Λήψη...",en:"Pulling...",de:"Empfange...",ru:"Получение..."},
+  syncError:{el:"Σφάλμα",en:"Error",de:"Fehler",ru:"Ошибка"},
+  lastSyncLabel:{el:"Τελευταίος:",en:"Last:",de:"Zuletzt:",ru:"Последний:"},
+  rnTitle:{el:"Μετονομασία εντύπου",en:"Rename item",de:"Artikel umbenennen",ru:"Переименовать издание"},
+  rnSave:{el:"💾 Αποθήκευση",en:"💾 Save",de:"💾 Speichern",ru:"💾 Сохранить"},
+  rnCancel:{el:"Άκυρο",en:"Cancel",de:"Abbrechen",ru:"Отмена"},
   langEl:{el:"🇬🇷 Ελληνικά",en:"🇬🇷 Greek",de:"🇬🇷 Griechisch",ru:"🇬🇷 Греческий"},
   langEn:{el:"🇬🇧 English",en:"🇬🇧 English",de:"🇬🇧 Englisch",ru:"🇬🇧 Английский"},
   langDe:{el:"🇩🇪 Deutsch",en:"🇩🇪 German",de:"🇩🇪 Deutsch",ru:"🇩🇪 Немецкий"},
@@ -624,10 +706,9 @@ var T = {
   langSr:{el:"🇷🇸 Српски",en:"🇷🇸 Serbian",de:"🇷🇸 Serbisch",ru:"🇷🇸 Сербский"},
   ccTitle:{el:"Επιβεβαίωση",en:"Confirmation",de:"Bestätigung",ru:"Подтверждение"},
   ccDelete:{el:"Διαγραφή εντύπου;",en:"Delete item?",de:"Artikel löschen?",ru:"Удалить издание?"},
-  ccDeleteAll:{el:"Διαγραφή ΟΛΩΝ;",en:"Delete ALL?",de:"ALLE löschen?",ru:"Удалить ВСЁ?"},
-  ccDeleteAllItems:{el:"Διαγραφή ΟΛΩΝ των εντύπων; Δεν αναιρείται!",en:"Delete ALL items? Cannot be undone!",de:"ALLE Artikel löschen? Nicht rückgängig zu machen!",ru:"Удалить ВСЕ издания? Нельзя отменить!"},
   ccClearLog:{el:"Καθαρισμός ιστορικού;",en:"Clear log?",de:"Verlauf löschen?",ru:"Очистить историю?"},
   ccRestore:{el:"Επαναφορά προ-φορτωμένων;",en:"Restore presets?",de:"Vorgaben wiederherstellen?",ru:"Восстановить предустановки?"},
+  ccDeleteAllItems:{el:"Διαγραφή ΟΛΩΝ; Δεν αναιρείται!",en:"Delete ALL? Cannot be undone!",de:"ALLE löschen? Nicht rückgängig zu machen!",ru:"Удалить ВСЁ? Нельзя отменить!"},
   ccCancelBtn:{el:"Άκυρο",en:"Cancel",de:"Abbrechen",ru:"Отмена"},
   ccOkBtn:{el:"OK",en:"OK",de:"OK",ru:"OK"}
 };
@@ -645,6 +726,7 @@ var TYPE_TRANS={
 "Βιβλιάριο":{el:"Βιβλιάριο",en:"Booklet",de:"Broschüre",ru:"Брошюра"},
 "Βιβλίο":{el:"Βιβλίο",en:"Book",de:"Buch",ru:"Книга"},
 "Κάρτα":{el:"Κάρτα",en:"Card",de:"Karte",ru:"Карточка"},
+"Πόστερ":{el:"Πόστερ",en:"Poster",de:"Poster",ru:"Плакат"},
 "Φυλλάδιο-Διαφημιστικό":{el:"Φυλλάδιο Διαφημιστικό",en:"Study Tract",de:"Studium Traktat",ru:"Брошюра для изучения"}
 };
 
@@ -652,119 +734,127 @@ var LOC={el:'el-GR',en:'en-GB',de:'de-DE',ru:'ru-RU'};
 
 /* ---------- 5. STATE ---------- */
 var curLang=localStorage.getItem('stand_lang')||'el';
-var curFS=15, curFF='Arial, sans-serif';
+/* ★ Font size settings */
+var curFS=parseInt(localStorage.getItem('stand_fs')||'15');           // UI size (default 15)
+var curLFS=parseInt(localStorage.getItem('stand_list_fs')||'13');     // List font size (default 13)
+var curFF=localStorage.getItem('stand_ff')||'Arial, sans-serif';
+
 var items=[];
 var adminPass=localStorage.getItem('stand_pass')||'1234';
 var currentFilter='all';
 var currentPhotoBase64='';
 var historyLog=[];
-var stands=[];
 var html5Qrcode=null, scanBusy=false;
 var chartMainInst=null;
 var deferredPrompt=null;
-
 var cloudEnabled = localStorage.getItem('stand_cloud_enabled') !== 'false';
 var cloudId = localStorage.getItem('stand_cloud_id') || 'stand-athens-1';
 var fbConfigStr=localStorage.getItem('stand_fb_config')||'{"apiKey":"AIzaSyCKoGOE84zPuc4t6UQrDYMbooCR43p0FyQ","authDomain":"stand-management-a46a7.firebaseapp.com","projectId":"stand-management-a46a7","storageBucket":"stand-management-a46a7.firebasestorage.app","messagingSenderId":"304875768432","appId":"1:304875768432:web:470adb4707b8a3680482b5"}';
 var cloudApp=null, cloudDb=null, cloudUnsub=null, cloudPushTimeout=null, isSyncingFromCloud=false;
-var cloudRaw='Offline', lastSyncStr='';
+var lastSyncStr='';
+var syncState='offline';
 
-/* ---------- 6. PRESETS (35 base + 22 public = 57 — χωρίς Study Edition) ---------- */
+/* ---------- 6. PRESETS ---------- */
 var PRESETS=[
-{"id":1,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Трактат"},"names":{"el":"Μπορείτε να ζήσετε για πάντα σε έναν παράδεισο στη γη;","en":"Can You Live Forever in Paradise on Earth?","de":"Können Sie für immer im Paradies auf Erden leben?","ru":"Можете ли вы жить вечно в раю на земле?"},"qty":20,"min":5},
-{"id":2,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Трактат"},"names":{"el":"Τι είναι η Βασιλεία του Θεού;","en":"What Is God's Kingdom?","de":"Was ist Gottes Königreich?","ru":"Что такое Царство Бога?"},"qty":20,"min":5},
-{"id":3,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Трактат"},"names":{"el":"Ποιος ελέγχει πραγματικά τον κόσμο;","en":"Who Really Controls the World?","de":"Wer herrscht wirklich über die Welt?","ru":"Кто на самом деле правит миром?"},"qty":20,"min":5},
-{"id":4,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Трактат"},"names":{"el":"Θα τελειώσει ποτέ ο πόνος;","en":"Will Suffering Ever End?","de":"Wird es jemals ein Ende des Leidens geben?","ru":"Закончатся ли когда-нибудь страдания?"},"qty":20,"min":5},
-{"id":5,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Трактат"},"names":{"el":"Μπορούν οι νεκροί να ζήσουν ξανά;","en":"Can the Dead Really Live Again?","de":"Können die Toten wirklich wieder leben?","ru":"Могут ли умершие снова жить?"},"qty":20,"min":5},
-{"id":6,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Трактат"},"names":{"el":"Πώς βλέπετε την Αγία Γραφή;","en":"How Do You View the Bible?","de":"Wie betrachten Sie die Bibel?","ru":"Как вы относитесь к Библии?"},"qty":15,"min":3},
-{"id":7,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Трактат"},"names":{"el":"Πώς βλέπετε το μέλλον;","en":"How Do You View the Future?","de":"Wie sehen Sie die Zukunft?","ru":"Как вы смотрите в будущее?"},"qty":15,"min":3},
-{"id":8,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Трактат"},"names":{"el":"Πού μπορείτε να βρείτε απαντήσεις στα μεγάλα ερωτήματα;","en":"Where Can You Find Answers to Life's Big Questions?","de":"Wo finden Sie Antworten auf die großen Fragen des Lebens?","ru":"Где найти ответы на важные вопросы жизни?"},"qty":15,"min":3},
-{"id":9,"type":"Φυλλάδιο","cat":{"el":"Οικογένεια","en":"Family","de":"Familie","ru":"Семья"},"names":{"el":"Ποιο είναι το κλειδί για ευτυχισμένη οικογένεια;","en":"What Is the Key to Happy Family Life?","de":"Was ist der Schlüssel zu einem glücklichen Familienleben?","ru":"В чем ключ к счастливой семейной жизни?"},"qty":15,"min":3},
-{"id":10,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Трактат"},"names":{"el":"Πώς θα είναι η ζωή στον Παράδεισο;","en":"What Will Life Be Like in Paradise?","de":"Wie wird das Leben im Paradies sein?","ru":"Какой будет жизнь в Раю?"},"qty":15,"min":3},
-{"id":11,"type":"Βιβλιάριο","cat":{"el":"Βιβλιάριο","en":"Booklet","de":"Broschüre","ru":"Брошюра"},"names":{"el":"Τα καλά νέα από τον Θεό!","en":"Good News From God!","de":"Die gute Botschaft von Gott!","ru":"Благая весть от Бога!"},"qty":20,"min":5},
-{"id":12,"type":"Βιβλιάριο","cat":{"el":"Βιβλιάριο","en":"Booklet","de":"Broschüre","ru":"Брошюра"},"names":{"el":"Να απολαμβάνετε για πάντα τη ζωή! - Εισαγωγή","en":"Enjoy Life Forever! - Introduction","de":"Für immer leben! - Einführung","ru":"Радуйтесь жизни вечно! - Введение"},"qty":20,"min":5},
-{"id":13,"type":"Βιβλίο","cat":{"el":"Βιβλίο","en":"Book","de":"Buch","ru":"Книга"},"names":{"el":"Τι διδάσκει πραγματικά η Αγία Γραφή;","en":"What Does the Bible Really Teach?","de":"Was lehrt die Bibel wirklich?","ru":"Чему на самом деле учит Библия?"},"qty":10,"min":2},
-{"id":14,"type":"Βιβλίο","cat":{"el":"Βιβλίο","en":"Book","de":"Buch","ru":"Книга"},"names":{"el":"Τι μπορεί να μας διδάξει η Αγία Γραφή;","en":"What Can the Bible Teach Us?","de":"Was kann uns die Bibel lehren?","ru":"Чему нас может научить Библия?"},"qty":10,"min":2},
-{"id":15,"type":"Βιβλίο","cat":{"el":"Βιβλίο","en":"Book","de":"Buch","ru":"Книга"},"names":{"el":"Να απολαμβάνετε για πάντα τη ζωή!","en":"Enjoy Life Forever!","de":"Das Vergnügen, für immer zu leben!","ru":"Радуйтесь жизни вечно!"},"qty":10,"min":2},
-{"id":16,"type":"Περιοδικό","cat":{"el":"Σκοπιά","en":"Watchtower","de":"Wachtturm","ru":"Сторожевая башня"},"names":{"el":"Η Σκοπιά - Δημόσια Έκδοση - Τρέχον","en":"The Watchtower - Public Edition - Current","de":"Der Wachtturm - Öffentlichkeitsausgabe - Aktuell","ru":"Сторожевая башня - Для публики - Текущий"},"qty":25,"min":5},
-{"id":17,"type":"Περιοδικό","cat":{"el":"Ξύπνα","en":"Awake","de":"Erwachet","ru":"Пробудитесь"},"names":{"el":"Ξύπνα! - Τρέχον τεύχος","en":"Awake! - Current Issue","de":"Erwachet! - Aktuelle Ausgabe","ru":"Пробудитесь! - Текущий выпуск"},"qty":25,"min":5},
-{"id":18,"type":"Φυλλάδιο","cat":{"el":"Δημιουργία","en":"Creation","de":"Schöpfung","ru":"Творение"},"names":{"el":"Είναι η ζωή απλώς ένα ατύχημα;","en":"Is Life Just an Accident?","de":"Ist das Leben nur ein Zufall?","ru":"Жизнь — просто случайность?"},"qty":15,"min":3},
-{"id":19,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Трактат"},"names":{"el":"Ποιος είναι ο σκοπός της ζωής;","en":"What Is the Purpose of Life?","de":"Was ist der Sinn des Lebens?","ru":"В чем смысл жизни?"},"qty":15,"min":3},
-{"id":20,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Трактат"},"names":{"el":"Πώς μπορείτε να βρείτε ευτυχία;","en":"How Can You Find Happiness?","de":"Wie können Sie Glück finden?","ru":"Как обрести счастье?"},"qty":15,"min":3},
-{"id":21,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Трактат"},"names":{"el":"Υπάρχει Θεός που νοιάζεται;","en":"Is There a God Who Cares About You?","de":"Gibt es einen Gott, der sich um Sie kümmert?","ru":"Есть ли Бог, который заботится о вас?"},"qty":15,"min":3},
-{"id":22,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Трактат"},"names":{"el":"Θα τελειώσει ποτέ ο πόλεμος;","en":"Will War Ever End?","de":"Wird es jemals keinen Krieg mehr geben?","ru":"Закончатся ли когда-нибудь войны?"},"qty":15,"min":3},
-{"id":23,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Трактат"},"names":{"el":"Τι λέει η Αγία Γραφή για το μέλλον;","en":"What Does the Bible Say About the Future?","de":"Was sagt die Bibel über die Zukunft?","ru":"Что Библия говорит о будущем?"},"qty":15,"min":3},
-{"id":24,"type":"Κάρτα","cat":{"el":"Πρόσκληση","en":"Invitation","de":"Einladung","ru":"Приглашение"},"names":{"el":"Πρόσκληση στην Ανάμνηση","en":"Invitation to Memorial","de":"Einladung zum Gedächtnismahl","ru":"Приглашение на Вечерю"},"qty":30,"min":5},
-{"id":25,"type":"Κάρτα","cat":{"el":"Πρόσκληση","en":"Invitation","de":"Einladung","ru":"Приглашение"},"names":{"el":"Πρόσκληση σε Συνέλευση","en":"Invitation to Convention","de":"Einladung zum Kongress","ru":"Приглашение на Конгресс"},"qty":30,"min":5},
-{"id":26,"type":"Κάρτα","cat":{"el":"Κάρτα","en":"Card","de":"Karte","ru":"Карточка"},"names":{"el":"Κάρτα jw.org","en":"jw.org Card","de":"jw.org Karte","ru":"Карточка jw.org"},"qty":25,"min":5},
-{"id":27,"type":"Βιβλιάριο","cat":{"el":"Νέοι","en":"Youth","de":"Jugend","ru":"Молодежь"},"names":{"el":"Ερωτήσεις νέων - Απαντήσεις","en":"Young People Ask - Answers","de":"Fragen junger Leute - Antworten","ru":"Вопросы молодежи - Ответы"},"qty":10,"min":2},
-{"id":28,"type":"Βιβλιάριο","cat":{"el":"Οικογένεια","en":"Family","de":"Familie","ru":"Семья"},"names":{"el":"Μυστικό ευτυχισμένης οικογένειας","en":"Secret of Happy Family","de":"Geheimnis des Familienglücks","ru":"Секрет счастливой семьи"},"qty":10,"min":2},
-{"id":29,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Трактат"},"names":{"el":"Μπορεί ο Θεός να σας βοηθήσει;","en":"Can God Help You?","de":"Kann Gott Ihnen helfen?","ru":"Может ли Бог помочь вам?"},"qty":15,"min":3},
-{"id":30,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Трактат"},"names":{"el":"Γιατί να μελετάτε την Αγία Γραφή;","en":"Why Study the Bible?","de":"Warum die Bibel studieren?","ru":"Почему изучать Библию?"},"qty":15,"min":3},
-{"id":32,"type":"Βιβλιάριο","cat":{"el":"Βιβλιάριο","en":"Booklet","de":"Broschüre","ru":"Брошюра"},"names":{"el":"Καταγωγή ζωής - 5 ερωτήματα","en":"Origin of Life - 5 Questions","de":"Ursprung des Lebens - 5 Fragen","ru":"Происхождение жизни - 5 вопросов"},"qty":10,"min":2},
-{"id":33,"type":"Βιβλιάριο","cat":{"el":"Βιβλιάριο","en":"Booklet","de":"Broschüre","ru":"Брошюра"},"names":{"el":"Δημιουργήθηκε η ζωή;","en":"Was Life Created?","de":"Ist das Leben erschaffen?","ru":"Была ли жизнь создана?"},"qty":10,"min":2},
-{"id":34,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Трактат"},"names":{"el":"Τι είναι ο θάνατος;","en":"What Is Death?","de":"Was ist der Tod?","ru":"Что такое смерть?"},"qty":15,"min":3},
-{"id":35,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Трактат"},"names":{"el":"Τι συμβαίνει όταν πεθαίνουμε;","en":"What Happens When We Die?","de":"Was geschieht beim Tod?","ru":"Что происходит после смерти?"},"qty":15,"min":3}
+{"id":1,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Μπορείτε να ζήσετε για πάντα σε έναν παράδεισο στη γη;","en":"Can You Live Forever in Paradise on Earth?","de":"Können Sie für immer im Paradies auf Erden leben?","ru":"Будете ли вы жить вечно в раю на земле?"},"qty":20,"min":5,"lang":"el"},
+{"id":2,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Τι είναι η Βασιλεία του Θεού;","en":"What Is God's Kingdom?","de":"Was ist Gottes Königreich?","ru":"Что такое Царство Бога?"},"qty":20,"min":5,"lang":"el"},
+{"id":3,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Ποιος ελέγχει πραγματικά τον κόσμο;","en":"Who Really Controls the World?","de":"Wer herrscht wirklich über die Welt?","ru":"Кто на самом деле правит миром?"},"qty":20,"min":5,"lang":"el"},
+{"id":4,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Θα τελειώσει ποτέ ο πόνος;","en":"Will Suffering Ever End?","de":"Wird es jemals ein Ende des Leidens geben?","ru":"Закончатся ли когда-нибудь страдания?"},"qty":20,"min":5,"lang":"el"},
+{"id":5,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Μπορούν οι νεκροί να ζήσουν ξανά;","en":"Can the Dead Really Live Again?","de":"Können die Toten wirklich wieder leben?","ru":"Будут ли умершие жить снова?"},"qty":20,"min":5,"lang":"el"},
+{"id":6,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Πώς βλέπετε την Αγία Γραφή;","en":"How Do You View the Bible?","de":"Wie betrachten Sie die Bibel?","ru":"Что для вас Библия?"},"qty":15,"min":3,"lang":"el"},
+{"id":7,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Πώς βλέπετε το μέλλον;","en":"How Do You View the Future?","de":"Wie sehen Sie die Zukunft?","ru":"Каким вы видите будущее?"},"qty":15,"min":3,"lang":"el"},
+{"id":8,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Πού μπορείτε να βρείτε απαντήσεις στα μεγάλα ερωτήματα;","en":"Where Can You Find Answers to Life's Big Questions?","de":"Wo finden Sie Antworten auf die großen Fragen des Lebens?","ru":"Где найти ответы на важные вопросы жизни?"},"qty":15,"min":3,"lang":"el"},
+{"id":9,"type":"Φυλλάδιο","cat":{"el":"Οικογένεια","en":"Family","de":"Familie","ru":"Семья"},"names":{"el":"Ποιο είναι το κλειδί για ευτυχισμένη οικογένεια;","en":"What Is the Key to Happy Family Life?","de":"Was ist der Schlüssel zu einem glücklichen Familienleben?","ru":"На чём строится семейное счастье?"},"qty":15,"min":3,"lang":"el"},
+{"id":10,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Πώς θα είναι η ζωή στον Παράδεισο;","en":"What Will Life Be Like in Paradise?","de":"Wie wird das Leben im Paradies sein?","ru":"Какой будет жизнь в Раю?"},"qty":15,"min":3,"lang":"el"},
+{"id":11,"type":"Βιβλιάριο","cat":{"el":"Βιβλιάριο","en":"Booklet","de":"Broschüre","ru":"Брошюра"},"names":{"el":"Τα καλά νέα από τον Θεό!","en":"Good News From God!","de":"Die gute Botschaft von Gott!","ru":"Добрая весть от Бога!"},"qty":20,"min":5,"lang":"el"},
+{"id":12,"type":"Βιβλιάριο","cat":{"el":"Βιβλιάριο","en":"Booklet","de":"Broschüre","ru":"Брошюра"},"names":{"el":"Να απολαμβάνετε για πάντα τη ζωή! - Εισαγωγή","en":"Enjoy Life Forever! - Introduction","de":"Für immer leben! - Einführung","ru":"Радуйтесь жизни сейчас и вечно! - Введение"},"qty":20,"min":5,"lang":"el"},
+{"id":13,"type":"Βιβλίο","cat":{"el":"Βιβλίο","en":"Book","de":"Buch","ru":"Книга"},"names":{"el":"Τι διδάσκει πραγματικά η Αγία Γραφή;","en":"What Does the Bible Really Teach?","de":"Was lehrt die Bibel wirklich?","ru":"Чему на самом деле учит Библия?"},"qty":10,"min":2,"lang":"el"},
+{"id":14,"type":"Βιβλίο","cat":{"el":"Βιβλίο","en":"Book","de":"Buch","ru":"Книга"},"names":{"el":"Τι μπορεί να μας διδάξει η Αγία Γραφή;","en":"What Can the Bible Teach Us?","de":"Was kann uns die Bibel lehren?","ru":"Чему нас может научить Библия?"},"qty":10,"min":2,"lang":"el"},
+{"id":15,"type":"Βιβλίο","cat":{"el":"Βιβλίο","en":"Book","de":"Buch","ru":"Книга"},"names":{"el":"Να απολαμβάνετε για πάντα τη ζωή!","en":"Enjoy Life Forever!","de":"Das Vergnügen, für immer zu leben!","ru":"Радуйтесь жизни сейчас и вечно!"},"qty":10,"min":2,"lang":"el"},
+{"id":16,"type":"Περιοδικό","cat":{"el":"Σκοπιά","en":"Watchtower","de":"Wachtturm","ru":"Сторожевая башня"},"names":{"el":"Η Σκοπιά - Δημόσια Έκδοση - Τρέχον","en":"The Watchtower - Public Edition - Current","de":"Der Wachtturm - Öffentlichkeitsausgabe - Aktuell","ru":"Сторожевая башня - Для публики - Текущий"},"qty":25,"min":5,"lang":"el"},
+{"id":17,"type":"Περιοδικό","cat":{"el":"Ξύπνα","en":"Awake","de":"Erwachet","ru":"Пробудитесь"},"names":{"el":"Ξύπνα! - Τρέχον τεύχος","en":"Awake! - Current Issue","de":"Erwachet! - Aktuelle Ausgabe","ru":"Пробудитесь! - Текущий выпуск"},"qty":25,"min":5,"lang":"el"},
+{"id":18,"type":"Φυλλάδιο","cat":{"el":"Δημιουργία","en":"Creation","de":"Schöpfung","ru":"Сотворение"},"names":{"el":"Είναι η ζωή απλώς ένα ατύχημα;","en":"Is Life Just an Accident?","de":"Ist das Leben nur ein Zufall?","ru":"Жизнь — просто случайность?"},"qty":15,"min":3,"lang":"el"},
+{"id":19,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Ποιος είναι ο σκοπός της ζωής;","en":"What Is the Purpose of Life?","de":"Was ist der Sinn des Lebens?","ru":"В чём смысл жизни?"},"qty":15,"min":3,"lang":"el"},
+{"id":20,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Πώς μπορείτε να βρείτε ευτυχία;","en":"How Can You Find Happiness?","de":"Wie können Sie Glück finden?","ru":"Как обрести счастье?"},"qty":15,"min":3,"lang":"el"},
+{"id":21,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Υπάρχει Θεός που νοιάζεται;","en":"Is There a God Who Cares About You?","de":"Gibt es einen Gott, der sich um Sie kümmert?","ru":"На самом ли деле Бог заботится о нас?"},"qty":15,"min":3,"lang":"el"},
+{"id":22,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Θα τελειώσει ποτέ ο πόλεμος;","en":"Will War Ever End?","de":"Wird es jemals keinen Krieg mehr geben?","ru":"Придёт ли конец страданиям?"},"qty":15,"min":3,"lang":"el"},
+{"id":23,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Τι λέει η Αγία Γραφή για το μέλλον;","en":"What Does the Bible Say About the Future?","de":"Was sagt die Bibel über die Zukunft?","ru":"Что Библия говорит о будущем?"},"qty":15,"min":3,"lang":"el"},
+{"id":24,"type":"Κάρτα","cat":{"el":"Πρόσκληση","en":"Invitation","de":"Einladung","ru":"Приглашение"},"names":{"el":"Πρόσκληση στην Ανάμνηση","en":"Invitation to Memorial","de":"Einladung zum Gedächtnismahl","ru":"Приглашение на Вечерю"},"qty":30,"min":5,"lang":"el"},
+{"id":25,"type":"Κάρτα","cat":{"el":"Πρόσκληση","en":"Invitation","de":"Einladung","ru":"Приглашение"},"names":{"el":"Πρόσκληση σε Συνέλευση","en":"Invitation to Convention","de":"Einladung zum Kongress","ru":"Приглашение на конгресс"},"qty":30,"min":5,"lang":"el"},
+{"id":26,"type":"Κάρτα","cat":{"el":"Κάρτα","en":"Card","de":"Karte","ru":"Карточка"},"names":{"el":"Κάρτα jw.org","en":"jw.org Card","de":"jw.org Karte","ru":"Карточка jw.org"},"qty":25,"min":5,"lang":"el"},
+{"id":27,"type":"Βιβλιάριο","cat":{"el":"Νέοι","en":"Youth","de":"Jugend","ru":"Молодёжь"},"names":{"el":"Ερωτήσεις νέων - Απαντήσεις","en":"Young People Ask - Answers","de":"Fragen junger Leute - Antworten","ru":"Ответы на 10 вопросов юношей и девушек"},"qty":10,"min":2,"lang":"el"},
+{"id":28,"type":"Βιβλιάριο","cat":{"el":"Οικογένεια","en":"Family","de":"Familie","ru":"Семья"},"names":{"el":"Μυστικό ευτυχισμένης οικογένειας","en":"Secret of Happy Family","de":"Geheimnis des Familienglücks","ru":"Ваша семья может быть счастливой"},"qty":10,"min":2,"lang":"el"},
+{"id":29,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Μπορεί ο Θεός να σας βοηθήσει;","en":"Can God Help You?","de":"Kann Gott Ihnen helfen?","ru":"Может ли Бог помочь вам?"},"qty":15,"min":3,"lang":"el"},
+{"id":30,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Γιατί να μελετάτε την Αγία Γραφή;","en":"Why Study the Bible?","de":"Warum die Bibel studieren?","ru":"Почему изучать Библию?"},"qty":15,"min":3,"lang":"el"},
+{"id":32,"type":"Βιβλιάριο","cat":{"el":"Βιβλιάριο","en":"Booklet","de":"Broschüre","ru":"Брошюра"},"names":{"el":"Καταγωγή ζωής - 5 ερωτήματα","en":"Origin of Life - 5 Questions","de":"Ursprung des Lebens - 5 Fragen","ru":"Происхождение жизни - 5 вопросов"},"qty":10,"min":2,"lang":"el"},
+{"id":33,"type":"Βιβλιάριο","cat":{"el":"Βιβλιάριο","en":"Booklet","de":"Broschüre","ru":"Брошюра"},"names":{"el":"Δημιουργήθηκε η ζωή;","en":"Was Life Created?","de":"Ist das Leben erschaffen?","ru":"Была ли жизнь создана?"},"qty":10,"min":2,"lang":"el"},
+{"id":34,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Τι είναι ο θάνατος;","en":"What Is Death?","de":"Was ist der Tod?","ru":"Что такое смерть?"},"qty":15,"min":3,"lang":"el"},
+{"id":35,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Τι συμβαίνει όταν πεθαίνουμε;","en":"What Happens When We Die?","de":"Was geschieht beim Tod?","ru":"Что происходит после смерти?"},"qty":15,"min":3,"lang":"el"}
 ];
+
 var PUBLIC_MAGAZINES=[
-{"id":1001,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2020 | Η Αναζήτηση της Αλήθειας","en":"The Watchtower — No. 1 2020 | The Search for Truth","de":"Der Wachtturm — Nr. 1 2020 | Die Suche nach der Wahrheit","ru":"Сторожевая башня — № 1 2020 | Поиск истины"},"qty":25,"min":5},
-{"id":1002,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 2 2020 | Τι Είναι η Βασιλεία του Θεού;","en":"The Watchtower — No. 2 2020 | What Is God's Kingdom?","de":"Der Wachtturm — Nr. 2 2020 | Was ist Gottes Königreich?","ru":"Сторожевая башня — № 2 2020 | Что такое Царство Бога?"},"qty":25,"min":5},
-{"id":1003,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 3 2020 | Ατέλειωτες Ευλογίες","en":"The Watchtower — No. 3 2020 | Lasting Blessings","de":"Der Wachtturm — Nr. 3 2020 | Dauerhafte Segnungen","ru":"Сторожевая башня — № 3 2020 | Вечные благословения"},"qty":25,"min":5},
-{"id":1004,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2020 | Νικήστε το Άγχος","en":"Awake! — No. 1 2020 | Find Relief From Stress","de":"Erwachet! — Nr. 1 2020 | Stress bewältigen","ru":"Пробудитесь! — № 1 2020 | Как справиться со стрессом"},"qty":25,"min":5},
-{"id":1005,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 2 2020 | 5 Ερωτήματα για τα Βάσανα","en":"Awake! — No. 2 2020 | 5 Questions About Suffering","de":"Erwachet! — Nr. 2 2020 | 5 Fragen über das Leid","ru":"Пробудитесь! — № 2 2020 | 5 вопросов о страданиях"},"qty":25,"min":5},
-{"id":1006,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 3 2020 | Θεραπεία για την Προκατάληψη;","en":"Awake! — No. 3 2020 | Cure for Prejudice?","de":"Erwachet! — Nr. 3 2020 | Heilmittel gegen Vorurteile?","ru":"Пробудитесь! — № 3 2020 | Избавиться от предубеждений?"},"qty":25,"min":5},
-{"id":1007,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2021 | Αξίζει να Προσεύχεστε;","en":"The Watchtower — No. 1 2021 | Why Pray?","de":"Der Wachtturm — Nr. 1 2021 | Warum beten?","ru":"Сторожевая башня — № 1 2021 | Зачем молиться?"},"qty":25,"min":5},
-{"id":1008,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 2 2021 | Ένας Καλύτερος Κόσμος","en":"The Watchtower — No. 2 2021 | A Better World","de":"Der Wachtturm — Nr. 2 2021 | Eine bessere Welt","ru":"Сторожевая башня — № 2 2021 | Лучший мир"},"qty":25,"min":5},
-{"id":1009,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 3 2021 | Ασφαλές Μέλλον;","en":"The Watchtower — No. 3 2021 | A Secure Future?","de":"Der Wachtturm — Nr. 3 2021 | Eine sichere Zukunft?","ru":"Сторожевая башня — № 3 2021 | Безопасное будущее?"},"qty":25,"min":5},
-{"id":1010,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2021 | Σοφία για τη Ζωή","en":"Awake! — No. 1 2021 | Wisdom for Life","de":"Erwachet! — Nr. 1 2021 | Weisheit fürs Leben","ru":"Пробудитесь! — № 1 2021 | Мудрость для жизни"},"qty":25,"min":5},
-{"id":1011,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 2 2021 | Τεχνολογία","en":"Awake! — No. 2 2021 | Technology","de":"Erwachet! — Nr. 2 2021 | Technik","ru":"Пробудитесь! — № 2 2021 | Технологии"},"qty":25,"min":5},
-{"id":1012,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 3 2021 | Πιστεύετε σε Δημιουργό;","en":"Awake! — No. 3 2021 | Believe in a Creator?","de":"Erwachet! — Nr. 3 2021 | An einen Schöpfer glauben?","ru":"Пробудитесь! — № 3 2021 | Верить в Творца?"},"qty":25,"min":5},
-{"id":1013,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2022 | Ο Κύκλος του Μίσους","en":"The Watchtower — No. 1 2022 | Cycle of Hatred","de":"Der Wachtturm — Nr. 1 2022 | Kreislauf des Hasses","ru":"Сторожевая башня — № 1 2022 | Круг ненависти"},"qty":25,"min":5},
-{"id":1014,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2022 | Κόσμος σε Αναστάτωση","en":"Awake! — No. 1 2022 | World in Turmoil","de":"Erwachet! — Nr. 1 2022 | Welt in Aufruhr","ru":"Пробудитесь! — № 1 2022 | Мир в смятении"},"qty":25,"min":5},
-{"id":1015,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2023 | Ψυχική Υγεία","en":"The Watchtower — No. 1 2023 | Mental Health","de":"Der Wachtturm — Nr. 1 2023 | Psychische Gesundheit","ru":"Сторожевая башня — № 1 2023 | Психическое здоровье"},"qty":25,"min":5},
-{"id":1016,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2023 | Ο Πλανήτης Μας","en":"Awake! — No. 1 2023 | Our Planet","de":"Erwachet! — Nr. 1 2023 | Unser Planet","ru":"Пробудитесь! — № 1 2023 | Наша планета"},"qty":25,"min":5},
-{"id":1017,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2024 | Σωστό και Λάθος","en":"The Watchtower — No. 1 2024 | Right and Wrong","de":"Der Wachtturm — Nr. 1 2024 | Richtig und falsch","ru":"Сторожевая башня — № 1 2024 | Правильно и неправильно"},"qty":25,"min":5},
-{"id":1018,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2024 | Τι Έγινε στον Σεβασμό;","en":"Awake! — No. 1 2024 | What Happened to Respect?","de":"Erwachet! — Nr. 1 2024 | Was geschah mit dem Respekt?","ru":"Пробудитесь! — № 1 2024 | Куда исчезло уважение?"},"qty":25,"min":5},
-{"id":1019,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2025 | Τέλος του Πολέμου;","en":"The Watchtower — No. 1 2025 | An End to War?","de":"Der Wachtturm — Nr. 1 2025 | Ein Ende der Kriege?","ru":"Сторожевая башня — № 1 2025 | Конец войн?"},"qty":25,"min":5},
-{"id":1020,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2025 | Αυξανόμενες Τιμές","en":"Awake! — No. 1 2025 | Rising Prices","de":"Erwachet! — Nr. 1 2025 | Steigende Preise","ru":"Пробудитесь! — № 1 2025 | Рост цен"},"qty":25,"min":5},
-{"id":1021,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2026 | Παγκόσμια Ειρήνη;","en":"The Watchtower — No. 1 2026 | World Peace?","de":"Der Wachtturm — Nr. 1 2026 | Weltfrieden?","ru":"Сторожевая башня — № 1 2026 | Мир во всем мире?"},"qty":25,"min":5},
-{"id":1022,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2026 | Μοναξιά","en":"Awake! — No. 1 2026 | Loneliness","de":"Erwachet! — Nr. 1 2026 | Einsamkeit","ru":"Пробудитесь! — № 1 2026 | Одиночество"},"qty":25,"min":5}
+{"id":1001,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2020 | Η Αναζήτηση της Αλήθειας","en":"The Watchtower — No. 1 2020 | The Search for Truth","de":"Der Wachtturm — Nr. 1 2020 | Die Suche nach der Wahrheit","ru":"Сторожевая башня — № 1 2020 | Поиск истины"},"qty":25,"min":5,"lang":"el"},
+{"id":1002,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 2 2020 | Τι Είναι η Βασιλεία του Θεού;","en":"The Watchtower — No. 2 2020 | What Is God's Kingdom?","de":"Der Wachtturm — Nr. 2 2020 | Was ist Gottes Königreich?","ru":"Сторожевая башня — № 2 2020 | Что такое Царство Бога?"},"qty":25,"min":5,"lang":"el"},
+{"id":1003,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 3 2020 | Ατέλειωτες Ευλογίες","en":"The Watchtower — No. 3 2020 | Lasting Blessings","de":"Der Wachtturm — Nr. 3 2020 | Dauerhafte Segnungen","ru":"Сторожевая башня — № 3 2020 | Вечные благословения"},"qty":25,"min":5,"lang":"el"},
+{"id":1004,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2020 | Νικήστε το Άγχος","en":"Awake! — No. 1 2020 | Find Relief From Stress","de":"Erwachet! — Nr. 1 2020 | Stress bewältigen","ru":"Пробудитесь! — № 1 2020 | Как справиться со стрессом"},"qty":25,"min":5,"lang":"el"},
+{"id":1005,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 2 2020 | 5 Ερωτήματα για τα Βάσανα","en":"Awake! — No. 2 2020 | 5 Questions About Suffering","de":"Erwachet! — Nr. 2 2020 | 5 Fragen über das Leid","ru":"Пробудитесь! — № 2 2020 | 5 вопросов о страданиях"},"qty":25,"min":5,"lang":"el"},
+{"id":1006,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 3 2020 | Θεραπεία για την Προκατάληψη;","en":"Awake! — No. 3 2020 | Cure for Prejudice?","de":"Erwachet! — Nr. 3 2020 | Heilmittel gegen Vorurteile?","ru":"Пробудитесь! — № 3 2020 | Избавиться от предубеждений?"},"qty":25,"min":5,"lang":"el"},
+{"id":1007,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2021 | Αξίζει να Προσεύχεστε;","en":"The Watchtower — No. 1 2021 | Why Pray?","de":"Der Wachtturm — Nr. 1 2021 | Warum beten?","ru":"Сторожевая башня — № 1 2021 | Зачем молиться?"},"qty":25,"min":5,"lang":"el"},
+{"id":1008,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 2 2021 | Ένας Καλύτερος Κόσμος","en":"The Watchtower — No. 2 2021 | A Better World","de":"Der Wachtturm — Nr. 2 2021 | Eine bessere Welt","ru":"Сторожевая башня — № 2 2021 | Лучший мир"},"qty":25,"min":5,"lang":"el"},
+{"id":1009,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 3 2021 | Ασφαλές Μέλλον;","en":"The Watchtower — No. 3 2021 | A Secure Future?","de":"Der Wachtturm — Nr. 3 2021 | Eine sichere Zukunft?","ru":"Сторожевая башня — № 3 2021 | Безопасное будущее?"},"qty":25,"min":5,"lang":"el"},
+{"id":1010,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2021 | Σοφία για τη Ζωή","en":"Awake! — No. 1 2021 | Wisdom for Life","de":"Erwachet! — Nr. 1 2021 | Weisheit fürs Leben","ru":"Пробудитесь! — № 1 2021 | Мудрость для жизни"},"qty":25,"min":5,"lang":"el"},
+{"id":1011,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 2 2021 | Τεχνολογία","en":"Awake! — No. 2 2021 | Technology","de":"Erwachet! — Nr. 2 2021 | Technik","ru":"Пробудитесь! — № 2 2021 | Технологии"},"qty":25,"min":5,"lang":"el"},
+{"id":1012,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 3 2021 | Πιστεύετε σε Δημιουργό;","en":"Awake! — No. 3 2021 | Believe in a Creator?","de":"Erwachet! — Nr. 3 2021 | An einen Schöpfer glauben?","ru":"Пробудитесь! — № 3 2021 | Верить в Творца?"},"qty":25,"min":5,"lang":"el"},
+{"id":1013,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2022 | Ο Κύκλος του Μίσους","en":"The Watchtower — No. 1 2022 | Cycle of Hatred","de":"Der Wachtturm — Nr. 1 2022 | Kreislauf des Hasses","ru":"Сторожевая башня — № 1 2022 | Круг ненависти"},"qty":25,"min":5,"lang":"el"},
+{"id":1014,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2022 | Κόσμος σε Αναστάτωση","en":"Awake! — No. 1 2022 | World in Turmoil","de":"Erwachet! — Nr. 1 2022 | Welt in Aufruhr","ru":"Пробудитесь! — № 1 2022 | Мир в смятении"},"qty":25,"min":5,"lang":"el"},
+{"id":1015,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2023 | Ψυχική Υγεία","en":"The Watchtower — No. 1 2023 | Mental Health","de":"Der Wachtturm — Nr. 1 2023 | Psychische Gesundheit","ru":"Сторожевая башня — № 1 2023 | Психическое здоровье"},"qty":25,"min":5,"lang":"el"},
+{"id":1016,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2023 | Ο Πλανήτης Μας","en":"Awake! — No. 1 2023 | Our Planet","de":"Erwachet! — Nr. 1 2023 | Unser Planet","ru":"Пробудитесь! — № 1 2023 | Наша планета"},"qty":25,"min":5,"lang":"el"},
+{"id":1017,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2024 | Σωστό και Λάθος","en":"The Watchtower — No. 1 2024 | Right and Wrong","de":"Der Wachtturm — Nr. 1 2024 | Richtig und falsch","ru":"Сторожевая башня — № 1 2024 | Правильно и неправильно"},"qty":25,"min":5,"lang":"el"},
+{"id":1018,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2024 | Τι Έγινε στον Σεβασμό;","en":"Awake! — No. 1 2024 | What Happened to Respect?","de":"Erwachet! — Nr. 1 2024 | Was geschah mit dem Respekt?","ru":"Пробудитесь! — № 1 2024 | Куда исчезло уважение?"},"qty":25,"min":5,"lang":"el"},
+{"id":1019,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2025 | Τέλος του Πολέμου;","en":"The Watchtower — No. 1 2025 | An End to War?","de":"Der Wachtturm — Nr. 1 2025 | Ein Ende der Kriege?","ru":"Сторожевая башня — № 1 2025 | Конец войн?"},"qty":25,"min":5,"lang":"el"},
+{"id":1020,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2025 | Αυξανόμενες Τιμές","en":"Awake! — No. 1 2025 | Rising Prices","de":"Erwachet! — Nr. 1 2025 | Steigende Preise","ru":"Пробудитесь! — № 1 2025 | Рост цен"},"qty":25,"min":5,"lang":"el"},
+{"id":1021,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2026 | Παγκόσμια Ειρήνη;","en":"The Watchtower — No. 1 2026 | World Peace?","de":"Der Wachtturm — Nr. 1 2026 | Weltfrieden?","ru":"Сторожевая башня — № 1 2026 | Возможен ли мир во всём мире?"},"qty":25,"min":5,"lang":"el"},
+{"id":1022,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2026 | Μοναξιά","en":"Awake! — No. 1 2026 | Loneliness","de":"Erwachet! — Nr. 1 2026 | Einsamkeit","ru":"Пробудитесь! — № 1 2026 | Как победить одиночество"},"qty":25,"min":5,"lang":"el"}
 ];
 PRESETS.push.apply(PRESETS, PUBLIC_MAGAZINES);
+
+var POSTERS=[
+{"id":2001,"type":"Πόστερ","cat":{"el":"Πόστερ","en":"Poster","de":"Poster","ru":"Плакат"},"names":{"el":"Πόστερ «Ο Ιεχωβά — ο καλύτερός σου φίλος»","en":"Poster «Jehovah — Your Best Friend»","de":"Poster «Jehova — dein bester Freund»","ru":"Постер «Иегова — твой лучший друг»"},"qty":10,"min":2,"lang":"el"},
+{"id":2002,"type":"Πόστερ","cat":{"el":"Πόστερ","en":"Poster","de":"Poster","ru":"Плакат"},"names":{"el":"Πόστερ «Το καλύτερο δώρο στον κόσμο»","en":"Poster «The Best Gift in the World»","de":"Poster «Das beste Geschenk der Welt»","ru":"Постер «Самый лучший подарок на свете»"},"qty":10,"min":2,"lang":"el"},
+{"id":2003,"type":"Πόστερ","cat":{"el":"Πόστερ","en":"Poster","de":"Poster","ru":"Плакат"},"names":{"el":"Πόστερ «Ο Ιεχωβά σε εκτιμάει»","en":"Poster «Jehovah Cares About You»","de":"Poster «Jehova schätzt dich»","ru":"Постер «Иегова тобой дорожит»"},"qty":10,"min":2,"lang":"el"},
+{"id":2004,"type":"Πόστερ","cat":{"el":"Πόστερ","en":"Poster","de":"Poster","ru":"Плакат"},"names":{"el":"Πόστερ «Ο Ιεχωβά θα σε βοηθήσει να είσαι γενναίος»","en":"Poster «Jehovah Will Help You Be Brave»","de":"Poster «Jehova hilft dir, mutig zu sein»","ru":"Постер «Иегова поможет тебе быть смелым»"},"qty":10,"min":2,"lang":"el"},
+{"id":2005,"type":"Πόστερ","cat":{"el":"Πόστερ","en":"Poster","de":"Poster","ru":"Плакат"},"names":{"el":"Πόστερ «Να χαροποιείς τον Ιεχωβά»","en":"Poster «Make Jehovah Happy»","de":"Poster «Mach Jehova Freude»","ru":"Постер «Радуй Иегову»"},"qty":10,"min":2,"lang":"el"}
+];
+PRESETS.push.apply(PRESETS, POSTERS);
 
 /* ---------- 7. STORAGE ---------- */
 try{ items=cleanItems(JSON.parse(localStorage.getItem('stand_items_v4')||'[]')); }catch(e){ items=[]; }
 try{ historyLog=JSON.parse(localStorage.getItem('stand_history')||'[]'); }catch(e){ historyLog=[]; }
-try{ stands=JSON.parse(localStorage.getItem('stand_locations')||'[]'); }catch(e){ stands=[]; }
-curFS=parseInt(localStorage.getItem('stand_fs')||'15');
-curFF=localStorage.getItem('stand_ff')||'Arial, sans-serif';
+
+items = items.filter(function(it){
+  if(it.presetId===31) return false;
+  if(it.type === 'Μαγνητικό Πόστερ') return false;
+  var n_el=(it.names && it.names.el) || it.name || '';
+  if(n_el.indexOf('Μελέτης')>=0) return false;
+  return true;
+});
 
 var deletedPresetIds=JSON.parse(localStorage.getItem('stand_deleted_presets')||'[]');
 function markPresetDeleted(id){ if(deletedPresetIds.indexOf(id)<0){ deletedPresetIds.push(id); localStorage.setItem('stand_deleted_presets',JSON.stringify(deletedPresetIds)); } }
 function unmarkPresetDeleted(id){ deletedPresetIds=deletedPresetIds.filter(function(x){return x!==id;}); localStorage.setItem('stand_deleted_presets',JSON.stringify(deletedPresetIds)); }
 
-var BLOCKED_PRESET_IDS=[31];
-BLOCKED_PRESET_IDS.forEach(function(bid){ if(deletedPresetIds.indexOf(bid)<0) deletedPresetIds.push(bid); });
+[31,2006,2007,2008].forEach(function(bid){ if(deletedPresetIds.indexOf(bid)<0) deletedPresetIds.push(bid); });
 localStorage.setItem('stand_deleted_presets', JSON.stringify(deletedPresetIds));
 
-items = items.filter(function(it){
-  if(it.presetId===31) return false;
-  var n_el=(it.names && it.names.el) || it.name || '';
-  if(n_el.indexOf('Μελέτης')>=0) return false;
-  var n_en=(it.names && it.names.en) || '';
-  if(n_en.indexOf('Study Edition')>=0) return false;
-  return true;
-});
-
 if(items.length===0){
-  items=PRESETS.map(function(p){ return {id:Date.now()+p.id+Math.random(),presetId:p.id,names:p.names,type:p.type,cat:p.cat,qty:p.qty,min:p.min,barcode:'',photo:'',lang:'el',magazineLang:'el'}; });
+  items=PRESETS.map(function(p){ return {id:Date.now()+p.id+Math.random(),presetId:p.id,names:p.names,type:p.type,cat:p.cat,qty:p.qty,min:p.min,barcode:'',photo:'',lang:p.lang||'el',magazineLang:p.lang||'el'}; });
 }
-(function ensurePublicMagazinePresets(){
+(function ensurePresets(){
   var existingIds=items.filter(function(x){return x.presetId;}).map(function(x){return x.presetId;});
   var added=0;
-  PUBLIC_MAGAZINES.forEach(function(p){
+  PRESETS.forEach(function(p){
     if(existingIds.indexOf(p.id)<0 && deletedPresetIds.indexOf(p.id)<0){
-      items.push({id:Date.now()+p.id+Math.random(),presetId:p.id,names:p.names,type:p.type,cat:p.cat,qty:p.qty,min:p.min,barcode:'',photo:'',lang:'el',magazineLang:'el'});
+      items.push({id:Date.now()+p.id+Math.random(),presetId:p.id,names:p.names,type:p.type,cat:p.cat,qty:p.qty,min:p.min,barcode:'',photo:'',lang:p.lang||'el',magazineLang:p.lang||'el'});
       added++;
     }
   });
@@ -775,16 +865,64 @@ if(items.length===0){
 function Tget(key){ var a=T[key]; return a ? (a[curLang]||a.el) : key; }
 function getDisplayName(it){ if(it.names && it.names[curLang]) return it.names[curLang]; if(it.names && it.names.el) return it.names.el; return it.name||''; }
 function getDisplayCat(it){ if(it.cat && typeof it.cat==='object') return it.cat[curLang]||it.cat.el||''; return it.cat||''; }
-function getTypeClass(tp){ if((tp||'').indexOf('Φυλλάδιο')>=0) return 't-flyer'; if(tp==='Περιοδικό') return 't-mag'; if(tp==='Βιβλιάριο') return 't-booklet'; return 't-book'; }
+function getTypeClass(tp){ if((tp||'').indexOf('Φυλλάδιο')>=0) return 't-flyer'; if(tp==='Περιοδικό') return 't-mag'; if(tp==='Βιβλιάριο') return 't-booklet'; if(tp==='Πόστερ') return 't-poster'; return 't-book'; }
 function getTypeDisplay(tp){ if(TYPE_TRANS[tp] && TYPE_TRANS[tp][curLang]) return TYPE_TRANS[tp][curLang]; for(var k in TYPE_TRANS){ if((tp||'').indexOf(k)>=0 && TYPE_TRANS[k][curLang]) return TYPE_TRANS[k][curLang]; } return tp; }
 function getItemLanguage(it){ if(it.lang) return it.lang; if(it.magazineLang) return it.magazineLang; return 'el'; }
-function updateSyncCodeDisplay(){ var el=document.getElementById('syncCodeDisplay'); if(el) el.textContent=cloudId; }
 
-/* ---------- 9. SAVE / LOG ---------- */
+var LANG_DISPLAY={
+el:{el:'🇬🇷 Ελληνικά',en:'🇬🇷 Greek',de:'🇬🇷 Griechisch',ru:'🇬🇷 Греческий'},
+en:{el:'🇬🇧 English',en:'🇬🇧 English',de:'🇬🇧 Englisch',ru:'🇬🇧 Английский'},
+de:{el:'🇩🇪 Deutsch',en:'🇩🇪 German',de:'🇩🇪 Deutsch',ru:'🇩🇪 Немецкий'},
+ru:{el:'🇷🇺 Русский',en:'🇷🇺 Russian',de:'🇷🇺 Russisch',ru:'🇷🇺 Русский'},
+sq:{el:'🇦🇱 Shqip',en:'🇦🇱 Albanian',de:'🇦🇱 Albanisch',ru:'🇦🇱 Албанский'},
+ro:{el:'🇷🇴 Română',en:'🇷🇴 Romanian',de:'🇷🇴 Rumänisch',ru:'🇷🇴 Румынский'},
+ar:{el:'🇸🇦 العربية',en:'🇸🇦 Arabic',de:'🇸🇦 Arabisch',ru:'🇸🇦 Арабский'},
+fa:{el:'🇮🇷 فارسی',en:'🇮🇷 Persian',de:'🇮🇷 Persisch',ru:'🇮🇷 Персидский'},
+fr:{el:'🇫🇷 Français',en:'🇫🇷 French',de:'🇫🇷 Französisch',ru:'🇫🇷 Французский'},
+es:{el:'🇪🇸 Español',en:'🇪🇸 Spanish',de:'🇪🇸 Spanisch',ru:'🇪🇸 Испанский'},
+it:{el:'🇮🇹 Italiano',en:'🇮🇹 Italian',de:'🇮🇹 Italienisch',ru:'🇮🇹 Итальянский'},
+pl:{el:'🇵🇱 Polski',en:'🇵🇱 Polish',de:'🇵🇱 Polnisch',ru:'🇵🇱 Польский'},
+hr:{el:'🇭🇷 Hrvatski',en:'🇭🇷 Croatian',de:'🇭🇷 Kroatisch',ru:'🇭🇷 Хорватский'},
+bg:{el:'🇧🇬 Български',en:'🇧🇬 Bulgarian',de:'🇧🇬 Bulgarisch',ru:'🇧🇬 Болгарский'},
+uk:{el:'🇺🇦 Українська',en:'🇺🇦 Ukrainian',de:'🇺🇦 Ukrainisch',ru:'🇺🇦 Украинский'},
+hu:{el:'🇭🇺 Magyar',en:'🇭🇺 Hungarian',de:'🇭🇺 Ungarisch',ru:'🇭🇺 Венгерский'},
+hy:{el:'🇦🇲 Հայերեն',en:'🇦🇲 Armenian',de:'🇦🇲 Armenisch',ru:'🇦🇲 Армянский'},
+tr:{el:'🇹🇷 Türkçe',en:'🇹🇷 Turkish',de:'🇹🇷 Türkisch',ru:'🇹🇷 Турецкий'},
+sr:{el:'🇷🇸 Српски',en:'🇷🇸 Serbian',de:'🇷🇸 Serbisch',ru:'🇷🇸 Сербский'}};
+function getLangDisplay(code){ var m=LANG_DISPLAY[code]; if(!m) return code; return m[curLang]||m.el; }
+function getLangBadge(it){
+  var lang=getItemLanguage(it);
+  var m=LANG_DISPLAY[lang];
+  var label=m ? (m[curLang]||m.el) : lang;
+  return '<span class="lang-badge lang-'+esc(lang)+'">'+esc(label)+'</span>';
+}
+
+/* ---------- 9. SYNC STATUS ---------- */
+function setSyncState(state){
+  syncState=state;
+  var badge=document.getElementById('syncStatusBadge');
+  var txt=document.getElementById('syncStatusText');
+  if(!badge || !txt) return;
+  badge.className='sync-status-badge';
+  var label='';
+  if(state==='offline'){ badge.classList.add('offline'); label=Tget('syncOffline'); }
+  else if(state==='connecting'){ badge.classList.add('syncing'); label=Tget('syncConnecting'); }
+  else if(state==='synced'){ badge.classList.add('synced'); label=Tget('syncOn'); }
+  else if(state==='pushing'){ badge.classList.add('syncing'); label=Tget('syncPushing'); }
+  else if(state==='pulling'){ badge.classList.add('syncing'); label=Tget('syncPulling'); }
+  else if(state==='error'){ badge.classList.add('offline'); label=Tget('syncError'); }
+  else { badge.classList.add('offline'); label=Tget('syncOffline'); }
+  txt.textContent=label;
+  if(state==='synced'){ lastSyncStr=new Date().toLocaleTimeString(LOC[curLang]||'el-GR'); }
+  var last=document.getElementById('lastSync'); if(last && lastSyncStr) last.textContent=Tget('lastSyncLabel')+' '+lastSyncStr;
+  var lastM=document.getElementById('lastSyncMain'); if(lastM && lastSyncStr) lastM.textContent=lastSyncStr;
+}
+function updateCloudStatus(txt){ var el=document.getElementById('cloudStatus'); if(el) el.textContent=txt; }
+
+/* ---------- 10. SAVE / LOG ---------- */
 function save(){
   try{ localStorage.setItem('stand_items_v4',JSON.stringify(items)); }catch(e){}
   try{ localStorage.setItem('stand_history',JSON.stringify(historyLog)); }catch(e){}
-  try{ localStorage.setItem('stand_locations',JSON.stringify(stands)); }catch(e){}
   if(cloudEnabled && !isSyncingFromCloud && cloudDb){
     clearTimeout(cloudPushTimeout);
     cloudPushTimeout=setTimeout(function(){ try{ pushToCloud(); }catch(e){} },1500);
@@ -807,19 +945,40 @@ function renderLog(){
 }
 function clearLog(){ customConfirm(Tget('ccClearLog'), function(){ historyLog=[]; save(); renderLog(); }); }
 
-/* ---------- 10. FONT ---------- */
+/* ---------- 11. FONT (★ ΝΕΟ — ξεχωριστό UI και λίστα) ---------- */
 function applyFont(){
+  // UI global
   document.documentElement.style.fontSize=curFS+'px';
   document.body.style.fontFamily=curFF;
+  // List font size via CSS variable
+  document.documentElement.style.setProperty('--list-font-size', curLFS+'px');
+  // UI values
   var el=document.getElementById('fsVal'); if(el) el.textContent=curFS;
   var r=document.getElementById('fsRange'); if(r) r.value=curFS;
+  var lfs=document.getElementById('lfsVal'); if(lfs) lfs.textContent=curLFS;
+  var lfsR=document.getElementById('lfsRange'); if(lfsR) lfsR.value=curLFS;
   var sel=document.getElementById('ffSelect'); if(sel) sel.value=curFF;
   var prev=document.getElementById('fontPrev'); if(prev){ prev.style.fontSize=curFS+'px'; prev.style.fontFamily=curFF; }
+  // Preview boxes
+  var uiPrev=document.getElementById('fsPreviewText'); if(uiPrev){ uiPrev.style.fontSize=curFS+'px'; uiPrev.style.fontFamily=curFF; }
+  var lpName=document.getElementById('lfsPreviewName'); if(lpName){ lpName.style.fontSize=curLFS+'px'; lpName.style.fontFamily=curFF; }
+  var lpCat=document.getElementById('lfsPreviewCat'); if(lpCat){ lpCat.style.fontSize=Math.round(curLFS*0.8)+'px'; lpCat.style.fontFamily=curFF; }
+  var lpBadge=document.getElementById('lfsPreviewBadge'); if(lpBadge){ lpBadge.style.fontSize=Math.round(curLFS*0.75)+'px'; lpBadge.style.fontFamily=curFF; }
+  var lpType=document.getElementById('lfsPreviewType'); if(lpType){ lpType.style.fontSize=Math.round(curLFS*0.7)+'px'; lpType.style.fontFamily=curFF; }
+  var lpLang=document.getElementById('lfsPreviewLang'); if(lpLang){ lpLang.style.fontSize=Math.round(curLFS*0.7)+'px'; lpLang.style.fontFamily=curFF; }
 }
 function setFontSize(v){ curFS=parseInt(v); localStorage.setItem('stand_fs',curFS); applyFont(); }
+function setListFontSize(v){ curLFS=parseInt(v); localStorage.setItem('stand_list_fs',curLFS); applyFont(); }
 function setFontFamily(v){ curFF=v; localStorage.setItem('stand_ff',curFF); applyFont(); }
+function resetFonts(){
+  curFS=15; curLFS=13; curFF='Arial, sans-serif';
+  localStorage.setItem('stand_fs',curFS);
+  localStorage.setItem('stand_list_fs',curLFS);
+  localStorage.setItem('stand_ff',curFF);
+  applyFont();
+}
 
-/* ---------- 11. BUILD SELECT OPTIONS (φίλτρα) ---------- */
+/* ---------- 12. BUILD SELECT OPTIONS ---------- */
 function buildSelectOptions(){
   var fl=document.getElementById('filterLangCount');
   if(fl){
@@ -837,11 +996,12 @@ function buildSelectOptions(){
       '<option value="Περιοδικό">'+Tget('thMag')+'</option>'+
       '<option value="Βιβλιάριο">'+Tget('thBooklet')+'</option>'+
       '<option value="Βιβλίο">'+Tget('thBook')+'</option>'+
+      '<option value="Πόστερ">'+Tget('thPoster')+'</option>'+
       '<option value="Κάρτα">'+Tget('thCard')+'</option>';
   }
 }
 
-/* ---------- 12. APPLY LANGUAGE ---------- */
+/* ---------- 13. APPLY LANGUAGE ---------- */
 function applyLang(){
   var nodes=document.querySelectorAll('[data-i18n]');
   for(var i=0;i<nodes.length;i++){
@@ -861,7 +1021,7 @@ function applyLang(){
   var ccCancel=document.getElementById('ccCancel'); if(ccCancel) ccCancel.textContent=Tget('ccCancelBtn');
   var ccTitle=document.getElementById('ccTitle'); if(ccTitle) ccTitle.textContent=Tget('ccTitle');
   updateGuideLanguage();
-  updateSyncCodeDisplay();
+  setSyncState(syncState);
   ['el','en','de','ru'].forEach(function(l){ var b=document.getElementById('bl-'+l); if(b) b.className=(l===curLang?'active':''); });
 }
 function setL(l){
@@ -873,7 +1033,7 @@ function setL(l){
   render();
 }
 
-/* ---------- 13. RENDER LIST ---------- */
+/* ---------- 14. RENDER LIST (★ με μικρότερα γράμματα) ---------- */
 function render(){
   var q=(document.getElementById('search').value||'').toLowerCase();
   var t=LANGS[curLang]||LANGS.el;
@@ -886,12 +1046,14 @@ function render(){
     var matchT=currentFilter==='all' || it.type===currentFilter || (currentFilter==='Φυλλάδιο' && (it.type||'').indexOf('Φυλλάδιο')>=0);
     if(matchQ && matchT) filtered.push(it);
   }
-  var total=0,cFly=0,cMag=0,cBook=0;
+  var total=0,cFly=0,cMag=0,cBooklet=0,cPoster=0;
   for(var i=0;i<items.length;i++){
     total+=items[i].qty;
-    if((items[i].type||'').indexOf('Φυλλάδιο')>=0) cFly+=items[i].qty;
-    else if(items[i].type==='Περιοδικό') cMag+=items[i].qty;
-    else cBook+=items[i].qty;
+    var tp=items[i].type||'';
+    if(tp.indexOf('Φυλλάδιο')>=0) cFly+=items[i].qty;
+    else if(tp==='Περιοδικό') cMag+=items[i].qty;
+    else if(tp==='Βιβλιάριο') cBooklet+=items[i].qty;
+    else if(tp==='Πόστερ') cPoster+=items[i].qty;
   }
   var need=[]; for(var i=0;i<items.length;i++) if(items[i].qty<=items[i].min) need.push(items[i]);
   var $=function(id){return document.getElementById(id);};
@@ -899,7 +1061,8 @@ function render(){
   if($('tit')) $('tit').textContent=items.length;
   if($('cnt-flyer')) $('cnt-flyer').textContent=cFly;
   if($('cnt-mag')) $('cnt-mag').textContent=cMag;
-  if($('cnt-booklet')) $('cnt-booklet').textContent=cBook;
+  if($('cnt-booklet')) $('cnt-booklet').textContent=cBooklet;
+  if($('cnt-poster')) $('cnt-poster').textContent=cPoster;
   if($('need')) $('need').textContent=need.length;
 
   var h='';
@@ -909,8 +1072,23 @@ function render(){
     var lab=it.qty<=it.min?t.order:t.ok;
     var tcl=getTypeClass(it.type);
     var displayType=getTypeDisplay(it.type);
+    var langBadge=getLangBadge(it);
     var photoHtml=it.photo?'<img src="'+esc(it.photo)+'" class="photo-thumb">':'<div class="photo-thumb" style="display:flex;align-items:center;justify-content:center;font-size:12px">📄</div>';
-    h+='<div class="item"><div style="display:flex;gap:8px;align-items:center">'+photoHtml+'<div><span class="type-label '+tcl+'">'+esc(displayType)+'</span> <b>'+esc(getDisplayName(it))+'</b><br><span class="small">'+esc(getDisplayCat(it))+(it.barcode?' | '+esc(it.barcode):'')+'</span><br><span class="badge '+col+'">'+lab+': '+it.qty+'/'+it.min+'</span></div></div><div style="display:flex;align-items:center"><button class="sec" onclick="changeQty('+it.id+',-1)">-</button><span style="padding:0 6px;font-weight:bold;min-width:20px;text-align:center">'+it.qty+'</span><button onclick="changeQty('+it.id+',1)">+</button><button class="sec" onclick="deleteItem('+it.id+')" style="margin-left:4px;background:#ef4444;color:#fff">🗑️</button></div></div>';
+    /* ★ Όλα τα στοιχεία έχουν δικές τους κλάσεις με ρυθμιζόμενο μέγεθος */
+    h+='<div class="item"><div style="display:flex;gap:8px;align-items:center;flex:1;min-width:0">'+photoHtml+
+      '<div style="min-width:0;flex:1">'+
+        '<span class="type-label '+tcl+'">'+esc(displayType)+'</span> '+langBadge+
+        ' <b class="item-name">'+esc(getDisplayName(it))+'</b>'+
+        '<div class="item-cat">'+esc(getDisplayCat(it))+(it.barcode?' | '+esc(it.barcode):'')+'</div>'+
+        '<span class="item-badge '+col+'">'+lab+': '+it.qty+'/'+it.min+'</span>'+
+      '</div></div>'+
+      '<div style="display:flex;align-items:center;flex-shrink:0">'+
+        '<button class="qty-btn minus" onclick="changeQty('+it.id+',-1)">−</button>'+
+        '<span class="qty-display">'+it.qty+'</span>'+
+        '<button class="qty-btn" onclick="changeQty('+it.id+',1)">+</button>'+
+        '<button class="rename-btn" onclick="openRename('+it.id+')" title="Rename">✏️</button>'+
+        '<button class="del-btn" onclick="deleteItem('+it.id+')">🗑️</button>'+
+      '</div></div>';
   }
   if($('list')) $('list').innerHTML=h||'<div class="small" style="text-align:center;padding:20px">—</div>';
 
@@ -947,7 +1125,7 @@ function render(){
   try{ updateJwDatalist(); }catch(e){}
 }
 
-/* ---------- 14. CHANGE / DELETE / ADD ---------- */
+/* ---------- 15. CHANGE / DELETE / ADD ---------- */
 function changeQty(id,d){
   var crossed=null;
   for(var i=0;i<items.length;i++){
@@ -1030,7 +1208,7 @@ function loadPresets(){
     var existingIds=items.filter(function(x){return x.presetId;}).map(function(x){return x.presetId;});
     PRESETS.forEach(function(p){
       if(existingIds.indexOf(p.id)<0){
-        items.push({id:Date.now()+p.id+Math.random(),presetId:p.id,names:p.names,type:p.type,cat:p.cat,qty:p.qty,min:p.min,barcode:'',photo:'',lang:'el',magazineLang:'el'});
+        items.push({id:Date.now()+p.id+Math.random(),presetId:p.id,names:p.names,type:p.type,cat:p.cat,qty:p.qty,min:p.min,barcode:'',photo:'',lang:p.lang||'el',magazineLang:p.lang||'el'});
         unmarkPresetDeleted(p.id);
       }
     });
@@ -1038,7 +1216,7 @@ function loadPresets(){
   });
 }
 
-/* ---------- 15. ORDER EXPORT ---------- */
+/* ---------- 16. ORDER EXPORT ---------- */
 function copyOrder(){ var txt=document.getElementById('orderList').innerText; navigator.clipboard.writeText(txt).then(function(){alert('OK');}); }
 function exportOrder(){ var b=new Blob([document.getElementById('orderList').innerText],{type:'text/plain'}); var a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='order.txt'; a.click(); }
 function csvCell(v){ return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'; }
@@ -1075,7 +1253,7 @@ function sendLowStockEmail(){
 }
 function exportChart(){ var c=document.getElementById('chartMain'); if(!c) return; var a=document.createElement('a'); a.download='chart.png'; a.href=c.toDataURL(); a.click(); }
 
-/* ---------- 16. SCANNER ---------- */
+/* ---------- 17. SCANNER ---------- */
 function startScanner(){
   document.getElementById('scannerBox').style.display='block';
   var resultEl=document.getElementById('scanResult');
@@ -1096,7 +1274,7 @@ function startScanner(){
 }
 function stopScanner(){ if(html5Qrcode){ try{ var p=html5Qrcode.stop(); if(p&&p.catch) p.catch(function(){}); }catch(e){} } document.getElementById('scannerBox').style.display='none'; }
 
-/* ---------- 17. VOICE ---------- */
+/* ---------- 18. VOICE ---------- */
 function startVoice(){
   if(!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)){ alert('Chrome?'); return; }
   var SpeechRec=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -1132,7 +1310,7 @@ function startVoice(){
   rec.onend=function(){ bVoice.classList.remove('voice-active'); };
 }
 
-/* ---------- 18. CHARTS ---------- */
+/* ---------- 19. CHARTS ---------- */
 function renderCharts(){
   try{
     var ctx=document.getElementById('chartMain'); if(!ctx) return;
@@ -1140,11 +1318,11 @@ function renderCharts(){
     for(var i=0;i<items.length;i++){ var tp=getTypeDisplay(items[i].type); typeCounts[tp]=(typeCounts[tp]||0)+items[i].qty; }
     var labels=Object.keys(typeCounts), data=Object.values(typeCounts);
     if(chartMainInst) chartMainInst.destroy();
-    chartMainInst=new Chart(ctx,{type:'doughnut',data:{labels:labels,datasets:[{data:data,backgroundColor:['#06b6d4','#f59e0b','#22c55e','#a855f7']}]},options:{responsive:true,plugins:{legend:{labels:{color:'#fff'}}}}});
+    chartMainInst=new Chart(ctx,{type:'doughnut',data:{labels:labels,datasets:[{data:data,backgroundColor:['#06b6d4','#f59e0b','#22c55e','#a855f7','#ec4899']}]},options:{responsive:true,plugins:{legend:{labels:{color:'#fff'}}}}});
   }catch(e){}
 }
 
-/* ---------- 19. NOTIFICATIONS ---------- */
+/* ---------- 20. NOTIFICATIONS ---------- */
 function checkLowStockAndNotify(only){
   var need=only?[only]:items.filter(function(x){return x.qty<=x.min;});
   if(need.length==0) return;
@@ -1153,7 +1331,7 @@ function checkLowStockAndNotify(only){
   }
 }
 
-/* ---------- 20. PWA ---------- */
+/* ---------- 21. PWA ---------- */
 window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferredPrompt=e; var b=document.getElementById('bInstall'); if(b) b.style.display='inline-block'; });
 function installPWA(){
   if(deferredPrompt){
@@ -1162,29 +1340,7 @@ function installPWA(){
   } else alert('—');
 }
 
-/* ---------- 21. COUNTING ---------- */
-var LANG_DISPLAY={
-el:{el:'🇬🇷 Ελληνικά',en:'🇬🇷 Greek',de:'🇬🇷 Griechisch',ru:'🇬🇷 Греческий'},
-en:{el:'🇬🇧 English',en:'🇬🇧 English',de:'🇬🇧 Englisch',ru:'🇬🇧 Английский'},
-de:{el:'🇩🇪 Deutsch',en:'🇩🇪 German',de:'🇩🇪 Deutsch',ru:'🇩🇪 Немецкий'},
-ru:{el:'🇷🇺 Русский',en:'🇷🇺 Russian',de:'🇷🇺 Russisch',ru:'🇷🇺 Русский'},
-sq:{el:'🇦🇱 Shqip',en:'🇦🇱 Albanian',de:'🇦🇱 Albanisch',ru:'🇦🇱 Албанский'},
-ro:{el:'🇷🇴 Română',en:'🇷🇴 Romanian',de:'🇷🇴 Rumänisch',ru:'🇷🇴 Румынский'},
-ar:{el:'🇸🇦 العربية',en:'🇸🇦 Arabic',de:'🇸🇦 Arabisch',ru:'🇸🇦 Арабский'},
-fa:{el:'🇮🇷 فارسی',en:'🇮🇷 Persian',de:'🇮🇷 Persisch',ru:'🇮🇷 Персидский'},
-fr:{el:'🇫🇷 Français',en:'🇫🇷 French',de:'🇫🇷 Französisch',ru:'🇫🇷 Французский'},
-es:{el:'🇪🇸 Español',en:'🇪🇸 Spanish',de:'🇪🇸 Spanisch',ru:'🇪🇸 Испанский'},
-it:{el:'🇮🇹 Italiano',en:'🇮🇹 Italian',de:'🇮🇹 Italienisch',ru:'🇮🇹 Итальянский'},
-pl:{el:'🇵🇱 Polski',en:'🇵🇱 Polish',de:'🇵🇱 Polnisch',ru:'🇵🇱 Польский'},
-hr:{el:'🇭🇷 Hrvatski',en:'🇭🇷 Croatian',de:'🇭🇷 Kroatisch',ru:'🇭🇷 Хорватский'},
-bg:{el:'🇧🇬 Български',en:'🇧🇬 Bulgarian',de:'🇧🇬 Bulgarisch',ru:'🇧🇬 Болгарский'},
-uk:{el:'🇺🇦 Українська',en:'🇺🇦 Ukrainian',de:'🇺🇦 Ukrainisch',ru:'🇺🇦 Украинский'},
-hu:{el:'🇭🇺 Magyar',en:'🇭🇺 Hungarian',de:'🇭🇺 Ungarisch',ru:'🇭🇺 Венгерский'},
-hy:{el:'🇦🇲 Հայերեն',en:'🇦🇲 Armenian',de:'🇦🇲 Armenisch',ru:'🇦🇲 Армянский'},
-tr:{el:'🇹🇷 Türkçe',en:'🇹🇷 Turkish',de:'🇹🇷 Türkisch',ru:'🇹🇷 Турецкий'},
-sr:{el:'🇷🇸 Српски',en:'🇷🇸 Serbian',de:'🇷🇸 Serbisch',ru:'🇷🇸 Сербский'}};
-function getLangDisplay(code){ var m=LANG_DISPLAY[code]; if(!m) return code; return m[curLang]||m.el; }
-
+/* ---------- 22. COUNTING ---------- */
 function renderCountByLang(){
   var container=document.getElementById('countByLang'); if(!container) return;
   var counts={}, total=0;
@@ -1205,7 +1361,7 @@ function renderCountByLang(){
 }
 function renderCountByType(){
   var container=document.getElementById('countByType'); if(!container) return;
-  var counts={flyer:0,mag:0,booklet:0,book:0,card:0};
+  var counts={flyer:0,mag:0,booklet:0,book:0,poster:0,card:0};
   var total=0;
   for(var i=0;i<items.length;i++){
     var tt=(items[i].type||'').toLowerCase();
@@ -1214,6 +1370,7 @@ function renderCountByType(){
     if(tt.indexOf('φυλλάδιο')>=0 || tt.indexOf('tract')>=0 || tt.indexOf('flyer')>=0) counts.flyer+=qty;
     else if(tt.indexOf('περιοδικό')>=0 || tt.indexOf('magazine')>=0 || tt.indexOf('σκοπιά')>=0 || tt.indexOf('watchtower')>=0) counts.mag+=qty;
     else if(tt.indexOf('βιβλιάριο')>=0 || tt.indexOf('booklet')>=0) counts.booklet+=qty;
+    else if(tt.indexOf('πόστερ')>=0 || tt.indexOf('poster')>=0) counts.poster+=qty;
     else if(tt.indexOf('βιβλίο')>=0 || (tt.indexOf('book')>=0 && tt.indexOf('booklet')<0)) counts.book+=qty;
     else if(tt.indexOf('κάρτα')>=0 || tt.indexOf('card')>=0) counts.card+=qty;
     else counts.booklet+=qty;
@@ -1224,6 +1381,7 @@ function renderCountByType(){
   html+='<div class="count-box"><div class="num" style="color:#f59e0b">'+counts.mag+'</div><div class="label">'+Tget('thMag')+'</div><div class="small" style="color:#888">'+pct(counts.mag)+'%</div></div>';
   html+='<div class="count-box"><div class="num" style="color:#22c55e">'+counts.booklet+'</div><div class="label">'+Tget('thBooklet')+'</div><div class="small" style="color:#888">'+pct(counts.booklet)+'%</div></div>';
   html+='<div class="count-box"><div class="num" style="color:#a855f7">'+counts.book+'</div><div class="label">'+Tget('thBook')+'</div><div class="small" style="color:#888">'+pct(counts.book)+'%</div></div>';
+  html+='<div class="count-box"><div class="num" style="color:#ec4899">'+counts.poster+'</div><div class="label">'+Tget('thPoster')+'</div><div class="small" style="color:#888">'+pct(counts.poster)+'%</div></div>';
   html+='<div class="count-box"><div class="num" style="color:#f87171">'+counts.card+'</div><div class="label">'+Tget('thCard')+'</div><div class="small" style="color:#888">'+pct(counts.card)+'%</div></div>';
   html+='<div class="count-box" style="border:2px solid #f59e0b"><div class="num" style="color:#f59e0b">'+total+'</div><div class="label">'+Tget('thTotal')+'</div><div class="small" style="color:#888">100%</div></div>';
   container.innerHTML=html;
@@ -1233,27 +1391,28 @@ function renderCountByLangType(){
   var langs={};
   for(var i=0;i<items.length;i++){
     var lang=getItemLanguage(items[i]);
-    if(!langs[lang]) langs[lang]={flyer:0,mag:0,booklet:0,book:0,card:0,total:0};
+    if(!langs[lang]) langs[lang]={flyer:0,mag:0,booklet:0,book:0,poster:0,card:0,total:0};
     var tt=(items[i].type||'').toLowerCase();
     var qty=items[i].qty||0;
     if(tt.indexOf('φυλλάδιο')>=0 || tt.indexOf('tract')>=0) langs[lang].flyer+=qty;
     else if(tt.indexOf('περιοδικό')>=0 || tt.indexOf('magazine')>=0) langs[lang].mag+=qty;
     else if(tt.indexOf('βιβλιάριο')>=0 || tt.indexOf('booklet')>=0) langs[lang].booklet+=qty;
+    else if(tt.indexOf('πόστερ')>=0 || tt.indexOf('poster')>=0) langs[lang].poster+=qty;
     else if(tt.indexOf('βιβλίο')>=0 || (tt.indexOf('book')>=0 && tt.indexOf('booklet')<0)) langs[lang].book+=qty;
     else if(tt.indexOf('κάρτα')>=0 || tt.indexOf('card')>=0) langs[lang].card+=qty;
     else langs[lang].booklet+=qty;
     langs[lang].total+=qty;
   }
-  var html='', totals={flyer:0,mag:0,booklet:0,book:0,card:0,total:0};
+  var html='', totals={flyer:0,mag:0,booklet:0,book:0,poster:0,card:0,total:0};
   for(var lang in langs){
     var d=langs[lang];
-    totals.flyer+=d.flyer; totals.mag+=d.mag; totals.booklet+=d.booklet; totals.book+=d.book; totals.card+=d.card; totals.total+=d.total;
-    html+='<tr><td><b>'+getLangDisplay(lang)+'</b></td><td>'+d.flyer+'</td><td>'+d.mag+'</td><td>'+d.booklet+'</td><td>'+d.book+'</td><td>'+d.card+'</td><td><b>'+d.total+'</b></td></tr>';
+    totals.flyer+=d.flyer; totals.mag+=d.mag; totals.booklet+=d.booklet; totals.book+=d.book; totals.poster+=d.poster; totals.card+=d.card; totals.total+=d.total;
+    html+='<tr><td><b>'+getLangDisplay(lang)+'</b></td><td>'+d.flyer+'</td><td>'+d.mag+'</td><td>'+d.booklet+'</td><td>'+d.book+'</td><td>'+d.poster+'</td><td>'+d.card+'</td><td><b>'+d.total+'</b></td></tr>';
   }
   if(html){
-    html+='<tr style="background:#222;font-weight:bold;border-top:2px solid #f59e0b"><td>'+Tget('thTotal')+'</td><td>'+totals.flyer+'</td><td>'+totals.mag+'</td><td>'+totals.booklet+'</td><td>'+totals.book+'</td><td>'+totals.card+'</td><td>'+totals.total+'</td></tr>';
+    html+='<tr style="background:#222;font-weight:bold;border-top:2px solid #f59e0b"><td>'+Tget('thTotal')+'</td><td>'+totals.flyer+'</td><td>'+totals.mag+'</td><td>'+totals.booklet+'</td><td>'+totals.book+'</td><td>'+totals.poster+'</td><td>'+totals.card+'</td><td>'+totals.total+'</td></tr>';
   } else {
-    html='<tr><td colspan="7" style="text-align:center;color:#888">—</td></tr>';
+    html='<tr><td colspan="8" style="text-align:center;color:#888">—</td></tr>';
   }
   tbody.innerHTML=html;
 }
@@ -1277,20 +1436,20 @@ function filterAndCount(){
     html+='<div style="max-height:150px;overflow:auto">';
     for(var i=0;i<Math.min(filtered.length,20);i++){
       var it=filtered[i];
-      html+='<div style="padding:4px 0;border-bottom:1px solid #222">'+esc(getDisplayName(it))+' - <b>'+it.qty+'</b></div>';
+      html+='<div style="padding:4px 0;border-bottom:1px solid #222">'+getLangBadge(it)+' '+esc(getDisplayName(it))+' - <b>'+it.qty+'</b></div>';
     }
     html+='</div>';
   }
   container.innerHTML=html;
 }
 function exportCountCSV(){
-  var lines=['Lang,Flyer,Mag,Booklet,Book,Card,Total'];
+  var lines=['Lang,Flyer,Mag,Booklet,Book,Poster,Card,Total'];
   var tbody=document.getElementById('countLangTypeBody');
   if(tbody){
     var rows=tbody.querySelectorAll('tr');
     for(var i=0;i<rows.length;i++){
       var cols=rows[i].querySelectorAll('td');
-      if(cols.length>=7){
+      if(cols.length>=8){
         var line=[];
         for(var j=0;j<cols.length;j++) line.push(csvCell(cols[j].textContent.trim()));
         lines.push(line.join(','));
@@ -1301,7 +1460,7 @@ function exportCountCSV(){
   var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='counts.csv'; a.click();
 }
 
-/* ---------- 22. JW DROPDOWN ---------- */
+/* ---------- 23. JW DROPDOWN ---------- */
 function updateJwDatalist(){
   var datalist=document.getElementById('jwTitlesList'); if(!datalist) return;
   datalist.innerHTML='';
@@ -1327,6 +1486,7 @@ function showAllJwTitles(){
     else if(p.type==='Βιβλιάριο') icon='📖';
     else if(p.type==='Βιβλίο') icon='📘';
     else if(p.type==='Κάρτα') icon='🃏';
+    else if(p.type==='Πόστερ') icon='🖼️';
     html+='<div onclick="pickJwTitle('+p.id+')" style="padding:8px;border-bottom:1px solid #222;cursor:pointer;display:flex;justify-content:space-between"><span><b>'+icon+' '+esc(name)+'</b><br><span class="small" style="color:#888">'+getTypeDisplay(p.type)+'</span></span><span style="color:#22c55e">➕</span></div>';
   }
   drop.innerHTML=html;
@@ -1360,7 +1520,7 @@ function pickJwTitle(id){
   if(drop) drop.style.display='none';
 }
 
-/* ---------- 23. PRESET LIST ---------- */
+/* ---------- 24. PRESET LIST ---------- */
 var presetFilter='all';
 function filterPresetList(type){ presetFilter=type; renderPresetListSimple(); }
 function renderPresetListSimple(){
@@ -1383,30 +1543,24 @@ function addPresetById(id){
   var exists=items.find(function(it){ return it.presetId===id; });
   if(exists){ exists.qty+=5; }
   else {
-    items.push({id:Date.now()+Math.random(),presetId:p.id,names:p.names,type:p.type,cat:p.cat,qty:p.qty,min:p.min,barcode:'',photo:'',lang:'el',magazineLang:'el'});
+    items.push({id:Date.now()+Math.random(),presetId:p.id,names:p.names,type:p.type,cat:p.cat,qty:p.qty,min:p.min,barcode:'',photo:'',lang:p.lang||'el',magazineLang:p.lang||'el'});
     unmarkPresetDeleted(p.id);
   }
   save(); render();
 }
 
-/* ---------- 24. FILTERS ---------- */
-function filterType(t){
-  currentFilter=t;
-  document.querySelectorAll('[id^=f-]').forEach(function(b){ b.className='typebtn'; });
-  var map={'all':'f-all','Φυλλάδιο':'f-flyer','Περιοδικό':'f-mag','Βιβλιάριο':'f-booklet'};
-  if(map[t]){ var el=document.getElementById(map[t]); if(el) el.className='typebtn active'; }
-  render();
-}
+/* ---------- 25. FILTERS ---------- */
+function filterType(t){ currentFilter=t; render(); }
 function setAddType(t){
   document.getElementById('addType').value=t;
   document.querySelectorAll('[id^=a-]').forEach(function(b){ b.className='typebtn'; });
-  var map2={'Φυλλάδιο':'a-flyer','Περιοδικό':'a-mag','Βιβλιάριο':'a-booklet','Βιβλίο':'a-book','Φυλλάδιο-Διαφημιστικό':'a-flyer'};
+  var map2={'Φυλλάδιο':'a-flyer','Περιοδικό':'a-mag','Βιβλιάριο':'a-booklet','Βιβλίο':'a-book','Πόστερ':'a-poster','Φυλλάδιο-Διαφημιστικό':'a-flyer'};
   if(map2[t]){ var e=document.getElementById(map2[t]); if(e) e.className='typebtn active'; }
 }
 function updateAddButtons(){ setAddType(document.getElementById('addType').value); }
 
-/* ---------- 25. ADMIN ---------- */
-function openAdmin(){ document.getElementById('adminScreen').style.display='block'; initCloudElements(); renderCharts(); }
+/* ---------- 26. ADMIN ---------- */
+function openAdmin(){ document.getElementById('adminScreen').style.display='block'; initCloudElements(); renderCharts(); applyFont(); }
 function closeAdmin(){
   document.getElementById('adminScreen').style.display='none';
   document.getElementById('adminContent').style.display='none';
@@ -1420,21 +1574,16 @@ function checkAdmin(){
   if(v===adminPass){
     document.getElementById('adminContent').style.display='block';
     document.getElementById('loginBox').style.display='none';
-    initCloudElements(); renderCharts();
+    initCloudElements(); renderCharts(); applyFont();
   } else alert('❌');
 }
 function saveNewPass(){
   var np=document.getElementById('newPass').value.trim();
   var recEmail=document.getElementById('recoveryEmail').value.trim();
-  if(np){
-    if(np.length<3){ return; }
-    adminPass=np;
-    localStorage.setItem('stand_pass',adminPass);
-  }
+  if(np){ if(np.length<3){ return; } adminPass=np; localStorage.setItem('stand_pass',adminPass); }
   if(recEmail){ if(recEmail.indexOf('@')===-1){ return; } localStorage.setItem('stand_recovery_email',recEmail); }
   document.getElementById('passMsg').textContent='✅';
   document.getElementById('newPass').value='';
-  // Sync settings to cloud so all phones get the new password
   if(cloudEnabled && cloudDb){ syncSettingsToCloud(); }
 }
 function showForgot(){ document.getElementById('forgotBox').style.display='block'; var saved=localStorage.getItem('stand_recovery_email')||''; if(saved) document.getElementById('forgotEmail').value=saved; }
@@ -1480,28 +1629,21 @@ function verifyResetCode(){
   setTimeout(function(){ hideForgot(); document.getElementById('pinCheck').value=newP; checkAdmin(); },1000);
 }
 
-/* ---------- 26. CLOUD ---------- */
+/* ---------- 27. CLOUD ---------- */
 function initCloudElements(){
   var ce=document.getElementById('cloudEnabled'); if(ce) ce.checked=cloudEnabled;
   var ci=document.getElementById('cloudId'); if(ci) ci.value=cloudId;
   var fc=document.getElementById('fbConfig'); if(fc) fc.value=fbConfigStr;
-  updateCloudStatus(cloudEnabled?'...':'Offline');
 }
-function copyCloudId(){
-  var v=cloudId;
-  if(navigator.clipboard) navigator.clipboard.writeText(v).then(function(){ alert('✓ '+v); });
-  else alert(v);
-}
+function copyCloudId(){ if(navigator.clipboard) navigator.clipboard.writeText(cloudId).then(function(){ alert('✓ '+cloudId); }); else alert(cloudId); }
 function saveCloudId(){
   var ci=document.getElementById('cloudId');
   cloudId=ci.value.trim()||'stand-athens-1';
   localStorage.setItem('stand_cloud_id',cloudId);
-  // Ensure cloud is enabled
   cloudEnabled=true;
   localStorage.setItem('stand_cloud_enabled','true');
   var ce=document.getElementById('cloudEnabled'); if(ce) ce.checked=true;
-  updateSyncCodeDisplay();
-  alert('✅ ' + cloudId);
+  alert('✅');
   initFirebase();
 }
 function saveFbConfig(){ var fc=document.getElementById('fbConfig'); fbConfigStr=fc.value.trim(); localStorage.setItem('stand_fb_config',fbConfigStr); if(cloudEnabled) initFirebase(); }
@@ -1510,21 +1652,13 @@ function toggleCloud(){
   cloudEnabled=ce.checked;
   localStorage.setItem('stand_cloud_enabled',cloudEnabled);
   if(cloudEnabled) initFirebase();
-  else { if(cloudUnsub){ try{ cloudUnsub(); }catch(e){} cloudUnsub=null; } updateCloudStatus('Offline'); }
-}
-function updateCloudStatus(txt){
-  cloudRaw=txt;
-  var el=document.getElementById('cloudStatus'); if(el) el.textContent=txt;
-  var elM=document.getElementById('cloudStatusMain'); if(elM) elM.textContent=txt;
-  if(txt.indexOf('Sync')>=0) lastSyncStr=new Date().toLocaleTimeString(LOC[curLang]||'el-GR');
-  var last=document.getElementById('lastSync'); if(last && lastSyncStr) last.textContent=lastSyncStr;
-  var lastM=document.getElementById('lastSyncMain'); if(lastM && lastSyncStr) lastM.textContent=lastSyncStr;
+  else { if(cloudUnsub){ try{ cloudUnsub(); }catch(e){} cloudUnsub=null; } setSyncState('offline'); }
 }
 function getFirebaseConfig(){ try{ return JSON.parse(fbConfigStr); }catch(e){ return null; } }
 async function initFirebase(){
-  updateCloudStatus('...');
+  setSyncState('connecting');
   var cfg=getFirebaseConfig();
-  if(!cfg){ updateCloudStatus('No config'); return; }
+  if(!cfg){ setSyncState('error'); return; }
   try{
     const {initializeApp}=await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
     const {getFirestore,doc,setDoc,onSnapshot,getDoc}=await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
@@ -1532,82 +1666,78 @@ async function initFirebase(){
     if(cloudUnsub){ try{ cloudUnsub(); }catch(e){} cloudUnsub=null; }
     var dRef=window._fb.doc(cloudDb,'stands',cloudId);
     cloudUnsub=window._fb.onSnapshot(dRef, function(snap){
-      if(!snap.exists()){ updateCloudStatus('No data'); return; }
+      if(!snap.exists()){ setSyncState('synced'); return; }
       var data=snap.data();
-      if(!data || !data.items) return;
-      // Sync items
+      if(!data || !data.items){ setSyncState('synced'); return; }
       if(data.items && !isSyncingFromCloud){
         isSyncingFromCloud=true;
-        items=cleanItems(data.items).filter(function(it){ return it.presetId!==31 && (it.names && it.names.el||'').indexOf('Μελέτης')<0; });
-        if(data.adminPass && data.adminPass !== adminPass){
-          adminPass = data.adminPass;
-          localStorage.setItem('stand_pass', adminPass);
-        }
-        if(data.recoveryEmail){
-          localStorage.setItem('stand_recovery_email', data.recoveryEmail);
-        }
+        items=cleanItems(data.items).filter(function(it){
+          if(it.presetId===31) return false;
+          if(it.type==='Μαγνητικό Πόστερ') return false;
+          var n_el=(it.names && it.names.el) || it.name || '';
+          if(n_el.indexOf('Μελέτης')>=0) return false;
+          return true;
+        });
+        if(data.adminPass && data.adminPass !== adminPass){ adminPass = data.adminPass; localStorage.setItem('stand_pass', adminPass); }
+        if(data.recoveryEmail){ localStorage.setItem('stand_recovery_email', data.recoveryEmail); }
         save(); render();
-        updateCloudStatus('Sync');
+        setSyncState('synced');
         isSyncingFromCloud=false;
       }
     });
-    updateCloudStatus('Sync');
-  }catch(e){ updateCloudStatus('Error: '+e.message); }
+    setSyncState('synced');
+  }catch(e){ setSyncState('error'); }
 }
 async function syncSettingsToCloud(){
   if(!cloudEnabled || !cloudDb) return;
   try{
     var dRef=window._fb.doc(cloudDb,'stands',cloudId);
-    await window._fb.setDoc(dRef,{
-      items: items,
-      adminPass: adminPass,
-      recoveryEmail: localStorage.getItem('stand_recovery_email') || '',
-      updated: Date.now()
-    },{merge:true});
+    await window._fb.setDoc(dRef,{items:items,adminPass:adminPass,recoveryEmail:localStorage.getItem('stand_recovery_email')||'',updated:Date.now()},{merge:true});
   }catch(e){ console.log('Sync settings error', e); }
 }
 async function pushToCloud(){
   if(!cloudEnabled){ alert('Cloud off'); return; }
   if(!cloudDb){ alert('No DB'); return; }
   try{
-    updateCloudStatus('...');
+    setSyncState('pushing');
     var dRef=window._fb.doc(cloudDb,'stands',cloudId);
-    await window._fb.setDoc(dRef,{
-      items: items,
-      adminPass: adminPass,
-      recoveryEmail: localStorage.getItem('stand_recovery_email') || '',
-      updated: Date.now()
-    },{merge:true});
-    updateCloudStatus('Sync ↑');
-  }catch(e){ alert(e.message); }
+    await window._fb.setDoc(dRef,{items:items,adminPass:adminPass,recoveryEmail:localStorage.getItem('stand_recovery_email')||'',updated:Date.now()},{merge:true});
+    setSyncState('synced');
+  }catch(e){ setSyncState('error'); alert(e.message); }
 }
 async function pullFromCloud(){
   if(!cloudEnabled){ alert('Cloud off'); return; }
   if(!cloudDb){ alert('No DB'); return; }
   try{
-    updateCloudStatus('...');
+    setSyncState('pulling');
     var dRef=window._fb.doc(cloudDb,'stands',cloudId);
     var snap=await window._fb.getDoc(dRef);
     if(snap.exists() && snap.data().items){
       isSyncingFromCloud=true;
       var data = snap.data();
-      items=cleanItems(data.items).filter(function(it){ return it.presetId!==31 && (it.names && it.names.el||'').indexOf('Μελέτης')<0; });
+      items=cleanItems(data.items).filter(function(it){
+        if(it.presetId===31) return false;
+        if(it.type==='Μαγνητικό Πόστερ') return false;
+        var n_el=(it.names && it.names.el) || it.name || '';
+        if(n_el.indexOf('Μελέτης')>=0) return false;
+        return true;
+      });
       if(data.adminPass){ adminPass=data.adminPass; localStorage.setItem('stand_pass',adminPass); }
       if(data.recoveryEmail){ localStorage.setItem('stand_recovery_email',data.recoveryEmail); }
       save(); render();
-      updateCloudStatus('Sync ↓');
+      setSyncState('synced');
       isSyncingFromCloud=false;
-    } else alert('—');
-  }catch(e){ alert(e.message); }
+    } else { setSyncState('synced'); alert('—'); }
+  }catch(e){ setSyncState('error'); alert(e.message); }
 }
 function testCloud(){ if(!cloudEnabled){ alert('Cloud off'); return; } initFirebase(); }
 
-/* ---------- 27. GUIDE ---------- */
+/* ---------- 28. GUIDE ---------- */
 var GUIDE_TEXTS={
-el:'<div style="margin:8px 0"><b style="color:#06b6d4">☁️ Cloud:</b> Offline = τοπικά, Synced = όλες οι συσκευές.</div><div style="margin:8px 0"><b style="color:#06b6d4">☁️ Αποστολή:</b> Στέλνει δεδομένα στο cloud.</div><div style="margin:8px 0"><b style="color:#06b6d4">⬇️ Λήψη:</b> Κατεβάζει από το cloud.</div><div style="margin:8px 0"><b style="color:#a855f7">📷 Scan:</b> Σκανάρει barcode.</div><div style="margin:8px 0"><b style="color:#ef4444">🎙️ Φωνή:</b> Πες «Σκοπιά 5».</div><div style="margin:8px 0"><b>🔍 Αναζήτηση:</b> Ψάχνει τίτλο, κατηγορία, barcode.</div><div style="margin:8px 0"><b>📦 Λίστα:</b> + / - αλλάζει ποσότητα. Κόκκινο = παραγγελία.</div><div style="margin:8px 0"><b style="color:#ef4444">⚠️ Επικίνδυνη Ζώνη:</b> Διαγραφή ΟΛΩΝ των εντύπων με ένα κλικ.</div>',
-en:'<div style="margin:8px 0"><b style="color:#06b6d4">☁️ Cloud:</b> Offline = local, Synced = all devices.</div><div style="margin:8px 0"><b style="color:#06b6d4">☁️ Push:</b> Sends data to cloud.</div><div style="margin:8px 0"><b style="color:#06b6d4">⬇️ Pull:</b> Downloads from cloud.</div><div style="margin:8px 0"><b style="color:#a855f7">📷 Scan:</b> Scans barcode.</div><div style="margin:8px 0"><b style="color:#ef4444">🎙️ Voice:</b> Say «Watchtower 5».</div><div style="margin:8px 0"><b>🔍 Search:</b> Title, category, barcode.</div><div style="margin:8px 0"><b>📦 List:</b> + / - changes qty. Red = order.</div><div style="margin:8px 0"><b style="color:#ef4444">⚠️ Danger Zone:</b> Delete ALL items with one click.</div>',
-de:'<div style="margin:8px 0"><b style="color:#06b6d4">☁️ Cloud:</b> Offline = lokal, Synced = alle Geräte.</div><div style="margin:8px 0"><b style="color:#06b6d4">☁️ Senden:</b> Sendet Daten.</div><div style="margin:8px 0"><b style="color:#06b6d4">⬇️ Empfangen:</b> Lädt herunter.</div><div style="margin:8px 0"><b style="color:#a855f7">📷 Scan:</b> Scannt Barcode.</div><div style="margin:8px 0"><b style="color:#ef4444">🎙️ Stimme:</b> Sage «Wachtturm 5».</div><div style="margin:8px 0"><b>🔍 Suche:</b> Titel, Kategorie, Barcode.</div><div style="margin:8px 0"><b>📦 Liste:</b> + / - ändert. Rot = Bestellung.</div><div style="margin:8px 0"><b style="color:#ef4444">⚠️ Gefahrenzone:</b> ALLE Artikel mit einem Klick löschen.</div>',
-ru:'<div style="margin:8px 0"><b style="color:#06b6d4">☁️ Облако:</b> Offline = локально, Synced = все устройства.</div><div style="margin:8px 0"><b style="color:#06b6d4">☁️ Отправить:</b> Отправляет в облако.</div><div style="margin:8px 0"><b style="color:#06b6d4">⬇️ Получить:</b> Загружает из облака.</div><div style="margin:8px 0"><b style="color:#a855f7">📷 Скан:</b> Сканирует штрихкод.</div><div style="margin:8px 0"><b style="color:#ef4444">🎙️ Голос:</b> Скажи «Сторожевая 5».</div><div style="margin:8px 0"><b>🔍 Поиск:</b> Название, категория, штрихкод.</div><div style="margin:8px 0"><b>📦 Список:</b> + / - меняет. Красный = заказ.</div><div style="margin:8px 0"><b style="color:#ef4444">⚠️ Опасная зона:</b> Удалить ВСЕ издания одним кликом.</div>'
+el:'<div style="margin:8px 0"><b style="color:#06b6d4">☁️ Cloud:</b> Offline = τοπικά, Synced = όλες οι συσκευές.</div><div style="margin:8px 0"><b style="color:#06b6d4">☁️ Αποστολή:</b> Στέλνει δεδομένα στο cloud.</div><div style="margin:8px 0"><b style="color:#06b6d4">⬇️ Λήψη:</b> Κατεβάζει από το cloud.</div><div style="margin:8px 0"><b style="color:#a855f7">📷 Scan:</b> Σκανάρει barcode.</div><div style="margin:8px 0"><b style="color:#ef4444">🎙️ Φωνή:</b> Πες «Σκοπιά 5».</div><div style="margin:8px 0"><b>🔍 Αναζήτηση:</b> Ψάχνει τίτλο, κατηγορία, barcode.</div><div style="margin:8px 0"><b>📦 Λίστα:</b> + / - αλλάζει ποσότητα. ✏️ = μετονομασία. Κόκκινο = παραγγελία.</div><div style="margin:8px 0"><b style="color:#ec4899">🖼️ Πόστερ:</b> Πόστερ από jw.org.</div><div style="margin:8px 0"><b>🎨 Γραμματοσειρά:</b> Ρύθμιση μεγέθους UI και λίστας στο Admin.</div>',
+en:'<div style="margin:8px 0"><b style="color:#06b6d4">☁️ Cloud:</b> Offline = local, Synced = all devices.</div><div style="margin:8px 0"><b style="color:#06b6d4">☁️ Push:</b> Sends data to cloud.</div><div style="margin:8px 0"><b style="color:#06b6d4">⬇️ Pull:</b> Downloads from cloud.</div><div style="margin:8px 0"><b style="color:#a855f7">📷 Scan:</b> Scans barcode.</div><div style="margin:8px 0"><b style="color:#ef4444">🎙️ Voice:</b> Say «Watchtower 5».</div><div style="margin:8px 0"><b>🔍 Search:</b> Title, category, barcode.</div><div style="margin:8px 0"><b>📦 List:</b> + / - changes qty. ✏️ = rename. Red = order.</div><div style="margin:8px 0"><b style="color:#ec4899">🖼️ Poster:</b> Poster from jw.org.</div><div style="margin:8px 0"><b>🎨 Font:</b> Adjust UI and list size in Admin.</div>',
+de:'<div style="margin:8px 0"><b style="color:#06b6d4">☁️ Cloud:</b> Offline = lokal, Synced = alle Geräte.</div><div style="margin:8px 0"><b style="color:#06b6d4">☁️ Senden:</b> Sendet Daten.</div><div style="margin:8px 0"><b style="color:#06b6d4">⬇️ Empfangen:</b> Lädt herunter.</div><div style="margin:8px 0"><b style="color:#a855f7">📷 Scan:</b> Scannt Barcode.</div><div style="margin:8px 0"><b style="color:#ef4444">🎙️ Stimme:</b> Sage «Wachtturm 5».</div><div style="margin:8px 0"><b>🔍 Suche:</b> Titel, Kategorie, Barcode.</div><div style="margin:8px 0"><b>📦 Liste:</b> + / - ändert. ✏️ = umbenennen. Rot = Bestellung.</div><div style="margin:8px 0"><b style="color:#ec4899">🖼️ Poster:</b> Poster von jw.org.</div><div style="margin:8px 0"><b>🎨 Schrift:</b> UI- und Listengröße im Admin anpassen.</div>',
+ru:'<div style="margin:8px 0"><b style="color:#06b6d4">☁️ Облако:</b> Offline = локально, Synced = все устройства.</div><div style="margin:8px 0"><b style="color:#06b6d4">☁️ Отправить:</b> Отправляет в облако.</div><div style="margin:8px 0"><b style="color:#06b6d4">⬇️ Получить:</b> Загружает из облака.</div><div style="margin:8px 0"><b style="color:#a855f7">📷 Скан:</b> Сканирует штрихкод.</div><div style="margin:8px 0"><b style="color:#ef4444">🎙️ Голос:</b> Скажи «Сторожевая 5».</div><div style="margin:8px 0"><b>🔍 Поиск:</b> Название, категория, штрихкод.</div><div style="margin:8px 0"><b>📦 Список:</b> + / - меняет. ✏️ = переименовать. Красный = заказ.</div><div style="margin:8px 0"><b style="color:#ec4899">🖼️ Плакат:</b> Плакат с jw.org.</div><div style="margin:8px 0"><b>🎨 Шрифт:</b> Настройка размера интерфейса и списка в админке.</div>'
 };
 function updateGuideLanguage(){
   var gc=document.getElementById('guideContent');
@@ -1618,7 +1748,7 @@ function shareGuideWA(){ window.open('https://wa.me/?text='+encodeURIComponent(d
 function exportGuidePDF(){ printDoc('Guide','<pre>'+esc(document.getElementById('guideContent').innerText)+'</pre>'); }
 function shareGuideEmail(){ window.location.href='mailto:?subject=Guide&body='+encodeURIComponent(document.getElementById('guideContent').innerText); }
 
-/* ---------- 28. INIT ---------- */
+/* ---------- 29. INIT ---------- */
 function init(){
   applyFont();
   buildSelectOptions();
@@ -1626,7 +1756,7 @@ function init(){
   updateJwDatalist();
   render();
   initCloudElements();
-  updateSyncCodeDisplay();
+  setSyncState('offline');
   if(cloudEnabled) setTimeout(initFirebase,1000);
 }
 document.addEventListener('DOMContentLoaded', init);

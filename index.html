@@ -51,6 +51,8 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 .file-btn{display:inline-block;padding:12px 16px;background:#333;color:#fff;border-radius:8px;font-weight:bold;cursor:pointer;font-size:0.95em;margin-top:4px;border:1px solid #555;text-align:center;width:100%}
 .file-btn:active{transform:scale(0.98);background:#444}
 .file-name{display:block;font-size:0.8em;color:#22c55e;margin-top:6px;word-break:break-all}
+.sync-info{background:#0a1a2a;border:2px solid #06b6d4;border-radius:8px;padding:10px;margin-top:8px;font-size:0.85em}
+.sync-code{font-family:monospace;background:#000;padding:6px 10px;border-radius:6px;color:#22c55e;font-weight:bold;display:inline-block;letter-spacing:1px;margin-top:4px;font-size:1.1em}
 </style>
 </head>
 <body>
@@ -82,6 +84,11 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 <span class="small" data-i18n="lCloudLabel">☁️ Cloud:</span>
 <span id="cloudStatusMain" style="padding:3px 10px;border-radius:99px;background:#333;font-size:11px">Offline</span>
 <span class="small" id="lastSyncMain" style="color:#888"></span>
+</div>
+<div class="sync-info">
+<div>🔑 <b data-i18n="syncCodeLabel">Κωδικός Συγχρονισμού (Stand ID):</b></div>
+<div class="sync-code" id="syncCodeDisplay">stand-athens-1</div>
+<div class="small" style="color:#ccc;margin-top:6px" data-i18n="syncCodeHelp">Πες τον ίδιο κωδικό σε όλα τα κινητά για να βλέπουν τα ίδια δεδομένα.</div>
 </div>
 <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
 <button onclick="pushToCloud()" id="bPushMain" data-i18n="bPushMain" style="flex:1;background:#06b6d4;color:#000">☁️ Αποστολή</button>
@@ -223,6 +230,13 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 <option value="es" data-i18n="langEs">🇪🇸 Español</option>
 <option value="it" data-i18n="langIt">🇮🇹 Italiano</option>
 <option value="pl" data-i18n="langPl">🇵🇱 Polski</option>
+<option value="hr" data-i18n="langHr">🇭🇷 Hrvatski</option>
+<option value="bg" data-i18n="langBg">🇧🇬 Български</option>
+<option value="uk" data-i18n="langUk">🇺🇦 Українська</option>
+<option value="hu" data-i18n="langHu">🇭🇺 Magyar</option>
+<option value="hy" data-i18n="langHy">🇦🇲 Հայերեն</option>
+<option value="tr" data-i18n="langTr">🇹🇷 Türkçe</option>
+<option value="sr" data-i18n="langSr">🇷🇸 Српски</option>
 </select>
 <label data-i18n="lFieldTitle">Τίτλος *</label>
 <div style="position:relative">
@@ -327,17 +341,16 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 </div>
 </div>
 
-<div class="card" style="border:1px solid #f59e0b">
-<b style="color:#f59e0b" data-i18n="lFontAdmin">🎨 Εμφάνιση</b>
-<label><span data-i18n="lFontSize">Μέγεθος:</span> <span id="fsVal">15</span>px</label>
-<input type="range" id="fsRange" min="12" max="26" value="15" oninput="setFontSize(this.value)">
-<label data-i18n="lFontFamily">Γραμματοσειρά</label>
-<select id="ffSelect" onchange="setFontFamily(this.value)">
-<option value="Arial, sans-serif">Arial</option>
-<option value="Verdana">Verdana</option>
-<option value="Georgia">Georgia</option>
-</select>
-<div id="fontPrev" style="background:#252525;padding:8px;border-radius:8px;margin-top:6px;text-align:center" data-i18n="fontPrev">Αα Bb Γγ Preview</div>
+<div class="card" style="border:2px solid #06b6d4;background:#0a1a2a">
+<b style="color:#06b6d4" data-i18n="lSyncSetup">🔗 Ρυθμίσεις Συγχρονισμού</b>
+<div class="small" style="color:#ccc;margin-top:6px" data-i18n="lSyncSetupDesc">Για να βλέπουν όλα τα κινητά τα ίδια δεδομένα, βάλε τον ΙΔΙΟ κωδικό σε όλα.</div>
+<label data-i18n="lCloudId">Κωδικός Συγχρονισμού (Stand ID)</label>
+<div style="display:flex;gap:4px">
+<input id="cloudId" value="stand-athens-1" style="flex:1;font-family:monospace">
+<button onclick="copyCloudId()" class="sec">📋</button>
+</div>
+<button onclick="saveCloudId()" style="width:100%;margin-top:8px;background:#22c55e;color:#000;font-weight:bold" data-i18n="bApplySync">🔄 Εφαρμογή Συγχρονισμού</button>
+<div class="small" style="margin-top:6px;color:#f59e0b" data-i18n="lSyncWarning">⚠️ Θα συνδεθείς στο cloud. Όποιος έχει τον ίδιο κωδικό βλέπει τα ίδια δεδομένα.</div>
 </div>
 
 <div class="card" style="border:2px solid #06b6d4;background:#0a1a2a">
@@ -346,8 +359,6 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 <label style="color:#fff"><input type="checkbox" id="cloudEnabled" onchange="toggleCloud()" style="width:auto"> <span data-i18n="lCloudOn">Ενεργό</span></label>
 <span id="cloudStatus" style="padding:3px 10px;border-radius:99px;background:#333;font-size:11px">Offline</span>
 </div>
-<label data-i18n="lCloudId">ID Σταντ</label>
-<div style="display:flex;gap:4px"><input id="cloudId" value="stand-athens-1" style="flex:1"><button onclick="saveCloudId()" class="sec" data-i18n="bSaveCloudId">Save</button></div>
 <label data-i18n="lCloudConfig">Firebase Config</label>
 <textarea id="fbConfig" style="height:80px;font-size:10px"></textarea>
 <div style="display:flex;gap:4px;margin-top:4px">
@@ -361,8 +372,22 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 <div class="small" id="lastSync" style="margin-top:6px;color:#999"></div>
 </div>
 
+<div class="card" style="border:1px solid #f59e0b">
+<b style="color:#f59e0b" data-i18n="lFontAdmin">🎨 Εμφάνιση</b>
+<label><span data-i18n="lFontSize">Μέγεθος:</span> <span id="fsVal">15</span>px</label>
+<input type="range" id="fsRange" min="12" max="26" value="15" oninput="setFontSize(this.value)">
+<label data-i18n="lFontFamily">Γραμματοσειρά</label>
+<select id="ffSelect" onchange="setFontFamily(this.value)">
+<option value="Arial, sans-serif">Arial</option>
+<option value="Verdana">Verdana</option>
+<option value="Georgia">Georgia</option>
+</select>
+<div id="fontPrev" style="background:#252525;padding:8px;border-radius:8px;margin-top:6px;text-align:center" data-i18n="fontPrev">Αα Bb Γγ Preview</div>
+</div>
+
 <div class="card" style="background:#252525;border:2px solid #f59e0b">
 <b style="color:#f59e0b" data-i18n="lChangePass">🔐 Αλλαγή κωδικού & Email</b>
+<div class="small" style="color:#06b6d4;margin:6px 0" data-i18n="lPassSyncNote">Ο κωδικός συγχρονίζεται αυτόματα σε όλα τα κινητά μέσω cloud.</div>
 <label data-i18n="lNewPass">Νέος κωδικός</label><input id="newPass" type="text">
 <label data-i18n="lRecEmail">📧 Email</label><input id="recoveryEmail" type="email">
 <button onclick="saveNewPass()" data-i18n="bSavePass" style="width:100%;margin-top:8px;background:#22c55e;color:#000">💾 Αποθήκευση</button>
@@ -386,8 +411,14 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 
 <script>
 /* =========================================================================
-   STAND MANAGER PRO — ΜΟΝΟ ΔΗΜΟΣΙΕΣ ΕΚΔΟΣΕΙΣ
-   (Αφαιρέθηκε η «Σκοπιά - Μελέτης» / Study Edition)
+   STAND MANAGER PRO — ΤΕΛΙΚΗ ΕΚΔΟΣΗ
+   • 19 γλώσσες εντύπων
+   • Πλήρης μετάφραση EL/EN/DE/RU
+   • Custom modal OK/Cancel
+   • Custom file input
+   • Διαγραφή ΟΛΩΝ
+   • Sync κωδικού + ρυθμίσεων μέσω cloud
+   • Χωρίς Σκοπιά Μελέτης
    ========================================================================= */
 
 /* ---------- 1. UTILITIES ---------- */
@@ -448,145 +479,159 @@ function _ccInit(){
 document.addEventListener('DOMContentLoaded', _ccInit);
 setTimeout(_ccInit, 50);
 
-/* ---------- 3. MASTER TRANSLATION DICTIONARY ---------- */
+/* ---------- 3. TRANSLATION DICTIONARY (T) ---------- */
 var T = {
-  subTitle:        {el:"Για συνεργάτες - ULTIMATE",  en:"For partners - ULTIMATE",    de:"Für Partner - ULTIMATE",         ru:"Для партнеров - ULTIMATE"},
-  bAdmin:          {el:"🔐 Admin",                    en:"🔐 Admin",                    de:"🔐 Admin",                       ru:"🔐 Админ"},
-  bInstall:        {el:"📲 Εγκατάσταση",              en:"📲 Install",                  de:"📲 Installieren",                ru:"📲 Установить"},
-  fAll:            {el:"Όλα",                         en:"All",                         de:"Alle",                           ru:"Все"},
-  fFlyer:          {el:"📄 Φυλλάδια",                 en:"📄 Tracts",                   de:"📄 Traktate",                    ru:"📄 Трактаты"},
-  fMag:            {el:"📚 Περιοδικά",                en:"📚 Magazines",                de:"📚 Zeitschriften",               ru:"📚 Журналы"},
-  fBooklet:        {el:"📖 Βιβλιάρια",                en:"📖 Booklets",                 de:"📖 Broschüren",                  ru:"📖 Брошюры"},
-  lCloudLabel:     {el:"☁️ Cloud:",                   en:"☁️ Cloud:",                   de:"☁️ Cloud:",                      ru:"☁️ Облако:"},
-  bPushMain:       {el:"☁️ Αποστολή",                 en:"☁️ Push",                     de:"☁️ Senden",                      ru:"☁️ Отправить"},
-  bPullMain:       {el:"⬇️ Λήψη",                     en:"⬇️ Pull",                     de:"⬇️ Empfangen",                   ru:"⬇️ Получить"},
-  bScan:           {el:"📷 Scan",                     en:"📷 Scan",                     de:"📷 Scan",                        ru:"📷 Скан"},
-  bVoice:          {el:"🎙️ Φωνή",                     en:"🎙️ Voice",                    de:"🎙️ Stimme",                      ru:"🎙️ Голос"},
-  bCloseScanner:   {el:"✕ Κλείσιμο scanner",          en:"✕ Close scanner",             de:"✕ Scanner schließen",            ru:"✕ Закрыть сканер"},
-  voiceHint:       {el:"Πες π.χ. «Σκοπιά 5»",         en:"Say e.g. «Watchtower 5»",     de:"Sage z.B. „Wachtturm 5“",        ru:"Скажи, например: «Сторожевая 5»"},
-  lTot:            {el:"Τεμάχια",                     en:"Pieces",                      de:"Stücke",                         ru:"Штуки"},
-  lTitles:         {el:"Τίτλοι",                      en:"Titles",                      de:"Titel",                          ru:"Названия"},
-  lFlyer:          {el:"Φυλλάδια",                    en:"Tracts",                      de:"Traktate",                       ru:"Трактаты"},
-  lMag:            {el:"Περιοδικά",                   en:"Magazines",                   de:"Zeitschriften",                  ru:"Журналы"},
-  lBooklet:        {el:"Βιβλιάρια",                   en:"Booklets",                    de:"Broschüren",                     ru:"Брошюры"},
-  lNeed:           {el:"Παραγγελία",                  en:"Order",                       de:"Bestellung",                     ru:"Заказ"},
-  lCountLang:      {el:"📊 Καταμέτρηση ανά Γλώσσα",   en:"📊 Count by Language",        de:"📊 Zählung nach Sprache",        ru:"📊 Подсчет по языкам"},
-  lCountLangDesc:  {el:"Πόσα έντυπα σε κάθε γλώσσα",  en:"How many items in each language", de:"Wie viele Artikel in jeder Sprache", ru:"Сколько изданий на каждом языке"},
-  lCountType:      {el:"📚 Καταμέτρηση ανά Είδος",    en:"📚 Count by Type",            de:"📚 Zählung nach Typ",            ru:"📚 Подсчет по типам"},
-  lCountTypeDesc:  {el:"Πόσα φυλλάδια, περιοδικά, βιβλιάρια, βιβλία, κάρτες", en:"How many tracts, magazines, booklets, books, cards", de:"Wie viele Traktate, Zeitschriften, Broschüren, Bücher, Karten", ru:"Сколько буклетов, журналов, брошюр, книг, карточек"},
-  lCountLangType:  {el:"🌍 Καταμέτρηση ανά Γλώσσα και Είδος", en:"🌍 Count by Language and Type", de:"🌍 Zählung nach Sprache und Typ", ru:"🌍 Подсчет по языку и типу"},
-  lCountLangTypeDesc:{el:"Πίνακας: γλώσσα × είδος",   en:"Table: language × type",       de:"Tabelle: Sprache × Typ",         ru:"Таблица: язык × тип"},
-  thLangType:      {el:"Γλώσσα / Είδος",              en:"Language / Type",             de:"Sprache / Typ",                  ru:"Язык / Тип"},
-  thFlyer:         {el:"📄 Φυλλάδια",                 en:"📄 Tracts",                   de:"📄 Traktate",                    ru:"📄 Буклеты"},
-  thMag:           {el:"📚 Περιοδικά",                en:"📚 Magazines",                de:"📚 Zeitschriften",               ru:"📚 Журналы"},
-  thBooklet:       {el:"📖 Βιβλιάρια",                en:"📖 Booklets",                 de:"📖 Broschüren",                  ru:"📖 Брошюры"},
-  thBook:          {el:"📘 Βιβλία",                   en:"📘 Books",                    de:"📘 Bücher",                      ru:"📘 Книги"},
-  thCard:          {el:"🃏 Κάρτες",                   en:"🃏 Cards",                    de:"🃏 Karten",                      ru:"🃏 Карточки"},
-  thTotal:         {el:"📦 Σύνολο",                   en:"📦 Total",                    de:"📦 Gesamt",                      ru:"📦 Всего"},
-  lCountRefresh:   {el:"🔄 Ανανέωση",                 en:"🔄 Refresh",                  de:"🔄 Aktualisieren",               ru:"🔄 Обновить"},
-  lCountExport:    {el:"📊 Εξαγωγή CSV",              en:"📊 Export CSV",               de:"📊 CSV Export",                  ru:"📊 Экспорт CSV"},
-  lFilterCount:    {el:"🔍 Φίλτρα Καταμέτρησης",      en:"🔍 Count Filters",            de:"🔍 Zählfilter",                  ru:"🔍 Фильтры подсчета"},
-  optAllLangs:     {el:"🌍 Όλες οι γλώσσες",          en:"🌍 All languages",            de:"🌍 Alle Sprachen",               ru:"🌍 Все языки"},
-  optAllTypes:     {el:"📦 Όλα τα είδη",              en:"📦 All types",                de:"📦 Alle Typen",                  ru:"📦 Все виды"},
-  lChart:          {el:"📊 Γραφήματα",                en:"📊 Charts",                   de:"📊 Diagramme",                   ru:"📊 Графики"},
-  bChartRefresh:   {el:"🔄 Ανανέωση",                 en:"🔄 Refresh",                  de:"🔄 Aktualisieren",               ru:"🔄 Обновить"},
-  bChartExport:    {el:"📸 Εξαγωγή",                  en:"📸 Export",                   de:"📸 Export",                      ru:"📸 Экспорт"},
-  lPre:            {el:"✅ Προ-φορτωμένοι:",          en:"✅ Pre-loaded:",              de:"✅ Vorgeladene:",                ru:"✅ Загруженные:"},
-  lPreDesc:        {el:"Μεταφράζονται",               en:"Auto-translated",             de:"Auto-übersetzt",                 ru:"Автоперевод"},
-  bRestore:        {el:"🔄 Επαναφορά",                en:"🔄 Restore",                  de:"🔄 Wiederherstellen",            ru:"🔄 Восстановить"},
-  presetsTitle:    {el:"📚 Τίτλοι jw.org για σταντ (μόνο δημόσιες εκδόσεις)", en:"📚 jw.org titles for the stand (public editions only)", de:"📚 jw.org-Titel für den Stand (nur öffentliche Ausgaben)", ru:"📚 Названия jw.org для стенда (только публичные издания)"},
-  presetsDesc:     {el:"📅 Περιλαμβάνονται μόνο τα δημόσια τεύχη Η Σκοπιά/Ξύπνα! 2020-2026.", en:"📅 Includes only public Watchtower/Awake! issues 2020-2026.", de:"📅 Enthält nur öffentliche Wachtturm/Erwachet!-Ausgaben 2020-2026.", ru:"📅 Включает только публичные выпуски Сторожевая башня/Пробудитесь! 2020-2026."},
-  presetAll:       {el:"📦 Όλα",                      en:"📦 All",                      de:"📦 Alle",                        ru:"📦 Все"},
-  lSearch:         {el:"🔍 Αναζήτηση",                en:"🔍 Search",                   de:"🔍 Suche",                       ru:"🔍 Поиск"},
-  phSearch:        {el:"Γράψε τίτλο...",              en:"Write title...",              de:"Titel schreiben...",             ru:"Напиши название..."},
-  listTitle:       {el:"📦 Όλα τα είδη",              en:"📦 All items",                de:"📦 Alle Artikel",                ru:"📦 Все издания"},
-  lHint:           {el:"Πάτα + / - ή 📷",             en:"Tap + / - or 📷",             de:"Tippe + / - oder 📷",            ru:"Нажми + / - или 📷"},
-  lAdd:            {el:"➕ Προσθήκη νέου",            en:"➕ Add new",                  de:"➕ Neu",                          ru:"➕ Добавить"},
-  aFlyer:          {el:"📄 Φυλλάδιο",                 en:"📄 Tract",                    de:"📄 Traktat",                     ru:"📄 Трактат"},
-  aMag:            {el:"📚 Περιοδικό",                en:"📚 Magazine",                 de:"📚 Zeitschrift",                 ru:"📚 Журнал"},
-  aBooklet:        {el:"📖 Βιβλιάριο",                en:"📖 Booklet",                  de:"📖 Broschüre",                   ru:"📖 Брошюра"},
-  aBook:           {el:"📘 Βιβλίο",                   en:"📘 Book",                     de:"📘 Buch",                        ru:"📘 Книга"},
-  aCard:           {el:"🃏 Κάρτα",                    en:"🃏 Card",                     de:"🃏 Karte",                       ru:"🃏 Карточка"},
-  aStudyTract:     {el:"📃 Φυλλάδιο Διαφημιστικό",    en:"📃 Study Tract",              de:"📃 Studium-Traktat",             ru:"📃 Трактат для изучения"},
-  lFieldType:      {el:"Τύπος",                       en:"Type",                        de:"Typ",                            ru:"Тип"},
-  lFieldLang:      {el:"🌍 Γλώσσα",                   en:"🌍 Language",                 de:"🌍 Sprache",                     ru:"🌍 Язык"},
-  lFieldTitle:     {el:"Τίτλος *",                    en:"Title *",                     de:"Titel *",                        ru:"Название *"},
-  lFieldCat:       {el:"Κατηγορία",                   en:"Category",                    de:"Kategorie",                      ru:"Категория"},
-  lFieldQty:       {el:"Πόσα έχει",                   en:"How many",                    de:"Wie viele",                      ru:"Сколько"},
-  lFieldMin:       {el:"Ελάχιστο",                    en:"Minimum",                     de:"Minimum",                        ru:"Минимум"},
-  lFieldBar:       {el:"Barcode",                     en:"Barcode",                     de:"Barcode",                        ru:"Штрихкод"},
-  lFieldPhoto:     {el:"📸 Φωτογραφία (προαιρετικά)", en:"📸 Photo (optional)",         de:"📸 Foto (optional)",             ru:"📸 Фото (опционально)"},
-  bChooseFile:     {el:"📁 Επιλογή αρχείου",          en:"📁 Choose file",              de:"📁 Datei wählen",                ru:"📁 Выбрать файл"},
-  phTitle:         {el:"π.χ. Νέος τίτλος...",         en:"e.g. New title...",           de:"z.B. Neuer Titel...",            ru:"напр. Новое название..."},
-  phBulk:          {el:"Τίτλος 1\nΤίτλος 2",          en:"Title 1\nTitle 2",            de:"Titel 1\nTitel 2",               ru:"Название 1\nНазвание 2"},
-  bAdd:            {el:"➕ Προσθήκη",                 en:"➕ Add",                       de:"➕ Hinzufügen",                  ru:"➕ Добавить"},
-  lBulk:           {el:"⚡ Πολλοί μαζί",              en:"⚡ Bulk add",                  de:"⚡ Mehrere auf einmal",          ru:"⚡ Много сразу"},
-  bBulk:           {el:"📋 Προσθήκη όλων",            en:"📋 Add all",                  de:"📋 Alle hinzufügen",             ru:"📋 Добавить все"},
-  lOrder:          {el:"⚠️ ΛΙΣΤΑ ΠΑΡΑΓΓΕΛΙΑΣ",        en:"⚠️ ORDER LIST",               de:"⚠️ BESTELLLISTE",                ru:"⚠️ СПИСОК ЗАКАЗА"},
-  bCopy:           {el:"Αντιγραφή",                   en:"Copy",                        de:"Kopieren",                       ru:"Копировать"},
-  bExportOrder:    {el:"TXT",                         en:"TXT",                         de:"TXT",                            ru:"TXT"},
-  bPDF:            {el:"📄 PDF",                      en:"📄 PDF",                      de:"📄 PDF",                         ru:"📄 PDF"},
-  bWA:             {el:"WhatsApp",                    en:"WhatsApp",                    de:"WhatsApp",                       ru:"WhatsApp"},
-  bEmailOrder:     {el:"📧 Email",                    en:"📧 Email",                    de:"📧 Email",                       ru:"📧 Email"},
-  lLog:            {el:"👥 Ιστορικό",                 en:"👥 History",                  de:"👥 Verlauf",                     ru:"👥 История"},
-  bClearLog:       {el:"Καθαρισμός",                  en:"Clear",                       de:"Löschen",                        ru:"Очистить"},
-  logEmpty:        {el:"Κανένα ιστορικό",             en:"No history",                  de:"Kein Verlauf",                   ru:"Нет истории"},
-  lDangerZone:     {el:"⚠️ Επικίνδυνη Ζώνη",          en:"⚠️ Danger Zone",              de:"⚠️ Gefahrenzone",                ru:"⚠️ Опасная зона"},
-  lDangerDesc:     {el:"Διαγραφή ΟΛΩΝ των εντύπων από το σταντ. Δεν αναιρείται!", en:"Delete ALL items from the stand. Cannot be undone!", de:"ALLE Artikel vom Stand löschen. Nicht rückgängig zu machen!", ru:"Удалить ВСЕ издания со стенда. Нельзя отменить!"},
-  bDeleteAll:      {el:"🗑️ Διαγραφή ΟΛΩΝ των εντύπων", en:"🗑️ Delete ALL items",         de:"🗑️ ALLE Artikel löschen",        ru:"🗑️ Удалить ВСЕ издания"},
-  aTitle:          {el:"👑 ADMIN ULTIMATE",           en:"👑 ADMIN ULTIMATE",           de:"👑 ADMIN ULTIMATE",              ru:"👑 АДМИН ULTIMATE"},
-  bClose:          {el:"✕ Κλείσιμο",                  en:"✕ Close",                     de:"✕ Schließen",                    ru:"✕ Закрыть"},
-  lLoginLabel:     {el:"Κωδικός",                     en:"Password",                    de:"Passwort",                       ru:"Пароль"},
-  bLogin:          {el:"Είσοδος",                     en:"Login",                       de:"Login",                          ru:"Вход"},
-  bForgot:         {el:"📧 Ξέχασα κωδικό",            en:"📧 Forgot password",          de:"📧 Passwort vergessen",          ru:"📧 Забыл пароль"},
-  lForgotTitle:    {el:"📧 Επαναφορά",                en:"📧 Reset",                    de:"📧 Zurücksetzen",                ru:"📧 Сброс"},
-  bSendReset:      {el:"📤 Αποστολή",                 en:"📤 Send",                     de:"📤 Senden",                      ru:"📤 Отправить"},
-  bChangePass:     {el:"✅ Αλλαγή",                   en:"✅ Change",                   de:"✅ Ändern",                      ru:"✅ Сменить"},
-  bBack:           {el:"Πίσω",                        en:"Back",                        de:"Zurück",                         ru:"Назад"},
-  lGuideTitle:     {el:"📖 Οδηγός Χρήσης",            en:"📖 User Guide",               de:"📖 Benutzerhandbuch",            ru:"📖 Руководство"},
-  lGuideDesc:      {el:"Ο διαχειριστής μπορεί να το μοιραστεί.", en:"The admin can share this.", de:"Der Admin kann dies teilen.", ru:"Админ может поделиться."},
-  bCopyGuide:      {el:"📋 Αντιγραφή",                en:"📋 Copy",                     de:"📋 Kopieren",                    ru:"📋 Копировать"},
-  bShareWA:        {el:"📱 WhatsApp",                 en:"📱 WhatsApp",                 de:"📱 WhatsApp",                    ru:"📱 WhatsApp"},
-  bExportGuidePDF: {el:"📄 PDF",                      en:"📄 PDF",                      de:"📄 PDF",                         ru:"📄 PDF"},
-  bShareEmail:     {el:"📧 Email",                    en:"📧 Email",                    de:"📧 Email",                       ru:"📧 Email"},
-  lFontAdmin:      {el:"🎨 Εμφάνιση",                 en:"🎨 Appearance",               de:"🎨 Aussehen",                    ru:"🎨 Внешний вид"},
-  lFontSize:       {el:"Μέγεθος:",                    en:"Size:",                       de:"Größe:",                         ru:"Размер:"},
-  lFontFamily:     {el:"Γραμματοσειρά",               en:"Font",                        de:"Schrift",                        ru:"Шрифт"},
-  fontPrev:        {el:"Αα Bb Γγ Preview",            en:"Aa Bb Cc Preview",            de:"Aa Bb Cc Vorschau",              ru:"Аа Бб Вв Превью"},
-  lCloudAdmin:     {el:"☁️ Cloud",                    en:"☁️ Cloud",                    de:"☁️ Cloud",                       ru:"☁️ Облако"},
-  lCloudOn:        {el:"Ενεργό",                      en:"Enabled",                     de:"Aktiv",                          ru:"Включено"},
-  lCloudId:        {el:"ID Σταντ",                    en:"Stand ID",                    de:"Stand ID",                       ru:"ID стенда"},
-  lCloudConfig:    {el:"Firebase Config",             en:"Firebase Config",             de:"Firebase-Konfiguration",         ru:"Настройки Firebase"},
-  bSaveCloudId:    {el:"Save",                        en:"Save",                        de:"Speichern",                      ru:"Сохранить"},
-  bSaveConfig:     {el:"Save Config",                 en:"Save Config",                 de:"Konfiguration speichern",        ru:"Сохранить настройки"},
-  bTestCloud:      {el:"Test",                        en:"Test",                        de:"Test",                           ru:"Тест"},
-  lChangePass:     {el:"🔐 Αλλαγή κωδικού & Email",   en:"🔐 Password & Email",         de:"🔐 Passwort & E-Mail",           ru:"🔐 Пароль и Email"},
-  lNewPass:        {el:"Νέος κωδικός",                en:"New password",                de:"Neues Passwort",                 ru:"Новый пароль"},
-  lRecEmail:       {el:"📧 Email",                    en:"📧 Email",                    de:"📧 E-Mail",                      ru:"📧 Email"},
-  bSavePass:       {el:"💾 Αποθήκευση",               en:"💾 Save",                     de:"💾 Speichern",                   ru:"💾 Сохранить"},
-  langEl:          {el:"🇬🇷 Ελληνικά",                en:"🇬🇷 Greek",                   de:"🇬🇷 Griechisch",                 ru:"🇬🇷 Греческий"},
-  langEn:          {el:"🇬🇧 English",                 en:"🇬🇧 English",                 de:"🇬🇧 Englisch",                   ru:"🇬🇧 Английский"},
-  langDe:          {el:"🇩🇪 Deutsch",                 en:"🇩🇪 German",                  de:"🇩🇪 Deutsch",                    ru:"🇩🇪 Немецкий"},
-  langRu:          {el:"🇷🇺 Русский",                 en:"🇷🇺 Russian",                 de:"🇷🇺 Russisch",                   ru:"🇷🇺 Русский"},
-  langSq:          {el:"🇦🇱 Shqip",                   en:"🇦🇱 Albanian",                de:"🇦🇱 Albanisch",                  ru:"🇦🇱 Албанский"},
-  langRo:          {el:"🇷🇴 Română",                  en:"🇷🇴 Romanian",                de:"🇷🇴 Rumänisch",                  ru:"🇷🇴 Румынский"},
-  langAr:          {el:"🇸🇦 العربية",                 en:"🇸🇦 Arabic",                  de:"🇸🇦 Arabisch",                   ru:"🇸🇦 Арабский"},
-  langFa:          {el:"🇮🇷 فارسی",                   en:"🇮🇷 Persian",                 de:"🇮🇷 Persisch",                   ru:"🇮🇷 Персидский"},
-  langFr:          {el:"🇫🇷 Français",                en:"🇫🇷 French",                  de:"🇫🇷 Französisch",                ru:"🇫🇷 Французский"},
-  langEs:          {el:"🇪🇸 Español",                 en:"🇪🇸 Spanish",                 de:"🇪🇸 Spanisch",                   ru:"🇪🇸 Испанский"},
-  langIt:          {el:"🇮🇹 Italiano",                en:"🇮🇹 Italian",                 de:"🇮🇹 Italienisch",                ru:"🇮🇹 Итальянский"},
-  langPl:          {el:"🇵🇱 Polski",                  en:"🇵🇱 Polish",                  de:"🇵🇱 Polnisch",                   ru:"🇵🇱 Польский"},
-  ccTitle:         {el:"Επιβεβαίωση",                 en:"Confirmation",                de:"Bestätigung",                    ru:"Подтверждение"},
-  ccDelete:        {el:"Διαγραφή εντύπου;",           en:"Delete item?",                de:"Artikel löschen?",               ru:"Удалить издание?"},
-  ccDeleteAll:     {el:"Διαγραφή ΟΛΩΝ;",              en:"Delete ALL?",                 de:"ALLE löschen?",                  ru:"Удалить ВСЁ?"},
-  ccDeleteAllItems:{el:"Διαγραφή ΟΛΩΝ των εντύπων; Δεν αναιρείται!", en:"Delete ALL items? Cannot be undone!", de:"ALLE Artikel löschen? Nicht rückgängig zu machen!", ru:"Удалить ВСЕ издания? Нельзя отменить!"},
-  ccClearLog:      {el:"Καθαρισμός ιστορικού;",       en:"Clear log?",                  de:"Verlauf löschen?",               ru:"Очистить историю?"},
-  ccRestore:       {el:"Επαναφορά προ-φορτωμένων;",   en:"Restore presets?",            de:"Vorgaben wiederherstellen?",     ru:"Восстановить предустановки?"},
-  ccCancelBtn:     {el:"Άκυρο",                       en:"Cancel",                      de:"Abbrechen",                      ru:"Отмена"},
-  ccOkBtn:         {el:"OK",                          en:"OK",                          de:"OK",                             ru:"OK"}
+  subTitle:{el:"Για συνεργάτες - ULTIMATE",en:"For partners - ULTIMATE",de:"Für Partner - ULTIMATE",ru:"Для партнеров - ULTIMATE"},
+  bAdmin:{el:"🔐 Admin",en:"🔐 Admin",de:"🔐 Admin",ru:"🔐 Админ"},
+  bInstall:{el:"📲 Εγκατάσταση",en:"📲 Install",de:"📲 Installieren",ru:"📲 Установить"},
+  fAll:{el:"Όλα",en:"All",de:"Alle",ru:"Все"},
+  fFlyer:{el:"📄 Φυλλάδια",en:"📄 Tracts",de:"📄 Traktate",ru:"📄 Трактаты"},
+  fMag:{el:"📚 Περιοδικά",en:"📚 Magazines",de:"📚 Zeitschriften",ru:"📚 Журналы"},
+  fBooklet:{el:"📖 Βιβλιάρια",en:"📖 Booklets",de:"📖 Broschüren",ru:"📖 Брошюры"},
+  lCloudLabel:{el:"☁️ Cloud:",en:"☁️ Cloud:",de:"☁️ Cloud:",ru:"☁️ Облако:"},
+  syncCodeLabel:{el:"Κωδικός Συγχρονισμού (Stand ID):",en:"Sync Code (Stand ID):",de:"Sync-Code (Stand-ID):",ru:"Код синхронизации (Stand ID):"},
+  syncCodeHelp:{el:"Πες τον ίδιο κωδικό σε όλα τα κινητά για να βλέπουν τα ίδια δεδομένα.",en:"Enter the same code on all phones to see the same data.",de:"Gib denselben Code auf allen Handys ein, um dieselben Daten zu sehen.",ru:"Введи один и тот же код на всех телефонах, чтобы видеть одни данные."},
+  bPushMain:{el:"☁️ Αποστολή",en:"☁️ Push",de:"☁️ Senden",ru:"☁️ Отправить"},
+  bPullMain:{el:"⬇️ Λήψη",en:"⬇️ Pull",de:"⬇️ Empfangen",ru:"⬇️ Получить"},
+  bScan:{el:"📷 Scan",en:"📷 Scan",de:"📷 Scan",ru:"📷 Скан"},
+  bVoice:{el:"🎙️ Φωνή",en:"🎙️ Voice",de:"🎙️ Stimme",ru:"🎙️ Голос"},
+  bCloseScanner:{el:"✕ Κλείσιμο scanner",en:"✕ Close scanner",de:"✕ Scanner schließen",ru:"✕ Закрыть сканер"},
+  voiceHint:{el:"Πες π.χ. «Σκοπιά 5»",en:"Say e.g. «Watchtower 5»",de:"Sage z.B. „Wachtturm 5“",ru:"Скажи, например: «Сторожевая 5»"},
+  lTot:{el:"Τεμάχια",en:"Pieces",de:"Stücke",ru:"Штуки"},
+  lTitles:{el:"Τίτλοι",en:"Titles",de:"Titel",ru:"Названия"},
+  lFlyer:{el:"Φυλλάδια",en:"Tracts",de:"Traktate",ru:"Трактаты"},
+  lMag:{el:"Περιοδικά",en:"Magazines",de:"Zeitschriften",ru:"Журналы"},
+  lBooklet:{el:"Βιβλιάρια",en:"Booklets",de:"Broschüren",ru:"Брошюры"},
+  lNeed:{el:"Παραγγελία",en:"Order",de:"Bestellung",ru:"Заказ"},
+  lCountLang:{el:"📊 Καταμέτρηση ανά Γλώσσα",en:"📊 Count by Language",de:"📊 Zählung nach Sprache",ru:"📊 Подсчет по языкам"},
+  lCountLangDesc:{el:"Πόσα έντυπα σε κάθε γλώσσα",en:"How many items in each language",de:"Wie viele Artikel in jeder Sprache",ru:"Сколько изданий на каждом языке"},
+  lCountType:{el:"📚 Καταμέτρηση ανά Είδος",en:"📚 Count by Type",de:"📚 Zählung nach Typ",ru:"📚 Подсчет по типам"},
+  lCountTypeDesc:{el:"Πόσα φυλλάδια, περιοδικά, βιβλιάρια, βιβλία, κάρτες",en:"How many tracts, magazines, booklets, books, cards",de:"Wie viele Traktate, Zeitschriften, Broschüren, Bücher, Karten",ru:"Сколько буклетов, журналов, брошюр, книг, карточек"},
+  lCountLangType:{el:"🌍 Καταμέτρηση ανά Γλώσσα και Είδος",en:"🌍 Count by Language and Type",de:"🌍 Zählung nach Sprache und Typ",ru:"🌍 Подсчет по языку и типу"},
+  lCountLangTypeDesc:{el:"Πίνακας: γλώσσα × είδος",en:"Table: language × type",de:"Tabelle: Sprache × Typ",ru:"Таблица: язык × тип"},
+  thLangType:{el:"Γλώσσα / Είδος",en:"Language / Type",de:"Sprache / Typ",ru:"Язык / Тип"},
+  thFlyer:{el:"📄 Φυλλάδια",en:"📄 Tracts",de:"📄 Traktate",ru:"📄 Буклеты"},
+  thMag:{el:"📚 Περιοδικά",en:"📚 Magazines",de:"📚 Zeitschriften",ru:"📚 Журналы"},
+  thBooklet:{el:"📖 Βιβλιάρια",en:"📖 Booklets",de:"📖 Broschüren",ru:"📖 Брошюры"},
+  thBook:{el:"📘 Βιβλία",en:"📘 Books",de:"📘 Bücher",ru:"📘 Книги"},
+  thCard:{el:"🃏 Κάρτες",en:"🃏 Cards",de:"🃏 Karten",ru:"🃏 Карточки"},
+  thTotal:{el:"📦 Σύνολο",en:"📦 Total",de:"📦 Gesamt",ru:"📦 Всего"},
+  lCountRefresh:{el:"🔄 Ανανέωση",en:"🔄 Refresh",de:"🔄 Aktualisieren",ru:"🔄 Обновить"},
+  lCountExport:{el:"📊 Εξαγωγή CSV",en:"📊 Export CSV",de:"📊 CSV Export",ru:"📊 Экспорт CSV"},
+  lFilterCount:{el:"🔍 Φίλτρα Καταμέτρησης",en:"🔍 Count Filters",de:"🔍 Zählfilter",ru:"🔍 Фильтры подсчета"},
+  optAllLangs:{el:"🌍 Όλες οι γλώσσες",en:"🌍 All languages",de:"🌍 Alle Sprachen",ru:"🌍 Все языки"},
+  optAllTypes:{el:"📦 Όλα τα είδη",en:"📦 All types",de:"📦 Alle Typen",ru:"📦 Все виды"},
+  lChart:{el:"📊 Γραφήματα",en:"📊 Charts",de:"📊 Diagramme",ru:"📊 Графики"},
+  bChartRefresh:{el:"🔄 Ανανέωση",en:"🔄 Refresh",de:"🔄 Aktualisieren",ru:"🔄 Обновить"},
+  bChartExport:{el:"📸 Εξαγωγή",en:"📸 Export",de:"📸 Export",ru:"📸 Экспорт"},
+  lPre:{el:"✅ Προ-φορτωμένοι:",en:"✅ Pre-loaded:",de:"✅ Vorgeladene:",ru:"✅ Загруженные:"},
+  lPreDesc:{el:"Μεταφράζονται",en:"Auto-translated",de:"Auto-übersetzt",ru:"Автоперевод"},
+  bRestore:{el:"🔄 Επαναφορά",en:"🔄 Restore",de:"🔄 Wiederherstellen",ru:"🔄 Восстановить"},
+  presetsTitle:{el:"📚 Τίτλοι jw.org για σταντ (μόνο δημόσιες εκδόσεις)",en:"📚 jw.org titles (public editions only)",de:"📚 jw.org-Titel (nur öffentliche Ausgaben)",ru:"📚 Названия jw.org (только публичные издания)"},
+  presetsDesc:{el:"📅 Περιλαμβάνονται μόνο τα δημόσια τεύχη 2020-2026.",en:"📅 Includes only public issues 2020-2026.",de:"📅 Enthält nur öffentliche Ausgaben 2020-2026.",ru:"📅 Включает только публичные выпуски 2020-2026."},
+  presetAll:{el:"📦 Όλα",en:"📦 All",de:"📦 Alle",ru:"📦 Все"},
+  lSearch:{el:"🔍 Αναζήτηση",en:"🔍 Search",de:"🔍 Suche",ru:"🔍 Поиск"},
+  phSearch:{el:"Γράψε τίτλο...",en:"Write title...",de:"Titel schreiben...",ru:"Напиши название..."},
+  listTitle:{el:"📦 Όλα τα είδη",en:"📦 All items",de:"📦 Alle Artikel",ru:"📦 Все издания"},
+  lHint:{el:"Πάτα + / - ή 📷",en:"Tap + / - or 📷",de:"Tippe + / - oder 📷",ru:"Нажми + / - или 📷"},
+  lAdd:{el:"➕ Προσθήκη νέου",en:"➕ Add new",de:"➕ Neu",ru:"➕ Добавить"},
+  aFlyer:{el:"📄 Φυλλάδιο",en:"📄 Tract",de:"📄 Traktat",ru:"📄 Трактат"},
+  aMag:{el:"📚 Περιοδικό",en:"📚 Magazine",de:"📚 Zeitschrift",ru:"📚 Журнал"},
+  aBooklet:{el:"📖 Βιβλιάριο",en:"📖 Booklet",de:"📖 Broschüre",ru:"📖 Брошюра"},
+  aBook:{el:"📘 Βιβλίο",en:"📘 Book",de:"📘 Buch",ru:"📘 Книга"},
+  aCard:{el:"🃏 Κάρτα",en:"🃏 Card",de:"🃏 Karte",ru:"🃏 Карточка"},
+  aStudyTract:{el:"📃 Φυλλάδιο Διαφημιστικό",en:"📃 Study Tract",de:"📃 Studium-Traktat",ru:"📃 Трактат для изучения"},
+  lFieldType:{el:"Τύπος",en:"Type",de:"Typ",ru:"Тип"},
+  lFieldLang:{el:"🌍 Γλώσσα",en:"🌍 Language",de:"🌍 Sprache",ru:"🌍 Язык"},
+  lFieldTitle:{el:"Τίτλος *",en:"Title *",de:"Titel *",ru:"Название *"},
+  lFieldCat:{el:"Κατηγορία",en:"Category",de:"Kategorie",ru:"Категория"},
+  lFieldQty:{el:"Πόσα έχει",en:"How many",de:"Wie viele",ru:"Сколько"},
+  lFieldMin:{el:"Ελάχιστο",en:"Minimum",de:"Minimum",ru:"Минимум"},
+  lFieldBar:{el:"Barcode",en:"Barcode",de:"Barcode",ru:"Штрихкод"},
+  lFieldPhoto:{el:"📸 Φωτογραφία (προαιρετικά)",en:"📸 Photo (optional)",de:"📸 Foto (optional)",ru:"📸 Фото (опционально)"},
+  bChooseFile:{el:"📁 Επιλογή αρχείου",en:"📁 Choose file",de:"📁 Datei wählen",ru:"📁 Выбрать файл"},
+  phTitle:{el:"π.χ. Νέος τίτλος...",en:"e.g. New title...",de:"z.B. Neuer Titel...",ru:"напр. Новое название..."},
+  phBulk:{el:"Τίτλος 1\nΤίτλος 2",en:"Title 1\nTitle 2",de:"Titel 1\nTitel 2",ru:"Название 1\nНазвание 2"},
+  bAdd:{el:"➕ Προσθήκη",en:"➕ Add",de:"➕ Hinzufügen",ru:"➕ Добавить"},
+  lBulk:{el:"⚡ Πολλοί μαζί",en:"⚡ Bulk add",de:"⚡ Mehrere auf einmal",ru:"⚡ Много сразу"},
+  bBulk:{el:"📋 Προσθήκη όλων",en:"📋 Add all",de:"📋 Alle hinzufügen",ru:"📋 Добавить все"},
+  lOrder:{el:"⚠️ ΛΙΣΤΑ ΠΑΡΑΓΓΕΛΙΑΣ",en:"⚠️ ORDER LIST",de:"⚠️ BESTELLLISTE",ru:"⚠️ СПИСОК ЗАКАЗА"},
+  bCopy:{el:"Αντιγραφή",en:"Copy",de:"Kopieren",ru:"Копировать"},
+  bExportOrder:{el:"TXT",en:"TXT",de:"TXT",ru:"TXT"},
+  bPDF:{el:"📄 PDF",en:"📄 PDF",de:"📄 PDF",ru:"📄 PDF"},
+  bWA:{el:"WhatsApp",en:"WhatsApp",de:"WhatsApp",ru:"WhatsApp"},
+  bEmailOrder:{el:"📧 Email",en:"📧 Email",de:"📧 Email",ru:"📧 Email"},
+  lLog:{el:"👥 Ιστορικό",en:"👥 History",de:"👥 Verlauf",ru:"👥 История"},
+  bClearLog:{el:"Καθαρισμός",en:"Clear",de:"Löschen",ru:"Очистить"},
+  logEmpty:{el:"Κανένα ιστορικό",en:"No history",de:"Kein Verlauf",ru:"Нет истории"},
+  lDangerZone:{el:"⚠️ Επικίνδυνη Ζώνη",en:"⚠️ Danger Zone",de:"⚠️ Gefahrenzone",ru:"⚠️ Опасная зона"},
+  lDangerDesc:{el:"Διαγραφή ΟΛΩΝ των εντύπων από το σταντ. Δεν αναιρείται!",en:"Delete ALL items from the stand. Cannot be undone!",de:"ALLE Artikel vom Stand löschen. Nicht rückgängig zu machen!",ru:"Удалить ВСЕ издания со стенда. Нельзя отменить!"},
+  bDeleteAll:{el:"🗑️ Διαγραφή ΟΛΩΝ των εντύπων",en:"🗑️ Delete ALL items",de:"🗑️ ALLE Artikel löschen",ru:"🗑️ Удалить ВСЕ издания"},
+  aTitle:{el:"👑 ADMIN ULTIMATE",en:"👑 ADMIN ULTIMATE",de:"👑 ADMIN ULTIMATE",ru:"👑 АДМИН ULTIMATE"},
+  bClose:{el:"✕ Κλείσιμο",en:"✕ Close",de:"✕ Schließen",ru:"✕ Закрыть"},
+  lLoginLabel:{el:"Κωδικός",en:"Password",de:"Passwort",ru:"Пароль"},
+  bLogin:{el:"Είσοδος",en:"Login",de:"Login",ru:"Вход"},
+  bForgot:{el:"📧 Ξέχασα κωδικό",en:"📧 Forgot password",de:"📧 Passwort vergessen",ru:"📧 Забыл пароль"},
+  lForgotTitle:{el:"📧 Επαναφορά",en:"📧 Reset",de:"📧 Zurücksetzen",ru:"📧 Сброс"},
+  bSendReset:{el:"📤 Αποστολή",en:"📤 Send",de:"📤 Senden",ru:"📤 Отправить"},
+  bChangePass:{el:"✅ Αλλαγή",en:"✅ Change",de:"✅ Ändern",ru:"✅ Сменить"},
+  bBack:{el:"Πίσω",en:"Back",de:"Zurück",ru:"Назад"},
+  lGuideTitle:{el:"📖 Οδηγός Χρήσης",en:"📖 User Guide",de:"📖 Benutzerhandbuch",ru:"📖 Руководство"},
+  lGuideDesc:{el:"Ο διαχειριστής μπορεί να το μοιραστεί.",en:"The admin can share this.",de:"Der Admin kann dies teilen.",ru:"Админ может поделиться."},
+  bCopyGuide:{el:"📋 Αντιγραφή",en:"📋 Copy",de:"📋 Kopieren",ru:"📋 Копировать"},
+  bShareWA:{el:"📱 WhatsApp",en:"📱 WhatsApp",de:"📱 WhatsApp",ru:"📱 WhatsApp"},
+  bExportGuidePDF:{el:"📄 PDF",en:"📄 PDF",de:"📄 PDF",ru:"📄 PDF"},
+  bShareEmail:{el:"📧 Email",en:"📧 Email",de:"📧 Email",ru:"📧 Email"},
+  lFontAdmin:{el:"🎨 Εμφάνιση",en:"🎨 Appearance",de:"🎨 Aussehen",ru:"🎨 Внешний вид"},
+  lFontSize:{el:"Μέγεθος:",en:"Size:",de:"Größe:",ru:"Размер:"},
+  lFontFamily:{el:"Γραμματοσειρά",en:"Font",de:"Schrift",ru:"Шрифт"},
+  fontPrev:{el:"Αα Bb Γγ Preview",en:"Aa Bb Cc Preview",de:"Aa Bb Cc Vorschau",ru:"Аа Бб Вв Превью"},
+  lSyncSetup:{el:"🔗 Ρυθμίσεις Συγχρονισμού",en:"🔗 Sync Settings",de:"🔗 Sync-Einstellungen",ru:"🔗 Настройки синхронизации"},
+  lSyncSetupDesc:{el:"Για να βλέπουν όλα τα κινητά τα ίδια δεδομένα, βάλε τον ΙΔΙΟ κωδικό σε όλα.",en:"To see the same data on all phones, enter the SAME code on all.",de:"Um dieselben Daten auf allen Handys zu sehen, gib überall denselben Code ein.",ru:"Чтобы видеть одни данные на всех телефонах, введи ОДИН и тот же код."},
+  lCloudAdmin:{el:"☁️ Cloud",en:"☁️ Cloud",de:"☁️ Cloud",ru:"☁️ Облако"},
+  lCloudOn:{el:"Ενεργό",en:"Enabled",de:"Aktiv",ru:"Включено"},
+  lCloudId:{el:"Κωδικός Συγχρονισμού (Stand ID)",en:"Sync Code (Stand ID)",de:"Sync-Code (Stand-ID)",ru:"Код синхронизации (Stand ID)"},
+  lCloudConfig:{el:"Firebase Config",en:"Firebase Config",de:"Firebase-Konfiguration",ru:"Настройки Firebase"},
+  bSaveCloudId:{el:"Save",en:"Save",de:"Speichern",ru:"Сохранить"},
+  bSaveConfig:{el:"Save Config",en:"Save Config",de:"Konfiguration speichern",ru:"Сохранить настройки"},
+  bTestCloud:{el:"Test",en:"Test",de:"Test",ru:"Тест"},
+  bApplySync:{el:"🔄 Εφαρμογή Συγχρονισμού",en:"🔄 Apply Sync",de:"🔄 Sync anwenden",ru:"🔄 Применить синхронизацию"},
+  lSyncWarning:{el:"⚠️ Θα συνδεθείς στο cloud. Όποιος έχει τον ίδιο κωδικό βλέπει τα ίδια δεδομένα.",en:"⚠️ You will connect to cloud. Anyone with the same code sees the same data.",de:"⚠️ Du verbindest dich mit der Cloud. Wer denselben Code hat, sieht dieselben Daten.",ru:"⚠️ Ты подключишься к облаку. У кого тот же код — видит те же данные."},
+  lChangePass:{el:"🔐 Αλλαγή κωδικού & Email",en:"🔐 Password & Email",de:"🔐 Passwort & E-Mail",ru:"🔐 Пароль и Email"},
+  lPassSyncNote:{el:"Ο κωδικός συγχρονίζεται αυτόματα σε όλα τα κινητά μέσω cloud.",en:"Password syncs automatically across all phones via cloud.",de:"Passwort wird automatisch über die Cloud auf alle Handys synchronisiert.",ru:"Пароль автоматически синхронизируется на все телефоны через облако."},
+  lNewPass:{el:"Νέος κωδικός",en:"New password",de:"Neues Passwort",ru:"Новый пароль"},
+  lRecEmail:{el:"📧 Email",en:"📧 Email",de:"📧 E-Mail",ru:"📧 Email"},
+  bSavePass:{el:"💾 Αποθήκευση",en:"💾 Save",de:"💾 Speichern",ru:"💾 Сохранить"},
+  /* Language names — 19 languages × 4 platform langs */
+  langEl:{el:"🇬🇷 Ελληνικά",en:"🇬🇷 Greek",de:"🇬🇷 Griechisch",ru:"🇬🇷 Греческий"},
+  langEn:{el:"🇬🇧 English",en:"🇬🇧 English",de:"🇬🇧 Englisch",ru:"🇬🇧 Английский"},
+  langDe:{el:"🇩🇪 Deutsch",en:"🇩🇪 German",de:"🇩🇪 Deutsch",ru:"🇩🇪 Немецкий"},
+  langRu:{el:"🇷🇺 Русский",en:"🇷🇺 Russian",de:"🇷🇺 Russisch",ru:"🇷🇺 Русский"},
+  langSq:{el:"🇦🇱 Shqip",en:"🇦🇱 Albanian",de:"🇦🇱 Albanisch",ru:"🇦🇱 Албанский"},
+  langRo:{el:"🇷🇴 Română",en:"🇷🇴 Romanian",de:"🇷🇴 Rumänisch",ru:"🇷🇴 Румынский"},
+  langAr:{el:"🇸🇦 العربية",en:"🇸🇦 Arabic",de:"🇸🇦 Arabisch",ru:"🇸🇦 Арабский"},
+  langFa:{el:"🇮🇷 فارسی",en:"🇮🇷 Persian",de:"🇮🇷 Persisch",ru:"🇮🇷 Персидский"},
+  langFr:{el:"🇫🇷 Français",en:"🇫🇷 French",de:"🇫🇷 Französisch",ru:"🇫🇷 Французский"},
+  langEs:{el:"🇪🇸 Español",en:"🇪🇸 Spanish",de:"🇪🇸 Spanisch",ru:"🇪🇸 Испанский"},
+  langIt:{el:"🇮🇹 Italiano",en:"🇮🇹 Italian",de:"🇮🇹 Italienisch",ru:"🇮🇹 Итальянский"},
+  langPl:{el:"🇵🇱 Polski",en:"🇵🇱 Polish",de:"🇵🇱 Polnisch",ru:"🇵🇱 Польский"},
+  langHr:{el:"🇭🇷 Hrvatski",en:"🇭🇷 Croatian",de:"🇭🇷 Kroatisch",ru:"🇭🇷 Хорватский"},
+  langBg:{el:"🇧🇬 Български",en:"🇧🇬 Bulgarian",de:"🇧🇬 Bulgarisch",ru:"🇧🇬 Болгарский"},
+  langUk:{el:"🇺🇦 Українська",en:"🇺🇦 Ukrainian",de:"🇺🇦 Ukrainisch",ru:"🇺🇦 Украинский"},
+  langHu:{el:"🇭🇺 Magyar",en:"🇭🇺 Hungarian",de:"🇭🇺 Ungarisch",ru:"🇭🇺 Венгерский"},
+  langHy:{el:"🇦🇲 Հայերեն",en:"🇦🇲 Armenian",de:"🇦🇲 Armenisch",ru:"🇦🇲 Армянский"},
+  langTr:{el:"🇹🇷 Türkçe",en:"🇹🇷 Turkish",de:"🇹🇷 Türkisch",ru:"🇹🇷 Турецкий"},
+  langSr:{el:"🇷🇸 Српски",en:"🇷🇸 Serbian",de:"🇷🇸 Serbisch",ru:"🇷🇸 Сербский"},
+  ccTitle:{el:"Επιβεβαίωση",en:"Confirmation",de:"Bestätigung",ru:"Подтверждение"},
+  ccDelete:{el:"Διαγραφή εντύπου;",en:"Delete item?",de:"Artikel löschen?",ru:"Удалить издание?"},
+  ccDeleteAll:{el:"Διαγραφή ΟΛΩΝ;",en:"Delete ALL?",de:"ALLE löschen?",ru:"Удалить ВСЁ?"},
+  ccDeleteAllItems:{el:"Διαγραφή ΟΛΩΝ των εντύπων; Δεν αναιρείται!",en:"Delete ALL items? Cannot be undone!",de:"ALLE Artikel löschen? Nicht rückgängig zu machen!",ru:"Удалить ВСЕ издания? Нельзя отменить!"},
+  ccClearLog:{el:"Καθαρισμός ιστορικού;",en:"Clear log?",de:"Verlauf löschen?",ru:"Очистить историю?"},
+  ccRestore:{el:"Επαναφορά προ-φορτωμένων;",en:"Restore presets?",de:"Vorgaben wiederherstellen?",ru:"Восстановить предустановки?"},
+  ccCancelBtn:{el:"Άκυρο",en:"Cancel",de:"Abbrechen",ru:"Отмена"},
+  ccOkBtn:{el:"OK",en:"OK",de:"OK",ru:"OK"}
 };
 
-/* ---------- 4. UI STRINGS ---------- */
 var LANGS={
 el:{order:"ΠΑΡΑΓΓΕΛΙΑ",ok:"ΟΚ",has:"έχει",lSmartTitle:"🤖 Έξυπνη πρόταση:"},
 en:{order:"ORDER",ok:"OK",has:"has",lSmartTitle:"🤖 Smart suggestion:"},
@@ -617,13 +662,14 @@ var stands=[];
 var html5Qrcode=null, scanBusy=false;
 var chartMainInst=null;
 var deferredPrompt=null;
-var cloudEnabled=localStorage.getItem('stand_cloud_enabled')==='true';
-var cloudId=localStorage.getItem('stand_cloud_id')||'stand-athens-1';
+
+var cloudEnabled = localStorage.getItem('stand_cloud_enabled') !== 'false';
+var cloudId = localStorage.getItem('stand_cloud_id') || 'stand-athens-1';
 var fbConfigStr=localStorage.getItem('stand_fb_config')||'{"apiKey":"AIzaSyCKoGOE84zPuc4t6UQrDYMbooCR43p0FyQ","authDomain":"stand-management-a46a7.firebaseapp.com","projectId":"stand-management-a46a7","storageBucket":"stand-management-a46a7.firebasestorage.app","messagingSenderId":"304875768432","appId":"1:304875768432:web:470adb4707b8a3680482b5"}';
 var cloudApp=null, cloudDb=null, cloudUnsub=null, cloudPushTimeout=null, isSyncingFromCloud=false;
 var cloudRaw='Offline', lastSyncStr='';
 
-/* ---------- 6. PRESETS (ΧΩΡΙΣ τη Σκοπιά Μελέτης / Study Edition) ---------- */
+/* ---------- 6. PRESETS (35 base + 22 public = 57 — χωρίς Study Edition) ---------- */
 var PRESETS=[
 {"id":1,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Трактат"},"names":{"el":"Μπορείτε να ζήσετε για πάντα σε έναν παράδεισο στη γη;","en":"Can You Live Forever in Paradise on Earth?","de":"Können Sie für immer im Paradies auf Erden leben?","ru":"Можете ли вы жить вечно в раю на земле?"},"qty":20,"min":5},
 {"id":2,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Трактат"},"names":{"el":"Τι είναι η Βασιλεία του Θεού;","en":"What Is God's Kingdom?","de":"Was ist Gottes Königreich?","ru":"Что такое Царство Бога?"},"qty":20,"min":5},
@@ -660,7 +706,6 @@ var PRESETS=[
 {"id":34,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Трактат"},"names":{"el":"Τι είναι ο θάνατος;","en":"What Is Death?","de":"Was ist der Tod?","ru":"Что такое смерть?"},"qty":15,"min":3},
 {"id":35,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Трактат"},"names":{"el":"Τι συμβαίνει όταν πεθαίνουμε;","en":"What Happens When We Die?","de":"Was geschieht beim Tod?","ru":"Что происходит после смерти?"},"qty":15,"min":3}
 ];
-/* ΔΗΜΟΣΙΑ ΠΕΡΙΟΔΙΚΑ 2020-2026 — μόνο κοινό (public edition) */
 var PUBLIC_MAGAZINES=[
 {"id":1001,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2020 | Η Αναζήτηση της Αλήθειας","en":"The Watchtower — No. 1 2020 | The Search for Truth","de":"Der Wachtturm — Nr. 1 2020 | Die Suche nach der Wahrheit","ru":"Сторожевая башня — № 1 2020 | Поиск истины"},"qty":25,"min":5},
 {"id":1002,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 2 2020 | Τι Είναι η Βασιλεία του Θεού;","en":"The Watchtower — No. 2 2020 | What Is God's Kingdom?","de":"Der Wachtturm — Nr. 2 2020 | Was ist Gottes Königreich?","ru":"Сторожевая башня — № 2 2020 | Что такое Царство Бога?"},"qty":25,"min":5},
@@ -698,20 +743,16 @@ var deletedPresetIds=JSON.parse(localStorage.getItem('stand_deleted_presets')||'
 function markPresetDeleted(id){ if(deletedPresetIds.indexOf(id)<0){ deletedPresetIds.push(id); localStorage.setItem('stand_deleted_presets',JSON.stringify(deletedPresetIds)); } }
 function unmarkPresetDeleted(id){ deletedPresetIds=deletedPresetIds.filter(function(x){return x!==id;}); localStorage.setItem('stand_deleted_presets',JSON.stringify(deletedPresetIds)); }
 
-// Το ID 31 (Σκοπιά Μελέτης) αφαιρείται πάντα
-var BLOCKED_PRESET_IDS = [31];
-BLOCKED_PRESET_IDS.forEach(function(bid){
-  if(deletedPresetIds.indexOf(bid)<0){ deletedPresetIds.push(bid); }
-});
+var BLOCKED_PRESET_IDS=[31];
+BLOCKED_PRESET_IDS.forEach(function(bid){ if(deletedPresetIds.indexOf(bid)<0) deletedPresetIds.push(bid); });
 localStorage.setItem('stand_deleted_presets', JSON.stringify(deletedPresetIds));
 
-// Καθαρισμός τυχόν υπαρχόντων "Σκοπιά - Μελέτης" items από localStorage
 items = items.filter(function(it){
-  if(it.presetId === 31) return false;
-  var n_el = (it.names && it.names.el) || it.name || '';
-  if(n_el.indexOf('Μελέτης') >= 0) return false;
-  var n_en = (it.names && it.names.en) || '';
-  if(n_en.indexOf('Study Edition') >= 0) return false;
+  if(it.presetId===31) return false;
+  var n_el=(it.names && it.names.el) || it.name || '';
+  if(n_el.indexOf('Μελέτης')>=0) return false;
+  var n_en=(it.names && it.names.en) || '';
+  if(n_en.indexOf('Study Edition')>=0) return false;
   return true;
 });
 
@@ -737,6 +778,7 @@ function getDisplayCat(it){ if(it.cat && typeof it.cat==='object') return it.cat
 function getTypeClass(tp){ if((tp||'').indexOf('Φυλλάδιο')>=0) return 't-flyer'; if(tp==='Περιοδικό') return 't-mag'; if(tp==='Βιβλιάριο') return 't-booklet'; return 't-book'; }
 function getTypeDisplay(tp){ if(TYPE_TRANS[tp] && TYPE_TRANS[tp][curLang]) return TYPE_TRANS[tp][curLang]; for(var k in TYPE_TRANS){ if((tp||'').indexOf(k)>=0 && TYPE_TRANS[k][curLang]) return TYPE_TRANS[k][curLang]; } return tp; }
 function getItemLanguage(it){ if(it.lang) return it.lang; if(it.magazineLang) return it.magazineLang; return 'el'; }
+function updateSyncCodeDisplay(){ var el=document.getElementById('syncCodeDisplay'); if(el) el.textContent=cloudId; }
 
 /* ---------- 9. SAVE / LOG ---------- */
 function save(){
@@ -763,11 +805,7 @@ function renderLog(){
   var el=document.getElementById('logList');
   if(el) el.innerHTML=h||'<span class="small">'+Tget('logEmpty')+'</span>';
 }
-function clearLog(){
-  customConfirm(Tget('ccClearLog'), function(){
-    historyLog=[]; save(); renderLog();
-  });
-}
+function clearLog(){ customConfirm(Tget('ccClearLog'), function(){ historyLog=[]; save(); renderLog(); }); }
 
 /* ---------- 10. FONT ---------- */
 function applyFont(){
@@ -781,12 +819,13 @@ function applyFont(){
 function setFontSize(v){ curFS=parseInt(v); localStorage.setItem('stand_fs',curFS); applyFont(); }
 function setFontFamily(v){ curFF=v; localStorage.setItem('stand_ff',curFF); applyFont(); }
 
-/* ---------- 11. BUILD SELECT OPTIONS ---------- */
+/* ---------- 11. BUILD SELECT OPTIONS (φίλτρα) ---------- */
 function buildSelectOptions(){
   var fl=document.getElementById('filterLangCount');
   if(fl){
+    var langs=['el','en','de','ru','sq','ro','ar','fa','fr','es','it','pl','hr','bg','uk','hu','hy','tr','sr'];
     fl.innerHTML='<option value="all">'+Tget('optAllLangs')+'</option>'+
-      ['el','en','de','ru','sq','ro','ar','fa','fr','es'].map(function(c){
+      langs.map(function(c){
         var key='lang'+c.charAt(0).toUpperCase()+c.slice(1);
         return '<option value="'+c+'">'+Tget(key)+'</option>';
       }).join('');
@@ -822,6 +861,7 @@ function applyLang(){
   var ccCancel=document.getElementById('ccCancel'); if(ccCancel) ccCancel.textContent=Tget('ccCancelBtn');
   var ccTitle=document.getElementById('ccTitle'); if(ccTitle) ccTitle.textContent=Tget('ccTitle');
   updateGuideLanguage();
+  updateSyncCodeDisplay();
   ['el','en','de','ru'].forEach(function(l){ var b=document.getElementById('bl-'+l); if(b) b.className=(l===curLang?'active':''); });
 }
 function setL(l){
@@ -938,13 +978,10 @@ function deleteItem(id){
 function deleteAllItems(){
   if(items.length === 0){ alert('—'); return; }
   customConfirm(Tget('ccDeleteAllItems'), function(){
-    items.forEach(function(it){
-      if(it.presetId) markPresetDeleted(it.presetId);
-    });
+    items.forEach(function(it){ if(it.presetId) markPresetDeleted(it.presetId); });
     items = [];
     addLog('Διαγραφή όλων', 'all items deleted');
-    save();
-    render();
+    save(); render();
   });
 }
 function previewPhoto(e){
@@ -1001,7 +1038,7 @@ function loadPresets(){
   });
 }
 
-/* ---------- 15. ORDER ---------- */
+/* ---------- 15. ORDER EXPORT ---------- */
 function copyOrder(){ var txt=document.getElementById('orderList').innerText; navigator.clipboard.writeText(txt).then(function(){alert('OK');}); }
 function exportOrder(){ var b=new Blob([document.getElementById('orderList').innerText],{type:'text/plain'}); var a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='order.txt'; a.click(); }
 function csvCell(v){ return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'; }
@@ -1126,7 +1163,8 @@ function installPWA(){
 }
 
 /* ---------- 21. COUNTING ---------- */
-var LANG_DISPLAY={el:{el:'🇬🇷 Ελληνικά',en:'🇬🇷 Greek',de:'🇬🇷 Griechisch',ru:'🇬🇷 Греческий'},
+var LANG_DISPLAY={
+el:{el:'🇬🇷 Ελληνικά',en:'🇬🇷 Greek',de:'🇬🇷 Griechisch',ru:'🇬🇷 Греческий'},
 en:{el:'🇬🇧 English',en:'🇬🇧 English',de:'🇬🇧 Englisch',ru:'🇬🇧 Английский'},
 de:{el:'🇩🇪 Deutsch',en:'🇩🇪 German',de:'🇩🇪 Deutsch',ru:'🇩🇪 Немецкий'},
 ru:{el:'🇷🇺 Русский',en:'🇷🇺 Russian',de:'🇷🇺 Russisch',ru:'🇷🇺 Русский'},
@@ -1137,7 +1175,14 @@ fa:{el:'🇮🇷 فارسی',en:'🇮🇷 Persian',de:'🇮🇷 Persisch',ru:'�
 fr:{el:'🇫🇷 Français',en:'🇫🇷 French',de:'🇫🇷 Französisch',ru:'🇫🇷 Французский'},
 es:{el:'🇪🇸 Español',en:'🇪🇸 Spanish',de:'🇪🇸 Spanisch',ru:'🇪🇸 Испанский'},
 it:{el:'🇮🇹 Italiano',en:'🇮🇹 Italian',de:'🇮🇹 Italienisch',ru:'🇮🇹 Итальянский'},
-pl:{el:'🇵🇱 Polski',en:'🇵🇱 Polish',de:'🇵🇱 Polnisch',ru:'🇵🇱 Польский'}};
+pl:{el:'🇵🇱 Polski',en:'🇵🇱 Polish',de:'🇵🇱 Polnisch',ru:'🇵🇱 Польский'},
+hr:{el:'🇭🇷 Hrvatski',en:'🇭🇷 Croatian',de:'🇭🇷 Kroatisch',ru:'🇭🇷 Хорватский'},
+bg:{el:'🇧🇬 Български',en:'🇧🇬 Bulgarian',de:'🇧🇬 Bulgarisch',ru:'🇧🇬 Болгарский'},
+uk:{el:'🇺🇦 Українська',en:'🇺🇦 Ukrainian',de:'🇺🇦 Ukrainisch',ru:'🇺🇦 Украинский'},
+hu:{el:'🇭🇺 Magyar',en:'🇭🇺 Hungarian',de:'🇭🇺 Ungarisch',ru:'🇭🇺 Венгерский'},
+hy:{el:'🇦🇲 Հայերեն',en:'🇦🇲 Armenian',de:'🇦🇲 Armenisch',ru:'🇦🇲 Армянский'},
+tr:{el:'🇹🇷 Türkçe',en:'🇹🇷 Turkish',de:'🇹🇷 Türkisch',ru:'🇹🇷 Турецкий'},
+sr:{el:'🇷🇸 Српски',en:'🇷🇸 Serbian',de:'🇷🇸 Serbisch',ru:'🇷🇸 Сербский'}};
 function getLangDisplay(code){ var m=LANG_DISPLAY[code]; if(!m) return code; return m[curLang]||m.el; }
 
 function renderCountByLang(){
@@ -1253,10 +1298,7 @@ function exportCountCSV(){
     }
   }
   var blob=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8'});
-  var a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='counts.csv';
-  a.click();
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='counts.csv'; a.click();
 }
 
 /* ---------- 22. JW DROPDOWN ---------- */
@@ -1384,10 +1426,16 @@ function checkAdmin(){
 function saveNewPass(){
   var np=document.getElementById('newPass').value.trim();
   var recEmail=document.getElementById('recoveryEmail').value.trim();
-  if(np){ if(np.length<3){ return; } adminPass=np; localStorage.setItem('stand_pass',adminPass); }
+  if(np){
+    if(np.length<3){ return; }
+    adminPass=np;
+    localStorage.setItem('stand_pass',adminPass);
+  }
   if(recEmail){ if(recEmail.indexOf('@')===-1){ return; } localStorage.setItem('stand_recovery_email',recEmail); }
   document.getElementById('passMsg').textContent='✅';
   document.getElementById('newPass').value='';
+  // Sync settings to cloud so all phones get the new password
+  if(cloudEnabled && cloudDb){ syncSettingsToCloud(); }
 }
 function showForgot(){ document.getElementById('forgotBox').style.display='block'; var saved=localStorage.getItem('stand_recovery_email')||''; if(saved) document.getElementById('forgotEmail').value=saved; }
 function hideForgot(){ document.getElementById('forgotBox').style.display='none'; document.getElementById('resetCodeBox').style.display='none'; }
@@ -1428,6 +1476,7 @@ function verifyResetCode(){
   localStorage.removeItem('stand_reset_code');
   localStorage.removeItem('stand_reset_expiry');
   msgEl.textContent='✅';
+  if(cloudEnabled && cloudDb){ syncSettingsToCloud(); }
   setTimeout(function(){ hideForgot(); document.getElementById('pinCheck').value=newP; checkAdmin(); },1000);
 }
 
@@ -1438,7 +1487,23 @@ function initCloudElements(){
   var fc=document.getElementById('fbConfig'); if(fc) fc.value=fbConfigStr;
   updateCloudStatus(cloudEnabled?'...':'Offline');
 }
-function saveCloudId(){ var ci=document.getElementById('cloudId'); cloudId=ci.value.trim()||'stand-athens-1'; localStorage.setItem('stand_cloud_id',cloudId); if(cloudEnabled) initFirebase(); }
+function copyCloudId(){
+  var v=cloudId;
+  if(navigator.clipboard) navigator.clipboard.writeText(v).then(function(){ alert('✓ '+v); });
+  else alert(v);
+}
+function saveCloudId(){
+  var ci=document.getElementById('cloudId');
+  cloudId=ci.value.trim()||'stand-athens-1';
+  localStorage.setItem('stand_cloud_id',cloudId);
+  // Ensure cloud is enabled
+  cloudEnabled=true;
+  localStorage.setItem('stand_cloud_enabled','true');
+  var ce=document.getElementById('cloudEnabled'); if(ce) ce.checked=true;
+  updateSyncCodeDisplay();
+  alert('✅ ' + cloudId);
+  initFirebase();
+}
 function saveFbConfig(){ var fc=document.getElementById('fbConfig'); fbConfigStr=fc.value.trim(); localStorage.setItem('stand_fb_config',fbConfigStr); if(cloudEnabled) initFirebase(); }
 function toggleCloud(){
   var ce=document.getElementById('cloudEnabled');
@@ -1469,9 +1534,18 @@ async function initFirebase(){
     cloudUnsub=window._fb.onSnapshot(dRef, function(snap){
       if(!snap.exists()){ updateCloudStatus('No data'); return; }
       var data=snap.data();
-      if(data && data.items && !isSyncingFromCloud){
+      if(!data || !data.items) return;
+      // Sync items
+      if(data.items && !isSyncingFromCloud){
         isSyncingFromCloud=true;
         items=cleanItems(data.items).filter(function(it){ return it.presetId!==31 && (it.names && it.names.el||'').indexOf('Μελέτης')<0; });
+        if(data.adminPass && data.adminPass !== adminPass){
+          adminPass = data.adminPass;
+          localStorage.setItem('stand_pass', adminPass);
+        }
+        if(data.recoveryEmail){
+          localStorage.setItem('stand_recovery_email', data.recoveryEmail);
+        }
         save(); render();
         updateCloudStatus('Sync');
         isSyncingFromCloud=false;
@@ -1480,13 +1554,30 @@ async function initFirebase(){
     updateCloudStatus('Sync');
   }catch(e){ updateCloudStatus('Error: '+e.message); }
 }
+async function syncSettingsToCloud(){
+  if(!cloudEnabled || !cloudDb) return;
+  try{
+    var dRef=window._fb.doc(cloudDb,'stands',cloudId);
+    await window._fb.setDoc(dRef,{
+      items: items,
+      adminPass: adminPass,
+      recoveryEmail: localStorage.getItem('stand_recovery_email') || '',
+      updated: Date.now()
+    },{merge:true});
+  }catch(e){ console.log('Sync settings error', e); }
+}
 async function pushToCloud(){
   if(!cloudEnabled){ alert('Cloud off'); return; }
   if(!cloudDb){ alert('No DB'); return; }
   try{
     updateCloudStatus('...');
     var dRef=window._fb.doc(cloudDb,'stands',cloudId);
-    await window._fb.setDoc(dRef,{items:items,updated:Date.now()},{merge:true});
+    await window._fb.setDoc(dRef,{
+      items: items,
+      adminPass: adminPass,
+      recoveryEmail: localStorage.getItem('stand_recovery_email') || '',
+      updated: Date.now()
+    },{merge:true});
     updateCloudStatus('Sync ↑');
   }catch(e){ alert(e.message); }
 }
@@ -1499,7 +1590,10 @@ async function pullFromCloud(){
     var snap=await window._fb.getDoc(dRef);
     if(snap.exists() && snap.data().items){
       isSyncingFromCloud=true;
-      items=cleanItems(snap.data().items).filter(function(it){ return it.presetId!==31 && (it.names && it.names.el||'').indexOf('Μελέτης')<0; });
+      var data = snap.data();
+      items=cleanItems(data.items).filter(function(it){ return it.presetId!==31 && (it.names && it.names.el||'').indexOf('Μελέτης')<0; });
+      if(data.adminPass){ adminPass=data.adminPass; localStorage.setItem('stand_pass',adminPass); }
+      if(data.recoveryEmail){ localStorage.setItem('stand_recovery_email',data.recoveryEmail); }
       save(); render();
       updateCloudStatus('Sync ↓');
       isSyncingFromCloud=false;
@@ -1532,6 +1626,7 @@ function init(){
   updateJwDatalist();
   render();
   initCloudElements();
+  updateSyncCodeDisplay();
   if(cloudEnabled) setTimeout(initFirebase,1000);
 }
 document.addEventListener('DOMContentLoaded', init);

@@ -9,80 +9,114 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
-*{box-sizing:border-box} body{margin:0;padding:0;background:#0f0f0f;color:#fff;font-family:Arial,sans-serif;font-size:15px}
-.header{background:#1a1a1a;padding:10px;text-align:center;border-bottom:3px solid #f59e0b;position:sticky;top:0;z-index:100}
-h1{color:#f59e0b;margin:0;font-size:1.3em} .small{font-size:0.75em;color:#999}
-button{padding:10px 12px;border-radius:8px;border:0;background:#f59e0b;color:#000;font-weight:bold;cursor:pointer;margin:3px 2px} button:active{transform:scale(0.97)}
-button.sec{background:#333;color:#fff} button.red{background:#ef4444;color:#fff} button.green{background:#22c55e;color:#000}
-button.typebtn{flex:1;padding:8px;font-size:0.8em;background:#333;color:#fff} button.typebtn.active{background:#f59e0b;color:#000}
+:root{--bg:#0f0f0f;--card:#1e1e1e;--card2:#252525;--text:#fff;--muted:#999;--border:#333;--header:#1a1a1a}
+body.day{--bg:#f5f5f5;--card:#ffffff;--card2:#f0f0f0;--text:#111;--muted:#666;--border:#ddd;--header:#ffffff}
+*{box-sizing:border-box}
+body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif;font-size:15px;transition:background 0.3s,color 0.3s}
+.header{background:var(--header);padding:10px;text-align:center;border-bottom:3px solid #f59e0b;position:sticky;top:0;z-index:100}
+h1{color:#f59e0b;margin:0;font-size:1.3em}
+.small{font-size:0.75em;color:var(--muted)}
+button{padding:10px 12px;border-radius:8px;border:0;background:#f59e0b;color:#000;font-weight:bold;cursor:pointer;margin:3px 2px}
+button:active{transform:scale(0.97)}
+button.sec{background:var(--card2);color:var(--text)}
+button.red{background:#ef4444;color:#fff}
+button.green{background:#22c55e;color:#000}
+button.typebtn{flex:1;padding:8px;font-size:0.8em;background:var(--card2);color:var(--text)}
+button.typebtn.active{background:#f59e0b;color:#000}
+button:disabled{opacity:0.5;cursor:not-allowed}
 .wrap{padding:8px;max-width:800px;margin:0 auto}
-.card{background:#1e1e1e;border:1px solid #333;border-radius:12px;padding:12px;margin:8px 0}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;margin:8px 0}
 label{color:#f59e0b;font-size:0.85em;font-weight:bold;display:block;margin:8px 0 3px}
-input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid #555;background:#2a2a2a;color:#fff;font-size:1em}
-/* ============ LIST ITEM — ΜΙΚΡΟΤΕΡΑ ΓΡΑΜΜΑΤΑ ============ */
-.item{background:#252525;padding:10px;border-radius:8px;margin:6px 0;display:flex;justify-content:space-between;align-items:center;gap:8px}
-.item .item-name{font-size:var(--list-font-size, 13px);font-weight:bold;line-height:1.3;word-break:break-word}
-.item .item-cat{font-size:calc(var(--list-font-size, 13px) * 0.8);color:#999;line-height:1.2}
-.item .item-badge{font-size:calc(var(--list-font-size, 13px) * 0.75);padding:3px 8px;border-radius:99px;font-weight:bold;display:inline-block;margin-top:3px}
-.item .type-label{font-size:calc(var(--list-font-size, 13px) * 0.7);padding:2px 6px;border-radius:99px;font-weight:bold}
-.item .lang-badge{display:inline-block;padding:2px 6px;border-radius:99px;font-size:calc(var(--list-font-size, 13px) * 0.7);font-weight:bold;vertical-align:middle;border:1px solid rgba(255,255,255,0.15)}
-.item .qty-display{font-size:var(--list-font-size, 13px);padding:0 6px;font-weight:bold;min-width:20px;text-align:center}
-.item .qty-btn{font-size:calc(var(--list-font-size, 13px) * 0.95);padding:6px 10px;border-radius:6px;border:0;font-weight:bold;cursor:pointer;background:#f59e0b;color:#000;margin:0 1px}
-.item .qty-btn.minus{background:#333;color:#fff}
-.item .rename-btn{background:#06b6d4!important;color:#000!important;padding:6px 8px!important;font-size:calc(var(--list-font-size, 13px) * 0.95)!important;margin-left:2px!important;border-radius:6px;border:0;font-weight:bold;cursor:pointer}
-.item .del-btn{background:#ef4444;color:#fff;padding:6px 8px;border-radius:6px;border:0;font-weight:bold;cursor:pointer;margin-left:2px}
-.badge{padding:3px 8px;border-radius:99px;font-weight:bold} .bad{background:#ef4444;color:#fff} .good{background:#22c55e;color:#000}
-.t-flyer{background:#06b6d4;color:#000} .t-mag{background:#f59e0b;color:#000} .t-booklet{background:#22c55e;color:#000} .t-book{background:#a855f7;color:#fff}
+input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:1em}
+.item{background:var(--card2);padding:10px;border-radius:8px;margin:6px 0;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.item.fav{border-left:3px solid #f59e0b}
+.item .item-name{font-size:var(--list-font-size,13px);font-weight:bold;line-height:1.3;word-break:break-word}
+.item .item-cat{font-size:calc(var(--list-font-size,13px)*0.8);color:var(--muted);line-height:1.2}
+.item .item-badge{font-size:calc(var(--list-font-size,13px)*0.75);padding:3px 8px;border-radius:99px;font-weight:bold;display:inline-block;margin-top:3px}
+.item .type-label{font-size:calc(var(--list-font-size,13px)*0.7);padding:2px 6px;border-radius:99px;font-weight:bold}
+.item .lang-badge{display:inline-block;padding:2px 6px;border-radius:99px;font-size:calc(var(--list-font-size,13px)*0.7);font-weight:bold;vertical-align:middle;border:1px solid rgba(255,255,255,0.15)}
+.item .qty-display{font-size:var(--list-font-size,13px);padding:0 6px;font-weight:bold;min-width:20px;text-align:center}
+.item .qty-btn{font-size:calc(var(--list-font-size,13px)*0.95);padding:6px 10px;border-radius:6px;border:0;font-weight:bold;cursor:pointer;background:#f59e0b;color:#000;margin:0 1px}
+.item .qty-btn.minus{background:var(--card);color:var(--text);border:1px solid var(--border)}
+.item .icon-btn{background:var(--card);color:var(--text);padding:6px 8px;border-radius:6px;border:1px solid var(--border);font-weight:bold;cursor:pointer;margin-left:2px;font-size:calc(var(--list-font-size,13px)*0.9)}
+.item .fav-btn{background:transparent;color:#f59e0b;font-size:1.2em;padding:4px 6px;border:0;cursor:pointer}
+.item .fav-btn.inactive{color:var(--muted);opacity:0.5}
+.badge{padding:3px 8px;border-radius:99px;font-weight:bold}
+.bad{background:#ef4444;color:#fff}
+.good{background:#22c55e;color:#000}
+.t-flyer{background:#06b6d4;color:#000}
+.t-mag{background:#f59e0b;color:#000}
+.t-booklet{background:#22c55e;color:#000}
+.t-book{background:#a855f7;color:#fff}
 .t-poster{background:#ec4899;color:#fff}
-.lang-el{background:#06b6d4;color:#000} .lang-en{background:#3b82f6;color:#fff} .lang-de{background:#eab308;color:#000} .lang-ru{background:#8b5cf6;color:#fff} .lang-sq{background:#dc2626;color:#fff} .lang-ro{background:#0891b2;color:#fff} .lang-ar{background:#16a34a;color:#fff} .lang-fa{background:#a855f7;color:#fff} .lang-fr{background:#2563eb;color:#fff} .lang-es{background:#f59e0b;color:#000} .lang-it{background:#22c55e;color:#000} .lang-pl{background:#e11d48;color:#fff} .lang-hr{background:#ef4444;color:#fff} .lang-bg{background:#84cc16;color:#000} .lang-uk{background:#facc15;color:#000} .lang-hu{background:#f97316;color:#fff} .lang-hy{background:#b91c1c;color:#fff} .lang-tr{background:#dc2626;color:#fff} .lang-sr{background:#1e40af;color:#fff}
-.row{display:flex;gap:6px} .row>div{flex:1}
-.stats{display:flex;gap:5px;flex-wrap:wrap} .stat{flex:1;min-width:60px;text-align:center;background:#252525;border-radius:8px;padding:8px 4px}
-#adminScreen{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:9999;overflow:auto;display:none;padding:10px}
+.lang-el{background:#06b6d4;color:#000}.lang-en{background:#3b82f6;color:#fff}.lang-de{background:#eab308;color:#000}.lang-ru{background:#8b5cf6;color:#fff}.lang-sq{background:#dc2626;color:#fff}.lang-ro{background:#0891b2;color:#fff}.lang-ar{background:#16a34a;color:#fff}.lang-fa{background:#a855f7;color:#fff}.lang-fr{background:#2563eb;color:#fff}.lang-es{background:#f59e0b;color:#000}.lang-it{background:#22c55e;color:#000}.lang-pl{background:#e11d48;color:#fff}.lang-hr{background:#ef4444;color:#fff}.lang-bg{background:#84cc16;color:#000}.lang-uk{background:#facc15;color:#000}.lang-hu{background:#f97316;color:#fff}.lang-hy{background:#b91c1c;color:#fff}.lang-tr{background:#dc2626;color:#fff}.lang-sr{background:#1e40af;color:#fff}
+.row{display:flex;gap:6px}
+.row>div{flex:1}
+.stats{display:flex;gap:5px;flex-wrap:wrap}
+.stat{flex:1;min-width:60px;text-align:center;background:var(--card2);border-radius:8px;padding:8px 4px}
+#adminScreen{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);z-index:9999;overflow:auto;display:none;padding:10px}
 #scannerBox{display:none;background:#000;padding:10px;border-radius:12px;margin:8px 0;border:2px solid #06b6d4}
-.photo-thumb{width:40px;height:40px;border-radius:6px;object-fit:cover;background:#333;flex-shrink:0}
-.voice-active{animation:pulse 1s infinite; background:#ef4444!important}
+.photo-thumb{width:40px;height:40px;border-radius:6px;object-fit:cover;background:var(--card);flex-shrink:0}
+.voice-active{animation:pulse 1s infinite;background:#ef4444!important}
 @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
-.log-entry{font-size:0.8em;padding:4px 0;border-bottom:1px solid #333}
+.log-entry{font-size:0.8em;padding:4px 0;border-bottom:1px solid var(--border)}
 .count-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:10px}
-.count-box{background:#1a1a1a;border-radius:8px;padding:10px;text-align:center;border:1px solid #333}
+.count-box{background:var(--card2);border-radius:8px;padding:10px;text-align:center;border:1px solid var(--border)}
 .count-box .num{font-size:1.5em;font-weight:bold;color:#f59e0b}
-.count-box .label{font-size:0.8em;color:#ccc;margin-top:4px}
+.count-box .label{font-size:0.8em;color:var(--muted);margin-top:4px}
 .count-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:0.85em}
-.count-table th{background:#222;padding:8px;text-align:left;color:#f59e0b}
-.count-table td{padding:8px;border-bottom:1px solid #333}
-.count-table tr:hover{background:#1a1a1a}
-#ccOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:99999;justify-content:center;align-items:center;padding:20px;box-sizing:border-box}
-#ccOverlay.show{display:flex}
-#ccBox{background:#1e1e1e;border:2px solid #f59e0b;border-radius:14px;padding:22px 18px;max-width:420px;width:100%;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.6)}
-#ccTitle{color:#f59e0b;font-size:1.15em;font-weight:bold;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #333}
-#ccMsg{color:#fff;font-size:1.05em;line-height:1.5;margin-bottom:20px;word-wrap:break-word}
+.count-table th{background:var(--card2);padding:8px;text-align:left;color:#f59e0b}
+.count-table td{padding:8px;border-bottom:1px solid var(--border)}
+#ccOverlay,#rnOverlay,#undOverlay,#qcOverlay,#userOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:99999;justify-content:center;align-items:center;padding:20px;box-sizing:border-box}
+#ccOverlay.show,#rnOverlay.show,#undOverlay.show,#qcOverlay.show,#userOverlay.show{display:flex}
+#ccBox,#rnBox,#userBox{background:var(--card);border:2px solid #f59e0b;border-radius:14px;padding:22px 18px;max-width:440px;width:100%;text-align:center;max-height:90vh;overflow:auto}
+#ccTitle,#rnBox h3,#userBox h3{color:#f59e0b;font-size:1.15em;font-weight:bold;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);text-align:center}
+#ccMsg{color:var(--text);font-size:1.05em;line-height:1.5;margin-bottom:20px;word-wrap:break-word}
 #ccButtons{display:flex;gap:10px}
 #ccButtons button{flex:1;padding:14px 10px;font-size:1em;font-weight:bold;border-radius:10px;border:0;cursor:pointer;margin:0}
 #ccOk{background:#22c55e;color:#000}
 #ccCancel{background:#555;color:#fff}
-.file-btn{display:inline-block;padding:12px 16px;background:#333;color:#fff;border-radius:8px;font-weight:bold;cursor:pointer;font-size:0.95em;margin-top:4px;border:1px solid #555;text-align:center;width:100%}
-.file-btn:active{transform:scale(0.98);background:#444}
+.file-btn{display:inline-block;padding:12px 16px;background:var(--card2);color:var(--text);border-radius:8px;font-weight:bold;cursor:pointer;font-size:0.95em;margin-top:4px;border:1px solid var(--border);text-align:center;width:100%}
 .file-name{display:block;font-size:0.8em;color:#22c55e;margin-top:6px;word-break:break-all}
-.sync-status-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:99px;font-size:0.9em;font-weight:bold;background:#333;color:#fff;margin-top:6px}
-.sync-status-badge.synced{background:#22c55e;color:#000}
-.sync-status-badge.syncing{background:#f59e0b;color:#000}
-.sync-status-badge.offline{background:#ef4444;color:#fff}
-.sync-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:currentColor;animation:pulse2 1.5s infinite}
+.sync-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:99px;font-size:0.8em;font-weight:bold;background:var(--card2);color:var(--text);cursor:pointer}
+.sync-chip.synced{background:#22c55e;color:#000}
+.sync-chip.syncing{background:#f59e0b;color:#000}
+.sync-chip.offline{background:#ef4444;color:#fff}
+.sync-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:currentColor;animation:pulse2 1.5s infinite}
 @keyframes pulse2{0%,100%{opacity:1}50%{opacity:0.4}}
-#rnOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99998;justify-content:center;align-items:center;padding:20px;box-sizing:border-box}
-#rnOverlay.show{display:flex}
-#rnBox{background:#1e1e1e;border:2px solid #06b6d4;border-radius:14px;padding:22px 18px;max-width:480px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,0.6)}
-#rnBox h3{color:#06b6d4;margin:0 0 14px;font-size:1.1em;text-align:center}
-.rn-lang-row{margin-bottom:10px}
-.rn-lang-row label{font-size:0.8em;color:#f59e0b;margin:0 0 3px}
-.rn-lang-row input{font-size:0.95em;padding:9px}
-.rn-actions{display:flex;gap:8px;margin-top:16px}
-.rn-actions button{flex:1;padding:12px;border-radius:8px;border:0;font-weight:bold;cursor:pointer}
-.rn-save{background:#22c55e;color:#000}
-.rn-cancel{background:#555;color:#fff}
-/* Font preview box */
-.preview-box{background:#252525;padding:10px;border-radius:8px;margin-top:8px}
-.preview-box .preview-title{font-size:0.75em;color:#f59e0b;margin-bottom:6px;font-weight:bold}
+.user-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;background:#a855f7;color:#fff;font-size:0.85em;font-weight:bold;cursor:pointer}
+.user-chip.no-user{background:var(--card2);color:var(--muted)}
+.today-card{background:linear-gradient(135deg,#f59e0b 0%,#ec4899 100%);color:#fff;border-radius:12px;padding:12px;margin:8px 0;display:flex;justify-content:space-around;text-align:center}
+.today-card .num{font-size:1.6em;font-weight:bold}
+.today-card .lbl{font-size:0.75em;opacity:0.9}
+.toolbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.toolbar select{padding:6px 8px;font-size:0.85em;flex:1;min-width:120px}
+#undBox{background:var(--card);border:2px solid #06b6d4;border-radius:12px;padding:16px;max-width:400px;width:100%;text-align:center;color:var(--text)}
+#undBox .btn-row{display:flex;gap:10px;margin-top:12px}
+#undBox button{flex:1;padding:12px}
+#qcOverlay{background:var(--bg);align-items:flex-start;padding:0}
+#qcContent{width:100%;max-width:800px;height:100%;overflow:auto;padding:8px}
+.qc-tile{background:var(--card2);border-radius:12px;padding:14px;margin:8px 0;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.qc-tile .qc-info{flex:1;min-width:0}
+.qc-tile .qc-name{font-size:1.1em;font-weight:bold}
+.qc-tile .qc-cat{font-size:0.8em;color:var(--muted);margin-top:2px}
+.qc-tile .qc-qty{font-size:1.8em;font-weight:bold;color:#f59e0b;min-width:60px;text-align:center}
+.qc-plus{background:#22c55e;color:#000;width:60px;height:60px;border-radius:50%;font-size:1.5em;border:0;font-weight:bold;cursor:pointer}
+.qc-minus{background:var(--card);color:var(--text);width:60px;height:60px;border-radius:50%;font-size:1.5em;border:1px solid var(--border);font-weight:bold;cursor:pointer}
+.perm-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}
+.perm-grid label{display:flex;align-items:center;gap:6px;font-size:0.85em;color:var(--text);font-weight:normal;background:var(--card2);padding:8px;border-radius:8px;cursor:pointer}
+.perm-grid input{width:auto;margin:0}
+.user-row{display:flex;justify-content:space-between;align-items:center;background:var(--card2);padding:10px;border-radius:8px;margin:6px 0;gap:8px}
+.user-row .uname{font-weight:bold}
+.user-row .urole{font-size:0.7em;padding:2px 8px;border-radius:10px;font-weight:bold}
+.role-admin{background:#ef4444;color:#fff}
+.role-manager{background:#f59e0b;color:#000}
+.role-counter{background:#22c55e;color:#000}
+.role-viewer{background:#6b7280;color:#fff}
+.permissions-badge{font-size:0.7em;color:var(--muted);margin-top:2px}
+.notice-box{border-radius:8px;padding:10px;margin:8px 0;font-size:0.85em}
+body:not(.day) .notice-box{background:#3a2a00;color:#fbbf24;border:1px solid #f59e0b}
+body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </style>
 </head>
 <body>
@@ -90,37 +124,44 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 <div class="header">
 <h1>STAND MANAGER PRO</h1>
 <div id="currentStandDisplay" style="font-size:0.9em;color:#22c55e;font-weight:bold;margin-top:2px"></div>
-<div class="small" data-i18n="subTitle">Για συνεργάτες - ULTIMATE</div>
+<div style="margin-top:6px;display:flex;gap:5px;justify-content:center;align-items:center;flex-wrap:wrap">
+<span class="sync-chip offline" id="syncChip" onclick="showSyncInfo()"><span class="sync-dot"></span><span id="syncChipText">Offline</span></span>
+<span class="user-chip no-user" id="userChip" onclick="openUserSelector()">👤 <span id="userChipText" data-i18n="pickBtnLabel">Επιλογή</span></span>
+</div>
 <div style="margin-top:6px;display:flex;gap:3px;justify-content:center;flex-wrap:wrap">
-<button onclick="setL('el')" id="bl-el" class="active">EL 🇬🇷</button>
-<button onclick="setL('en')" id="bl-en">EN 🇬🇧</button>
-<button onclick="setL('de')" id="bl-de">DE 🇩🇪</button>
-<button onclick="setL('ru')" id="bl-ru">RU 🇷🇺</button>
-<button onclick="openAdmin()" data-i18n="bAdmin" style="background:#222;color:#f59e0b;border:1px solid #f59e0b">🔐 Admin</button>
-<button onclick="installPWA()" id="bInstall" data-i18n="bInstall" style="background:#06b6d4;color:#000;display:none">📲 Εγκατάσταση</button>
+<button onclick="setL('el')" id="bl-el" class="active" style="padding:6px 10px;font-size:0.85em">EL</button>
+<button onclick="setL('en')" id="bl-en" style="padding:6px 10px;font-size:0.85em">EN</button>
+<button onclick="setL('de')" id="bl-de" style="padding:6px 10px;font-size:0.85em">DE</button>
+<button onclick="setL('ru')" id="bl-ru" style="padding:6px 10px;font-size:0.85em">RU</button>
+<button onclick="toggleTheme()" id="bTheme" style="padding:6px 10px;font-size:0.85em;background:var(--card2);color:var(--text)">🌙</button>
+<button onclick="openQuickCount()" id="bQuick" style="padding:6px 10px;font-size:0.85em;background:#a855f7;color:#fff">🎯</button>
+<button onclick="openAdmin()" id="bAdmin" style="padding:6px 10px;font-size:0.85em;background:var(--card2);color:#f59e0b;border:1px solid #f59e0b">🔐</button>
+<button onclick="installPWA()" id="bInstall" style="padding:6px 10px;font-size:0.85em;background:#06b6d4;color:#000;display:none">📲</button>
 </div>
 </div>
 
 <div class="wrap">
 
-<div class="card" style="border:1px solid #333;text-align:center">
-<div style="display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px">
-<span class="sync-status-badge offline" id="syncStatusBadge"><span class="sync-dot"></span><span id="syncStatusText">Offline</span></span>
-<span class="small" id="lastSyncMain" style="color:#888"></span>
+<div class="today-card" id="todayCard">
+<div><div class="num" id="tAdd">0</div><div class="lbl" data-i18n="tAdded">Προστέθηκαν</div></div>
+<div><div class="num" id="tRem">0</div><div class="lbl" data-i18n="tRemoved">Μειώθηκαν</div></div>
+<div><div class="num" id="tOrder">0</div><div class="lbl" data-i18n="tOrders">Παραγγελίες</div></div>
 </div>
-<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
-<button onclick="pushToCloud()" id="bPushMain" data-i18n="bPushMain" style="flex:1;background:#06b6d4;color:#000">☁️ Αποστολή</button>
-<button onclick="pullFromCloud()" id="bPullMain" data-i18n="bPullMain" style="flex:1" class="sec">⬇️ Λήψη</button>
-<button onclick="startScanner()" id="bScan" data-i18n="bScan" style="flex:1;background:#a855f7;color:#fff">📷 Scan</button>
-<button onclick="startVoice()" id="bVoice" data-i18n="bVoice" style="flex:1;background:#ef4444;color:#fff">🎙️ Φωνή</button>
+
+<div class="card" style="text-align:center">
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<button onclick="pushToCloud()" style="flex:1;background:#06b6d4;color:#000" data-i18n="bPush">☁️ Αποστολή</button>
+<button onclick="pullFromCloud()" style="flex:1" class="sec" data-i18n="bPull">⬇️ Λήψη</button>
+<button onclick="startScanner()" style="flex:1;background:#a855f7;color:#fff" data-i18n="bScan">📷 Scan</button>
+<button onclick="startVoice()" style="flex:1;background:#ef4444;color:#fff" data-i18n="bVoice">🎙️ Φωνή</button>
 </div>
 <div id="scannerBox">
 <div id="reader" style="width:100%"></div>
-<button onclick="stopScanner()" class="sec" data-i18n="bCloseScanner" style="width:100%;margin-top:6px">✕ Κλείσιμο scanner</button>
+<button onclick="stopScanner()" class="sec" style="width:100%;margin-top:6px">✕</button>
 <div class="small" id="scanResult" style="margin-top:6px"></div>
 </div>
 <div id="voiceBox" style="display:none;margin-top:8px;background:#1a0000;padding:8px;border-radius:8px;border:1px solid #ef4444">
-<span id="voiceText" class="small" data-i18n="voiceHint">Πες π.χ. «Σκοπιά 5»</span>
+<span id="voiceText" class="small" data-i18n="voiceHint">Πες τίτλο και αριθμό</span>
 </div>
 </div>
 
@@ -134,105 +175,113 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 <div class="stat"><div id="need" style="color:#ef4444;font-weight:bold">0</div><div class="small" data-i18n="lNeed">Παραγγελία</div></div>
 </div>
 
-<div class="card" style="border:2px solid #06b6d4;background:#0a1a2a">
+<div class="card" style="border:2px solid #06b6d4;background:var(--card)">
 <b style="color:#06b6d4" data-i18n="lCountLang">📊 Καταμέτρηση ανά Γλώσσα</b>
-<div class="small" data-i18n="lCountLangDesc" style="color:#ccc;margin-top:4px"></div>
 <div id="countByLang" class="count-grid" style="margin-top:10px"></div>
 </div>
 
-<div class="card" style="border:2px solid #22c55e;background:#0a1a0f">
+<div class="card" style="border:2px solid #22c55e;background:var(--card)">
 <b style="color:#22c55e" data-i18n="lCountType">📚 Καταμέτρηση ανά Είδος</b>
-<div class="small" data-i18n="lCountTypeDesc" style="color:#ccc;margin-top:4px"></div>
 <div id="countByType" class="count-grid" style="margin-top:10px"></div>
 </div>
 
-<div class="card" style="border:2px solid #f59e0b;background:#1a1a0a">
-<b style="color:#f59e0b" data-i18n="lCountLangType">🌍 Καταμέτρηση ανά Γλώσσα και Είδος</b>
-<div class="small" data-i18n="lCountLangTypeDesc" style="color:#ccc;margin-top:4px"></div>
+<div class="card" style="border:2px solid #f59e0b;background:var(--card)">
+<b style="color:#f59e0b" data-i18n="lCountLangType">🌍 Γλώσσα × Είδος</b>
 <div style="overflow:auto">
-<table class="count-table" id="countLangTypeTable">
+<table class="count-table">
 <thead><tr>
-<th data-i18n="thLangType">Γλώσσα / Είδος</th>
-<th data-i18n="thFlyer">📄 Φυλλάδια</th>
-<th data-i18n="thMag">📚 Περιοδικά</th>
-<th data-i18n="thBooklet">📖 Βιβλιάρια</th>
-<th data-i18n="thBook">📘 Βιβλία</th>
-<th data-i18n="thPoster">🖼️ Πόστερ</th>
-<th data-i18n="thCard">🃏 Κάρτες</th>
-<th data-i18n="thTotal">📦 Σύνολο</th>
+<th data-i18n="thLangType">Γλώσσα</th>
+<th>📄</th><th>📚</th><th>📖</th><th>📘</th><th>🖼️</th><th>🃏</th><th data-i18n="thTotal">Σύνολο</th>
 </tr></thead>
 <tbody id="countLangTypeBody"></tbody>
 </table>
 </div>
 <div style="display:flex;gap:4px;margin-top:8px">
-<button onclick="renderCountByLangType()" data-i18n="lCountRefresh" class="sec" style="flex:1">🔄 Ανανέωση</button>
-<button onclick="exportCountCSV()" data-i18n="lCountExport" class="sec" style="flex:1">📊 Εξαγωγή CSV</button>
+<button onclick="renderCountByLangType()" class="sec" style="flex:1">🔄</button>
+<button onclick="exportCountCSV()" class="sec" style="flex:1">📊 CSV</button>
 </div>
-</div>
-
-<div class="card" style="border:1px solid #333">
-<b data-i18n="lFilterCount">🔍 Φίλτρα Καταμέτρησης</b>
-<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
-<select id="filterLangCount" onchange="filterAndCount()" style="flex:1"></select>
-<select id="filterTypeCount" onchange="filterAndCount()" style="flex:1"></select>
-</div>
-<div id="filteredCountResult" style="margin-top:10px;background:#111;border-radius:8px;padding:10px"></div>
 </div>
 
 <div class="card">
 <b data-i18n="lChart">📊 Γραφήματα</b>
 <canvas id="chartMain" style="max-height:220px;margin-top:8px"></canvas>
 <div style="display:flex;gap:4px;margin-top:8px">
-<button onclick="renderCharts()" data-i18n="bChartRefresh" class="sec" style="flex:1">🔄 Ανανέωση</button>
-<button onclick="exportChart()" data-i18n="bChartExport" class="sec" style="flex:1">📸 Εξαγωγή</button>
+<button onclick="renderCharts()" class="sec" style="flex:1">🔄</button>
+<button onclick="exportChart()" class="sec" style="flex:1">📸</button>
 </div>
-</div>
-
-<div class="card" style="background:#1a2a1a;border:1px solid #22c55e">
-<b style="color:#22c55e" data-i18n="lPre">✅ Προ-φορτωμένοι:</b>
-<span class="small" data-i18n="lPreDesc">Μεταφράζονται</span>
-<button class="sec" onclick="loadPresets()" data-i18n="bRestore" style="width:100%;margin-top:6px">🔄 Επαναφορά</button>
-</div>
-
-<div class="card" style="background:#0f1a0f;border:2px solid #22c55e">
-<b style="color:#22c55e" data-i18n="presetsTitle">📚 Τίτλοι jw.org (μόνο δημόσιες εκδόσεις)</b>
-<div class="small" data-i18n="presetsDesc" style="margin-top:4px;color:#aaa"></div>
-<div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap">
-<button onclick="filterPresetList('all')" class="sec" id="presetAllBtn" style="font-size:0.7em"></button>
-<button onclick="filterPresetList('Φυλλάδιο')" class="sec" data-i18n="fFlyer" style="font-size:0.7em">📄 Φυλλάδια</button>
-<button onclick="filterPresetList('Περιοδικό')" class="sec" data-i18n="fMag" style="font-size:0.7em">📚 Περιοδικά</button>
-<button onclick="filterPresetList('Βιβλιάριο')" class="sec" data-i18n="fBooklet" style="font-size:0.7em">📖 Βιβλιάρια</button>
-<button onclick="filterPresetList('Πόστερ')" class="sec" data-i18n="fPoster" style="font-size:0.7em">🖼️ Πόστερ</button>
-</div>
-<div id="presetList" style="max-height:350px;overflow:auto;background:#0a0a0a;border-radius:8px;padding:6px;margin-top:8px"></div>
 </div>
 
 <div class="card">
-<label data-i18n="lSearch">🔍 Αναζήτηση</label>
-<input id="search" data-i18n-ph="phSearch" placeholder="Γράψε τίτλο..." oninput="render()">
-</div>
-
-<div class="card">
-<div style="display:flex;justify-content:space-between">
+<div style="display:flex;justify-content:space-between;align-items:center">
 <b data-i18n="listTitle">📦 Όλα τα είδη</b>
 <span class="small" data-i18n="lHint">Πάτα ✏️ για μετονομασία</span>
+</div>
+<div class="toolbar">
+<input id="search" placeholder="🔍..." oninput="render()" style="flex:2;padding:8px">
+<select id="sortSelect" onchange="setSort(this.value)" style="flex:1">
+<option value="low" data-i18n="sortLow">⚠️ Χαμηλό απόθεμα</option>
+<option value="fav" data-i18n="sortFav">⭐ Αγαπημένα</option>
+<option value="name" data-i18n="sortName">🔤 Αλφαβητικά</option>
+<option value="qty" data-i18n="sortQty">📊 Ποσότητα</option>
+<option value="new" data-i18n="sortNew">🆕 Πρόσφατα</option>
+</select>
+</div>
+<div class="toolbar">
+<select id="typeFilter" onchange="setTypeFilter(this.value)" style="flex:1">
+<option value="all" data-i18n="fAll">Όλα</option>
+<option value="Φυλλάδιο" data-i18n="fFlyer">📄 Φυλλάδια</option>
+<option value="Περιοδικό" data-i18n="fMag">📚 Περιοδικά</option>
+<option value="Βιβλιάριο" data-i18n="fBooklet">📖 Βιβλιάρια</option>
+<option value="Πόστερ" data-i18n="fPoster">🖼️ Πόστερ</option>
+<option value="Βιβλίο" data-i18n="fBook">📘 Βιβλία</option>
+<option value="Κάρτα" data-i18n="fCard">🃏 Κάρτες</option>
+</select>
+<select id="langFilter" onchange="setLangFilter(this.value)" style="flex:1">
+<option value="all" data-i18n="optAllLangs">🌍 Όλες</option>
+</select>
 </div>
 <div id="list" style="margin-top:8px"></div>
 </div>
 
-<div class="card" style="border:2px solid #f59e0b">
+<div class="card" id="orderBox" style="display:none;border:2px solid #ef4444;background:var(--card)">
+<b style="color:#ef4444" data-i18n="lOrder">⚠️ ΛΙΣΤΑ ΠΑΡΑΓΓΕΛΙΑΣ</b>
+<div id="orderList" style="margin-top:8px"></div>
+<div id="smartOrder" style="margin-top:10px;background:var(--card2);padding:8px;border-radius:8px;border:1px solid #f59e0b"></div>
+<div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap">
+<button onclick="copyOrder()" data-i18n="bCopy">Αντιγραφή</button>
+<button onclick="exportOrder()" class="sec">TXT</button>
+<button onclick="exportPDF()" style="background:#22c55e;color:#000">📄 PDF</button>
+<button onclick="shareWhatsApp()" style="background:#25D366;color:#000">WhatsApp</button>
+</div>
+</div>
+
+<div class="card">
+<b data-i18n="lLog">👥 Ιστορικό</b>
+<div id="logList" style="margin-top:8px;max-height:150px;overflow:auto"></div>
+<button onclick="clearLog()" class="sec" style="width:100%;margin-top:6px" data-i18n="bClearLog">Καθαρισμός</button>
+</div>
+
+<div class="card" id="dangerCard" style="border:2px solid #ef4444;background:var(--card)">
+<b style="color:#ef4444" data-i18n="lDangerZone">⚠️ Επικίνδυνη Ζώνη</b>
+<button onclick="deleteAllItems()" style="width:100%;margin-top:6px;background:#ef4444;color:#fff" data-i18n="bDeleteAll">🗑️ Διαγραφή ΟΛΩΝ</button>
+</div>
+
+<div class="card" id="addCard" style="border:2px solid #f59e0b">
 <b style="color:#f59e0b" data-i18n="lAdd">➕ Προσθήκη νέου</b>
+<div id="addPermNotice" class="notice-box" style="display:none">
+⚠️ <span data-i18n="noAddPerm">Δεν έχεις δικαίωμα προσθήκης.</span>
+</div>
 <div style="display:flex;gap:4px;margin:8px 0;flex-wrap:wrap">
-<button onclick="setAddType('Φυλλάδιο')" id="a-flyer" class="typebtn" data-i18n="aFlyer">📄 Φυλλάδιο</button>
-<button onclick="setAddType('Περιοδικό')" id="a-mag" class="typebtn active" data-i18n="aMag">📚 Περιοδικό</button>
-<button onclick="setAddType('Βιβλιάριο')" id="a-booklet" class="typebtn" data-i18n="aBooklet">📖 Βιβλιάριο</button>
-<button onclick="setAddType('Βιβλίο')" id="a-book" class="typebtn" data-i18n="aBook">📘 Βιβλίο</button>
-<button onclick="setAddType('Πόστερ')" id="a-poster" class="typebtn" data-i18n="aPoster">🖼️ Πόστερ</button>
+<button onclick="setAddType('Φυλλάδιο')" id="a-flyer" class="typebtn">📄</button>
+<button onclick="setAddType('Περιοδικό')" id="a-mag" class="typebtn active">📚</button>
+<button onclick="setAddType('Βιβλιάριο')" id="a-booklet" class="typebtn">📖</button>
+<button onclick="setAddType('Βιβλίο')" id="a-book" class="typebtn">📘</button>
+<button onclick="setAddType('Πόστερ')" id="a-poster" class="typebtn">🖼️</button>
 </div>
 <label data-i18n="lFieldType">Τύπος</label>
 <select id="addType" onchange="updateAddButtons()">
 <option value="Φυλλάδιο" data-i18n="aFlyer">📄 Φυλλάδιο</option>
-<option value="Περιοδικό" selected data-i18n="aMag">📚 Περιοδικό</option>
+<option value="Περιοδικό" data-i18n="aMag" selected>📚 Περιοδικό</option>
 <option value="Βιβλιάριο" data-i18n="aBooklet">📖 Βιβλιάριο</option>
 <option value="Βιβλίο" data-i18n="aBook">📘 Βιβλίο</option>
 <option value="Κάρτα" data-i18n="aCard">🃏 Κάρτα</option>
@@ -262,179 +311,113 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 <option value="sr" data-i18n="langSr">🇷🇸 Српски</option>
 </select>
 <label data-i18n="lFieldTitle">Τίτλος *</label>
-<div style="position:relative">
-<input id="title" list="jwTitlesList" data-i18n-ph="phTitle" placeholder="π.χ. Νέος τίτλος..." autocomplete="off" style="width:100%">
+<input id="title" list="jwTitlesList" placeholder="..." autocomplete="off">
 <datalist id="jwTitlesList"></datalist>
-<div style="position:absolute;right:2px;top:2px;display:flex;gap:2px">
-<button type="button" onclick="showAllJwTitles()" id="jwDropdownBtn" style="background:#f59e0b;color:#000;border:none;border-radius:4px;padding:8px 10px;font-weight:bold;font-size:0.8em">▼ jw.org</button>
+<div class="row">
+<div><label data-i18n="lFieldQty">Πόσα έχει</label><input id="qty" type="number" value="10"></div>
+<div><label data-i18n="lFieldMin">Ελάχιστο</label><input id="min" type="number" value="3"></div>
 </div>
-</div>
-<div id="jwQuickButtons" style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap">
-<button type="button" onclick="filterJwTitles('Φυλλάδιο')" class="sec" data-i18n="fFlyer" style="font-size:0.65em">📄 Φυλλάδια</button>
-<button type="button" onclick="filterJwTitles('Περιοδικό')" class="sec" data-i18n="fMag" style="font-size:0.65em">📚 Σκοπιά/Ξύπνα</button>
-<button type="button" onclick="filterJwTitles('Βιβλιάριο')" class="sec" data-i18n="fBooklet" style="font-size:0.65em">📖 Βιβλιάρια</button>
-<button type="button" onclick="filterJwTitles('Πόστερ')" class="sec" data-i18n="fPoster" style="font-size:0.65em">🖼️ Πόστερ</button>
-<button type="button" onclick="filterJwTitles('all')" class="sec" data-i18n="fAll" style="font-size:0.65em">📦 Όλα</button>
-</div>
-<div id="jwTitlesDropdown" style="display:none;max-height:250px;overflow:auto;background:#111;border:2px solid #f59e0b;border-radius:8px;margin-top:6px;padding:6px"></div>
 <div class="row">
 <div><label data-i18n="lFieldCat">Κατηγορία</label><input id="cat"></div>
-<div><label data-i18n="lFieldQty">Πόσα έχει</label><input id="qty" type="number" value="10"></div>
+<div><label data-i18n="lFieldBar">Barcode</label><input id="bar"></div>
 </div>
-<div class="row">
-<div><label data-i18n="lFieldMin">Ελάχιστο</label><input id="min" type="number" value="3"></div>
-<div><label data-i18n="lFieldBar">Barcode</label><input id="bar" placeholder="123456"></div>
-</div>
-<label data-i18n="lFieldPhoto">📸 Φωτογραφία (προαιρετικά)</label>
-<label for="photoInput" class="file-btn" data-i18n="bChooseFile">📁 Επιλογή αρχείου</label>
+<label for="photoInput" class="file-btn">📁 <span data-i18n="bChooseFile">Επιλογή αρχείου</span></label>
 <input type="file" id="photoInput" accept="image/*" onchange="previewPhoto(event)" style="display:none">
 <span id="fileNameDisplay" class="file-name"></span>
 <img id="photoPreview" style="display:none;width:80px;height:80px;object-fit:cover;border-radius:8px;margin-top:6px">
-<button onclick="addItem()" data-i18n="bAdd" style="width:100%;margin-top:10px">➕ Προσθήκη</button>
-<div style="margin-top:10px;border-top:1px solid #333;padding-top:8px">
+<button onclick="addItem()" id="btnAddItem" style="width:100%;margin-top:10px" data-i18n="bAdd">➕ Προσθήκη</button>
+<div style="margin-top:10px;border-top:1px solid var(--border);padding-top:8px">
 <label data-i18n="lBulk">⚡ Πολλοί μαζί</label>
 <textarea id="bulk" data-i18n-ph="phBulk" placeholder="Τίτλος 1&#10;Τίτλος 2"></textarea>
-<button class="sec" onclick="addBulk()" data-i18n="bBulk" style="width:100%;margin-top:4px">📋 Προσθήκη όλων</button>
+<button class="sec" onclick="addBulk()" id="btnAddBulk" style="width:100%;margin-top:4px">📋</button>
 </div>
-</div>
-
-<div class="card" id="orderBox" style="display:none;border:2px solid #ef4444;background:#2a1515">
-<b style="color:#ef4444" data-i18n="lOrder">⚠️ ΛΙΣΤΑ ΠΑΡΑΓΓΕΛΙΑΣ</b>
-<div id="orderList" style="margin-top:8px"></div>
-<div id="smartOrder" style="margin-top:10px;background:#111;padding:8px;border-radius:8px;border:1px solid #f59e0b"></div>
-<div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap">
-<button onclick="copyOrder()" data-i18n="bCopy">Αντιγραφή</button>
-<button onclick="exportOrder()" class="sec" data-i18n="bExportOrder">TXT</button>
-<button onclick="exportPDF()" data-i18n="bPDF" style="background:#22c55e;color:#000">📄 PDF</button>
-<button onclick="shareWhatsApp()" data-i18n="bWA" style="background:#25D366;color:#000">WhatsApp</button>
-<button onclick="sendLowStockEmail()" class="sec" data-i18n="bEmailOrder">📧 Email</button>
-</div>
-</div>
-
-<div class="card">
-<b data-i18n="lLog">👥 Ιστορικό</b>
-<div id="logList" style="margin-top:8px;max-height:150px;overflow:auto"></div>
-<button onclick="clearLog()" class="sec" data-i18n="bClearLog" style="width:100%;margin-top:6px">Καθαρισμός</button>
-</div>
-
-<div class="card" style="border:2px solid #ef4444;background:#2a0a0a">
-<b style="color:#ef4444" data-i18n="lDangerZone">⚠️ Επικίνδυνη Ζώνη</b>
-<div class="small" data-i18n="lDangerDesc" style="margin:6px 0;color:#ccc">Διαγραφή ΟΛΩΝ των εντύπων. Δεν αναιρείται!</div>
-<button onclick="deleteAllItems()" style="width:100%;margin-top:6px;background:#ef4444;color:#fff" data-i18n="bDeleteAll">🗑️ Διαγραφή ΟΛΩΝ των εντύπων</button>
 </div>
 
 </div>
 
 <div id="adminScreen">
 <div class="card" style="max-width:750px;margin:0 auto;border:2px solid #f59e0b">
-<h2 style="color:#f59e0b;text-align:center" data-i18n="aTitle">👑 ADMIN ULTIMATE</h2>
+<h2 style="color:#f59e0b;text-align:center" data-i18n="aTitle">👑 ADMIN</h2>
 <div style="text-align:center"><button class="sec" onclick="closeAdmin()" data-i18n="bClose">✕ Κλείσιμο</button></div>
 
 <div id="loginBox" style="margin-top:12px">
-<label data-i18n="lLoginLabel">Κωδικός</label>
-<div style="display:flex;gap:4px"><input id="pinCheck" type="password" placeholder="••••" style="flex:1"><button onclick="togglePin()" class="sec">👁️</button></div>
-<button onclick="checkAdmin()" data-i18n="bLogin" style="width:100%;margin-top:8px">Είσοδος</button>
-<div style="margin-top:12px;border-top:1px solid #333;padding-top:10px">
-<button onclick="showForgot()" class="sec" data-i18n="bForgot" style="width:100%;background:#1a1a1a;border:1px solid #555">📧 Ξέχασα κωδικό</button>
-</div>
-<div id="forgotBox" style="display:none;margin-top:12px;background:#111;padding:10px;border-radius:8px">
-<b style="color:#06b6d4" data-i18n="lForgotTitle">📧 Επαναφορά</b>
-<input id="forgotEmail" type="email" placeholder="admin@gmail.com" style="margin-top:6px">
-<button onclick="sendResetEmail()" data-i18n="bSendReset" style="width:100%;margin-top:6px;background:#06b6d4;color:#000">📤 Αποστολή</button>
-<div id="forgotMsg" class="small" style="margin-top:8px"></div>
-<div id="resetCodeBox" style="display:none;margin-top:10px">
-<input id="resetCodeInput" placeholder="123456" maxlength="6">
-<input id="newPassFromReset" type="text" data-i18n-ph="lNewPass" placeholder="Νέος κωδικός" style="margin-top:4px">
-<button onclick="verifyResetCode()" data-i18n="bChangePass" style="width:100%;margin-top:6px;background:#22c55e;color:#000">✅ Αλλαγή</button>
-</div>
-<button onclick="hideForgot()" class="sec" data-i18n="bBack" style="width:100%;margin-top:8px">Πίσω</button>
-</div>
+<label data-i18n="lLoginLabel">Κωδικός Admin</label>
+<input id="pinCheck" type="password" placeholder="••••">
+<button onclick="checkAdmin()" style="width:100%;margin-top:8px" data-i18n="bLogin">Είσοδος</button>
 </div>
 
 <div id="adminContent" style="display:none;margin-top:12px">
 
-<div class="card" style="border:2px solid #f59e0b;background:#1a1a0a">
-<b style="color:#f59e0b" data-i18n="lGuideTitle">📖 Οδηγός Χρήσης</b>
-<div class="small" data-i18n="lGuideDesc" style="margin:8px 0;color:#ccc"></div>
-<div id="guideContent" style="background:#0f0f0f;border-radius:8px;padding:10px;font-size:0.9em;line-height:1.5;max-height:400px;overflow:auto"></div>
-<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
-<button onclick="copyGuide()" data-i18n="bCopyGuide" style="flex:1">📋 Αντιγραφή</button>
-<button onclick="shareGuideWA()" data-i18n="bShareWA" style="flex:1;background:#25D366;color:#000">📱 WhatsApp</button>
-<button onclick="exportGuidePDF()" data-i18n="bExportGuidePDF" style="flex:1;background:#f59e0b;color:#000">📄 PDF</button>
-<button onclick="shareGuideEmail()" data-i18n="bShareEmail" style="flex:1" class="sec">📧 Email</button>
+<div class="card" style="border:2px solid #a855f7;background:var(--card)">
+<b style="color:#a855f7" data-i18n="lUsersTitle">👥 Διαχείριση Χρηστών</b>
+<div class="small" style="color:var(--muted);margin-top:4px" data-i18n="lUsersDesc">Πρόσθεσε άτομα. Όλοι βλέπουν τα ίδια έντυπα.</div>
+
+<div id="usersList" style="margin-top:12px"></div>
+
+<div style="background:var(--card2);border:1px dashed #22c55e;border-radius:8px;padding:10px;margin-top:12px">
+<b style="color:#22c55e;font-size:0.95em" data-i18n="addUserTitle">➕ Προσθήκη χρήστη</b>
+<label data-i18n="userName">Όνομα</label>
+<input id="newUserName" data-i18n-ph="phUserName" placeholder="π.χ. Γιώργος">
+<label data-i18n="userRole">Ρόλος</label>
+<select id="newUserRole" onchange="updatePermsFromRole()">
+<option value="counter" data-i18n="optCounter">🔢 Counter</option>
+<option value="manager" data-i18n="optManager">📦 Manager</option>
+<option value="viewer" data-i18n="optViewer">👀 Viewer</option>
+<option value="admin" data-i18n="optAdmin">👑 Admin</option>
+</select>
+<div style="margin-top:8px" data-i18n="permsTitle">Δικαιώματα:</div>
+<div class="perm-grid">
+<label><input type="checkbox" id="p_count" checked> ➕➖ <span data-i18n="pCount">Αλλαγή ποσότητας</span></label>
+<label><input type="checkbox" id="p_add"> ➕ <span data-i18n="pAdd">Προσθήκη</span></label>
+<label><input type="checkbox" id="p_del"> 🗑️ <span data-i18n="pDel">Διαγραφή</span></label>
+<label><input type="checkbox" id="p_edit"> ✏️ <span data-i18n="pEdit">Επεξεργασία</span></label>
+<label><input type="checkbox" id="p_rename" checked> 📝 <span data-i18n="pRename">Μετονομασία</span></label>
+<label><input type="checkbox" id="p_sync" checked> ☁️ <span data-i18n="pSync">Συγχρονισμός</span></label>
+<label><input type="checkbox" id="p_order"> 📋 <span data-i18n="pOrder">Παραγγελία</span></label>
+<label><input type="checkbox" id="p_scan" checked> 📷 <span data-i18n="pScan">Scanner</span></label>
+<label><input type="checkbox" id="p_voice" checked> 🎙️ <span data-i18n="pVoice">Φωνή</span></label>
+<label><input type="checkbox" id="p_export"> 📊 <span data-i18n="pExport">Εξαγωγή</span></label>
+</div>
+<button onclick="addUser()" style="width:100%;margin-top:8px;background:#22c55e;color:#000" data-i18n="bAddUser">➕ Προσθήκη</button>
 </div>
 </div>
 
-<!-- ★ ΝΕΟ: ΡΥΘΜΙΣΗ ΓΡΑΜΜΑΤΟΣΕΙΡΑΣ -->
-<div class="card" style="border:2px solid #06b6d4;background:#0a1a2a">
+<div class="card" style="border:2px solid #06b6d4;background:var(--card)">
+<b style="color:#06b6d4" data-i18n="lCloudAdmin">☁️ Συγχρονισμός</b>
+<div class="small" style="color:var(--muted);margin-top:4px" data-i18n="syncHelp">Πες σε όλους τον ίδιο κωδικό Stand ID.</div>
+<label data-i18n="lCloudId">Stand ID</label>
+<div style="display:flex;gap:4px">
+<input id="cloudId" style="flex:1;font-family:monospace">
+<button onclick="copyCloudId()" class="sec">📋</button>
+</div>
+<button onclick="saveCloudId()" style="width:100%;margin-top:8px;background:#22c55e;color:#000;font-weight:bold" data-i18n="bApply">🔄 Εφαρμογή</button>
+<label style="margin-top:10px" data-i18n="lCloudConfig">Firebase Config</label>
+<textarea id="fbConfig" style="height:60px;font-size:10px"></textarea>
+<button onclick="saveFbConfig()" class="sec" style="width:100%;margin-top:4px" data-i18n="bSaveConfig">💾 Αποθήκευση</button>
+</div>
+
+<div class="card" style="border:2px solid #06b6d4;background:var(--card)">
 <b style="color:#06b6d4" data-i18n="lFontAdmin">🎨 Εμφάνιση & Γραμματοσειρά</b>
-
 <label><span data-i18n="lFontSize">Μέγεθος UI:</span> <span id="fsVal">15</span>px</label>
 <input type="range" id="fsRange" min="11" max="22" value="15" oninput="setFontSize(this.value)">
-<div class="preview-box">
-<div class="preview-title" data-i18n="lPreviewUi">Προεπισκόπηση UI</div>
-<div style="font-size:15px" id="fsPreviewText">STAND MANAGER PRO — Για συνεργάτες</div>
-</div>
-
-<label style="margin-top:14px"><span data-i18n="lListFontSize">Μέγεθος Λίστας:</span> <span id="lfsVal">13</span>px</label>
+<label style="margin-top:12px"><span data-i18n="lListFontSize">Μέγεθος Λίστας:</span> <span id="lfsVal">13</span>px</label>
 <input type="range" id="lfsRange" min="9" max="20" value="13" oninput="setListFontSize(this.value)">
-<div class="preview-box">
-<div class="preview-title" data-i18n="lPreviewList">Προεπισκόπηση λίστας</div>
-<div style="display:flex;gap:8px;align-items:center">
-<div class="photo-thumb" style="display:flex;align-items:center;justify-content:center;font-size:12px">📄</div>
-<div style="min-width:0">
-<span class="type-label t-mag" id="lfsPreviewType">Περιοδικό</span>
-<span class="lang-badge lang-el" id="lfsPreviewLang">🇬🇷 Ελληνικά</span>
-<b class="item-name" id="lfsPreviewName">Σκοπιά — Αρ. 1 2026</b>
-<div class="item-cat" id="lfsPreviewCat">Σκοπιά — Κοινό</div>
-<span class="item-badge good" id="lfsPreviewBadge">ΟΚ: 25/5</span>
-</div>
-</div>
-</div>
-
-<label style="margin-top:14px" data-i18n="lFontFamily">Γραμματοσειρά</label>
+<label style="margin-top:12px" data-i18n="lFontFamily">Γραμματοσειρά</label>
 <select id="ffSelect" onchange="setFontFamily(this.value)">
 <option value="Arial, sans-serif">Arial</option>
 <option value="Verdana">Verdana</option>
 <option value="Georgia">Georgia</option>
 <option value="'Segoe UI', sans-serif">Segoe UI</option>
 <option value="Tahoma">Tahoma</option>
-<option value="'Courier New', monospace">Courier New</option>
 </select>
-<button class="sec" onclick="resetFonts()" style="width:100%;margin-top:10px" data-i18n="bResetFonts">↺ Επαναφορά προεπιλογών</button>
+<button class="sec" onclick="resetFonts()" style="width:100%;margin-top:10px" data-i18n="bResetFonts">↺ Επαναφορά</button>
 </div>
 
-<div class="card" style="border:2px solid #06b6d4;background:#0a1a2a">
-<b style="color:#06b6d4" data-i18n="lCloudAdmin">☁️ Cloud</b>
-<div style="display:flex;gap:6px;align-items:center;margin-top:8px">
-<label style="color:#fff"><input type="checkbox" id="cloudEnabled" onchange="toggleCloud()" style="width:auto"> <span data-i18n="lCloudOn">Ενεργό</span></label>
-<span id="cloudStatus" style="padding:3px 10px;border-radius:99px;background:#333;font-size:11px">Offline</span>
-</div>
-<label data-i18n="lCloudId">Κωδικός Συγχρονισμού (Stand ID)</label>
-<div style="display:flex;gap:4px">
-<input id="cloudId" value="stand-athens-1" style="flex:1;font-family:monospace">
-<button onclick="copyCloudId()" class="sec">📋</button>
-</div>
-<button onclick="saveCloudId()" style="width:100%;margin-top:8px;background:#22c55e;color:#000;font-weight:bold" data-i18n="bApplySync">🔄 Εφαρμογή Συγχρονισμού</button>
-<label data-i18n="lCloudConfig">Firebase Config</label>
-<textarea id="fbConfig" style="height:80px;font-size:10px"></textarea>
-<div style="display:flex;gap:4px;margin-top:4px">
-<button onclick="saveFbConfig()" class="sec" data-i18n="bSaveConfig" style="flex:1">Save Config</button>
-<button onclick="testCloud()" class="sec" data-i18n="bTestCloud" style="flex:1">Test</button>
-</div>
-<div style="display:flex;gap:4px;margin-top:10px">
-<button onclick="pushToCloud()" data-i18n="bPushMain" style="flex:1;background:#06b6d4;color:#000">☁️ Αποστολή</button>
-<button onclick="pullFromCloud()" data-i18n="bPullMain" style="flex:1" class="sec">⬇️ Λήψη</button>
-</div>
-<div class="small" id="lastSync" style="margin-top:6px;color:#999"></div>
-</div>
-
-<div class="card" style="background:#252525;border:2px solid #f59e0b">
-<b style="color:#f59e0b" data-i18n="lChangePass">🔐 Αλλαγή κωδικού & Email</b>
-<div class="small" style="color:#06b6d4;margin:6px 0" data-i18n="lPassSyncNote">Ο κωδικός συγχρονίζεται αυτόματα σε όλα τα κινητά μέσω cloud.</div>
+<div class="card" style="background:var(--card2);border:2px solid #f59e0b">
+<b style="color:#f59e0b" data-i18n="lChangePass">🔐 Κωδικός Admin</b>
 <label data-i18n="lNewPass">Νέος κωδικός</label><input id="newPass" type="text">
 <label data-i18n="lRecEmail">📧 Email</label><input id="recoveryEmail" type="email">
-<button onclick="saveNewPass()" data-i18n="bSavePass" style="width:100%;margin-top:8px;background:#22c55e;color:#000">💾 Αποθήκευση</button>
+<button onclick="saveNewPass()" style="width:100%;margin-top:8px;background:#22c55e;color:#000" data-i18n="bSavePass">💾 Αποθήκευση</button>
 <div class="small" id="passMsg" style="margin-top:6px;color:#22c55e"></div>
 </div>
 
@@ -443,248 +426,258 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 </div>
 
 <div id="rnOverlay">
-  <div id="rnBox">
-    <h3>✏️ <span data-i18n="rnTitle">Μετονομασία εντύπου</span></h3>
-    <div id="rnFields"></div>
-    <div class="rn-actions">
-      <button class="rn-cancel" onclick="closeRename()" data-i18n="rnCancel">Άκυρο</button>
-      <button class="rn-save" onclick="saveRename()" data-i18n="rnSave">💾 Αποθήκευση</button>
-    </div>
-  </div>
+<div id="rnBox" style="border-color:#06b6d4">
+<h3 style="color:#06b6d4">✏️ <span data-i18n="rnTitle">Μετονομασία</span></h3>
+<div id="rnFields"></div>
+<div style="display:flex;gap:8px;margin-top:16px">
+<button class="sec" onclick="closeRename()" style="flex:1;padding:12px" data-i18n="rnCancel">Άκυρο</button>
+<button onclick="saveRename()" style="flex:1;padding:12px;background:#22c55e;color:#000" data-i18n="rnSave">💾</button>
+</div>
+</div>
 </div>
 
 <div id="ccOverlay">
-  <div id="ccBox">
-    <div id="ccTitle" data-i18n="ccTitle">Επιβεβαίωση</div>
-    <div id="ccMsg"></div>
-    <div id="ccButtons">
-      <button id="ccCancel" type="button" data-i18n="ccCancelBtn">Άκυρο</button>
-      <button id="ccOk" type="button" data-i18n="ccOkBtn">OK</button>
-    </div>
-  </div>
+<div id="ccBox">
+<div id="ccTitle" data-i18n="ccTitle">Επιβεβαίωση</div>
+<div id="ccMsg"></div>
+<div id="ccButtons">
+<button id="ccCancel" type="button" data-i18n="ccCancelBtn">Άκυρο</button>
+<button id="ccOk" type="button" data-i18n="ccOkBtn">OK</button>
+</div>
+</div>
+</div>
+
+<div id="undOverlay">
+<div id="undBox">
+<div style="color:#06b6d4;font-weight:bold;margin-bottom:8px">↩️ <span data-i18n="undoTitle">Αναίρεση;</span></div>
+<div id="undMsg" style="font-size:0.95em;margin-bottom:12px"></div>
+<div class="btn-row">
+<button class="sec" onclick="closeUndo()" data-i18n="undoCancel">Όχι</button>
+<button onclick="doUndo()" style="background:#06b6d4;color:#000" data-i18n="undoConfirm">↩️ Αναίρεση</button>
+</div>
+</div>
+</div>
+
+<div id="qcOverlay">
+<div id="qcContent">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--card);border-radius:12px;margin:8px 0">
+<b style="color:#a855f7;font-size:1.1em">🎯 <span data-i18n="qcTitle">Γρήγορη Καταμέτρηση</span></b>
+<button class="sec" onclick="closeQuickCount()">✕</button>
+</div>
+<input id="qcSearch" placeholder="🔍..." oninput="renderQuickCount()" style="width:100%;padding:12px;font-size:1.1em;margin-bottom:8px">
+<div id="qcList"></div>
+</div>
+</div>
+
+<div id="userOverlay">
+<div id="userBox">
+<h3>👤 <span data-i18n="pickUser">Ποιος είσαι;</span></h3>
+<div id="userSelectList" style="margin-top:12px"></div>
+<div style="margin-top:16px;border-top:1px solid var(--border);padding-top:10px">
+<div class="small" style="color:var(--muted)" data-i18n="pickUserHelp">Επίλεξε το όνομά σου.</div>
+</div>
+<button class="sec" onclick="closeUserSelector()" style="width:100%;margin-top:12px">✕</button>
+</div>
 </div>
 
 <script>
 /* =========================================================================
-   STAND MANAGER PRO — Με ρύθμιση γραμματοσειράς λίστας
+   STAND MANAGER PRO — FULL i18n + Structured Log
    ========================================================================= */
 
 /* ---------- 1. UTILITIES ---------- */
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 function cleanStr(v){ return String(v==null?'':v).replace(/[<>"]/g,''); }
+function vibrate(ms){ try{ if(navigator.vibrate) navigator.vibrate(ms||10); }catch(e){} }
 function cleanItems(arr){
   if(!Array.isArray(arr)) return [];
   return arr.filter(function(it){ return it && typeof it==='object'; }).map(function(it){
     var o={}; for(var k in it) o[k]=it[k];
     var id=parseFloat(o.id); o.id=isNaN(id)?Date.now()+Math.random():id;
     if(o.names && typeof o.names==='object'){ var n={}; for(var l in o.names) n[l]=cleanStr(o.names[l]); o.names=n; }
-    if(o.name!=null) o.name=cleanStr(o.name);
     if(o.cat && typeof o.cat==='object'){ var c={}; for(var l2 in o.cat) c[l2]=cleanStr(o.cat[l2]); o.cat=c; } else o.cat=cleanStr(o.cat);
     o.type=cleanStr(o.type); o.barcode=cleanStr(o.barcode);
     if(o.lang!=null) o.lang=cleanStr(o.lang);
-    if(o.magazineLang!=null) o.magazineLang=cleanStr(o.magazineLang);
     o.qty=parseInt(o.qty)||0; o.min=parseInt(o.min)||0;
     if(!/^data:image\/[a-z+.-]+;base64,[A-Za-z0-9+\/=]+$/.test(o.photo||'')) o.photo='';
     return o;
   });
 }
+function cleanUsers(arr){
+  if(!Array.isArray(arr)) return [];
+  return arr.filter(function(u){ return u && typeof u==='object'; }).map(function(u){
+    return { id: parseFloat(u.id)||Date.now()+Math.random(), name: cleanStr(u.name||''), role: cleanStr(u.role||'counter'), perms: u.perms || {} };
+  });
+}
 function printDoc(title, bodyHtml){
   var w=window.open('','_blank');
-  if(!w){ alert('Allow pop-ups'); return false; }
-  w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+esc(title)+'</title><style>body{font-family:Arial,sans-serif;font-size:14px;color:#000;margin:20px}h1{font-size:18px}li{margin:4px 0}pre{white-space:pre-wrap;font-family:inherit}</style></head><body>'+bodyHtml+'</body></html>');
+  if(!w){ alert(Tget('alertPopups')); return false; }
+  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+esc(title)+'</title></head><body style="font-family:Arial;margin:20px;color:#000">'+bodyHtml+'</body></html>');
   w.document.close(); w.focus(); setTimeout(function(){ w.print(); },400); return true;
 }
 
-/* ---------- 2. RENAME ---------- */
-var _renamingId=null;
-function openRename(id){
-  var it=items.find(function(x){return x.id==id;});
-  if(!it) return;
-  _renamingId=id;
-  var langs=['el','en','de','ru'];
-  var langNames={el:'🇬🇷 Ελληνικά',en:'🇬🇧 English',de:'🇩🇪 Deutsch',ru:'🇷🇺 Русский'};
-  var html='';
-  langs.forEach(function(l){
-    var cur=(it.names && it.names[l]) || '';
-    html+='<div class="rn-lang-row"><label>'+langNames[l]+'</label><input id="rn-'+l+'" value="'+esc(cur)+'"></div>';
-  });
-  document.getElementById('rnFields').innerHTML=html;
-  document.getElementById('rnOverlay').classList.add('show');
-}
-function closeRename(){ document.getElementById('rnOverlay').classList.remove('show'); _renamingId=null; }
-function saveRename(){
-  if(!_renamingId){ closeRename(); return; }
-  var it=items.find(function(x){return x.id==_renamingId;});
-  if(!it){ closeRename(); return; }
-  ['el','en','de','ru'].forEach(function(l){
-    var el=document.getElementById('rn-'+l);
-    if(el && el.value.trim()){ it.names[l]=el.value.trim(); }
-  });
-  addLog('Μετονομασία', getDisplayName(it));
-  closeRename(); save(); render();
-}
+/* ---------- 2. PERMISSIONS ---------- */
+var PERM_KEYS = ['count','add','del','edit','rename','sync','order','scan','voice','export'];
+var PERMS_PRESETS = {
+  admin:   {count:true, add:true, del:true, edit:true, rename:true, sync:true, order:true, scan:true, voice:true, export:true},
+  manager: {count:true, add:true, del:true, edit:true, rename:true, sync:true, order:true, scan:true, voice:true, export:true},
+  counter: {count:true, add:false, del:false, edit:false, rename:true, sync:true, order:false, scan:true, voice:true, export:false},
+  viewer:  {count:false, add:false, del:false, edit:false, rename:false, sync:true, order:true, scan:false, voice:false, export:true}
+};
 
-/* ---------- 3. CUSTOM CONFIRM ---------- */
-var _ccCallback = null;
-function customConfirm(msg, callback){
-  var overlay = document.getElementById('ccOverlay');
-  var msgEl   = document.getElementById('ccMsg');
-  var titleEl = document.getElementById('ccTitle');
-  if(!overlay || !msgEl){ if(window.confirm(msg)) callback(); return; }
-  if(titleEl) titleEl.textContent = Tget('ccTitle');
-  var okBtn = document.getElementById('ccOk');
-  var ccBtn = document.getElementById('ccCancel');
-  if(okBtn) okBtn.textContent = Tget('ccOkBtn');
-  if(ccBtn) ccBtn.textContent = Tget('ccCancelBtn');
-  msgEl.textContent = msg;
-  overlay.classList.add('show');
-  _ccCallback = callback;
-}
-function _ccClose(){ var ov=document.getElementById('ccOverlay'); if(ov) ov.classList.remove('show'); _ccCallback=null; }
-function _ccInit(){
-  var ok=document.getElementById('ccOk'); var cancel=document.getElementById('ccCancel'); var ov=document.getElementById('ccOverlay');
-  if(ok) ok.onclick=function(){ var cb=_ccCallback; _ccClose(); if(cb) cb(); };
-  if(cancel) cancel.onclick=function(){ _ccClose(); };
-  if(ov) ov.onclick=function(e){ if(e.target===ov) _ccClose(); };
-}
-document.addEventListener('DOMContentLoaded', _ccInit);
-setTimeout(_ccInit, 50);
-
-/* ---------- 4. TRANSLATIONS ---------- */
+/* ---------- 3. TRANSLATIONS ---------- */
 var T = {
-  subTitle:{el:"Για συνεργάτες - ULTIMATE",en:"For partners - ULTIMATE",de:"Für Partner - ULTIMATE",ru:"Для партнеров - ULTIMATE"},
-  bAdmin:{el:"🔐 Admin",en:"🔐 Admin",de:"🔐 Admin",ru:"🔐 Админ"},
-  bInstall:{el:"📲 Εγκατάσταση",en:"📲 Install",de:"📲 Installieren",ru:"📲 Установить"},
-  fAll:{el:"Όλα",en:"All",de:"Alle",ru:"Все"},
-  fFlyer:{el:"📄 Φυλλάδια",en:"📄 Tracts",de:"📄 Traktate",ru:"📄 Трактаты"},
-  fMag:{el:"📚 Περιοδικά",en:"📚 Magazines",de:"📚 Zeitschriften",ru:"📚 Журналы"},
-  fBooklet:{el:"📖 Βιβλιάρια",en:"📖 Booklets",de:"📖 Broschüren",ru:"📖 Брошюры"},
-  fPoster:{el:"🖼️ Πόστερ",en:"🖼️ Posters",de:"🖼️ Poster",ru:"🖼️ Плакаты"},
-  bPushMain:{el:"☁️ Αποστολή",en:"☁️ Push",de:"☁️ Senden",ru:"☁️ Отправить"},
-  bPullMain:{el:"⬇️ Λήψη",en:"⬇️ Pull",de:"⬇️ Empfangen",ru:"⬇️ Получить"},
+  pickBtnLabel:{el:"Επιλογή",en:"Select",de:"Wählen",ru:"Выбрать"},
+  tAdded:{el:"Προστέθηκαν",en:"Added",de:"Hinzugefügt",ru:"Добавлено"},
+  tRemoved:{el:"Μειώθηκαν",en:"Removed",de:"Entfernt",ru:"Убрано"},
+  tOrders:{el:"Παραγγελίες",en:"Orders",de:"Bestellungen",ru:"Заказы"},
+  bPush:{el:"☁️ Αποστολή",en:"☁️ Push",de:"☁️ Senden",ru:"☁️ Отправить"},
+  bPull:{el:"⬇️ Λήψη",en:"⬇️ Pull",de:"⬇️ Empfangen",ru:"⬇️ Получить"},
   bScan:{el:"📷 Scan",en:"📷 Scan",de:"📷 Scan",ru:"📷 Скан"},
   bVoice:{el:"🎙️ Φωνή",en:"🎙️ Voice",de:"🎙️ Stimme",ru:"🎙️ Голос"},
-  bCloseScanner:{el:"✕ Κλείσιμο scanner",en:"✕ Close scanner",de:"✕ Scanner schließen",ru:"✕ Закрыть сканер"},
-  voiceHint:{el:"Πες π.χ. «Σκοπιά 5»",en:"Say e.g. «Watchtower 5»",de:"Sage z.B. „Wachtturm 5“",ru:"Скажи, например: «Сторожевая 5»"},
+  voiceHint:{el:"Πες τίτλο και αριθμό",en:"Say title and number",de:"Sage Titel und Zahl",ru:"Скажи название и число"},
   lTot:{el:"Τεμάχια",en:"Pieces",de:"Stücke",ru:"Штуки"},
   lTitles:{el:"Τίτλοι",en:"Titles",de:"Titel",ru:"Названия"},
   lFlyer:{el:"Φυλλάδια",en:"Tracts",de:"Traktate",ru:"Трактаты"},
   lMag:{el:"Περιοδικά",en:"Magazines",de:"Zeitschriften",ru:"Журналы"},
   lBooklet:{el:"Βιβλιάρια",en:"Booklets",de:"Broschüren",ru:"Брошюры"},
   lPoster:{el:"Πόστερ",en:"Posters",de:"Poster",ru:"Плакаты"},
-  lNeed:{el:"Παραγγελία",en:"Order",de:"Bestellung",ru:"Заказ"},
+  lNeed:{el:"Παραγγελία",en:"Orders",de:"Bestellungen",ru:"Заказы"},
   lCountLang:{el:"📊 Καταμέτρηση ανά Γλώσσα",en:"📊 Count by Language",de:"📊 Zählung nach Sprache",ru:"📊 Подсчет по языкам"},
-  lCountLangDesc:{el:"Πόσα έντυπα σε κάθε γλώσσα",en:"How many items in each language",de:"Wie viele Artikel in jeder Sprache",ru:"Сколько изданий на каждом языке"},
   lCountType:{el:"📚 Καταμέτρηση ανά Είδος",en:"📚 Count by Type",de:"📚 Zählung nach Typ",ru:"📚 Подсчет по типам"},
-  lCountTypeDesc:{el:"Πόσα φυλλάδια, περιοδικά, βιβλιάρια, βιβλία, πόστερ, κάρτες",en:"How many tracts, magazines, booklets, books, posters, cards",de:"Wie viele Traktate, Zeitschriften, Broschüren, Bücher, Poster, Karten",ru:"Сколько буклетов, журналов, брошюр, книг, плакатов, карточек"},
-  lCountLangType:{el:"🌍 Καταμέτρηση ανά Γλώσσα και Είδος",en:"🌍 Count by Language and Type",de:"🌍 Zählung nach Sprache und Typ",ru:"🌍 Подсчет по языку и типу"},
-  lCountLangTypeDesc:{el:"Πίνακας: γλώσσα × είδος",en:"Table: language × type",de:"Tabelle: Sprache × Typ",ru:"Таблица: язык × тип"},
-  thLangType:{el:"Γλώσσα / Είδος",en:"Language / Type",de:"Sprache / Typ",ru:"Язык / Тип"},
-  thFlyer:{el:"📄 Φυλλάδια",en:"📄 Tracts",de:"📄 Traktate",ru:"📄 Буклеты"},
-  thMag:{el:"📚 Περιοδικά",en:"📚 Magazines",de:"📚 Zeitschriften",ru:"📚 Журналы"},
-  thBooklet:{el:"📖 Βιβλιάρια",en:"📖 Booklets",de:"📖 Broschüren",ru:"📖 Брошюры"},
-  thBook:{el:"📘 Βιβλία",en:"📘 Books",de:"📘 Bücher",ru:"📘 Книги"},
-  thPoster:{el:"🖼️ Πόστερ",en:"🖼️ Posters",de:"🖼️ Poster",ru:"🖼️ Плакаты"},
-  thCard:{el:"🃏 Κάρτες",en:"🃏 Cards",de:"🃏 Karten",ru:"🃏 Карточки"},
-  thTotal:{el:"📦 Σύνολο",en:"📦 Total",de:"📦 Gesamt",ru:"📦 Всего"},
-  lCountRefresh:{el:"🔄 Ανανέωση",en:"🔄 Refresh",de:"🔄 Aktualisieren",ru:"🔄 Обновить"},
-  lCountExport:{el:"📊 Εξαγωγή CSV",en:"📊 Export CSV",de:"📊 CSV Export",ru:"📊 Экспорт CSV"},
-  lFilterCount:{el:"🔍 Φίλτρα Καταμέτρησης",en:"🔍 Count Filters",de:"🔍 Zählfilter",ru:"🔍 Фильтры подсчета"},
-  optAllLangs:{el:"🌍 Όλες οι γλώσσες",en:"🌍 All languages",de:"🌍 Alle Sprachen",ru:"🌍 Все языки"},
-  optAllTypes:{el:"📦 Όλα τα είδη",en:"📦 All types",de:"📦 Alle Typen",ru:"📦 Все виды"},
+  lCountLangType:{el:"🌍 Γλώσσα × Είδος",en:"🌍 Language × Type",de:"🌍 Sprache × Typ",ru:"🌍 Язык × Тип"},
+  thLangType:{el:"Γλώσσα",en:"Language",de:"Sprache",ru:"Язык"},
+  thTotal:{el:"Σύνολο",en:"Total",de:"Gesamt",ru:"Всего"},
   lChart:{el:"📊 Γραφήματα",en:"📊 Charts",de:"📊 Diagramme",ru:"📊 Графики"},
-  bChartRefresh:{el:"🔄 Ανανέωση",en:"🔄 Refresh",de:"🔄 Aktualisieren",ru:"🔄 Обновить"},
-  bChartExport:{el:"📸 Εξαγωγή",en:"📸 Export",de:"📸 Export",ru:"📸 Экспорт"},
-  lPre:{el:"✅ Προ-φορτωμένοι:",en:"✅ Pre-loaded:",de:"✅ Vorgeladene:",ru:"✅ Загруженные:"},
-  lPreDesc:{el:"Μεταφράζονται",en:"Auto-translated",de:"Auto-übersetzt",ru:"Автоперевод"},
-  bRestore:{el:"🔄 Επαναφορά",en:"🔄 Restore",de:"🔄 Wiederherstellen",ru:"🔄 Восстановить"},
-  presetsTitle:{el:"📚 Τίτλοι jw.org (μόνο δημόσιες εκδόσεις)",en:"📚 jw.org titles (public editions only)",de:"📚 jw.org-Titel (nur öffentliche Ausgaben)",ru:"📚 Названия jw.org (только публичные издания)"},
-  presetsDesc:{el:"📅 Περιλαμβάνονται μόνο τα δημόσια τεύχη 2020-2026 + Πόστερ.",en:"📅 Includes only public issues 2020-2026 + Posters.",de:"📅 Enthält nur öffentliche Ausgaben 2020-2026 + Poster.",ru:"📅 Включает только публичные выпуски 2020-2026 + Плакаты."},
-  presetAll:{el:"📦 Όλα",en:"📦 All",de:"📦 Alle",ru:"📦 Все"},
-  lSearch:{el:"🔍 Αναζήτηση",en:"🔍 Search",de:"🔍 Suche",ru:"🔍 Поиск"},
-  phSearch:{el:"Γράψε τίτλο...",en:"Write title...",de:"Titel schreiben...",ru:"Напиши название..."},
   listTitle:{el:"📦 Όλα τα είδη",en:"📦 All items",de:"📦 Alle Artikel",ru:"📦 Все издания"},
-  lHint:{el:"Πάτα ✏️ για μετονομασία",en:"Tap ✏️ to rename",de:"Tippe ✏️ zum Umbenennen",ru:"Нажми ✏️ для переименования"},
+  lHint:{el:"Πάτα ✏️ για μετονομασία",en:"Tap ✏️ to rename",de:"Tippe ✏️",ru:"Нажми ✏️"},
+  sortLow:{el:"⚠️ Χαμηλό απόθεμα",en:"⚠️ Low stock",de:"⚠️ Niedriger Bestand",ru:"⚠️ Низкий запас"},
+  sortFav:{el:"⭐ Αγαπημένα",en:"⭐ Favorites",de:"⭐ Favoriten",ru:"⭐ Избранные"},
+  sortName:{el:"🔤 Αλφαβητικά",en:"🔤 Alphabetical",de:"🔤 Alphabetisch",ru:"🔤 По алфавиту"},
+  sortQty:{el:"📊 Ποσότητα",en:"📊 Quantity",de:"📊 Menge",ru:"📊 Количество"},
+  sortNew:{el:"🆕 Πρόσφατα",en:"🆕 Recent",de:"🆕 Neu",ru:"🆕 Новые"},
+  fAll:{el:"Όλα",en:"All",de:"Alle",ru:"Все"},
+  fFlyer:{el:"📄 Φυλλάδια",en:"📄 Tracts",de:"📄 Traktate",ru:"📄 Трактаты"},
+  fMag:{el:"📚 Περιοδικά",en:"📚 Magazines",de:"📚 Zeitschriften",ru:"📚 Журналы"},
+  fBooklet:{el:"📖 Βιβλιάρια",en:"📖 Booklets",de:"📖 Broschüren",ru:"📖 Брошюры"},
+  fPoster:{el:"🖼️ Πόστερ",en:"🖼️ Posters",de:"🖼️ Poster",ru:"🖼️ Плакаты"},
+  fBook:{el:"📘 Βιβλία",en:"📘 Books",de:"📘 Bücher",ru:"📘 Книги"},
+  fCard:{el:"🃏 Κάρτες",en:"🃏 Cards",de:"🃏 Karten",ru:"🃏 Карточки"},
+  optAllLangs:{el:"🌍 Όλες",en:"🌍 All",de:"🌍 Alle",ru:"🌍 Все"},
   lAdd:{el:"➕ Προσθήκη νέου",en:"➕ Add new",de:"➕ Neu",ru:"➕ Добавить"},
+  lFieldType:{el:"Τύπος",en:"Type",de:"Typ",ru:"Тип"},
+  lFieldLang:{el:"🌍 Γλώσσα",en:"🌍 Language",de:"🌍 Sprache",ru:"🌍 Язык"},
+  lFieldTitle:{el:"Τίτλος *",en:"Title *",de:"Titel *",ru:"Название *"},
+  lFieldQty:{el:"Πόσα έχει",en:"How many",de:"Wie viele",ru:"Сколько"},
+  lFieldMin:{el:"Ελάχιστο",en:"Minimum",de:"Minimum",ru:"Минимум"},
+  lFieldCat:{el:"Κατηγορία",en:"Category",de:"Kategorie",ru:"Категория"},
+  lFieldBar:{el:"Barcode",en:"Barcode",de:"Barcode",ru:"Штрихкод"},
+  bChooseFile:{el:"Επιλογή αρχείου",en:"Choose file",de:"Datei wählen",ru:"Выбрать файл"},
+  bAdd:{el:"➕ Προσθήκη",en:"➕ Add",de:"➕ Hinzufügen",ru:"➕ Добавить"},
+  lBulk:{el:"⚡ Πολλοί μαζί",en:"⚡ Bulk",de:"⚡ Mehrere",ru:"⚡ Много"},
+  phBulk:{el:"Τίτλος 1\nΤίτλος 2",en:"Title 1\nTitle 2",de:"Titel 1\nTitel 2",ru:"Название 1\nНазвание 2"},
+  noAddPerm:{el:"Δεν έχεις δικαίωμα προσθήκης.",en:"No permission to add.",de:"Keine Berechtigung.",ru:"Нет прав."},
   aFlyer:{el:"📄 Φυλλάδιο",en:"📄 Tract",de:"📄 Traktat",ru:"📄 Трактат"},
   aMag:{el:"📚 Περιοδικό",en:"📚 Magazine",de:"📚 Zeitschrift",ru:"📚 Журнал"},
   aBooklet:{el:"📖 Βιβλιάριο",en:"📖 Booklet",de:"📖 Broschüre",ru:"📖 Брошюра"},
   aBook:{el:"📘 Βιβλίο",en:"📘 Book",de:"📘 Buch",ru:"📘 Книга"},
   aCard:{el:"🃏 Κάρτα",en:"🃏 Card",de:"🃏 Karte",ru:"🃏 Карточка"},
   aPoster:{el:"🖼️ Πόστερ",en:"🖼️ Poster",de:"🖼️ Poster",ru:"🖼️ Плакат"},
-  aStudyTract:{el:"📃 Φυλλάδιο Διαφημιστικό",en:"📃 Study Tract",de:"📃 Studium-Traktat",ru:"📃 Трактат для изучения"},
-  lFieldType:{el:"Τύπος",en:"Type",de:"Typ",ru:"Тип"},
-  lFieldLang:{el:"🌍 Γλώσσα",en:"🌍 Language",de:"🌍 Sprache",ru:"🌍 Язык"},
-  lFieldTitle:{el:"Τίτλος *",en:"Title *",de:"Titel *",ru:"Название *"},
-  lFieldCat:{el:"Κατηγορία",en:"Category",de:"Kategorie",ru:"Категория"},
-  lFieldQty:{el:"Πόσα έχει",en:"How many",de:"Wie viele",ru:"Сколько"},
-  lFieldMin:{el:"Ελάχιστο",en:"Minimum",de:"Minimum",ru:"Минимум"},
-  lFieldBar:{el:"Barcode",en:"Barcode",de:"Barcode",ru:"Штрихкод"},
-  lFieldPhoto:{el:"📸 Φωτογραφία (προαιρετικά)",en:"📸 Photo (optional)",de:"📸 Foto (optional)",ru:"📸 Фото (опционально)"},
-  bChooseFile:{el:"📁 Επιλογή αρχείου",en:"📁 Choose file",de:"📁 Datei wählen",ru:"📁 Выбрать файл"},
-  phTitle:{el:"π.χ. Νέος τίτλος...",en:"e.g. New title...",de:"z.B. Neuer Titel...",ru:"напр. Новое название..."},
-  phBulk:{el:"Τίτλος 1\nΤίτλος 2",en:"Title 1\nTitle 2",de:"Titel 1\nTitel 2",ru:"Название 1\nНазвание 2"},
-  bAdd:{el:"➕ Προσθήκη",en:"➕ Add",de:"➕ Hinzufügen",ru:"➕ Добавить"},
-  lBulk:{el:"⚡ Πολλοί μαζί",en:"⚡ Bulk add",de:"⚡ Mehrere auf einmal",ru:"⚡ Много сразу"},
-  bBulk:{el:"📋 Προσθήκη όλων",en:"📋 Add all",de:"📋 Alle hinzufügen",ru:"📋 Добавить все"},
+  aStudyTract:{el:"📃 Φυλλάδιο Διαφημιστικό",en:"📃 Study Tract",de:"📃 Studium",ru:"📃 Брошюра для изучения"},
   lOrder:{el:"⚠️ ΛΙΣΤΑ ΠΑΡΑΓΓΕΛΙΑΣ",en:"⚠️ ORDER LIST",de:"⚠️ BESTELLLISTE",ru:"⚠️ СПИСОК ЗАКАЗА"},
   bCopy:{el:"Αντιγραφή",en:"Copy",de:"Kopieren",ru:"Копировать"},
-  bExportOrder:{el:"TXT",en:"TXT",de:"TXT",ru:"TXT"},
-  bPDF:{el:"📄 PDF",en:"📄 PDF",de:"📄 PDF",ru:"📄 PDF"},
-  bWA:{el:"WhatsApp",en:"WhatsApp",de:"WhatsApp",ru:"WhatsApp"},
-  bEmailOrder:{el:"📧 Email",en:"📧 Email",de:"📧 Email",ru:"📧 Email"},
   lLog:{el:"👥 Ιστορικό",en:"👥 History",de:"👥 Verlauf",ru:"👥 История"},
   bClearLog:{el:"Καθαρισμός",en:"Clear",de:"Löschen",ru:"Очистить"},
   logEmpty:{el:"Κανένα ιστορικό",en:"No history",de:"Kein Verlauf",ru:"Нет истории"},
   lDangerZone:{el:"⚠️ Επικίνδυνη Ζώνη",en:"⚠️ Danger Zone",de:"⚠️ Gefahrenzone",ru:"⚠️ Опасная зона"},
-  lDangerDesc:{el:"Διαγραφή ΟΛΩΝ των εντύπων. Δεν αναιρείται!",en:"Delete ALL items. Cannot be undone!",de:"ALLE Artikel löschen. Nicht rückgängig zu machen!",ru:"Удалить ВСЕ издания. Нельзя отменить!"},
-  bDeleteAll:{el:"🗑️ Διαγραφή ΟΛΩΝ των εντύπων",en:"🗑️ Delete ALL items",de:"🗑️ ALLE Artikel löschen",ru:"🗑️ Удалить ВСЕ издания"},
-  aTitle:{el:"👑 ADMIN ULTIMATE",en:"👑 ADMIN ULTIMATE",de:"👑 ADMIN ULTIMATE",ru:"👑 АДМИН ULTIMATE"},
+  bDeleteAll:{el:"🗑️ Διαγραφή ΟΛΩΝ",en:"🗑️ Delete ALL",de:"🗑️ ALLE löschen",ru:"🗑️ Удалить ВСЕ"},
+  aTitle:{el:"👑 ADMIN",en:"👑 ADMIN",de:"👑 ADMIN",ru:"👑 АДМИН"},
   bClose:{el:"✕ Κλείσιμο",en:"✕ Close",de:"✕ Schließen",ru:"✕ Закрыть"},
-  lLoginLabel:{el:"Κωδικός",en:"Password",de:"Passwort",ru:"Пароль"},
+  lLoginLabel:{el:"Κωδικός Admin",en:"Admin password",de:"Admin-Passwort",ru:"Пароль админа"},
   bLogin:{el:"Είσοδος",en:"Login",de:"Login",ru:"Вход"},
-  bForgot:{el:"📧 Ξέχασα κωδικό",en:"📧 Forgot password",de:"📧 Passwort vergessen",ru:"📧 Забыл пароль"},
-  lForgotTitle:{el:"📧 Επαναφορά",en:"📧 Reset",de:"📧 Zurücksetzen",ru:"📧 Сброс"},
-  bSendReset:{el:"📤 Αποστολή",en:"📤 Send",de:"📤 Senden",ru:"📤 Отправить"},
-  bChangePass:{el:"✅ Αλλαγή",en:"✅ Change",de:"✅ Ändern",ru:"✅ Сменить"},
-  bBack:{el:"Πίσω",en:"Back",de:"Zurück",ru:"Назад"},
-  lGuideTitle:{el:"📖 Οδηγός Χρήσης",en:"📖 User Guide",de:"📖 Benutzerhandbuch",ru:"📖 Руководство"},
-  lGuideDesc:{el:"Ο διαχειριστής μπορεί να το μοιραστεί.",en:"The admin can share this.",de:"Der Admin kann dies teilen.",ru:"Админ может поделиться."},
-  bCopyGuide:{el:"📋 Αντιγραφή",en:"📋 Copy",de:"📋 Kopieren",ru:"📋 Копировать"},
-  bShareWA:{el:"📱 WhatsApp",en:"📱 WhatsApp",de:"📱 WhatsApp",ru:"📱 WhatsApp"},
-  bExportGuidePDF:{el:"📄 PDF",en:"📄 PDF",de:"📄 PDF",ru:"📄 PDF"},
-  bShareEmail:{el:"📧 Email",en:"📧 Email",de:"📧 Email",ru:"📧 Email"},
-  lFontAdmin:{el:"🎨 Εμφάνιση & Γραμματοσειρά",en:"🎨 Appearance & Font",de:"🎨 Aussehen & Schrift",ru:"🎨 Внешний вид и шрифт"},
-  lFontSize:{el:"Μέγεθος UI:",en:"UI size:",de:"UI-Größe:",ru:"Размер интерфейса:"},
+  lFontAdmin:{el:"🎨 Εμφάνιση & Γραμματοσειρά",en:"🎨 Appearance & Font",de:"🎨 Aussehen & Schrift",ru:"🎨 Внешний вид"},
+  lFontSize:{el:"Μέγεθος UI:",en:"UI size:",de:"UI-Größe:",ru:"Размер UI:"},
   lListFontSize:{el:"Μέγεθος Λίστας:",en:"List size:",de:"Listengröße:",ru:"Размер списка:"},
-  lPreviewUi:{el:"Προεπισκόπηση UI",en:"UI Preview",de:"UI-Vorschau",ru:"Предпросмотр интерфейса"},
-  lPreviewList:{el:"Προεπισκόπηση λίστας",en:"List preview",de:"Listenvorschau",ru:"Предпросмотр списка"},
   lFontFamily:{el:"Γραμματοσειρά",en:"Font",de:"Schrift",ru:"Шрифт"},
-  bResetFonts:{el:"↺ Επαναφορά προεπιλογών",en:"↺ Reset defaults",de:"↺ Standard wiederherstellen",ru:"↺ Сброс по умолчанию"},
-  fontPrev:{el:"Αα Bb Γγ Preview",en:"Aa Bb Cc Preview",de:"Aa Bb Cc Vorschau",ru:"Аа Бб Вв Превью"},
-  lCloudAdmin:{el:"☁️ Cloud",en:"☁️ Cloud",de:"☁️ Cloud",ru:"☁️ Облако"},
-  lCloudOn:{el:"Ενεργό",en:"Enabled",de:"Aktiv",ru:"Включено"},
-  lCloudId:{el:"Κωδικός Συγχρονισμού (Stand ID)",en:"Sync Code (Stand ID)",de:"Sync-Code (Stand-ID)",ru:"Код синхронизации (Stand ID)"},
+  bResetFonts:{el:"↺ Επαναφορά",en:"↺ Reset",de:"↺ Zurücksetzen",ru:"↺ Сброс"},
+  lCloudAdmin:{el:"☁️ Συγχρονισμός",en:"☁️ Sync",de:"☁️ Sync",ru:"☁️ Синхронизация"},
+  lCloudId:{el:"Stand ID",en:"Stand ID",de:"Stand-ID",ru:"Stand ID"},
   lCloudConfig:{el:"Firebase Config",en:"Firebase Config",de:"Firebase-Konfiguration",ru:"Настройки Firebase"},
-  bSaveCloudId:{el:"Save",en:"Save",de:"Speichern",ru:"Сохранить"},
-  bSaveConfig:{el:"Save Config",en:"Save Config",de:"Konfiguration speichern",ru:"Сохранить настройки"},
-  bTestCloud:{el:"Test",en:"Test",de:"Test",ru:"Тест"},
-  bApplySync:{el:"🔄 Εφαρμογή Συγχρονισμού",en:"🔄 Apply Sync",de:"🔄 Sync anwenden",ru:"🔄 Применить синхронизацию"},
-  lChangePass:{el:"🔐 Αλλαγή κωδικού & Email",en:"🔐 Password & Email",de:"🔐 Passwort & E-Mail",ru:"🔐 Пароль и Email"},
-  lPassSyncNote:{el:"Ο κωδικός συγχρονίζεται αυτόματα σε όλα τα κινητά μέσω cloud.",en:"Password syncs automatically across all phones via cloud.",de:"Passwort wird automatisch über die Cloud auf alle Handys synchronisiert.",ru:"Пароль автоматически синхронизируется на все телефоны через облако."},
+  bSaveConfig:{el:"💾 Αποθήκευση",en:"💾 Save",de:"💾 Speichern",ru:"💾 Сохранить"},
+  bApply:{el:"🔄 Εφαρμογή",en:"🔄 Apply",de:"🔄 Anwenden",ru:"🔄 Применить"},
+  syncHelp:{el:"Πες σε όλους τον ίδιο Stand ID.",en:"Give everyone the same Stand ID.",de:"Gib allen dieselbe Stand-ID.",ru:"Дай всем тот же Stand ID."},
+  lChangePass:{el:"🔐 Κωδικός Admin",en:"🔐 Admin password",de:"🔐 Admin-Passwort",ru:"🔐 Пароль админа"},
   lNewPass:{el:"Νέος κωδικός",en:"New password",de:"Neues Passwort",ru:"Новый пароль"},
   lRecEmail:{el:"📧 Email",en:"📧 Email",de:"📧 E-Mail",ru:"📧 Email"},
   bSavePass:{el:"💾 Αποθήκευση",en:"💾 Save",de:"💾 Speichern",ru:"💾 Сохранить"},
-  syncOffline:{el:"Εκτός σύνδεσης",en:"Offline",de:"Offline",ru:"Офлайн"},
+  syncOffline:{el:"Offline",en:"Offline",de:"Offline",ru:"Офлайн"},
   syncConnecting:{el:"Σύνδεση...",en:"Connecting...",de:"Verbinden...",ru:"Подключение..."},
   syncOn:{el:"Συγχρονισμένο",en:"Synced",de:"Synchronisiert",ru:"Синхронизировано"},
   syncPushing:{el:"Αποστολή...",en:"Pushing...",de:"Sende...",ru:"Отправка..."},
   syncPulling:{el:"Λήψη...",en:"Pulling...",de:"Empfange...",ru:"Получение..."},
   syncError:{el:"Σφάλμα",en:"Error",de:"Fehler",ru:"Ошибка"},
-  lastSyncLabel:{el:"Τελευταίος:",en:"Last:",de:"Zuletzt:",ru:"Последний:"},
-  rnTitle:{el:"Μετονομασία εντύπου",en:"Rename item",de:"Artikel umbenennen",ru:"Переименовать издание"},
+  rnTitle:{el:"Μετονομασία",en:"Rename",de:"Umbenennen",ru:"Переименовать"},
   rnSave:{el:"💾 Αποθήκευση",en:"💾 Save",de:"💾 Speichern",ru:"💾 Сохранить"},
   rnCancel:{el:"Άκυρο",en:"Cancel",de:"Abbrechen",ru:"Отмена"},
+  ccTitle:{el:"Επιβεβαίωση",en:"Confirmation",de:"Bestätigung",ru:"Подтверждение"},
+  ccDelete:{el:"Διαγραφή;",en:"Delete?",de:"Löschen?",ru:"Удалить?"},
+  ccDeleteAll:{el:"Διαγραφή ΟΛΩΝ; Δεν αναιρείται!",en:"Delete ALL? Cannot be undone!",de:"ALLE löschen?",ru:"Удалить ВСЁ?"},
+  ccClearLog:{el:"Καθαρισμός ιστορικού;",en:"Clear log?",de:"Verlauf löschen?",ru:"Очистить историю?"},
+  ccDeleteUser:{el:"Διαγραφή χρήστη;",en:"Delete user?",de:"Benutzer löschen?",ru:"Удалить пользователя?"},
+  ccCancelBtn:{el:"Άκυρο",en:"Cancel",de:"Abbrechen",ru:"Отмена"},
+  ccOkBtn:{el:"OK",en:"OK",de:"OK",ru:"OK"},
+  undoTitle:{el:"Αναίρεση;",en:"Undo?",de:"Rückgängig?",ru:"Отменить?"},
+  undoCancel:{el:"Όχι",en:"No",de:"Nein",ru:"Нет"},
+  undoConfirm:{el:"↩️ Αναίρεση",en:"↩️ Undo",de:"↩️ Rückgängig",ru:"↩️ Отменить"},
+  undoDeletedAll:{el:"🗑️ Όλα τα έντυπα",en:"🗑️ All items",de:"🗑️ Alle Artikel",ru:"🗑️ Все издания"},
+  qcTitle:{el:"Γρήγορη Καταμέτρηση",en:"Quick Count",de:"Schnellzählung",ru:"Быстрый подсчет"},
+  pickUser:{el:"Ποιος είσαι;",en:"Who are you?",de:"Wer bist du?",ru:"Кто ты?"},
+  pickUserHelp:{el:"Επίλεξε το όνομά σου.",en:"Pick your name.",de:"Wähle deinen Namen.",ru:"Выбери имя."},
+  lUsersTitle:{el:"👥 Διαχείριση Χρηστών",en:"👥 User Management",de:"👥 Benutzer",ru:"👥 Пользователи"},
+  lUsersDesc:{el:"Πρόσθεσε άτομα. Όλοι βλέπουν τα ίδια έντυπα.",en:"Add people. All see same items.",de:"Personen hinzufügen.",ru:"Добавь людей."},
+  addUserTitle:{el:"➕ Προσθήκη χρήστη",en:"➕ Add user",de:"➕ Benutzer hinzufügen",ru:"➕ Добавить пользователя"},
+  userName:{el:"Όνομα",en:"Name",de:"Name",ru:"Имя"},
+  phUserName:{el:"π.χ. Γιώργος",en:"e.g. George",de:"z.B. Georg",ru:"напр. Георгий"},
+  userRole:{el:"Ρόλος",en:"Role",de:"Rolle",ru:"Роль"},
+  permsTitle:{el:"Δικαιώματα:",en:"Permissions:",de:"Rechte:",ru:"Права:"},
+  pCount:{el:"Αλλαγή ποσότητας",en:"Change qty",de:"Menge ändern",ru:"Изм. количества"},
+  pAdd:{el:"Προσθήκη",en:"Add",de:"Hinzufügen",ru:"Добавить"},
+  pDel:{el:"Διαγραφή",en:"Delete",de:"Löschen",ru:"Удалить"},
+  pEdit:{el:"Επεξεργασία",en:"Edit",de:"Bearbeiten",ru:"Редактировать"},
+  pRename:{el:"Μετονομασία",en:"Rename",de:"Umbenennen",ru:"Переименовать"},
+  pSync:{el:"Συγχρονισμός",en:"Sync",de:"Sync",ru:"Синхронизация"},
+  pOrder:{el:"Παραγγελία",en:"Orders",de:"Bestellungen",ru:"Заказы"},
+  pScan:{el:"Scanner",en:"Scanner",de:"Scanner",ru:"Сканер"},
+  pVoice:{el:"Φωνή",en:"Voice",de:"Stimme",ru:"Голос"},
+  pExport:{el:"Εξαγωγή",en:"Export",de:"Export",ru:"Экспорт"},
+  bAddUser:{el:"➕ Προσθήκη",en:"➕ Add",de:"➕ Hinzufügen",ru:"➕ Добавить"},
+  roleAdmin:{el:"👑 Διαχειριστής",en:"👑 Admin",de:"👑 Administrator",ru:"👑 Администратор"},
+  roleManager:{el:"📦 Υπεύθυνος",en:"📦 Manager",de:"📦 Verwalter",ru:"📦 Менеджер"},
+  roleCounter:{el:"🔢 Μετρητής",en:"🔢 Counter",de:"🔢 Zähler",ru:"🔢 Счётчик"},
+  roleViewer:{el:"👀 Παρατηρητής",en:"👀 Viewer",de:"👀 Betrachter",ru:"👀 Наблюдатель"},
+  optCounter:{el:"🔢 Counter — μόνο καταμέτρηση",en:"🔢 Counter — count only",de:"🔢 Zähler — nur zählen",ru:"🔢 Счётчик — только подсчёт"},
+  optManager:{el:"📦 Manager — προσθέτει & επεξεργάζεται",en:"📦 Manager — add & edit",de:"📦 Verwalter — hinzufügen & bearbeiten",ru:"📦 Менеджер — добавление и правка"},
+  optViewer:{el:"👀 Viewer — μόνο βλέπει",en:"👀 Viewer — view only",de:"👀 Betrachter — nur ansehen",ru:"👀 Наблюдатель — только просмотр"},
+  optAdmin:{el:"👑 Admin — όλα",en:"👑 Admin — all",de:"👑 Administrator — alles",ru:"👑 Администратор — всё"},
+  logAdd:{el:"Προσθήκη",en:"Add",de:"Hinzufügen",ru:"Добавить"},
+  logDelete:{el:"Διαγραφή",en:"Delete",de:"Löschen",ru:"Удалить"},
+  logRename:{el:"Μετονομασία",en:"Rename",de:"Umbenennen",ru:"Переименовать"},
+  logNewUser:{el:"Νέος χρήστης",en:"New user",de:"Neuer Benutzer",ru:"Новый пользователь"},
+  logLogin:{el:"Σύνδεση",en:"Login",de:"Anmeldung",ru:"Вход"},
+  logUndo:{el:"Αναίρεση",en:"Undo",de:"Rückgängig",ru:"Отмена"},
+  logDeleteAll:{el:"Διαγραφή όλων",en:"Delete all",de:"Alle löschen",ru:"Удалить всё"},
+  logQty:{el:"Ποσότητα",en:"Quantity",de:"Menge",ru:"Количество"},
+  alertNoName:{el:"Βάλε όνομα!",en:"Enter name!",de:"Name eingeben!",ru:"Введите имя!"},
+  alertNoTitle:{el:"Βάλε τίτλο!",en:"Enter title!",de:"Titel eingeben!",ru:"Введите название!"},
+  alertWrongPass:{el:"Λάθος κωδικός",en:"Wrong password",de:"Falsches Passwort",ru:"Неверный пароль"},
+  alertSaved:{el:"Αποθηκεύτηκε",en:"Saved",de:"Gespeichert",ru:"Сохранено"},
+  alertNothing:{el:"Δεν υπάρχει τίποτα",en:"Nothing here",de:"Nichts vorhanden",ru:"Ничего нет"},
+  alertChrome:{el:"Χρειάζεται Chrome",en:"Requires Chrome",de:"Chrome erforderlich",ru:"Требуется Chrome"},
+  alertPopups:{el:"Επίτρεψε τα αναδυόμενα παράθυρα",en:"Allow pop-ups",de:"Pop-ups erlauben",ru:"Разреши всплывающие окна"},
+  alertCloudOff:{el:"Cloud εκτός",en:"Cloud off",de:"Cloud aus",ru:"Cloud выключен"},
+  alertNoDB:{el:"Δεν υπάρχει βάση δεδομένων",en:"No database",de:"Keine Datenbank",ru:"Нет базы данных"},
+  alertError:{el:"Σφάλμα",en:"Error",de:"Fehler",ru:"Ошибка"},
+  alertCopied:{el:"Αντιγράφηκε",en:"Copied",de:"Kopiert",ru:"Скопировано"},
   langEl:{el:"🇬🇷 Ελληνικά",en:"🇬🇷 Greek",de:"🇬🇷 Griechisch",ru:"🇬🇷 Греческий"},
   langEn:{el:"🇬🇧 English",en:"🇬🇧 English",de:"🇬🇧 Englisch",ru:"🇬🇧 Английский"},
   langDe:{el:"🇩🇪 Deutsch",en:"🇩🇪 German",de:"🇩🇪 Deutsch",ru:"🇩🇪 Немецкий"},
@@ -703,23 +696,10 @@ var T = {
   langHu:{el:"🇭🇺 Magyar",en:"🇭🇺 Hungarian",de:"🇭🇺 Ungarisch",ru:"🇭🇺 Венгерский"},
   langHy:{el:"🇦🇲 Հայերեն",en:"🇦🇲 Armenian",de:"🇦🇲 Armenisch",ru:"🇦🇲 Армянский"},
   langTr:{el:"🇹🇷 Türkçe",en:"🇹🇷 Turkish",de:"🇹🇷 Türkisch",ru:"🇹🇷 Турецкий"},
-  langSr:{el:"🇷🇸 Српски",en:"🇷🇸 Serbian",de:"🇷🇸 Serbisch",ru:"🇷🇸 Сербский"},
-  ccTitle:{el:"Επιβεβαίωση",en:"Confirmation",de:"Bestätigung",ru:"Подтверждение"},
-  ccDelete:{el:"Διαγραφή εντύπου;",en:"Delete item?",de:"Artikel löschen?",ru:"Удалить издание?"},
-  ccClearLog:{el:"Καθαρισμός ιστορικού;",en:"Clear log?",de:"Verlauf löschen?",ru:"Очистить историю?"},
-  ccRestore:{el:"Επαναφορά προ-φορτωμένων;",en:"Restore presets?",de:"Vorgaben wiederherstellen?",ru:"Восстановить предустановки?"},
-  ccDeleteAllItems:{el:"Διαγραφή ΟΛΩΝ; Δεν αναιρείται!",en:"Delete ALL? Cannot be undone!",de:"ALLE löschen? Nicht rückgängig zu machen!",ru:"Удалить ВСЁ? Нельзя отменить!"},
-  ccCancelBtn:{el:"Άκυρο",en:"Cancel",de:"Abbrechen",ru:"Отмена"},
-  ccOkBtn:{el:"OK",en:"OK",de:"OK",ru:"OK"}
+  langSr:{el:"🇷🇸 Српски",en:"🇷🇸 Serbian",de:"🇷🇸 Serbisch",ru:"🇷🇸 Сербский"}
 };
 
-var LANGS={
-el:{order:"ΠΑΡΑΓΓΕΛΙΑ",ok:"ΟΚ",has:"έχει",lSmartTitle:"🤖 Έξυπνη πρόταση:"},
-en:{order:"ORDER",ok:"OK",has:"has",lSmartTitle:"🤖 Smart suggestion:"},
-de:{order:"BESTELLUNG",ok:"OK",has:"hat",lSmartTitle:"🤖 Vorschlag:"},
-ru:{order:"ЗАКАЗ",ok:"ОК",has:"есть",lSmartTitle:"🤖 Совет:"}
-};
-
+var LOC={el:'el-GR',en:'en-GB',de:'de-DE',ru:'ru-RU'};
 var TYPE_TRANS={
 "Φυλλάδιο":{el:"Φυλλάδιο",en:"Tract",de:"Traktat",ru:"Трактат"},
 "Περιοδικό":{el:"Περιοδικό",en:"Magazine",de:"Zeitschrift",ru:"Журнал"},
@@ -727,23 +707,33 @@ var TYPE_TRANS={
 "Βιβλίο":{el:"Βιβλίο",en:"Book",de:"Buch",ru:"Книга"},
 "Κάρτα":{el:"Κάρτα",en:"Card",de:"Karte",ru:"Карточка"},
 "Πόστερ":{el:"Πόστερ",en:"Poster",de:"Poster",ru:"Плакат"},
-"Φυλλάδιο-Διαφημιστικό":{el:"Φυλλάδιο Διαφημιστικό",en:"Study Tract",de:"Studium Traktat",ru:"Брошюра для изучения"}
+"Φυλλάδιο-Διαφημιστικό":{el:"Φυλλάδιο Διαφημιστικό",en:"Study Tract",de:"Studium",ru:"Брошюра"}
+};
+var LANGS_SHORT={
+  el:{order:"ΠΑΡΑΓΓΕΛΙΑ",ok:"ΟΚ",has:"έχει",lSmartTitle:"🤖 Πρόταση:"},
+  en:{order:"ORDER",ok:"OK",has:"has",lSmartTitle:"🤖 Suggestion:"},
+  de:{order:"BESTELLUNG",ok:"OK",has:"hat",lSmartTitle:"🤖 Vorschlag:"},
+  ru:{order:"ЗАКАЗ",ok:"ОК",has:"есть",lSmartTitle:"🤖 Совет:"}
 };
 
-var LOC={el:'el-GR',en:'en-GB',de:'de-DE',ru:'ru-RU'};
-
-/* ---------- 5. STATE ---------- */
+/* ---------- 4. STATE ---------- */
 var curLang=localStorage.getItem('stand_lang')||'el';
-/* ★ Font size settings */
-var curFS=parseInt(localStorage.getItem('stand_fs')||'15');           // UI size (default 15)
-var curLFS=parseInt(localStorage.getItem('stand_list_fs')||'13');     // List font size (default 13)
+var curFS=parseInt(localStorage.getItem('stand_fs')||'15');
+var curLFS=parseInt(localStorage.getItem('stand_list_fs')||'13');
 var curFF=localStorage.getItem('stand_ff')||'Arial, sans-serif';
+var curTheme=localStorage.getItem('stand_theme')||'dark';
+var curSort=localStorage.getItem('stand_sort')||'low';
+var curTypeFilter='all';
+var curLangFilter='all';
 
 var items=[];
+var users=[];
+var currentUserId=parseFloat(localStorage.getItem('stand_current_user_id'))||null;
 var adminPass=localStorage.getItem('stand_pass')||'1234';
-var currentFilter='all';
-var currentPhotoBase64='';
 var historyLog=[];
+var todayStats={date:new Date().toDateString(), added:0, removed:0};
+try{ var ts=JSON.parse(localStorage.getItem('stand_today')||'null'); if(ts && ts.date===todayStats.date) todayStats=ts; }catch(e){}
+
 var html5Qrcode=null, scanBusy=false;
 var chartMainInst=null;
 var deferredPrompt=null;
@@ -753,8 +743,21 @@ var fbConfigStr=localStorage.getItem('stand_fb_config')||'{"apiKey":"AIzaSyCKoGO
 var cloudApp=null, cloudDb=null, cloudUnsub=null, cloudPushTimeout=null, isSyncingFromCloud=false;
 var lastSyncStr='';
 var syncState='offline';
+var currentPhotoBase64='';
+var lastAction=null;
+var undoTimer=null;
 
-/* ---------- 6. PRESETS ---------- */
+/* Legacy log action mapping */
+var LEGACY_LOG_ACTIONS = {
+  'Προσθήκη':'logAdd','Διαγραφή':'logDelete','Μετονομασία':'logRename',
+  'Νέος χρήστης':'logNewUser','Σύνδεση':'logLogin','Αναίρεση':'logUndo',
+  'Διαγραφή όλων':'logDeleteAll','Ποσότητα':'logQty','Αλλαγή ποσότητας':'logQty',
+  'Add':'logAdd','Delete':'logDelete','Rename':'logRename',
+  'New user':'logNewUser','Login':'logLogin','Undo':'logUndo',
+  'Delete all':'logDeleteAll','Quantity':'logQty'
+};
+
+/* ---------- 5. PRESETS ---------- */
 var PRESETS=[
 {"id":1,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Μπορείτε να ζήσετε για πάντα σε έναν παράδεισο στη γη;","en":"Can You Live Forever in Paradise on Earth?","de":"Können Sie für immer im Paradies auf Erden leben?","ru":"Будете ли вы жить вечно в раю на земле?"},"qty":20,"min":5,"lang":"el"},
 {"id":2,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Τι είναι η Βασιλεία του Θεού;","en":"What Is God's Kingdom?","de":"Was ist Gottes Königreich?","ru":"Что такое Царство Бога?"},"qty":20,"min":5,"lang":"el"},
@@ -763,288 +766,302 @@ var PRESETS=[
 {"id":5,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Μπορούν οι νεκροί να ζήσουν ξανά;","en":"Can the Dead Really Live Again?","de":"Können die Toten wirklich wieder leben?","ru":"Будут ли умершие жить снова?"},"qty":20,"min":5,"lang":"el"},
 {"id":6,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Πώς βλέπετε την Αγία Γραφή;","en":"How Do You View the Bible?","de":"Wie betrachten Sie die Bibel?","ru":"Что для вас Библия?"},"qty":15,"min":3,"lang":"el"},
 {"id":7,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Πώς βλέπετε το μέλλον;","en":"How Do You View the Future?","de":"Wie sehen Sie die Zukunft?","ru":"Каким вы видите будущее?"},"qty":15,"min":3,"lang":"el"},
-{"id":8,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Πού μπορείτε να βρείτε απαντήσεις στα μεγάλα ερωτήματα;","en":"Where Can You Find Answers to Life's Big Questions?","de":"Wo finden Sie Antworten auf die großen Fragen des Lebens?","ru":"Где найти ответы на важные вопросы жизни?"},"qty":15,"min":3,"lang":"el"},
-{"id":9,"type":"Φυλλάδιο","cat":{"el":"Οικογένεια","en":"Family","de":"Familie","ru":"Семья"},"names":{"el":"Ποιο είναι το κλειδί για ευτυχισμένη οικογένεια;","en":"What Is the Key to Happy Family Life?","de":"Was ist der Schlüssel zu einem glücklichen Familienleben?","ru":"На чём строится семейное счастье?"},"qty":15,"min":3,"lang":"el"},
-{"id":10,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Πώς θα είναι η ζωή στον Παράδεισο;","en":"What Will Life Be Like in Paradise?","de":"Wie wird das Leben im Paradies sein?","ru":"Какой будет жизнь в Раю?"},"qty":15,"min":3,"lang":"el"},
+{"id":8,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Πού βρίσκεις απαντήσεις στα μεγάλα ερωτήματα;","en":"Where Can You Find Answers?","de":"Wo finden Sie Antworten?","ru":"Где найти ответы?"},"qty":15,"min":3,"lang":"el"},
+{"id":9,"type":"Φυλλάδιο","cat":{"el":"Οικογένεια","en":"Family","de":"Familie","ru":"Семья"},"names":{"el":"Κλειδί για ευτυχισμένη οικογένεια;","en":"Key to Happy Family?","de":"Schlüssel zum Familienglück?","ru":"На чём строится семейное счастье?"},"qty":15,"min":3,"lang":"el"},
+{"id":10,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Πώς θα είναι η ζωή στον Παράδεισο;","en":"Life in Paradise?","de":"Leben im Paradies?","ru":"Какой будет жизнь в Раю?"},"qty":15,"min":3,"lang":"el"},
 {"id":11,"type":"Βιβλιάριο","cat":{"el":"Βιβλιάριο","en":"Booklet","de":"Broschüre","ru":"Брошюра"},"names":{"el":"Τα καλά νέα από τον Θεό!","en":"Good News From God!","de":"Die gute Botschaft von Gott!","ru":"Добрая весть от Бога!"},"qty":20,"min":5,"lang":"el"},
-{"id":12,"type":"Βιβλιάριο","cat":{"el":"Βιβλιάριο","en":"Booklet","de":"Broschüre","ru":"Брошюра"},"names":{"el":"Να απολαμβάνετε για πάντα τη ζωή! - Εισαγωγή","en":"Enjoy Life Forever! - Introduction","de":"Für immer leben! - Einführung","ru":"Радуйтесь жизни сейчас и вечно! - Введение"},"qty":20,"min":5,"lang":"el"},
+{"id":12,"type":"Βιβλιάριο","cat":{"el":"Βιβλιάριο","en":"Booklet","de":"Broschüre","ru":"Брошюра"},"names":{"el":"Να απολαμβάνετε για πάντα τη ζωή!","en":"Enjoy Life Forever!","de":"Für immer leben!","ru":"Радуйтесь жизни вечно!"},"qty":20,"min":5,"lang":"el"},
 {"id":13,"type":"Βιβλίο","cat":{"el":"Βιβλίο","en":"Book","de":"Buch","ru":"Книга"},"names":{"el":"Τι διδάσκει πραγματικά η Αγία Γραφή;","en":"What Does the Bible Really Teach?","de":"Was lehrt die Bibel wirklich?","ru":"Чему на самом деле учит Библия?"},"qty":10,"min":2,"lang":"el"},
 {"id":14,"type":"Βιβλίο","cat":{"el":"Βιβλίο","en":"Book","de":"Buch","ru":"Книга"},"names":{"el":"Τι μπορεί να μας διδάξει η Αγία Γραφή;","en":"What Can the Bible Teach Us?","de":"Was kann uns die Bibel lehren?","ru":"Чему нас может научить Библия?"},"qty":10,"min":2,"lang":"el"},
-{"id":15,"type":"Βιβλίο","cat":{"el":"Βιβλίο","en":"Book","de":"Buch","ru":"Книга"},"names":{"el":"Να απολαμβάνετε για πάντα τη ζωή!","en":"Enjoy Life Forever!","de":"Das Vergnügen, für immer zu leben!","ru":"Радуйтесь жизни сейчас и вечно!"},"qty":10,"min":2,"lang":"el"},
-{"id":16,"type":"Περιοδικό","cat":{"el":"Σκοπιά","en":"Watchtower","de":"Wachtturm","ru":"Сторожевая башня"},"names":{"el":"Η Σκοπιά - Δημόσια Έκδοση - Τρέχον","en":"The Watchtower - Public Edition - Current","de":"Der Wachtturm - Öffentlichkeitsausgabe - Aktuell","ru":"Сторожевая башня - Для публики - Текущий"},"qty":25,"min":5,"lang":"el"},
-{"id":17,"type":"Περιοδικό","cat":{"el":"Ξύπνα","en":"Awake","de":"Erwachet","ru":"Пробудитесь"},"names":{"el":"Ξύπνα! - Τρέχον τεύχος","en":"Awake! - Current Issue","de":"Erwachet! - Aktuelle Ausgabe","ru":"Пробудитесь! - Текущий выпуск"},"qty":25,"min":5,"lang":"el"},
-{"id":18,"type":"Φυλλάδιο","cat":{"el":"Δημιουργία","en":"Creation","de":"Schöpfung","ru":"Сотворение"},"names":{"el":"Είναι η ζωή απλώς ένα ατύχημα;","en":"Is Life Just an Accident?","de":"Ist das Leben nur ein Zufall?","ru":"Жизнь — просто случайность?"},"qty":15,"min":3,"lang":"el"},
-{"id":19,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Ποιος είναι ο σκοπός της ζωής;","en":"What Is the Purpose of Life?","de":"Was ist der Sinn des Lebens?","ru":"В чём смысл жизни?"},"qty":15,"min":3,"lang":"el"},
-{"id":20,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Πώς μπορείτε να βρείτε ευτυχία;","en":"How Can You Find Happiness?","de":"Wie können Sie Glück finden?","ru":"Как обрести счастье?"},"qty":15,"min":3,"lang":"el"},
-{"id":21,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Υπάρχει Θεός που νοιάζεται;","en":"Is There a God Who Cares About You?","de":"Gibt es einen Gott, der sich um Sie kümmert?","ru":"На самом ли деле Бог заботится о нас?"},"qty":15,"min":3,"lang":"el"},
-{"id":22,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Θα τελειώσει ποτέ ο πόλεμος;","en":"Will War Ever End?","de":"Wird es jemals keinen Krieg mehr geben?","ru":"Придёт ли конец страданиям?"},"qty":15,"min":3,"lang":"el"},
-{"id":23,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Τι λέει η Αγία Γραφή για το μέλλον;","en":"What Does the Bible Say About the Future?","de":"Was sagt die Bibel über die Zukunft?","ru":"Что Библия говорит о будущем?"},"qty":15,"min":3,"lang":"el"},
+{"id":16,"type":"Περιοδικό","cat":{"el":"Σκοπιά","en":"Watchtower","de":"Wachtturm","ru":"Сторожевая башня"},"names":{"el":"Η Σκοπιά - Δημόσια Έκδοση","en":"The Watchtower - Public","de":"Der Wachtturm - Öffentlich","ru":"Сторожевая башня - Для публики"},"qty":25,"min":5,"lang":"el"},
+{"id":17,"type":"Περιοδικό","cat":{"el":"Ξύπνα","en":"Awake","de":"Erwachet","ru":"Пробудитесь"},"names":{"el":"Ξύπνα! - Τρέχον τεύχος","en":"Awake! - Current","de":"Erwachet! - Aktuell","ru":"Пробудитесь! - Текущий"},"qty":25,"min":5,"lang":"el"},
+{"id":18,"type":"Φυλλάδιο","cat":{"el":"Δημιουργία","en":"Creation","de":"Schöpfung","ru":"Творение"},"names":{"el":"Είναι η ζωή απλώς ένα ατύχημα;","en":"Is Life Just an Accident?","de":"Ist das Leben ein Zufall?","ru":"Жизнь — просто случайность?"},"qty":15,"min":3,"lang":"el"},
+{"id":19,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Ποιος είναι ο σκοπός της ζωής;","en":"Purpose of Life?","de":"Sinn des Lebens?","ru":"В чём смысл жизни?"},"qty":15,"min":3,"lang":"el"},
+{"id":20,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Πώς μπορείτε να βρείτε ευτυχία;","en":"How Can You Find Happiness?","de":"Glück finden?","ru":"Как обрести счастье?"},"qty":15,"min":3,"lang":"el"},
+{"id":21,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Υπάρχει Θεός που νοιάζεται;","en":"Is There a God Who Cares?","de":"Gibt es einen Gott?","ru":"На самом ли деле Бог заботится?"},"qty":15,"min":3,"lang":"el"},
+{"id":22,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Θα τελειώσει ποτέ ο πόλεμος;","en":"Will War Ever End?","de":"Ende des Krieges?","ru":"Придёт ли конец страданиям?"},"qty":15,"min":3,"lang":"el"},
 {"id":24,"type":"Κάρτα","cat":{"el":"Πρόσκληση","en":"Invitation","de":"Einladung","ru":"Приглашение"},"names":{"el":"Πρόσκληση στην Ανάμνηση","en":"Invitation to Memorial","de":"Einladung zum Gedächtnismahl","ru":"Приглашение на Вечерю"},"qty":30,"min":5,"lang":"el"},
 {"id":25,"type":"Κάρτα","cat":{"el":"Πρόσκληση","en":"Invitation","de":"Einladung","ru":"Приглашение"},"names":{"el":"Πρόσκληση σε Συνέλευση","en":"Invitation to Convention","de":"Einladung zum Kongress","ru":"Приглашение на конгресс"},"qty":30,"min":5,"lang":"el"},
 {"id":26,"type":"Κάρτα","cat":{"el":"Κάρτα","en":"Card","de":"Karte","ru":"Карточка"},"names":{"el":"Κάρτα jw.org","en":"jw.org Card","de":"jw.org Karte","ru":"Карточка jw.org"},"qty":25,"min":5,"lang":"el"},
-{"id":27,"type":"Βιβλιάριο","cat":{"el":"Νέοι","en":"Youth","de":"Jugend","ru":"Молодёжь"},"names":{"el":"Ερωτήσεις νέων - Απαντήσεις","en":"Young People Ask - Answers","de":"Fragen junger Leute - Antworten","ru":"Ответы на 10 вопросов юношей и девушек"},"qty":10,"min":2,"lang":"el"},
-{"id":28,"type":"Βιβλιάριο","cat":{"el":"Οικογένεια","en":"Family","de":"Familie","ru":"Семья"},"names":{"el":"Μυστικό ευτυχισμένης οικογένειας","en":"Secret of Happy Family","de":"Geheimnis des Familienglücks","ru":"Ваша семья может быть счастливой"},"qty":10,"min":2,"lang":"el"},
-{"id":29,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Μπορεί ο Θεός να σας βοηθήσει;","en":"Can God Help You?","de":"Kann Gott Ihnen helfen?","ru":"Может ли Бог помочь вам?"},"qty":15,"min":3,"lang":"el"},
-{"id":30,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Γιατί να μελετάτε την Αγία Γραφή;","en":"Why Study the Bible?","de":"Warum die Bibel studieren?","ru":"Почему изучать Библию?"},"qty":15,"min":3,"lang":"el"},
-{"id":32,"type":"Βιβλιάριο","cat":{"el":"Βιβλιάριο","en":"Booklet","de":"Broschüre","ru":"Брошюра"},"names":{"el":"Καταγωγή ζωής - 5 ερωτήματα","en":"Origin of Life - 5 Questions","de":"Ursprung des Lebens - 5 Fragen","ru":"Происхождение жизни - 5 вопросов"},"qty":10,"min":2,"lang":"el"},
+{"id":27,"type":"Βιβλιάριο","cat":{"el":"Νέοι","en":"Youth","de":"Jugend","ru":"Молодёжь"},"names":{"el":"Ερωτήσεις νέων - Απαντήσεις","en":"Young People Ask","de":"Fragen junger Leute","ru":"Ответы на 10 вопросов"},"qty":10,"min":2,"lang":"el"},
+{"id":28,"type":"Βιβλιάριο","cat":{"el":"Οικογένεια","en":"Family","de":"Familie","ru":"Семья"},"names":{"el":"Μυστικό ευτυχισμένης οικογένειας","en":"Secret of Happy Family","de":"Familienglück","ru":"Ваша семья может быть счастливой"},"qty":10,"min":2,"lang":"el"},
+{"id":32,"type":"Βιβλιάριο","cat":{"el":"Βιβλιάριο","en":"Booklet","de":"Broschüre","ru":"Брошюра"},"names":{"el":"Καταγωγή ζωής - 5 ερωτήματα","en":"Origin of Life - 5 Questions","de":"Ursprung des Lebens","ru":"Происхождение жизни"},"qty":10,"min":2,"lang":"el"},
 {"id":33,"type":"Βιβλιάριο","cat":{"el":"Βιβλιάριο","en":"Booklet","de":"Broschüre","ru":"Брошюра"},"names":{"el":"Δημιουργήθηκε η ζωή;","en":"Was Life Created?","de":"Ist das Leben erschaffen?","ru":"Была ли жизнь создана?"},"qty":10,"min":2,"lang":"el"},
 {"id":34,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Τι είναι ο θάνατος;","en":"What Is Death?","de":"Was ist der Tod?","ru":"Что такое смерть?"},"qty":15,"min":3,"lang":"el"},
 {"id":35,"type":"Φυλλάδιο","cat":{"el":"Φυλλάδιο","en":"Tract","de":"Traktat","ru":"Буклет"},"names":{"el":"Τι συμβαίνει όταν πεθαίνουμε;","en":"What Happens When We Die?","de":"Was geschieht beim Tod?","ru":"Что происходит после смерти?"},"qty":15,"min":3,"lang":"el"}
 ];
-
 var PUBLIC_MAGAZINES=[
-{"id":1001,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2020 | Η Αναζήτηση της Αλήθειας","en":"The Watchtower — No. 1 2020 | The Search for Truth","de":"Der Wachtturm — Nr. 1 2020 | Die Suche nach der Wahrheit","ru":"Сторожевая башня — № 1 2020 | Поиск истины"},"qty":25,"min":5,"lang":"el"},
-{"id":1002,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 2 2020 | Τι Είναι η Βασιλεία του Θεού;","en":"The Watchtower — No. 2 2020 | What Is God's Kingdom?","de":"Der Wachtturm — Nr. 2 2020 | Was ist Gottes Königreich?","ru":"Сторожевая башня — № 2 2020 | Что такое Царство Бога?"},"qty":25,"min":5,"lang":"el"},
-{"id":1003,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 3 2020 | Ατέλειωτες Ευλογίες","en":"The Watchtower — No. 3 2020 | Lasting Blessings","de":"Der Wachtturm — Nr. 3 2020 | Dauerhafte Segnungen","ru":"Сторожевая башня — № 3 2020 | Вечные благословения"},"qty":25,"min":5,"lang":"el"},
-{"id":1004,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2020 | Νικήστε το Άγχος","en":"Awake! — No. 1 2020 | Find Relief From Stress","de":"Erwachet! — Nr. 1 2020 | Stress bewältigen","ru":"Пробудитесь! — № 1 2020 | Как справиться со стрессом"},"qty":25,"min":5,"lang":"el"},
-{"id":1005,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 2 2020 | 5 Ερωτήματα για τα Βάσανα","en":"Awake! — No. 2 2020 | 5 Questions About Suffering","de":"Erwachet! — Nr. 2 2020 | 5 Fragen über das Leid","ru":"Пробудитесь! — № 2 2020 | 5 вопросов о страданиях"},"qty":25,"min":5,"lang":"el"},
-{"id":1006,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 3 2020 | Θεραπεία για την Προκατάληψη;","en":"Awake! — No. 3 2020 | Cure for Prejudice?","de":"Erwachet! — Nr. 3 2020 | Heilmittel gegen Vorurteile?","ru":"Пробудитесь! — № 3 2020 | Избавиться от предубеждений?"},"qty":25,"min":5,"lang":"el"},
-{"id":1007,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2021 | Αξίζει να Προσεύχεστε;","en":"The Watchtower — No. 1 2021 | Why Pray?","de":"Der Wachtturm — Nr. 1 2021 | Warum beten?","ru":"Сторожевая башня — № 1 2021 | Зачем молиться?"},"qty":25,"min":5,"lang":"el"},
-{"id":1008,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 2 2021 | Ένας Καλύτερος Κόσμος","en":"The Watchtower — No. 2 2021 | A Better World","de":"Der Wachtturm — Nr. 2 2021 | Eine bessere Welt","ru":"Сторожевая башня — № 2 2021 | Лучший мир"},"qty":25,"min":5,"lang":"el"},
-{"id":1009,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 3 2021 | Ασφαλές Μέλλον;","en":"The Watchtower — No. 3 2021 | A Secure Future?","de":"Der Wachtturm — Nr. 3 2021 | Eine sichere Zukunft?","ru":"Сторожевая башня — № 3 2021 | Безопасное будущее?"},"qty":25,"min":5,"lang":"el"},
-{"id":1010,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2021 | Σοφία για τη Ζωή","en":"Awake! — No. 1 2021 | Wisdom for Life","de":"Erwachet! — Nr. 1 2021 | Weisheit fürs Leben","ru":"Пробудитесь! — № 1 2021 | Мудрость для жизни"},"qty":25,"min":5,"lang":"el"},
-{"id":1011,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 2 2021 | Τεχνολογία","en":"Awake! — No. 2 2021 | Technology","de":"Erwachet! — Nr. 2 2021 | Technik","ru":"Пробудитесь! — № 2 2021 | Технологии"},"qty":25,"min":5,"lang":"el"},
-{"id":1012,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 3 2021 | Πιστεύετε σε Δημιουργό;","en":"Awake! — No. 3 2021 | Believe in a Creator?","de":"Erwachet! — Nr. 3 2021 | An einen Schöpfer glauben?","ru":"Пробудитесь! — № 3 2021 | Верить в Творца?"},"qty":25,"min":5,"lang":"el"},
-{"id":1013,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2022 | Ο Κύκλος του Μίσους","en":"The Watchtower — No. 1 2022 | Cycle of Hatred","de":"Der Wachtturm — Nr. 1 2022 | Kreislauf des Hasses","ru":"Сторожевая башня — № 1 2022 | Круг ненависти"},"qty":25,"min":5,"lang":"el"},
-{"id":1014,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2022 | Κόσμος σε Αναστάτωση","en":"Awake! — No. 1 2022 | World in Turmoil","de":"Erwachet! — Nr. 1 2022 | Welt in Aufruhr","ru":"Пробудитесь! — № 1 2022 | Мир в смятении"},"qty":25,"min":5,"lang":"el"},
-{"id":1015,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2023 | Ψυχική Υγεία","en":"The Watchtower — No. 1 2023 | Mental Health","de":"Der Wachtturm — Nr. 1 2023 | Psychische Gesundheit","ru":"Сторожевая башня — № 1 2023 | Психическое здоровье"},"qty":25,"min":5,"lang":"el"},
-{"id":1016,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2023 | Ο Πλανήτης Μας","en":"Awake! — No. 1 2023 | Our Planet","de":"Erwachet! — Nr. 1 2023 | Unser Planet","ru":"Пробудитесь! — № 1 2023 | Наша планета"},"qty":25,"min":5,"lang":"el"},
-{"id":1017,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2024 | Σωστό και Λάθος","en":"The Watchtower — No. 1 2024 | Right and Wrong","de":"Der Wachtturm — Nr. 1 2024 | Richtig und falsch","ru":"Сторожевая башня — № 1 2024 | Правильно и неправильно"},"qty":25,"min":5,"lang":"el"},
-{"id":1018,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2024 | Τι Έγινε στον Σεβασμό;","en":"Awake! — No. 1 2024 | What Happened to Respect?","de":"Erwachet! — Nr. 1 2024 | Was geschah mit dem Respekt?","ru":"Пробудитесь! — № 1 2024 | Куда исчезло уважение?"},"qty":25,"min":5,"lang":"el"},
-{"id":1019,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2025 | Τέλος του Πολέμου;","en":"The Watchtower — No. 1 2025 | An End to War?","de":"Der Wachtturm — Nr. 1 2025 | Ein Ende der Kriege?","ru":"Сторожевая башня — № 1 2025 | Конец войн?"},"qty":25,"min":5,"lang":"el"},
-{"id":1020,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2025 | Αυξανόμενες Τιμές","en":"Awake! — No. 1 2025 | Rising Prices","de":"Erwachet! — Nr. 1 2025 | Steigende Preise","ru":"Пробудитесь! — № 1 2025 | Рост цен"},"qty":25,"min":5,"lang":"el"},
-{"id":1021,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2026 | Παγκόσμια Ειρήνη;","en":"The Watchtower — No. 1 2026 | World Peace?","de":"Der Wachtturm — Nr. 1 2026 | Weltfrieden?","ru":"Сторожевая башня — № 1 2026 | Возможен ли мир во всём мире?"},"qty":25,"min":5,"lang":"el"},
-{"id":1022,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2026 | Μοναξιά","en":"Awake! — No. 1 2026 | Loneliness","de":"Erwachet! — Nr. 1 2026 | Einsamkeit","ru":"Пробудитесь! — № 1 2026 | Как победить одиночество"},"qty":25,"min":5,"lang":"el"}
+{"id":1001,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2020","en":"The Watchtower — No. 1 2020","de":"Der Wachtturm — Nr. 1 2020","ru":"Сторожевая башня — № 1 2020"},"qty":25,"min":5,"lang":"el"},
+{"id":1002,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 2 2020","en":"The Watchtower — No. 2 2020","de":"Der Wachtturm — Nr. 2 2020","ru":"Сторожевая башня — № 2 2020"},"qty":25,"min":5,"lang":"el"},
+{"id":1004,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2020","en":"Awake! — No. 1 2020","de":"Erwachet! — Nr. 1 2020","ru":"Пробудитесь! — № 1 2020"},"qty":25,"min":5,"lang":"el"},
+{"id":1007,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2021","en":"The Watchtower — No. 1 2021","de":"Der Wachtturm — Nr. 1 2021","ru":"Сторожевая башня — № 1 2021"},"qty":25,"min":5,"lang":"el"},
+{"id":1008,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 2 2021","en":"The Watchtower — No. 2 2021","de":"Der Wachtturm — Nr. 2 2021","ru":"Сторожевая башня — № 2 2021"},"qty":25,"min":5,"lang":"el"},
+{"id":1010,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2021","en":"Awake! — No. 1 2021","de":"Erwachet! — Nr. 1 2021","ru":"Пробудитесь! — № 1 2021"},"qty":25,"min":5,"lang":"el"},
+{"id":1013,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2022","en":"The Watchtower — No. 1 2022","de":"Der Wachtturm — Nr. 1 2022","ru":"Сторожевая башня — № 1 2022"},"qty":25,"min":5,"lang":"el"},
+{"id":1014,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2022","en":"Awake! — No. 1 2022","de":"Erwachet! — Nr. 1 2022","ru":"Пробудитесь! — № 1 2022"},"qty":25,"min":5,"lang":"el"},
+{"id":1015,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2023","en":"The Watchtower — No. 1 2023","de":"Der Wachtturm — Nr. 1 2023","ru":"Сторожевая башня — № 1 2023"},"qty":25,"min":5,"lang":"el"},
+{"id":1016,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2023","en":"Awake! — No. 1 2023","de":"Erwachet! — Nr. 1 2023","ru":"Пробудитесь! — № 1 2023"},"qty":25,"min":5,"lang":"el"},
+{"id":1017,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2024","en":"The Watchtower — No. 1 2024","de":"Der Wachtturm — Nr. 1 2024","ru":"Сторожевая башня — № 1 2024"},"qty":25,"min":5,"lang":"el"},
+{"id":1018,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2024","en":"Awake! — No. 1 2024","de":"Erwachet! — Nr. 1 2024","ru":"Пробудитесь! — № 1 2024"},"qty":25,"min":5,"lang":"el"},
+{"id":1019,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2025","en":"The Watchtower — No. 1 2025","de":"Der Wachtturm — Nr. 1 2025","ru":"Сторожевая башня — № 1 2025"},"qty":25,"min":5,"lang":"el"},
+{"id":1020,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2025","en":"Awake! — No. 1 2025","de":"Erwachet! — Nr. 1 2025","ru":"Пробудитесь! — № 1 2025"},"qty":25,"min":5,"lang":"el"},
+{"id":1021,"type":"Περιοδικό","cat":{"el":"Σκοπιά — Κοινό","en":"Watchtower — Public","de":"Wachtturm — Öffentlich","ru":"Сторожевая башня — Для публики"},"names":{"el":"Η Σκοπιά — Αρ. 1 2026","en":"The Watchtower — No. 1 2026","de":"Der Wachtturm — Nr. 1 2026","ru":"Сторожевая башня — № 1 2026"},"qty":25,"min":5,"lang":"el"},
+{"id":1022,"type":"Περιοδικό","cat":{"el":"Ξύπνα! — Κοινό","en":"Awake! — Public","de":"Erwachet! — Öffentlich","ru":"Пробудитесь! — Для публики"},"names":{"el":"Ξύπνα! — Αρ. 1 2026","en":"Awake! — No. 1 2026","de":"Erwachet! — Nr. 1 2026","ru":"Пробудитесь! — № 1 2026"},"qty":25,"min":5,"lang":"el"}
 ];
 PRESETS.push.apply(PRESETS, PUBLIC_MAGAZINES);
-
 var POSTERS=[
 {"id":2001,"type":"Πόστερ","cat":{"el":"Πόστερ","en":"Poster","de":"Poster","ru":"Плакат"},"names":{"el":"Πόστερ «Ο Ιεχωβά — ο καλύτερός σου φίλος»","en":"Poster «Jehovah — Your Best Friend»","de":"Poster «Jehova — dein bester Freund»","ru":"Постер «Иегова — твой лучший друг»"},"qty":10,"min":2,"lang":"el"},
-{"id":2002,"type":"Πόστερ","cat":{"el":"Πόστερ","en":"Poster","de":"Poster","ru":"Плакат"},"names":{"el":"Πόστερ «Το καλύτερο δώρο στον κόσμο»","en":"Poster «The Best Gift in the World»","de":"Poster «Das beste Geschenk der Welt»","ru":"Постер «Самый лучший подарок на свете»"},"qty":10,"min":2,"lang":"el"},
-{"id":2003,"type":"Πόστερ","cat":{"el":"Πόστερ","en":"Poster","de":"Poster","ru":"Плакат"},"names":{"el":"Πόστερ «Ο Ιεχωβά σε εκτιμάει»","en":"Poster «Jehovah Cares About You»","de":"Poster «Jehova schätzt dich»","ru":"Постер «Иегова тобой дорожит»"},"qty":10,"min":2,"lang":"el"},
-{"id":2004,"type":"Πόστερ","cat":{"el":"Πόστερ","en":"Poster","de":"Poster","ru":"Плакат"},"names":{"el":"Πόστερ «Ο Ιεχωβά θα σε βοηθήσει να είσαι γενναίος»","en":"Poster «Jehovah Will Help You Be Brave»","de":"Poster «Jehova hilft dir, mutig zu sein»","ru":"Постер «Иегова поможет тебе быть смелым»"},"qty":10,"min":2,"lang":"el"},
+{"id":2002,"type":"Πόστερ","cat":{"el":"Πόστερ","en":"Poster","de":"Poster","ru":"Плакат"},"names":{"el":"Πόστερ «Το καλύτερο δώρο στον κόσμο»","en":"Poster «The Best Gift»","de":"Poster «Das beste Geschenk»","ru":"Постер «Самый лучший подарок»"},"qty":10,"min":2,"lang":"el"},
+{"id":2003,"type":"Πόστερ","cat":{"el":"Πόστερ","en":"Poster","de":"Poster","ru":"Плакат"},"names":{"el":"Πόστερ «Ο Ιεχωβά σε εκτιμάει»","en":"Poster «Jehovah Cares»","de":"Poster «Jehova schätzt dich»","ru":"Постер «Иегова тобой дорожит»"},"qty":10,"min":2,"lang":"el"},
+{"id":2004,"type":"Πόστερ","cat":{"el":"Πόστερ","en":"Poster","de":"Poster","ru":"Плакат"},"names":{"el":"Πόστερ «Ο Ιεχωβά θα σε βοηθήσει»","en":"Poster «Jehovah Will Help You»","de":"Poster «Jehova hilft dir»","ru":"Постер «Иегова поможет тебе»"},"qty":10,"min":2,"lang":"el"},
 {"id":2005,"type":"Πόστερ","cat":{"el":"Πόστερ","en":"Poster","de":"Poster","ru":"Плакат"},"names":{"el":"Πόστερ «Να χαροποιείς τον Ιεχωβά»","en":"Poster «Make Jehovah Happy»","de":"Poster «Mach Jehova Freude»","ru":"Постер «Радуй Иегову»"},"qty":10,"min":2,"lang":"el"}
 ];
 PRESETS.push.apply(PRESETS, POSTERS);
 
-/* ---------- 7. STORAGE ---------- */
+/* ---------- 6. LOAD + REPAIR ---------- */
 try{ items=cleanItems(JSON.parse(localStorage.getItem('stand_items_v4')||'[]')); }catch(e){ items=[]; }
+try{ users=cleanUsers(JSON.parse(localStorage.getItem('stand_users_v1')||'[]')); }catch(e){ users=[]; }
 try{ historyLog=JSON.parse(localStorage.getItem('stand_history')||'[]'); }catch(e){ historyLog=[]; }
+
+users = users.map(function(u){
+  if(!u.perms) u.perms = {};
+  PERM_KEYS.forEach(function(k){
+    if(typeof u.perms[k] !== 'boolean') u.perms[k] = (PERMS_PRESETS[u.role] || PERMS_PRESETS.counter)[k] || false;
+  });
+  return u;
+});
+if(!users.find(function(u){ return u.role === 'admin'; })){
+  users.unshift({id: Date.now(), name:'Admin', role:'admin', perms: JSON.parse(JSON.stringify(PERMS_PRESETS.admin))});
+}
+if(!currentUserId || !users.find(function(u){ return u.id == currentUserId; })){
+  var adm = users.find(function(u){ return u.role === 'admin'; });
+  currentUserId = adm ? adm.id : users[0].id;
+}
+localStorage.setItem('stand_current_user_id', currentUserId);
+localStorage.setItem('stand_users_v1', JSON.stringify(users));
 
 items = items.filter(function(it){
   if(it.presetId===31) return false;
   if(it.type === 'Μαγνητικό Πόστερ') return false;
-  var n_el=(it.names && it.names.el) || it.name || '';
+  var n_el=(it.names && it.names.el) || '';
   if(n_el.indexOf('Μελέτης')>=0) return false;
   return true;
 });
-
-var deletedPresetIds=JSON.parse(localStorage.getItem('stand_deleted_presets')||'[]');
-function markPresetDeleted(id){ if(deletedPresetIds.indexOf(id)<0){ deletedPresetIds.push(id); localStorage.setItem('stand_deleted_presets',JSON.stringify(deletedPresetIds)); } }
-function unmarkPresetDeleted(id){ deletedPresetIds=deletedPresetIds.filter(function(x){return x!==id;}); localStorage.setItem('stand_deleted_presets',JSON.stringify(deletedPresetIds)); }
-
-[31,2006,2007,2008].forEach(function(bid){ if(deletedPresetIds.indexOf(bid)<0) deletedPresetIds.push(bid); });
-localStorage.setItem('stand_deleted_presets', JSON.stringify(deletedPresetIds));
-
 if(items.length===0){
   items=PRESETS.map(function(p){ return {id:Date.now()+p.id+Math.random(),presetId:p.id,names:p.names,type:p.type,cat:p.cat,qty:p.qty,min:p.min,barcode:'',photo:'',lang:p.lang||'el',magazineLang:p.lang||'el'}; });
-}
-(function ensurePresets(){
+} else {
   var existingIds=items.filter(function(x){return x.presetId;}).map(function(x){return x.presetId;});
-  var added=0;
   PRESETS.forEach(function(p){
-    if(existingIds.indexOf(p.id)<0 && deletedPresetIds.indexOf(p.id)<0){
+    if(existingIds.indexOf(p.id)<0){
       items.push({id:Date.now()+p.id+Math.random(),presetId:p.id,names:p.names,type:p.type,cat:p.cat,qty:p.qty,min:p.min,barcode:'',photo:'',lang:p.lang||'el',magazineLang:p.lang||'el'});
-      added++;
     }
   });
-  if(added){ try{ localStorage.setItem('stand_items_v4',JSON.stringify(items)); }catch(e){} }
-})();
+}
 
-/* ---------- 8. HELPERS ---------- */
+/* ---------- 7. HELPERS ---------- */
 function Tget(key){ var a=T[key]; return a ? (a[curLang]||a.el) : key; }
 function getDisplayName(it){ if(it.names && it.names[curLang]) return it.names[curLang]; if(it.names && it.names.el) return it.names.el; return it.name||''; }
 function getDisplayCat(it){ if(it.cat && typeof it.cat==='object') return it.cat[curLang]||it.cat.el||''; return it.cat||''; }
 function getTypeClass(tp){ if((tp||'').indexOf('Φυλλάδιο')>=0) return 't-flyer'; if(tp==='Περιοδικό') return 't-mag'; if(tp==='Βιβλιάριο') return 't-booklet'; if(tp==='Πόστερ') return 't-poster'; return 't-book'; }
 function getTypeDisplay(tp){ if(TYPE_TRANS[tp] && TYPE_TRANS[tp][curLang]) return TYPE_TRANS[tp][curLang]; for(var k in TYPE_TRANS){ if((tp||'').indexOf(k)>=0 && TYPE_TRANS[k][curLang]) return TYPE_TRANS[k][curLang]; } return tp; }
 function getItemLanguage(it){ if(it.lang) return it.lang; if(it.magazineLang) return it.magazineLang; return 'el'; }
-
-var LANG_DISPLAY={
-el:{el:'🇬🇷 Ελληνικά',en:'🇬🇷 Greek',de:'🇬🇷 Griechisch',ru:'🇬🇷 Греческий'},
-en:{el:'🇬🇧 English',en:'🇬🇧 English',de:'🇬🇧 Englisch',ru:'🇬🇧 Английский'},
-de:{el:'🇩🇪 Deutsch',en:'🇩🇪 German',de:'🇩🇪 Deutsch',ru:'🇩🇪 Немецкий'},
-ru:{el:'🇷🇺 Русский',en:'🇷🇺 Russian',de:'🇷🇺 Russisch',ru:'🇷🇺 Русский'},
-sq:{el:'🇦🇱 Shqip',en:'🇦🇱 Albanian',de:'🇦🇱 Albanisch',ru:'🇦🇱 Албанский'},
-ro:{el:'🇷🇴 Română',en:'🇷🇴 Romanian',de:'🇷🇴 Rumänisch',ru:'🇷🇴 Румынский'},
-ar:{el:'🇸🇦 العربية',en:'🇸🇦 Arabic',de:'🇸🇦 Arabisch',ru:'🇸🇦 Арабский'},
-fa:{el:'🇮🇷 فارسی',en:'🇮🇷 Persian',de:'🇮🇷 Persisch',ru:'🇮🇷 Персидский'},
-fr:{el:'🇫🇷 Français',en:'🇫🇷 French',de:'🇫🇷 Französisch',ru:'🇫🇷 Французский'},
-es:{el:'🇪🇸 Español',en:'🇪🇸 Spanish',de:'🇪🇸 Spanisch',ru:'🇪🇸 Испанский'},
-it:{el:'🇮🇹 Italiano',en:'🇮🇹 Italian',de:'🇮🇹 Italienisch',ru:'🇮🇹 Итальянский'},
-pl:{el:'🇵🇱 Polski',en:'🇵🇱 Polish',de:'🇵🇱 Polnisch',ru:'🇵🇱 Польский'},
-hr:{el:'🇭🇷 Hrvatski',en:'🇭🇷 Croatian',de:'🇭🇷 Kroatisch',ru:'🇭🇷 Хорватский'},
-bg:{el:'🇧🇬 Български',en:'🇧🇬 Bulgarian',de:'🇧🇬 Bulgarisch',ru:'🇧🇬 Болгарский'},
-uk:{el:'🇺🇦 Українська',en:'🇺🇦 Ukrainian',de:'🇺🇦 Ukrainisch',ru:'🇺🇦 Украинский'},
-hu:{el:'🇭🇺 Magyar',en:'🇭🇺 Hungarian',de:'🇭🇺 Ungarisch',ru:'🇭🇺 Венгерский'},
-hy:{el:'🇦🇲 Հայերեն',en:'🇦🇲 Armenian',de:'🇦🇲 Armenisch',ru:'🇦🇲 Армянский'},
-tr:{el:'🇹🇷 Türkçe',en:'🇹🇷 Turkish',de:'🇹🇷 Türkisch',ru:'🇹🇷 Турецкий'},
-sr:{el:'🇷🇸 Српски',en:'🇷🇸 Serbian',de:'🇷🇸 Serbisch',ru:'🇷🇸 Сербский'}};
-function getLangDisplay(code){ var m=LANG_DISPLAY[code]; if(!m) return code; return m[curLang]||m.el; }
+function getLangDisplay(code){
+  var key = 'lang' + code.charAt(0).toUpperCase() + code.slice(1);
+  return Tget(key);
+}
 function getLangBadge(it){
   var lang=getItemLanguage(it);
-  var m=LANG_DISPLAY[lang];
-  var label=m ? (m[curLang]||m.el) : lang;
+  var label=getLangDisplay(lang);
   return '<span class="lang-badge lang-'+esc(lang)+'">'+esc(label)+'</span>';
 }
+function getCurrentUser(){ return users.find(function(u){ return u.id==currentUserId; }) || null; }
+function hasPerm(perm){
+  var u=getCurrentUser();
+  if(!u) return false;
+  if(u.role === 'admin') return true;
+  return !!(u.perms && u.perms[perm]);
+}
+function getRoleDisplay(role){
+  var map = {admin:'roleAdmin', manager:'roleManager', counter:'roleCounter', viewer:'roleViewer'};
+  var key = map[role];
+  if(!key) return role;
+  return Tget(key);
+}
 
-/* ---------- 9. SYNC STATUS ---------- */
+/* ---------- 8. SYNC STATE ---------- */
 function setSyncState(state){
   syncState=state;
-  var badge=document.getElementById('syncStatusBadge');
-  var txt=document.getElementById('syncStatusText');
-  if(!badge || !txt) return;
-  badge.className='sync-status-badge';
+  var chip=document.getElementById('syncChip');
+  var txt=document.getElementById('syncChipText');
+  if(!chip || !txt) return;
+  chip.className='sync-chip';
   var label='';
-  if(state==='offline'){ badge.classList.add('offline'); label=Tget('syncOffline'); }
-  else if(state==='connecting'){ badge.classList.add('syncing'); label=Tget('syncConnecting'); }
-  else if(state==='synced'){ badge.classList.add('synced'); label=Tget('syncOn'); }
-  else if(state==='pushing'){ badge.classList.add('syncing'); label=Tget('syncPushing'); }
-  else if(state==='pulling'){ badge.classList.add('syncing'); label=Tget('syncPulling'); }
-  else if(state==='error'){ badge.classList.add('offline'); label=Tget('syncError'); }
-  else { badge.classList.add('offline'); label=Tget('syncOffline'); }
+  if(state==='offline'){ chip.classList.add('offline'); label=Tget('syncOffline'); }
+  else if(state==='connecting'){ chip.classList.add('syncing'); label=Tget('syncConnecting'); }
+  else if(state==='synced'){ chip.classList.add('synced'); label=Tget('syncOn'); }
+  else if(state==='pushing'){ chip.classList.add('syncing'); label=Tget('syncPushing'); }
+  else if(state==='pulling'){ chip.classList.add('syncing'); label=Tget('syncPulling'); }
+  else if(state==='error'){ chip.classList.add('offline'); label=Tget('syncError'); }
   txt.textContent=label;
   if(state==='synced'){ lastSyncStr=new Date().toLocaleTimeString(LOC[curLang]||'el-GR'); }
-  var last=document.getElementById('lastSync'); if(last && lastSyncStr) last.textContent=Tget('lastSyncLabel')+' '+lastSyncStr;
-  var lastM=document.getElementById('lastSyncMain'); if(lastM && lastSyncStr) lastM.textContent=lastSyncStr;
 }
-function updateCloudStatus(txt){ var el=document.getElementById('cloudStatus'); if(el) el.textContent=txt; }
 
-/* ---------- 10. SAVE / LOG ---------- */
+/* ---------- 9. SAVE / LOG / TODAY ---------- */
 function save(){
-  try{ localStorage.setItem('stand_items_v4',JSON.stringify(items)); }catch(e){}
-  try{ localStorage.setItem('stand_history',JSON.stringify(historyLog)); }catch(e){}
+  try{
+    localStorage.setItem('stand_items_v4',JSON.stringify(items));
+    localStorage.setItem('stand_users_v1',JSON.stringify(users));
+    localStorage.setItem('stand_history',JSON.stringify(historyLog));
+    localStorage.setItem('stand_today',JSON.stringify(todayStats));
+    localStorage.setItem('stand_current_user_id', currentUserId);
+  }catch(e){}
   if(cloudEnabled && !isSyncingFromCloud && cloudDb){
     clearTimeout(cloudPushTimeout);
     cloudPushTimeout=setTimeout(function(){ try{ pushToCloud(); }catch(e){} },1500);
   }
 }
-function addLog(action,detail){
-  historyLog.unshift({ts:Date.now(),time:new Date().toLocaleString(),action:action,detail:detail});
+
+/* ★ STRUCTURED LOG — αποθηκεύει ΔΕΔΟΜΕΝΑ αντί για κείμενο */
+function addLog(actionKey, detail){
+  var u=getCurrentUser();
+  var who = u ? u.name : '';
+  var entry = {ts:Date.now(), time:new Date().toLocaleString(), who:who, actionKey:actionKey};
+  if(detail == null){ /* nothing */ }
+  else if(typeof detail === 'object'){
+    if(detail.names) entry.names = detail.names;                    // for items
+    if(detail.userName) entry.userName = detail.userName;           // for user logs
+    if(detail.userRole) entry.userRole = detail.userRole;
+    if(detail.extra != null) entry.extra = String(detail.extra);
+  } else {
+    entry.detail = String(detail);
+  }
+  historyLog.unshift(entry);
   if(historyLog.length>200) historyLog.pop();
   save(); renderLog();
 }
+
+/* ★ renderLog — μεταφράζει τα πάντα live */
 function renderLog(){
   var h='';
   for(var i=0;i<Math.min(historyLog.length,30);i++){
     var l=historyLog[i];
     var tm=l.ts?new Date(l.ts).toLocaleString(LOC[curLang]||'el-GR'):l.time;
-    h+='<div class="log-entry"><b>'+esc(tm)+'</b> - '+esc(l.action||'')+': '+esc(String(l.detail||''))+'</div>';
+    var action='';
+    if(l.actionKey){ action=Tget(l.actionKey); }
+    else if(l.action){ var k=LEGACY_LOG_ACTIONS[l.action]; action = k ? Tget(k) : l.action; }
+    var detail='';
+    if(l.names){
+      detail = l.names[curLang] || l.names.el || '';
+      if(l.extra) detail += ' ' + l.extra;
+    } else if(l.userName){
+      detail = l.userName + (l.userRole ? ' (' + getRoleDisplay(l.userRole) + ')' : '');
+    } else if(l.extra){
+      detail = l.extra;
+    } else if(l.detail != null){
+      detail = String(l.detail);
+    }
+    h+='<div class="log-entry"><b>'+esc(tm)+'</b> '+(l.who?'<span style="color:#a855f7">['+esc(l.who)+']</span> ':'')+esc(action)+(detail?': '+esc(detail):'')+'</div>';
   }
   var el=document.getElementById('logList');
   if(el) el.innerHTML=h||'<span class="small">'+Tget('logEmpty')+'</span>';
 }
 function clearLog(){ customConfirm(Tget('ccClearLog'), function(){ historyLog=[]; save(); renderLog(); }); }
+function bumpToday(type, n){
+  if(todayStats.date !== new Date().toDateString()){
+    todayStats = {date: new Date().toDateString(), added:0, removed:0};
+  }
+  if(type==='add') todayStats.added += n;
+  else if(type==='rem') todayStats.removed += n;
+  save(); renderToday();
+}
+function renderToday(){
+  var $=function(id){return document.getElementById(id);};
+  if($('tAdd')) $('tAdd').textContent=todayStats.added||0;
+  if($('tRem')) $('tRem').textContent=todayStats.removed||0;
+  if($('tOrder')) $('tOrder').textContent=items.filter(function(x){return x.qty<=x.min;}).length;
+}
 
-/* ---------- 11. FONT (★ ΝΕΟ — ξεχωριστό UI και λίστα) ---------- */
+/* ---------- 10. UNDO ---------- */
+function showUndo(msg, undoFn){
+  lastAction = undoFn;
+  document.getElementById('undMsg').textContent = msg;
+  document.getElementById('undOverlay').classList.add('show');
+  clearTimeout(undoTimer);
+  undoTimer = setTimeout(function(){ closeUndo(); }, 5000);
+}
+function closeUndo(){ document.getElementById('undOverlay').classList.remove('show'); lastAction=null; clearTimeout(undoTimer); }
+function doUndo(){ if(typeof lastAction==='function'){ lastAction(); } closeUndo(); }
+
+/* ---------- 11. CONFIRM ---------- */
+var _ccCallback=null;
+function customConfirm(msg, cb){
+  document.getElementById('ccTitle').textContent=Tget('ccTitle');
+  document.getElementById('ccMsg').textContent=msg;
+  document.getElementById('ccOk').textContent=Tget('ccOkBtn');
+  document.getElementById('ccCancel').textContent=Tget('ccCancelBtn');
+  document.getElementById('ccOverlay').classList.add('show');
+  _ccCallback=cb;
+}
+function _ccClose(){ document.getElementById('ccOverlay').classList.remove('show'); _ccCallback=null; }
+document.getElementById('ccOk').onclick=function(){ var cb=_ccCallback; _ccClose(); if(cb) cb(); };
+document.getElementById('ccCancel').onclick=_ccClose;
+document.getElementById('ccOverlay').onclick=function(e){ if(e.target===this) _ccClose(); };
+
+/* ---------- 12. FONT / THEME ---------- */
 function applyFont(){
-  // UI global
   document.documentElement.style.fontSize=curFS+'px';
   document.body.style.fontFamily=curFF;
-  // List font size via CSS variable
   document.documentElement.style.setProperty('--list-font-size', curLFS+'px');
-  // UI values
   var el=document.getElementById('fsVal'); if(el) el.textContent=curFS;
   var r=document.getElementById('fsRange'); if(r) r.value=curFS;
   var lfs=document.getElementById('lfsVal'); if(lfs) lfs.textContent=curLFS;
   var lfsR=document.getElementById('lfsRange'); if(lfsR) lfsR.value=curLFS;
   var sel=document.getElementById('ffSelect'); if(sel) sel.value=curFF;
-  var prev=document.getElementById('fontPrev'); if(prev){ prev.style.fontSize=curFS+'px'; prev.style.fontFamily=curFF; }
-  // Preview boxes
-  var uiPrev=document.getElementById('fsPreviewText'); if(uiPrev){ uiPrev.style.fontSize=curFS+'px'; uiPrev.style.fontFamily=curFF; }
-  var lpName=document.getElementById('lfsPreviewName'); if(lpName){ lpName.style.fontSize=curLFS+'px'; lpName.style.fontFamily=curFF; }
-  var lpCat=document.getElementById('lfsPreviewCat'); if(lpCat){ lpCat.style.fontSize=Math.round(curLFS*0.8)+'px'; lpCat.style.fontFamily=curFF; }
-  var lpBadge=document.getElementById('lfsPreviewBadge'); if(lpBadge){ lpBadge.style.fontSize=Math.round(curLFS*0.75)+'px'; lpBadge.style.fontFamily=curFF; }
-  var lpType=document.getElementById('lfsPreviewType'); if(lpType){ lpType.style.fontSize=Math.round(curLFS*0.7)+'px'; lpType.style.fontFamily=curFF; }
-  var lpLang=document.getElementById('lfsPreviewLang'); if(lpLang){ lpLang.style.fontSize=Math.round(curLFS*0.7)+'px'; lpLang.style.fontFamily=curFF; }
 }
 function setFontSize(v){ curFS=parseInt(v); localStorage.setItem('stand_fs',curFS); applyFont(); }
 function setListFontSize(v){ curLFS=parseInt(v); localStorage.setItem('stand_list_fs',curLFS); applyFont(); }
 function setFontFamily(v){ curFF=v; localStorage.setItem('stand_ff',curFF); applyFont(); }
-function resetFonts(){
-  curFS=15; curLFS=13; curFF='Arial, sans-serif';
-  localStorage.setItem('stand_fs',curFS);
-  localStorage.setItem('stand_list_fs',curLFS);
-  localStorage.setItem('stand_ff',curFF);
-  applyFont();
+function resetFonts(){ curFS=15; curLFS=13; curFF='Arial, sans-serif'; localStorage.setItem('stand_fs',curFS); localStorage.setItem('stand_list_fs',curLFS); localStorage.setItem('stand_ff',curFF); applyFont(); }
+function toggleTheme(){ curTheme = curTheme==='dark'?'day':'dark'; localStorage.setItem('stand_theme', curTheme); applyTheme(); }
+function applyTheme(){
+  if(curTheme==='day') document.body.classList.add('day');
+  else document.body.classList.remove('day');
+  var b=document.getElementById('bTheme');
+  if(b) b.textContent = curTheme==='day' ? '☀️' : '🌙';
 }
 
-/* ---------- 12. BUILD SELECT OPTIONS ---------- */
-function buildSelectOptions(){
-  var fl=document.getElementById('filterLangCount');
-  if(fl){
-    var langs=['el','en','de','ru','sq','ro','ar','fa','fr','es','it','pl','hr','bg','uk','hu','hy','tr','sr'];
-    fl.innerHTML='<option value="all">'+Tget('optAllLangs')+'</option>'+
-      langs.map(function(c){
-        var key='lang'+c.charAt(0).toUpperCase()+c.slice(1);
-        return '<option value="'+c+'">'+Tget(key)+'</option>';
-      }).join('');
-  }
-  var ft=document.getElementById('filterTypeCount');
-  if(ft){
-    ft.innerHTML='<option value="all">'+Tget('optAllTypes')+'</option>'+
-      '<option value="Φυλλάδιο">'+Tget('thFlyer')+'</option>'+
-      '<option value="Περιοδικό">'+Tget('thMag')+'</option>'+
-      '<option value="Βιβλιάριο">'+Tget('thBooklet')+'</option>'+
-      '<option value="Βιβλίο">'+Tget('thBook')+'</option>'+
-      '<option value="Πόστερ">'+Tget('thPoster')+'</option>'+
-      '<option value="Κάρτα">'+Tget('thCard')+'</option>';
-  }
-}
+/* ---------- 13. FILTERS ---------- */
+function setSort(v){ curSort=v; localStorage.setItem('stand_sort',v); render(); }
+function setTypeFilter(v){ curTypeFilter=v; render(); }
+function setLangFilter(v){ curLangFilter=v; render(); }
 
-/* ---------- 13. APPLY LANGUAGE ---------- */
-function applyLang(){
-  var nodes=document.querySelectorAll('[data-i18n]');
-  for(var i=0;i<nodes.length;i++){
-    var el=nodes[i]; var key=el.getAttribute('data-i18n');
-    var val=Tget(key);
-    if(val) el.textContent=val;
-  }
-  var phs=document.querySelectorAll('[data-i18n-ph]');
-  for(var j=0;j<phs.length;j++){
-    var p=phs[j]; var k=p.getAttribute('data-i18n-ph');
-    var v=Tget(k);
-    if(v) p.placeholder=v;
-  }
-  var presetBtn=document.getElementById('presetAllBtn');
-  if(presetBtn) presetBtn.textContent=Tget('presetAll')+' ('+PRESETS.length+')';
-  var ccOk=document.getElementById('ccOk'); if(ccOk) ccOk.textContent=Tget('ccOkBtn');
-  var ccCancel=document.getElementById('ccCancel'); if(ccCancel) ccCancel.textContent=Tget('ccCancelBtn');
-  var ccTitle=document.getElementById('ccTitle'); if(ccTitle) ccTitle.textContent=Tget('ccTitle');
-  updateGuideLanguage();
-  setSyncState(syncState);
-  ['el','en','de','ru'].forEach(function(l){ var b=document.getElementById('bl-'+l); if(b) b.className=(l===curLang?'active':''); });
-}
-function setL(l){
-  curLang=l;
-  localStorage.setItem('stand_lang',l);
-  document.documentElement.lang=l;
-  buildSelectOptions();
-  applyLang();
-  render();
-}
-
-/* ---------- 14. RENDER LIST (★ με μικρότερα γράμματα) ---------- */
+/* ---------- 14. RENDER LIST ---------- */
 function render(){
   var q=(document.getElementById('search').value||'').toLowerCase();
-  var t=LANGS[curLang]||LANGS.el;
+  var t=LANGS_SHORT[curLang]||LANGS_SHORT.el;
   var filtered=[];
   for(var i=0;i<items.length;i++){
     var it=items[i];
     var name=getDisplayName(it).toLowerCase();
     var cat=getDisplayCat(it).toLowerCase();
     var matchQ=name.indexOf(q)>=0 || cat.indexOf(q)>=0 || (it.barcode&&it.barcode.toLowerCase().indexOf(q)>=0);
-    var matchT=currentFilter==='all' || it.type===currentFilter || (currentFilter==='Φυλλάδιο' && (it.type||'').indexOf('Φυλλάδιο')>=0);
-    if(matchQ && matchT) filtered.push(it);
+    var matchT=curTypeFilter==='all' || it.type===curTypeFilter || (curTypeFilter==='Φυλλάδιο' && (it.type||'').indexOf('Φυλλάδιο')>=0);
+    var matchL=curLangFilter==='all' || getItemLanguage(it)===curLangFilter;
+    if(matchQ && matchT && matchL) filtered.push(it);
+  }
+  filtered.sort(function(a,b){
+    if(curSort==='low'){
+      var aNeed=(a.qty<=a.min?0:1), bNeed=(b.qty<=b.min?0:1);
+      if(aNeed!==bNeed) return aNeed-bNeed;
+      return a.qty-b.qty;
+    } else if(curSort==='fav'){ return (b.favorite?1:0)-(a.favorite?1:0); }
+    else if(curSort==='name'){ return getDisplayName(a).localeCompare(getDisplayName(b)); }
+    else if(curSort==='qty'){ return b.qty-a.qty; }
+    else if(curSort==='new'){ return (b.id||0)-(a.id||0); }
+    return 0;
+  });
+  if(curSort!=='fav'){
+    filtered.sort(function(a,b){ return (b.favorite?1:0)-(a.favorite?1:0); });
   }
   var total=0,cFly=0,cMag=0,cBooklet=0,cPoster=0;
   for(var i=0;i<items.length;i++){
@@ -1065,6 +1082,7 @@ function render(){
   if($('cnt-poster')) $('cnt-poster').textContent=cPoster;
   if($('need')) $('need').textContent=need.length;
 
+  var canCount=hasPerm('count'), canRename=hasPerm('rename'), canDel=hasPerm('del');
   var h='';
   for(var i=0;i<filtered.length;i++){
     var it=filtered[i];
@@ -1074,8 +1092,10 @@ function render(){
     var displayType=getTypeDisplay(it.type);
     var langBadge=getLangBadge(it);
     var photoHtml=it.photo?'<img src="'+esc(it.photo)+'" class="photo-thumb">':'<div class="photo-thumb" style="display:flex;align-items:center;justify-content:center;font-size:12px">📄</div>';
-    /* ★ Όλα τα στοιχεία έχουν δικές τους κλάσεις με ρυθμιζόμενο μέγεθος */
-    h+='<div class="item"><div style="display:flex;gap:8px;align-items:center;flex:1;min-width:0">'+photoHtml+
+    var favCls = it.favorite ? 'item fav' : 'item';
+    var favStar = it.favorite ? '⭐' : '☆';
+    var favCls2 = it.favorite ? 'fav-btn' : 'fav-btn inactive';
+    h+='<div class="'+favCls+'"><div style="display:flex;gap:8px;align-items:center;flex:1;min-width:0">'+photoHtml+
       '<div style="min-width:0;flex:1">'+
         '<span class="type-label '+tcl+'">'+esc(displayType)+'</span> '+langBadge+
         ' <b class="item-name">'+esc(getDisplayName(it))+'</b>'+
@@ -1083,18 +1103,19 @@ function render(){
         '<span class="item-badge '+col+'">'+lab+': '+it.qty+'/'+it.min+'</span>'+
       '</div></div>'+
       '<div style="display:flex;align-items:center;flex-shrink:0">'+
-        '<button class="qty-btn minus" onclick="changeQty('+it.id+',-1)">−</button>'+
+        '<button class="'+favCls2+'" onclick="toggleFav('+it.id+')">'+favStar+'</button>'+
+        (canCount?'<button class="qty-btn minus" onclick="changeQty('+it.id+',-1)">−</button>':'')+
         '<span class="qty-display">'+it.qty+'</span>'+
-        '<button class="qty-btn" onclick="changeQty('+it.id+',1)">+</button>'+
-        '<button class="rename-btn" onclick="openRename('+it.id+')" title="Rename">✏️</button>'+
-        '<button class="del-btn" onclick="deleteItem('+it.id+')">🗑️</button>'+
+        (canCount?'<button class="qty-btn" onclick="changeQty('+it.id+',1)">+</button>':'')+
+        (canRename?'<button class="icon-btn" onclick="openRename('+it.id+')">✏️</button>':'')+
+        (canDel?'<button class="icon-btn" style="color:#ef4444" onclick="deleteItem('+it.id+')">🗑️</button>':'')+
       '</div></div>';
   }
   if($('list')) $('list').innerHTML=h||'<div class="small" style="text-align:center;padding:20px">—</div>';
 
   var ob=$('orderBox');
   if(ob){
-    if(need.length>0){
+    if(need.length>0 && hasPerm('order')){
       ob.style.display='block';
       var oh=''; for(var i=0;i<need.length;i++) oh+=esc(getDisplayName(need[i]))+' - '+t.has+' '+need[i].qty+'<br>';
       if($('orderList')) $('orderList').innerHTML=oh;
@@ -1104,29 +1125,38 @@ function render(){
         var avg=parseInt(localStorage.getItem('avg_'+it.id)||'2');
         var days=Math.max(1,Math.floor(it.qty/Math.max(1,avg)));
         var orderQty=(it.min*2 - it.qty + 3);
-        var orderWord,endsWord,daysWord;
-        if(curLang==='el'){ orderWord='Παράγγειλε '; endsWord='τελειώνει σε ~'; daysWord=' μέρες'; }
-        else if(curLang==='de'){ orderWord='Bestelle '; endsWord='endet in ~'; daysWord=' Tagen'; }
-        else if(curLang==='ru'){ orderWord='Закажи '; endsWord='закончится через ~'; daysWord=' дней'; }
-        else { orderWord='Order '; endsWord='ends in ~'; daysWord=' days'; }
-        smartHtml+=esc(getDisplayName(it))+': '+orderWord+orderQty+' ('+endsWord+days+daysWord+')<br>';
+        smartHtml+=esc(getDisplayName(it))+': '+orderQty+'<br>';
       }
       if($('smartOrder')) $('smartOrder').innerHTML=smartHtml;
     } else ob.style.display='none';
   }
-  var recEl=$('recoveryEmail'); if(recEl) recEl.value=localStorage.getItem('stand_recovery_email')||'';
+  var dangerCard=$('dangerCard'); if(dangerCard) dangerCard.style.display=hasPerm('del')?'block':'none';
+  var addCard=$('addCard'); if(addCard) addCard.style.display='block';
+  var addNotice=$('addPermNotice');
+  var canAdd=hasPerm('add');
+  if(addNotice) addNotice.style.display = canAdd ? 'none' : 'block';
+  var btnAdd=document.getElementById('btnAddItem'); if(btnAdd) btnAdd.disabled=!canAdd;
+  var btnBulk=document.getElementById('btnAddBulk'); if(btnBulk) btnBulk.disabled=!canAdd;
+
   try{ renderCountByLang(); }catch(e){}
   try{ renderCountByType(); }catch(e){}
   try{ renderCountByLangType(); }catch(e){}
-  try{ filterAndCount(); }catch(e){}
-  try{ renderPresetListSimple(); }catch(e){}
   try{ renderLog(); }catch(e){}
   try{ renderCharts(); }catch(e){}
-  try{ updateJwDatalist(); }catch(e){}
+  try{ renderToday(); }catch(e){}
 }
 
-/* ---------- 15. CHANGE / DELETE / ADD ---------- */
+function toggleFav(id){
+  var it=items.find(function(x){return x.id==id;});
+  if(!it) return;
+  it.favorite=!it.favorite;
+  vibrate(15);
+  save(); render();
+}
+
+/* ---------- 15. CHANGE QTY / DELETE ---------- */
 function changeQty(id,d){
+  if(!hasPerm('count')) return;
   var crossed=null;
   for(var i=0;i<items.length;i++){
     if(items[i].id==id){
@@ -1134,34 +1164,80 @@ function changeQty(id,d){
       items[i].qty=Math.max(0,items[i].qty+d);
       var diff=items[i].qty-old;
       if(diff!==0 && old>items[i].min && items[i].qty<=items[i].min) crossed=items[i];
-      if(diff!==0){
-        var key='avg_'+id;
-        var prev=parseInt(localStorage.getItem(key)||'2');
-        if(d<0) localStorage.setItem(key, Math.max(1, Math.floor((prev+Math.abs(d))/2)));
-      }
+      if(diff>0) bumpToday('add', diff);
+      else if(diff<0) bumpToday('rem', -diff);
+      var key='avg_'+id;
+      var prev=parseInt(localStorage.getItem(key)||'2');
+      if(d<0) localStorage.setItem(key, Math.max(1, Math.floor((prev+Math.abs(d))/2)));
       break;
     }
   }
+  vibrate(10);
   save(); render();
   if(crossed) checkLowStockAndNotify(crossed);
 }
 function deleteItem(id){
+  if(!hasPerm('del')) return;
   customConfirm(Tget('ccDelete'), function(){
     var it=items.find(function(x){return x.id==id;});
-    if(it){ if(it.presetId) markPresetDeleted(it.presetId); }
+    if(!it) return;
+    var backup = JSON.parse(JSON.stringify(it));
     items=items.filter(function(x){return x.id!=id;});
+    addLog('logDelete', {names: it.names});  /* ★ store names object */
     save(); render();
+    showUndo('🗑️ '+(it.names[curLang]||it.names.el||''), function(){
+      items.push(backup);
+      addLog('logUndo', {names: it.names});
+      save(); render();
+    });
   });
 }
 function deleteAllItems(){
-  if(items.length === 0){ alert('—'); return; }
-  customConfirm(Tget('ccDeleteAllItems'), function(){
-    items.forEach(function(it){ if(it.presetId) markPresetDeleted(it.presetId); });
-    items = [];
-    addLog('Διαγραφή όλων', 'all items deleted');
+  if(!hasPerm('del')) return;
+  customConfirm(Tget('ccDeleteAll'), function(){
+    var backup = JSON.parse(JSON.stringify(items));
+    items=[];
+    addLog('logDeleteAll','');
     save(); render();
+    showUndo(Tget('undoDeletedAll'), function(){
+      items=backup;
+      addLog('logUndo','');
+      save(); render();
+    });
   });
 }
+
+/* ---------- 16. RENAME ---------- */
+var _renamingId=null;
+function openRename(id){
+  if(!hasPerm('rename')) return;
+  var it=items.find(function(x){return x.id==id;});
+  if(!it) return;
+  _renamingId=id;
+  var langs=['el','en','de','ru'];
+  var langKeys={el:'langEl',en:'langEn',de:'langDe',ru:'langRu'};
+  var html='';
+  langs.forEach(function(l){
+    var cur=(it.names && it.names[l]) || '';
+    html+='<div style="margin-bottom:8px"><label style="font-size:0.8em;color:#f59e0b;margin:0 0 3px;display:block">'+Tget(langKeys[l])+'</label><input id="rn-'+l+'" value="'+esc(cur)+'" style="padding:9px"></div>';
+  });
+  document.getElementById('rnFields').innerHTML=html;
+  document.getElementById('rnOverlay').classList.add('show');
+}
+function closeRename(){ document.getElementById('rnOverlay').classList.remove('show'); _renamingId=null; }
+function saveRename(){
+  if(!_renamingId){ closeRename(); return; }
+  var it=items.find(function(x){return x.id==_renamingId;});
+  if(!it){ closeRename(); return; }
+  ['el','en','de','ru'].forEach(function(l){
+    var el=document.getElementById('rn-'+l);
+    if(el && el.value.trim()){ if(!it.names) it.names={}; it.names[l]=el.value.trim(); }
+  });
+  addLog('logRename', {names: it.names});
+  closeRename(); save(); render();
+}
+
+/* ---------- 17. ADD ITEM ---------- */
 function previewPhoto(e){
   var file=e.target.files[0]; if(!file) return;
   var nameEl=document.getElementById('fileNameDisplay');
@@ -1176,23 +1252,26 @@ function previewPhoto(e){
   reader.readAsDataURL(file);
 }
 function addItem(){
+  if(!hasPerm('add')){ alert(Tget('noAddPerm')); return; }
   var titleVal=document.getElementById('title').value.trim();
-  if(!titleVal){ alert('*'); return; }
-  var langVal=document.getElementById('addLang')?document.getElementById('addLang').value:'el';
+  if(!titleVal){ alert(Tget('alertNoTitle')); return; }
+  var langVal=document.getElementById('addLang').value;
   var namesObj={el:titleVal,en:titleVal,de:titleVal,ru:titleVal};
   var newItem={id:Date.now()+Math.random(),names:namesObj,type:document.getElementById('addType').value,cat:document.getElementById('cat').value||'-',lang:langVal,magazineLang:langVal,qty:parseInt(document.getElementById('qty').value)||0,min:parseInt(document.getElementById('min').value)||3,barcode:document.getElementById('bar').value||'',photo:currentPhotoBase64||''};
   items.push(newItem);
+  addLog('logAdd', {names: newItem.names});
   document.getElementById('title').value='';
   document.getElementById('photoInput').value='';
   document.getElementById('photoPreview').style.display='none';
-  var nameEl=document.getElementById('fileNameDisplay'); if(nameEl) nameEl.textContent='';
+  document.getElementById('fileNameDisplay').textContent='';
   currentPhotoBase64='';
   save(); render();
 }
 function addBulk(){
+  if(!hasPerm('add')){ alert(Tget('noAddPerm')); return; }
   var txt=document.getElementById('bulk').value.trim(); if(!txt) return;
   var lines=txt.split('\n'); var c=0;
-  var langVal=document.getElementById('addLang')?document.getElementById('addLang').value:'el';
+  var langVal=document.getElementById('addLang').value;
   for(var i=0;i<lines.length;i++){
     var tt=lines[i].trim(); if(!tt) continue;
     var obj={el:tt,en:tt,de:tt,ru:tt};
@@ -1203,58 +1282,247 @@ function addBulk(){
   save(); render();
   alert(c+' ✓');
 }
-function loadPresets(){
-  customConfirm(Tget('ccRestore'), function(){
-    var existingIds=items.filter(function(x){return x.presetId;}).map(function(x){return x.presetId;});
-    PRESETS.forEach(function(p){
-      if(existingIds.indexOf(p.id)<0){
-        items.push({id:Date.now()+p.id+Math.random(),presetId:p.id,names:p.names,type:p.type,cat:p.cat,qty:p.qty,min:p.min,barcode:'',photo:'',lang:p.lang||'el',magazineLang:p.lang||'el'});
-        unmarkPresetDeleted(p.id);
-      }
-    });
-    save(); render();
+
+/* ---------- 18. USERS ---------- */
+function renderUsers(){
+  var list=document.getElementById('usersList');
+  if(!list) return;
+  if(users.length===0){ list.innerHTML='<div class="small">—</div>'; return; }
+  var h='';
+  users.forEach(function(u){
+    var roleCls='role-'+u.role;
+    var roleLabel=getRoleDisplay(u.role);
+    var permStr=[];
+    if(u.perms){
+      if(u.perms.count) permStr.push('➕');
+      if(u.perms.add) permStr.push('📥');
+      if(u.perms.del) permStr.push('🗑️');
+      if(u.perms.rename) permStr.push('✏️');
+      if(u.perms.sync) permStr.push('☁️');
+      if(u.perms.export) permStr.push('📊');
+    }
+    h+='<div class="user-row"><div style="flex:1;min-width:0"><div class="uname">👤 '+esc(u.name)+' <span class="urole '+roleCls+'">'+esc(roleLabel)+'</span></div><div class="permissions-badge">'+permStr.join(' ')+'</div></div><button class="icon-btn" style="background:#ef4444;color:#fff;border:0;padding:8px 12px;border-radius:6px" onclick="deleteUser('+u.id+')">🗑️</button></div>';
+  });
+  list.innerHTML=h;
+}
+function addUser(){
+  var name=document.getElementById('newUserName').value.trim();
+  if(!name){ alert(Tget('alertNoName')); return; }
+  var role=document.getElementById('newUserRole').value;
+  var perms={
+    count: document.getElementById('p_count').checked,
+    add: document.getElementById('p_add').checked,
+    del: document.getElementById('p_del').checked,
+    edit: document.getElementById('p_edit').checked,
+    rename: document.getElementById('p_rename').checked,
+    sync: document.getElementById('p_sync').checked,
+    order: document.getElementById('p_order').checked,
+    scan: document.getElementById('p_scan').checked,
+    voice: document.getElementById('p_voice').checked,
+    export: document.getElementById('p_export').checked
+  };
+  users.push({id:Date.now()+Math.random(), name:name, role:role, perms:perms});
+  document.getElementById('newUserName').value='';
+  updatePermsFromRole();
+  save(); renderUsers(); renderUserSelectList();
+  addLog('logNewUser', {userName: name, userRole: role});  /* ★ structured */
+}
+function deleteUser(id){
+  customConfirm(Tget('ccDeleteUser'), function(){
+    users=users.filter(function(u){ return u.id!=id; });
+    if(currentUserId==id){
+      var adm = users.find(function(u){ return u.role === 'admin'; });
+      currentUserId = adm ? adm.id : (users[0] ? users[0].id : null);
+    }
+    save(); renderUsers(); renderUserSelectList(); updateUserChip(); render();
+  });
+}
+function updatePermsFromRole(){
+  var role=document.getElementById('newUserRole').value;
+  var p=PERMS_PRESETS[role]||PERMS_PRESETS.counter;
+  ['count','add','del','edit','rename','sync','order','scan','voice','export'].forEach(function(k){
+    var el=document.getElementById('p_'+k);
+    if(el) el.checked=!!p[k];
   });
 }
 
-/* ---------- 16. ORDER EXPORT ---------- */
-function copyOrder(){ var txt=document.getElementById('orderList').innerText; navigator.clipboard.writeText(txt).then(function(){alert('OK');}); }
-function exportOrder(){ var b=new Blob([document.getElementById('orderList').innerText],{type:'text/plain'}); var a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='order.txt'; a.click(); }
-function csvCell(v){ return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'; }
-function exportCSV(){
-  var lines=['Type,Title,Category,Qty,Min,Barcode'];
+/* ---------- 19. USER SELECTOR ---------- */
+function openUserSelector(){ renderUserSelectList(); document.getElementById('userOverlay').classList.add('show'); }
+function closeUserSelector(){ document.getElementById('userOverlay').classList.remove('show'); }
+function renderUserSelectList(){
+  var list=document.getElementById('userSelectList');
+  if(!list) return;
+  if(users.length===0){ list.innerHTML='<div class="small" style="text-align:center;padding:20px">—</div>'; return; }
+  var h='';
+  users.forEach(function(u){
+    var isCur=u.id==currentUserId;
+    var roleLabel=getRoleDisplay(u.role);
+    h+='<div onclick="pickUser('+u.id+')" style="background:var(--card2);padding:14px;border-radius:10px;margin:6px 0;cursor:pointer;border:2px solid '+(isCur?'#22c55e':'transparent')+'"><b style="font-size:1.1em">👤 '+esc(u.name)+'</b> <span class="urole role-'+u.role+'">'+esc(roleLabel)+'</span>'+(isCur?' <span style="color:#22c55e;font-size:0.8em">✓</span>':'')+'</div>';
+  });
+  list.innerHTML=h;
+}
+function pickUser(id){
+  currentUserId=id;
+  localStorage.setItem('stand_current_user_id', id);
+  var u=getCurrentUser();
+  addLog('logLogin', {userName: u ? u.name : ''});  /* ★ structured */
+  updateUserChip();
+  closeUserSelector();
+  render();
+}
+function updateUserChip(){
+  var u=getCurrentUser();
+  var chip=document.getElementById('userChip');
+  var txt=document.getElementById('userChipText');
+  if(!chip || !txt) return;
+  if(u){ chip.className='user-chip'; txt.textContent=u.name; }
+  else { chip.className='user-chip no-user'; txt.textContent=Tget('pickBtnLabel'); }
+}
+
+/* ---------- 20. QUICK COUNT ---------- */
+function openQuickCount(){ document.getElementById('qcOverlay').classList.add('show'); document.getElementById('qcSearch').value=''; renderQuickCount(); }
+function closeQuickCount(){ document.getElementById('qcOverlay').classList.remove('show'); render(); }
+function renderQuickCount(){
+  var q=(document.getElementById('qcSearch').value||'').toLowerCase();
+  var list=document.getElementById('qcList');
+  if(!list) return;
+  var canCount=hasPerm('count');
+  var h='';
   for(var i=0;i<items.length;i++){
-    lines.push([getTypeDisplay(items[i].type),getDisplayName(items[i]),getDisplayCat(items[i]),items[i].qty,items[i].min,items[i].barcode||''].map(csvCell).join(','));
+    var it=items[i];
+    var nm=getDisplayName(it).toLowerCase();
+    if(q && nm.indexOf(q)<0) continue;
+    var col=it.qty<=it.min?'bad':'good';
+    var lab=it.qty<=it.min?'⚠️':'✅';
+    h+='<div class="qc-tile"><div class="qc-info"><div class="qc-name">'+esc(getDisplayName(it))+'</div><div class="qc-cat">'+getLangBadge(it)+' '+esc(getDisplayCat(it))+' <span class="badge '+col+'" style="font-size:0.7em">'+lab+'</span></div></div>'+
+      (canCount?'<button class="qc-minus" onclick="qcChange('+it.id+',-1)">−</button>':'')+
+      '<div class="qc-qty">'+it.qty+'</div>'+
+      (canCount?'<button class="qc-plus" onclick="qcChange('+it.id+',1)">+</button>':'')+
+    '</div>';
   }
-  var b=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8'});
-  var a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='stand.csv'; a.click();
+  list.innerHTML=h||'<div class="small" style="text-align:center;padding:20px">—</div>';
 }
-function exportPDF(){
-  var t=LANGS[curLang]||LANGS.el;
-  var need=items.filter(function(x){return x.qty<=x.min;});
-  var h='<h1>STAND MANAGER</h1><p>'+esc(new Date().toLocaleString(LOC[curLang]||'el-GR'))+' | '+esc(cloudId)+'</p><ul>';
-  need.forEach(function(x){ h+='<li>'+esc(getDisplayName(x))+' - '+esc(t.has||'')+' '+x.qty+' / min '+x.min+'</li>'; });
-  h+='</ul>'; if(!need.length) h+='<p>-</p>';
-  printDoc('order_'+cloudId,h);
+function qcChange(id,d){ changeQty(id,d); renderQuickCount(); }
+
+/* ---------- 21. COUNTS ---------- */
+function renderCountByLang(){
+  var container=document.getElementById('countByLang'); if(!container) return;
+  var counts={}, total=0;
+  for(var i=0;i<items.length;i++){
+    var lang=getItemLanguage(items[i]);
+    counts[lang]=(counts[lang]||0)+items[i].qty;
+    total+=items[i].qty;
+  }
+  var html='';
+  for(var lang in counts){
+    var name=getLangDisplay(lang);
+    var percent=total>0?Math.round(counts[lang]/total*100):0;
+    html+='<div class="count-box"><div class="num">'+counts[lang]+'</div><div class="label">'+name+'</div><div class="small">'+percent+'%</div></div>';
+  }
+  if(!html) html='<div class="small">—</div>';
+  container.innerHTML=html;
 }
-function shareWhatsApp(){ var txt=encodeURIComponent(document.getElementById('orderList').innerText); window.open('https://wa.me/?text='+txt,'_blank'); }
-function sendLowStockEmail(){
-  var email=localStorage.getItem('stand_recovery_email');
-  if(!email){ alert('Email?'); return; }
-  var need=items.filter(function(x){return x.qty<=x.min;});
-  if(need.length==0){ alert('—'); return; }
-  var msg=need.map(function(x){ return getDisplayName(x)+' - '+x.qty+' / min '+x.min; }).join('\n');
-  var fd=new FormData();
-  fd.append('subject','Low Stock - '+cloudId);
-  fd.append('message',msg+'\n\n'+cloudId);
-  fd.append('_captcha','false');
-  fetch('https://formsubmit.co/ajax/'+encodeURIComponent(email),{method:'POST',body:fd})
-    .then(function(){ alert('OK → '+email); })
-    .catch(function(e){ alert('Error: '+e.message); });
+function renderCountByType(){
+  var container=document.getElementById('countByType'); if(!container) return;
+  var counts={flyer:0,mag:0,booklet:0,book:0,poster:0,card:0};
+  var total=0;
+  for(var i=0;i<items.length;i++){
+    var tt=(items[i].type||'').toLowerCase();
+    var qty=items[i].qty||0;
+    total+=qty;
+    if(tt.indexOf('φυλλάδιο')>=0 || tt.indexOf('tract')>=0) counts.flyer+=qty;
+    else if(tt.indexOf('περιοδικό')>=0 || tt.indexOf('magazine')>=0) counts.mag+=qty;
+    else if(tt.indexOf('βιβλιάριο')>=0 || tt.indexOf('booklet')>=0) counts.booklet+=qty;
+    else if(tt.indexOf('πόστερ')>=0 || tt.indexOf('poster')>=0) counts.poster+=qty;
+    else if(tt.indexOf('βιβλίο')>=0) counts.book+=qty;
+    else if(tt.indexOf('κάρτα')>=0 || tt.indexOf('card')>=0) counts.card+=qty;
+  }
+  var pct=function(n){ return total>0?Math.round(n/total*100):0; };
+  var html='';
+  html+='<div class="count-box"><div class="num" style="color:#06b6d4">'+counts.flyer+'</div><div class="label">📄</div><div class="small">'+pct(counts.flyer)+'%</div></div>';
+  html+='<div class="count-box"><div class="num" style="color:#f59e0b">'+counts.mag+'</div><div class="label">📚</div><div class="small">'+pct(counts.mag)+'%</div></div>';
+  html+='<div class="count-box"><div class="num" style="color:#22c55e">'+counts.booklet+'</div><div class="label">📖</div><div class="small">'+pct(counts.booklet)+'%</div></div>';
+  html+='<div class="count-box"><div class="num" style="color:#a855f7">'+counts.book+'</div><div class="label">📘</div><div class="small">'+pct(counts.book)+'%</div></div>';
+  html+='<div class="count-box"><div class="num" style="color:#ec4899">'+counts.poster+'</div><div class="label">🖼️</div><div class="small">'+pct(counts.poster)+'%</div></div>';
+  html+='<div class="count-box"><div class="num" style="color:#f87171">'+counts.card+'</div><div class="label">🃏</div><div class="small">'+pct(counts.card)+'%</div></div>';
+  html+='<div class="count-box" style="border:2px solid #f59e0b"><div class="num" style="color:#f59e0b">'+total+'</div><div class="label">📦</div><div class="small">100%</div></div>';
+  container.innerHTML=html;
+}
+function renderCountByLangType(){
+  var tbody=document.getElementById('countLangTypeBody'); if(!tbody) return;
+  var langs={};
+  for(var i=0;i<items.length;i++){
+    var lang=getItemLanguage(items[i]);
+    if(!langs[lang]) langs[lang]={flyer:0,mag:0,booklet:0,book:0,poster:0,card:0,total:0};
+    var tt=(items[i].type||'').toLowerCase();
+    var qty=items[i].qty||0;
+    if(tt.indexOf('φυλλάδιο')>=0 || tt.indexOf('tract')>=0) langs[lang].flyer+=qty;
+    else if(tt.indexOf('περιοδικό')>=0 || tt.indexOf('magazine')>=0) langs[lang].mag+=qty;
+    else if(tt.indexOf('βιβλιάριο')>=0 || tt.indexOf('booklet')>=0) langs[lang].booklet+=qty;
+    else if(tt.indexOf('πόστερ')>=0 || tt.indexOf('poster')>=0) langs[lang].poster+=qty;
+    else if(tt.indexOf('βιβλίο')>=0) langs[lang].book+=qty;
+    else if(tt.indexOf('κάρτα')>=0 || tt.indexOf('card')>=0) langs[lang].card+=qty;
+    langs[lang].total+=qty;
+  }
+  var html='', totals={flyer:0,mag:0,booklet:0,book:0,poster:0,card:0,total:0};
+  for(var lang in langs){
+    var d=langs[lang];
+    totals.flyer+=d.flyer; totals.mag+=d.mag; totals.booklet+=d.booklet; totals.book+=d.book; totals.poster+=d.poster; totals.card+=d.card; totals.total+=d.total;
+    html+='<tr><td><b>'+getLangDisplay(lang)+'</b></td><td>'+d.flyer+'</td><td>'+d.mag+'</td><td>'+d.booklet+'</td><td>'+d.book+'</td><td>'+d.poster+'</td><td>'+d.card+'</td><td><b>'+d.total+'</b></td></tr>';
+  }
+  if(html){
+    html+='<tr style="background:var(--card2);font-weight:bold;border-top:2px solid #f59e0b"><td>'+Tget('thTotal')+'</td><td>'+totals.flyer+'</td><td>'+totals.mag+'</td><td>'+totals.booklet+'</td><td>'+totals.book+'</td><td>'+totals.poster+'</td><td>'+totals.card+'</td><td>'+totals.total+'</td></tr>';
+  } else {
+    html='<tr><td colspan="8" style="text-align:center">—</td></tr>';
+  }
+  tbody.innerHTML=html;
+}
+function exportCountCSV(){
+  var lines=['Lang,Flyer,Mag,Booklet,Book,Poster,Card,Total'];
+  var tbody=document.getElementById('countLangTypeBody');
+  if(tbody){
+    var rows=tbody.querySelectorAll('tr');
+    for(var i=0;i<rows.length;i++){
+      var cols=rows[i].querySelectorAll('td');
+      if(cols.length>=8){
+        var line=[];
+        for(var j=0;j<cols.length;j++) line.push('"'+cols[j].textContent.trim()+'"');
+        lines.push(line.join(','));
+      }
+    }
+  }
+  var blob=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='counts.csv'; a.click();
+}
+
+/* ---------- 22. CHARTS ---------- */
+function renderCharts(){
+  try{
+    var ctx=document.getElementById('chartMain'); if(!ctx) return;
+    var typeCounts={};
+    for(var i=0;i<items.length;i++){ var tp=getTypeDisplay(items[i].type); typeCounts[tp]=(typeCounts[tp]||0)+items[i].qty; }
+    var labels=Object.keys(typeCounts), data=Object.values(typeCounts);
+    if(chartMainInst) chartMainInst.destroy();
+    chartMainInst=new Chart(ctx,{type:'doughnut',data:{labels:labels,datasets:[{data:data,backgroundColor:['#06b6d4','#f59e0b','#22c55e','#a855f7','#ec4899']}]},options:{responsive:true,plugins:{legend:{labels:{color:curTheme==='day'?'#111':'#fff'}}}}});
+  }catch(e){}
 }
 function exportChart(){ var c=document.getElementById('chartMain'); if(!c) return; var a=document.createElement('a'); a.download='chart.png'; a.href=c.toDataURL(); a.click(); }
 
-/* ---------- 17. SCANNER ---------- */
+/* ---------- 23. ORDER ---------- */
+function copyOrder(){ var txt=document.getElementById('orderList').innerText; if(navigator.clipboard) navigator.clipboard.writeText(txt).then(function(){alert(Tget('alertCopied'));}); }
+function exportOrder(){ var b=new Blob([document.getElementById('orderList').innerText],{type:'text/plain'}); var a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='order.txt'; a.click(); }
+function exportPDF(){
+  var need=items.filter(function(x){return x.qty<=x.min;});
+  var h='<h1>STAND MANAGER</h1><p>'+new Date().toLocaleString(LOC[curLang]||'el-GR')+'</p><ul>';
+  need.forEach(function(x){ h+='<li>'+esc(getDisplayName(x))+' - '+x.qty+'/'+x.min+'</li>'; });
+  h+='</ul>'; if(!need.length) h+='<p>-</p>';
+  printDoc('order',h);
+}
+function shareWhatsApp(){ var txt=encodeURIComponent(document.getElementById('orderList').innerText); window.open('https://wa.me/?text='+txt,'_blank'); }
+
+/* ---------- 24. SCANNER ---------- */
 function startScanner(){
+  if(!hasPerm('scan')) return;
   document.getElementById('scannerBox').style.display='block';
   var resultEl=document.getElementById('scanResult');
   scanBusy=false;
@@ -1270,28 +1538,26 @@ function startScanner(){
       setTimeout(function(){ stopScanner(); },1500);
     },
     function(err){}
-  ).catch(function(e){ resultEl.textContent='Error: '+e; });
+  ).catch(function(e){ resultEl.textContent=Tget('alertError')+': '+e; });
 }
 function stopScanner(){ if(html5Qrcode){ try{ var p=html5Qrcode.stop(); if(p&&p.catch) p.catch(function(){}); }catch(e){} } document.getElementById('scannerBox').style.display='none'; }
 
-/* ---------- 18. VOICE ---------- */
+/* ---------- 25. VOICE ---------- */
 function startVoice(){
-  if(!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)){ alert('Chrome?'); return; }
+  if(!hasPerm('voice')) return;
+  if(!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)){ alert(Tget('alertChrome')); return; }
   var SpeechRec=window.SpeechRecognition||window.webkitSpeechRecognition;
   var rec=new SpeechRec();
   rec.lang=curLang==='el'?'el-GR':curLang==='de'?'de-DE':curLang==='ru'?'ru-RU':'en-US';
   rec.interimResults=false; rec.maxAlternatives=1;
   var voiceBox=document.getElementById('voiceBox');
   var voiceText=document.getElementById('voiceText');
-  var bVoice=document.getElementById('bVoice');
   voiceBox.style.display='block';
-  bVoice.classList.add('voice-active');
   voiceText.textContent='🎙️...';
   rec.start();
   rec.onresult=function(event){
     var spoken=event.results[0][0].transcript;
     voiceText.textContent='"'+spoken+'"';
-    bVoice.classList.remove('voice-active');
     var parts=spoken.trim().split(' ');
     var last=parts[parts.length-1];
     var qty=parseInt(last);
@@ -1306,335 +1572,10 @@ function startVoice(){
     if(found){ var diff=qty-found.qty; if(diff!==0){ changeQty(found.id, diff); voiceText.textContent+=' → '+getDisplayName(found)+'='+found.qty; } }
     setTimeout(function(){ voiceBox.style.display='none'; },3000);
   };
-  rec.onerror=function(){ bVoice.classList.remove('voice-active'); setTimeout(function(){ voiceBox.style.display='none'; },2000); };
-  rec.onend=function(){ bVoice.classList.remove('voice-active'); };
+  rec.onerror=function(){ setTimeout(function(){ voiceBox.style.display='none'; },2000); };
 }
 
-/* ---------- 19. CHARTS ---------- */
-function renderCharts(){
-  try{
-    var ctx=document.getElementById('chartMain'); if(!ctx) return;
-    var typeCounts={};
-    for(var i=0;i<items.length;i++){ var tp=getTypeDisplay(items[i].type); typeCounts[tp]=(typeCounts[tp]||0)+items[i].qty; }
-    var labels=Object.keys(typeCounts), data=Object.values(typeCounts);
-    if(chartMainInst) chartMainInst.destroy();
-    chartMainInst=new Chart(ctx,{type:'doughnut',data:{labels:labels,datasets:[{data:data,backgroundColor:['#06b6d4','#f59e0b','#22c55e','#a855f7','#ec4899']}]},options:{responsive:true,plugins:{legend:{labels:{color:'#fff'}}}}});
-  }catch(e){}
-}
-
-/* ---------- 20. NOTIFICATIONS ---------- */
-function checkLowStockAndNotify(only){
-  var need=only?[only]:items.filter(function(x){return x.qty<=x.min;});
-  if(need.length==0) return;
-  if('Notification' in window && Notification.permission==='granted'){
-    new Notification('Stand Manager', {body: need.slice(0,3).map(function(x){return getDisplayName(x);}).join(', ')});
-  }
-}
-
-/* ---------- 21. PWA ---------- */
-window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferredPrompt=e; var b=document.getElementById('bInstall'); if(b) b.style.display='inline-block'; });
-function installPWA(){
-  if(deferredPrompt){
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(function(choice){ if(choice.outcome==='accepted'){ var b=document.getElementById('bInstall'); if(b) b.style.display='none'; } deferredPrompt=null; });
-  } else alert('—');
-}
-
-/* ---------- 22. COUNTING ---------- */
-function renderCountByLang(){
-  var container=document.getElementById('countByLang'); if(!container) return;
-  var counts={}, total=0;
-  for(var i=0;i<items.length;i++){
-    var lang=getItemLanguage(items[i]);
-    counts[lang]=(counts[lang]||0)+items[i].qty;
-    total+=items[i].qty;
-  }
-  var html='';
-  for(var lang in counts){
-    var name=getLangDisplay(lang);
-    var percent=total>0?Math.round(counts[lang]/total*100):0;
-    html+='<div class="count-box"><div class="num">'+counts[lang]+'</div><div class="label">'+name+'</div><div class="small" style="color:#888">'+percent+'%</div></div>';
-  }
-  if(html==='') html='<div class="small" style="color:#888;padding:10px">—</div>';
-  else html+='<div class="count-box" style="border:2px solid #f59e0b"><div class="num" style="color:#f59e0b">'+total+'</div><div class="label">'+Tget('thTotal')+'</div><div class="small" style="color:#888">100%</div></div>';
-  container.innerHTML=html;
-}
-function renderCountByType(){
-  var container=document.getElementById('countByType'); if(!container) return;
-  var counts={flyer:0,mag:0,booklet:0,book:0,poster:0,card:0};
-  var total=0;
-  for(var i=0;i<items.length;i++){
-    var tt=(items[i].type||'').toLowerCase();
-    var qty=items[i].qty||0;
-    total+=qty;
-    if(tt.indexOf('φυλλάδιο')>=0 || tt.indexOf('tract')>=0 || tt.indexOf('flyer')>=0) counts.flyer+=qty;
-    else if(tt.indexOf('περιοδικό')>=0 || tt.indexOf('magazine')>=0 || tt.indexOf('σκοπιά')>=0 || tt.indexOf('watchtower')>=0) counts.mag+=qty;
-    else if(tt.indexOf('βιβλιάριο')>=0 || tt.indexOf('booklet')>=0) counts.booklet+=qty;
-    else if(tt.indexOf('πόστερ')>=0 || tt.indexOf('poster')>=0) counts.poster+=qty;
-    else if(tt.indexOf('βιβλίο')>=0 || (tt.indexOf('book')>=0 && tt.indexOf('booklet')<0)) counts.book+=qty;
-    else if(tt.indexOf('κάρτα')>=0 || tt.indexOf('card')>=0) counts.card+=qty;
-    else counts.booklet+=qty;
-  }
-  var pct=function(n){ return total>0?Math.round(n/total*100):0; };
-  var html='';
-  html+='<div class="count-box"><div class="num" style="color:#06b6d4">'+counts.flyer+'</div><div class="label">'+Tget('thFlyer')+'</div><div class="small" style="color:#888">'+pct(counts.flyer)+'%</div></div>';
-  html+='<div class="count-box"><div class="num" style="color:#f59e0b">'+counts.mag+'</div><div class="label">'+Tget('thMag')+'</div><div class="small" style="color:#888">'+pct(counts.mag)+'%</div></div>';
-  html+='<div class="count-box"><div class="num" style="color:#22c55e">'+counts.booklet+'</div><div class="label">'+Tget('thBooklet')+'</div><div class="small" style="color:#888">'+pct(counts.booklet)+'%</div></div>';
-  html+='<div class="count-box"><div class="num" style="color:#a855f7">'+counts.book+'</div><div class="label">'+Tget('thBook')+'</div><div class="small" style="color:#888">'+pct(counts.book)+'%</div></div>';
-  html+='<div class="count-box"><div class="num" style="color:#ec4899">'+counts.poster+'</div><div class="label">'+Tget('thPoster')+'</div><div class="small" style="color:#888">'+pct(counts.poster)+'%</div></div>';
-  html+='<div class="count-box"><div class="num" style="color:#f87171">'+counts.card+'</div><div class="label">'+Tget('thCard')+'</div><div class="small" style="color:#888">'+pct(counts.card)+'%</div></div>';
-  html+='<div class="count-box" style="border:2px solid #f59e0b"><div class="num" style="color:#f59e0b">'+total+'</div><div class="label">'+Tget('thTotal')+'</div><div class="small" style="color:#888">100%</div></div>';
-  container.innerHTML=html;
-}
-function renderCountByLangType(){
-  var tbody=document.getElementById('countLangTypeBody'); if(!tbody) return;
-  var langs={};
-  for(var i=0;i<items.length;i++){
-    var lang=getItemLanguage(items[i]);
-    if(!langs[lang]) langs[lang]={flyer:0,mag:0,booklet:0,book:0,poster:0,card:0,total:0};
-    var tt=(items[i].type||'').toLowerCase();
-    var qty=items[i].qty||0;
-    if(tt.indexOf('φυλλάδιο')>=0 || tt.indexOf('tract')>=0) langs[lang].flyer+=qty;
-    else if(tt.indexOf('περιοδικό')>=0 || tt.indexOf('magazine')>=0) langs[lang].mag+=qty;
-    else if(tt.indexOf('βιβλιάριο')>=0 || tt.indexOf('booklet')>=0) langs[lang].booklet+=qty;
-    else if(tt.indexOf('πόστερ')>=0 || tt.indexOf('poster')>=0) langs[lang].poster+=qty;
-    else if(tt.indexOf('βιβλίο')>=0 || (tt.indexOf('book')>=0 && tt.indexOf('booklet')<0)) langs[lang].book+=qty;
-    else if(tt.indexOf('κάρτα')>=0 || tt.indexOf('card')>=0) langs[lang].card+=qty;
-    else langs[lang].booklet+=qty;
-    langs[lang].total+=qty;
-  }
-  var html='', totals={flyer:0,mag:0,booklet:0,book:0,poster:0,card:0,total:0};
-  for(var lang in langs){
-    var d=langs[lang];
-    totals.flyer+=d.flyer; totals.mag+=d.mag; totals.booklet+=d.booklet; totals.book+=d.book; totals.poster+=d.poster; totals.card+=d.card; totals.total+=d.total;
-    html+='<tr><td><b>'+getLangDisplay(lang)+'</b></td><td>'+d.flyer+'</td><td>'+d.mag+'</td><td>'+d.booklet+'</td><td>'+d.book+'</td><td>'+d.poster+'</td><td>'+d.card+'</td><td><b>'+d.total+'</b></td></tr>';
-  }
-  if(html){
-    html+='<tr style="background:#222;font-weight:bold;border-top:2px solid #f59e0b"><td>'+Tget('thTotal')+'</td><td>'+totals.flyer+'</td><td>'+totals.mag+'</td><td>'+totals.booklet+'</td><td>'+totals.book+'</td><td>'+totals.poster+'</td><td>'+totals.card+'</td><td>'+totals.total+'</td></tr>';
-  } else {
-    html='<tr><td colspan="8" style="text-align:center;color:#888">—</td></tr>';
-  }
-  tbody.innerHTML=html;
-}
-function filterAndCount(){
-  var langFilter=document.getElementById('filterLangCount').value;
-  var typeFilter=document.getElementById('filterTypeCount').value;
-  var container=document.getElementById('filteredCountResult'); if(!container) return;
-  var filtered=[], totalQty=0;
-  for(var i=0;i<items.length;i++){
-    var it=items[i];
-    var itemLang=getItemLanguage(it);
-    var matchLang=langFilter==='all' || itemLang===langFilter;
-    var matchType=typeFilter==='all' || it.type===typeFilter || (typeFilter==='Φυλλάδιο' && (it.type||'').indexOf('Φυλλάδιο')>=0);
-    if(matchLang && matchType){ filtered.push(it); totalQty+=it.qty; }
-  }
-  var langLabel=langFilter==='all'?Tget('optAllLangs'):getLangDisplay(langFilter);
-  var typeLabel=typeFilter==='all'?Tget('optAllTypes'):getTypeDisplay(typeFilter);
-  var html='<b>'+Tget('lFilterCount')+':</b> '+langLabel+' + '+typeLabel+'<br>';
-  html+='<b>'+filtered.length+'</b>, <b>'+totalQty+'</b><br><br>';
-  if(filtered.length>0){
-    html+='<div style="max-height:150px;overflow:auto">';
-    for(var i=0;i<Math.min(filtered.length,20);i++){
-      var it=filtered[i];
-      html+='<div style="padding:4px 0;border-bottom:1px solid #222">'+getLangBadge(it)+' '+esc(getDisplayName(it))+' - <b>'+it.qty+'</b></div>';
-    }
-    html+='</div>';
-  }
-  container.innerHTML=html;
-}
-function exportCountCSV(){
-  var lines=['Lang,Flyer,Mag,Booklet,Book,Poster,Card,Total'];
-  var tbody=document.getElementById('countLangTypeBody');
-  if(tbody){
-    var rows=tbody.querySelectorAll('tr');
-    for(var i=0;i<rows.length;i++){
-      var cols=rows[i].querySelectorAll('td');
-      if(cols.length>=8){
-        var line=[];
-        for(var j=0;j<cols.length;j++) line.push(csvCell(cols[j].textContent.trim()));
-        lines.push(line.join(','));
-      }
-    }
-  }
-  var blob=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8'});
-  var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='counts.csv'; a.click();
-}
-
-/* ---------- 23. JW DROPDOWN ---------- */
-function updateJwDatalist(){
-  var datalist=document.getElementById('jwTitlesList'); if(!datalist) return;
-  datalist.innerHTML='';
-  for(var i=0;i<PRESETS.length;i++){
-    var p=PRESETS[i];
-    var name=(p.names && p.names[curLang]) ? p.names[curLang] : (p.names ? p.names.el : '');
-    var opt=document.createElement('option');
-    opt.value=name;
-    datalist.appendChild(opt);
-  }
-  var btn=document.getElementById('jwDropdownBtn');
-  if(btn) btn.textContent='▼ jw.org ('+PRESETS.length+')';
-}
-function showAllJwTitles(){
-  var drop=document.getElementById('jwTitlesDropdown'); if(!drop) return;
-  if(drop.style.display==='block'){ drop.style.display='none'; return; }
-  var html='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b style="color:#f59e0b">📚 '+PRESETS.length+'</b><button onclick="document.getElementById(\'jwTitlesDropdown\').style.display=\'none\'" style="background:#333;color:#fff;border:none;border-radius:4px;padding:4px 8px">✕</button></div>';
-  for(var i=0;i<PRESETS.length;i++){
-    var p=PRESETS[i];
-    var name=(p.names && p.names[curLang]) ? p.names[curLang] : (p.names ? p.names.el : '');
-    var icon='📄';
-    if(p.type==='Περιοδικό') icon='📚';
-    else if(p.type==='Βιβλιάριο') icon='📖';
-    else if(p.type==='Βιβλίο') icon='📘';
-    else if(p.type==='Κάρτα') icon='🃏';
-    else if(p.type==='Πόστερ') icon='🖼️';
-    html+='<div onclick="pickJwTitle('+p.id+')" style="padding:8px;border-bottom:1px solid #222;cursor:pointer;display:flex;justify-content:space-between"><span><b>'+icon+' '+esc(name)+'</b><br><span class="small" style="color:#888">'+getTypeDisplay(p.type)+'</span></span><span style="color:#22c55e">➕</span></div>';
-  }
-  drop.innerHTML=html;
-  drop.style.display='block';
-}
-function filterJwTitles(type){
-  var drop=document.getElementById('jwTitlesDropdown'); if(!drop) return;
-  var filtered=type==='all'?PRESETS:PRESETS.filter(function(p){ return p.type===type; });
-  var html='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b style="color:#f59e0b">'+filtered.length+'</b><button onclick="document.getElementById(\'jwTitlesDropdown\').style.display=\'none\'" style="background:#333;color:#fff;border:none;border-radius:4px;padding:4px 8px">✕</button></div>';
-  for(var i=0;i<filtered.length;i++){
-    var p=filtered[i];
-    var name=(p.names && p.names[curLang]) ? p.names[curLang] : (p.names ? p.names.el : '');
-    html+='<div onclick="pickJwTitle('+p.id+')" style="padding:8px;border-bottom:1px solid #222;cursor:pointer"><b>'+esc(name)+'</b><br><span class="small" style="color:#888">'+getTypeDisplay(p.type)+'</span></div>';
-  }
-  drop.innerHTML=html;
-  drop.style.display='block';
-}
-function pickJwTitle(id){
-  var p=PRESETS.find(function(x){ return x.id===id; }); if(!p) return;
-  var name=(p.names && p.names[curLang]) ? p.names[curLang] : (p.names ? p.names.el : '');
-  var input=document.getElementById('title');
-  if(input) input.value=name;
-  var typeSel=document.getElementById('addType');
-  if(typeSel){ typeSel.value=p.type; updateAddButtons(); }
-  var catIn=document.getElementById('cat');
-  if(catIn){
-    var catName=(p.cat && p.cat[curLang]) ? p.cat[curLang] : (p.cat ? p.cat.el : '');
-    catIn.value=catName;
-  }
-  var drop=document.getElementById('jwTitlesDropdown');
-  if(drop) drop.style.display='none';
-}
-
-/* ---------- 24. PRESET LIST ---------- */
-var presetFilter='all';
-function filterPresetList(type){ presetFilter=type; renderPresetListSimple(); }
-function renderPresetListSimple(){
-  var container=document.getElementById('presetList'); if(!container) return;
-  var filtered=presetFilter==='all'?PRESETS:PRESETS.filter(function(p){ return p.type===presetFilter; });
-  var html='';
-  for(var i=0;i<filtered.length;i++){
-    var p=filtered[i];
-    var name=(p.names && p.names[curLang]) ? p.names[curLang] : (p.names ? p.names.el : '');
-    var exists=items.find(function(it){ return it.presetId===p.id; });
-    var btn=exists?'<span style="color:#888">✓</span>':'<button onclick="addPresetById('+p.id+')" style="background:#22c55e;color:#000;border:none;border-radius:4px;padding:6px 10px;font-weight:bold">➕</button>';
-    html+='<div style="display:flex;justify-content:space-between;align-items:center;background:#1a1a1a;padding:8px;border-radius:6px;margin:4px 0"><span><b>'+esc(name)+'</b><br><span class="small" style="color:#888">'+getTypeDisplay(p.type)+'</span></span>'+btn+'</div>';
-  }
-  container.innerHTML=html;
-  var allBtn=document.getElementById('presetAllBtn');
-  if(allBtn) allBtn.textContent=Tget('presetAll')+' ('+PRESETS.length+')';
-}
-function addPresetById(id){
-  var p=PRESETS.find(function(x){ return x.id===id; }); if(!p) return;
-  var exists=items.find(function(it){ return it.presetId===id; });
-  if(exists){ exists.qty+=5; }
-  else {
-    items.push({id:Date.now()+Math.random(),presetId:p.id,names:p.names,type:p.type,cat:p.cat,qty:p.qty,min:p.min,barcode:'',photo:'',lang:p.lang||'el',magazineLang:p.lang||'el'});
-    unmarkPresetDeleted(p.id);
-  }
-  save(); render();
-}
-
-/* ---------- 25. FILTERS ---------- */
-function filterType(t){ currentFilter=t; render(); }
-function setAddType(t){
-  document.getElementById('addType').value=t;
-  document.querySelectorAll('[id^=a-]').forEach(function(b){ b.className='typebtn'; });
-  var map2={'Φυλλάδιο':'a-flyer','Περιοδικό':'a-mag','Βιβλιάριο':'a-booklet','Βιβλίο':'a-book','Πόστερ':'a-poster','Φυλλάδιο-Διαφημιστικό':'a-flyer'};
-  if(map2[t]){ var e=document.getElementById(map2[t]); if(e) e.className='typebtn active'; }
-}
-function updateAddButtons(){ setAddType(document.getElementById('addType').value); }
-
-/* ---------- 26. ADMIN ---------- */
-function openAdmin(){ document.getElementById('adminScreen').style.display='block'; initCloudElements(); renderCharts(); applyFont(); }
-function closeAdmin(){
-  document.getElementById('adminScreen').style.display='none';
-  document.getElementById('adminContent').style.display='none';
-  document.getElementById('loginBox').style.display='block';
-  document.getElementById('pinCheck').value='';
-  document.getElementById('forgotBox').style.display='none';
-}
-function togglePin(){ var el=document.getElementById('pinCheck'); el.type=el.type==='password'?'text':'password'; }
-function checkAdmin(){
-  var v=document.getElementById('pinCheck').value;
-  if(v===adminPass){
-    document.getElementById('adminContent').style.display='block';
-    document.getElementById('loginBox').style.display='none';
-    initCloudElements(); renderCharts(); applyFont();
-  } else alert('❌');
-}
-function saveNewPass(){
-  var np=document.getElementById('newPass').value.trim();
-  var recEmail=document.getElementById('recoveryEmail').value.trim();
-  if(np){ if(np.length<3){ return; } adminPass=np; localStorage.setItem('stand_pass',adminPass); }
-  if(recEmail){ if(recEmail.indexOf('@')===-1){ return; } localStorage.setItem('stand_recovery_email',recEmail); }
-  document.getElementById('passMsg').textContent='✅';
-  document.getElementById('newPass').value='';
-  if(cloudEnabled && cloudDb){ syncSettingsToCloud(); }
-}
-function showForgot(){ document.getElementById('forgotBox').style.display='block'; var saved=localStorage.getItem('stand_recovery_email')||''; if(saved) document.getElementById('forgotEmail').value=saved; }
-function hideForgot(){ document.getElementById('forgotBox').style.display='none'; document.getElementById('resetCodeBox').style.display='none'; }
-async function sendResetEmail(){
-  var emailInput=document.getElementById('forgotEmail').value.trim();
-  var savedEmail=localStorage.getItem('stand_recovery_email')||'';
-  var msgEl=document.getElementById('forgotMsg');
-  if(!emailInput){ msgEl.textContent='❌'; return; }
-  if(!savedEmail){ msgEl.textContent='❌'; return; }
-  if(emailInput.toLowerCase()!==savedEmail.toLowerCase()){ msgEl.textContent='❌'; return; }
-  var code=Math.floor(100000+Math.random()*900000).toString();
-  var expiry=Date.now()+15*60*1000;
-  localStorage.setItem('stand_reset_code',code);
-  localStorage.setItem('stand_reset_expiry',expiry.toString());
-  msgEl.textContent='...';
-  try{
-    var fd=new FormData();
-    fd.append('subject','Stand Manager - Code: '+code);
-    fd.append('message','Code: '+code);
-    fd.append('_captcha','false');
-    await fetch('https://formsubmit.co/ajax/'+encodeURIComponent(emailInput),{method:'POST',body:fd});
-    msgEl.textContent='✅ '+emailInput;
-    document.getElementById('resetCodeBox').style.display='block';
-  }catch(e){ msgEl.textContent='⚠️'; }
-}
-function verifyResetCode(){
-  var input=document.getElementById('resetCodeInput').value.trim();
-  var newP=document.getElementById('newPassFromReset').value.trim();
-  var saved=localStorage.getItem('stand_reset_code');
-  var exp=parseInt(localStorage.getItem('stand_reset_expiry')||'0');
-  var msgEl=document.getElementById('forgotMsg');
-  if(!input || !newP){ msgEl.textContent='❌'; return; }
-  if(Date.now()>exp){ msgEl.textContent='❌'; return; }
-  if(input!==saved){ msgEl.textContent='❌'; return; }
-  if(newP.length<3){ msgEl.textContent='❌'; return; }
-  adminPass=newP;
-  localStorage.setItem('stand_pass',adminPass);
-  localStorage.removeItem('stand_reset_code');
-  localStorage.removeItem('stand_reset_expiry');
-  msgEl.textContent='✅';
-  if(cloudEnabled && cloudDb){ syncSettingsToCloud(); }
-  setTimeout(function(){ hideForgot(); document.getElementById('pinCheck').value=newP; checkAdmin(); },1000);
-}
-
-/* ---------- 27. CLOUD ---------- */
-function initCloudElements(){
-  var ce=document.getElementById('cloudEnabled'); if(ce) ce.checked=cloudEnabled;
-  var ci=document.getElementById('cloudId'); if(ci) ci.value=cloudId;
-  var fc=document.getElementById('fbConfig'); if(fc) fc.value=fbConfigStr;
-}
+/* ---------- 26. CLOUD ---------- */
 function copyCloudId(){ if(navigator.clipboard) navigator.clipboard.writeText(cloudId).then(function(){ alert('✓ '+cloudId); }); else alert(cloudId); }
 function saveCloudId(){
   var ci=document.getElementById('cloudId');
@@ -1642,18 +1583,10 @@ function saveCloudId(){
   localStorage.setItem('stand_cloud_id',cloudId);
   cloudEnabled=true;
   localStorage.setItem('stand_cloud_enabled','true');
-  var ce=document.getElementById('cloudEnabled'); if(ce) ce.checked=true;
-  alert('✅');
+  alert('✅ '+Tget('alertSaved'));
   initFirebase();
 }
 function saveFbConfig(){ var fc=document.getElementById('fbConfig'); fbConfigStr=fc.value.trim(); localStorage.setItem('stand_fb_config',fbConfigStr); if(cloudEnabled) initFirebase(); }
-function toggleCloud(){
-  var ce=document.getElementById('cloudEnabled');
-  cloudEnabled=ce.checked;
-  localStorage.setItem('stand_cloud_enabled',cloudEnabled);
-  if(cloudEnabled) initFirebase();
-  else { if(cloudUnsub){ try{ cloudUnsub(); }catch(e){} cloudUnsub=null; } setSyncState('offline'); }
-}
 function getFirebaseConfig(){ try{ return JSON.parse(fbConfigStr); }catch(e){ return null; } }
 async function initFirebase(){
   setSyncState('connecting');
@@ -1668,19 +1601,38 @@ async function initFirebase(){
     cloudUnsub=window._fb.onSnapshot(dRef, function(snap){
       if(!snap.exists()){ setSyncState('synced'); return; }
       var data=snap.data();
-      if(!data || !data.items){ setSyncState('synced'); return; }
-      if(data.items && !isSyncingFromCloud){
+      if(!data){ setSyncState('synced'); return; }
+      if(!isSyncingFromCloud){
         isSyncingFromCloud=true;
-        items=cleanItems(data.items).filter(function(it){
-          if(it.presetId===31) return false;
-          if(it.type==='Μαγνητικό Πόστερ') return false;
-          var n_el=(it.names && it.names.el) || it.name || '';
-          if(n_el.indexOf('Μελέτης')>=0) return false;
-          return true;
-        });
+        if(data.items){
+          items=cleanItems(data.items).filter(function(it){
+            if(it.presetId===31) return false;
+            if(it.type === 'Μαγνητικό Πόστερ') return false;
+            var n_el=(it.names && it.names.el) || '';
+            if(n_el.indexOf('Μελέτης')>=0) return false;
+            return true;
+          });
+        }
+        if(data.users && Array.isArray(data.users)){
+          users=cleanUsers(data.users);
+          users = users.map(function(u){
+            if(!u.perms) u.perms = {};
+            PERM_KEYS.forEach(function(k){
+              if(typeof u.perms[k] !== 'boolean') u.perms[k] = (PERMS_PRESETS[u.role] || PERMS_PRESETS.counter)[k] || false;
+            });
+            return u;
+          });
+          if(!users.find(function(u){ return u.role === 'admin'; })){
+            users.unshift({id: Date.now(), name:'Admin', role:'admin', perms: JSON.parse(JSON.stringify(PERMS_PRESETS.admin))});
+          }
+          if(currentUserId && !users.find(function(u){return u.id==currentUserId;})){
+            var adm = users.find(function(u){ return u.role === 'admin'; });
+            currentUserId = adm ? adm.id : users[0].id;
+          }
+        }
         if(data.adminPass && data.adminPass !== adminPass){ adminPass = data.adminPass; localStorage.setItem('stand_pass', adminPass); }
-        if(data.recoveryEmail){ localStorage.setItem('stand_recovery_email', data.recoveryEmail); }
-        save(); render();
+        if(data.history && Array.isArray(data.history)){ historyLog = data.history; }
+        save(); render(); renderUsers(); renderUserSelectList(); updateUserChip();
         setSyncState('synced');
         isSyncingFromCloud=false;
       }
@@ -1688,76 +1640,156 @@ async function initFirebase(){
     setSyncState('synced');
   }catch(e){ setSyncState('error'); }
 }
-async function syncSettingsToCloud(){
-  if(!cloudEnabled || !cloudDb) return;
-  try{
-    var dRef=window._fb.doc(cloudDb,'stands',cloudId);
-    await window._fb.setDoc(dRef,{items:items,adminPass:adminPass,recoveryEmail:localStorage.getItem('stand_recovery_email')||'',updated:Date.now()},{merge:true});
-  }catch(e){ console.log('Sync settings error', e); }
-}
 async function pushToCloud(){
-  if(!cloudEnabled){ alert('Cloud off'); return; }
-  if(!cloudDb){ alert('No DB'); return; }
+  if(!cloudEnabled){ alert(Tget('alertCloudOff')); return; }
+  if(!cloudDb){ alert(Tget('alertNoDB')); return; }
   try{
     setSyncState('pushing');
     var dRef=window._fb.doc(cloudDb,'stands',cloudId);
-    await window._fb.setDoc(dRef,{items:items,adminPass:adminPass,recoveryEmail:localStorage.getItem('stand_recovery_email')||'',updated:Date.now()},{merge:true});
+    await window._fb.setDoc(dRef,{items:items,users:users,adminPass:adminPass,history:historyLog,updated:Date.now()},{merge:true});
     setSyncState('synced');
   }catch(e){ setSyncState('error'); alert(e.message); }
 }
 async function pullFromCloud(){
-  if(!cloudEnabled){ alert('Cloud off'); return; }
-  if(!cloudDb){ alert('No DB'); return; }
+  if(!cloudEnabled){ alert(Tget('alertCloudOff')); return; }
+  if(!cloudDb){ alert(Tget('alertNoDB')); return; }
   try{
     setSyncState('pulling');
     var dRef=window._fb.doc(cloudDb,'stands',cloudId);
     var snap=await window._fb.getDoc(dRef);
     if(snap.exists() && snap.data().items){
       isSyncingFromCloud=true;
-      var data = snap.data();
+      var data=snap.data();
       items=cleanItems(data.items).filter(function(it){
         if(it.presetId===31) return false;
-        if(it.type==='Μαγνητικό Πόστερ') return false;
-        var n_el=(it.names && it.names.el) || it.name || '';
+        if(it.type === 'Μαγνητικό Πόστερ') return false;
+        var n_el=(it.names && it.names.el) || '';
         if(n_el.indexOf('Μελέτης')>=0) return false;
         return true;
       });
+      if(data.users) users=cleanUsers(data.users);
+      if(data.history && Array.isArray(data.history)) historyLog = data.history;
       if(data.adminPass){ adminPass=data.adminPass; localStorage.setItem('stand_pass',adminPass); }
-      if(data.recoveryEmail){ localStorage.setItem('stand_recovery_email',data.recoveryEmail); }
-      save(); render();
+      save(); render(); renderUsers(); renderUserSelectList(); updateUserChip();
       setSyncState('synced');
       isSyncingFromCloud=false;
-    } else { setSyncState('synced'); alert('—'); }
+    } else { setSyncState('synced'); alert(Tget('alertNothing')); }
   }catch(e){ setSyncState('error'); alert(e.message); }
 }
-function testCloud(){ if(!cloudEnabled){ alert('Cloud off'); return; } initFirebase(); }
+function showSyncInfo(){ alert('Stand ID: '+cloudId+'\n\n'+syncState); }
 
-/* ---------- 28. GUIDE ---------- */
-var GUIDE_TEXTS={
-el:'<div style="margin:8px 0"><b style="color:#06b6d4">☁️ Cloud:</b> Offline = τοπικά, Synced = όλες οι συσκευές.</div><div style="margin:8px 0"><b style="color:#06b6d4">☁️ Αποστολή:</b> Στέλνει δεδομένα στο cloud.</div><div style="margin:8px 0"><b style="color:#06b6d4">⬇️ Λήψη:</b> Κατεβάζει από το cloud.</div><div style="margin:8px 0"><b style="color:#a855f7">📷 Scan:</b> Σκανάρει barcode.</div><div style="margin:8px 0"><b style="color:#ef4444">🎙️ Φωνή:</b> Πες «Σκοπιά 5».</div><div style="margin:8px 0"><b>🔍 Αναζήτηση:</b> Ψάχνει τίτλο, κατηγορία, barcode.</div><div style="margin:8px 0"><b>📦 Λίστα:</b> + / - αλλάζει ποσότητα. ✏️ = μετονομασία. Κόκκινο = παραγγελία.</div><div style="margin:8px 0"><b style="color:#ec4899">🖼️ Πόστερ:</b> Πόστερ από jw.org.</div><div style="margin:8px 0"><b>🎨 Γραμματοσειρά:</b> Ρύθμιση μεγέθους UI και λίστας στο Admin.</div>',
-en:'<div style="margin:8px 0"><b style="color:#06b6d4">☁️ Cloud:</b> Offline = local, Synced = all devices.</div><div style="margin:8px 0"><b style="color:#06b6d4">☁️ Push:</b> Sends data to cloud.</div><div style="margin:8px 0"><b style="color:#06b6d4">⬇️ Pull:</b> Downloads from cloud.</div><div style="margin:8px 0"><b style="color:#a855f7">📷 Scan:</b> Scans barcode.</div><div style="margin:8px 0"><b style="color:#ef4444">🎙️ Voice:</b> Say «Watchtower 5».</div><div style="margin:8px 0"><b>🔍 Search:</b> Title, category, barcode.</div><div style="margin:8px 0"><b>📦 List:</b> + / - changes qty. ✏️ = rename. Red = order.</div><div style="margin:8px 0"><b style="color:#ec4899">🖼️ Poster:</b> Poster from jw.org.</div><div style="margin:8px 0"><b>🎨 Font:</b> Adjust UI and list size in Admin.</div>',
-de:'<div style="margin:8px 0"><b style="color:#06b6d4">☁️ Cloud:</b> Offline = lokal, Synced = alle Geräte.</div><div style="margin:8px 0"><b style="color:#06b6d4">☁️ Senden:</b> Sendet Daten.</div><div style="margin:8px 0"><b style="color:#06b6d4">⬇️ Empfangen:</b> Lädt herunter.</div><div style="margin:8px 0"><b style="color:#a855f7">📷 Scan:</b> Scannt Barcode.</div><div style="margin:8px 0"><b style="color:#ef4444">🎙️ Stimme:</b> Sage «Wachtturm 5».</div><div style="margin:8px 0"><b>🔍 Suche:</b> Titel, Kategorie, Barcode.</div><div style="margin:8px 0"><b>📦 Liste:</b> + / - ändert. ✏️ = umbenennen. Rot = Bestellung.</div><div style="margin:8px 0"><b style="color:#ec4899">🖼️ Poster:</b> Poster von jw.org.</div><div style="margin:8px 0"><b>🎨 Schrift:</b> UI- und Listengröße im Admin anpassen.</div>',
-ru:'<div style="margin:8px 0"><b style="color:#06b6d4">☁️ Облако:</b> Offline = локально, Synced = все устройства.</div><div style="margin:8px 0"><b style="color:#06b6d4">☁️ Отправить:</b> Отправляет в облако.</div><div style="margin:8px 0"><b style="color:#06b6d4">⬇️ Получить:</b> Загружает из облака.</div><div style="margin:8px 0"><b style="color:#a855f7">📷 Скан:</b> Сканирует штрихкод.</div><div style="margin:8px 0"><b style="color:#ef4444">🎙️ Голос:</b> Скажи «Сторожевая 5».</div><div style="margin:8px 0"><b>🔍 Поиск:</b> Название, категория, штрихкод.</div><div style="margin:8px 0"><b>📦 Список:</b> + / - меняет. ✏️ = переименовать. Красный = заказ.</div><div style="margin:8px 0"><b style="color:#ec4899">🖼️ Плакат:</b> Плакат с jw.org.</div><div style="margin:8px 0"><b>🎨 Шрифт:</b> Настройка размера интерфейса и списка в админке.</div>'
-};
-function updateGuideLanguage(){
-  var gc=document.getElementById('guideContent');
-  if(gc) gc.innerHTML=GUIDE_TEXTS[curLang]||GUIDE_TEXTS.el;
-}
-function copyGuide(){ navigator.clipboard.writeText(document.getElementById('guideContent').innerText).then(function(){alert('✅');}); }
-function shareGuideWA(){ window.open('https://wa.me/?text='+encodeURIComponent(document.getElementById('guideContent').innerText),'_blank'); }
-function exportGuidePDF(){ printDoc('Guide','<pre>'+esc(document.getElementById('guideContent').innerText)+'</pre>'); }
-function shareGuideEmail(){ window.location.href='mailto:?subject=Guide&body='+encodeURIComponent(document.getElementById('guideContent').innerText); }
-
-/* ---------- 29. INIT ---------- */
-function init(){
+/* ---------- 27. ADMIN ---------- */
+function openAdmin(){
+  document.getElementById('adminScreen').style.display='block';
+  document.getElementById('cloudId').value=cloudId;
+  document.getElementById('fbConfig').value=fbConfigStr;
+  document.getElementById('recoveryEmail').value=localStorage.getItem('stand_recovery_email')||'';
   applyFont();
-  buildSelectOptions();
+}
+function closeAdmin(){ document.getElementById('adminScreen').style.display='none'; document.getElementById('adminContent').style.display='none'; document.getElementById('loginBox').style.display='block'; document.getElementById('pinCheck').value=''; }
+function checkAdmin(){
+  if(document.getElementById('pinCheck').value===adminPass){
+    document.getElementById('adminContent').style.display='block';
+    document.getElementById('loginBox').style.display='none';
+    renderUsers(); applyFont();
+    updatePermsFromRole();
+  } else alert(Tget('alertWrongPass'));
+}
+function saveNewPass(){
+  var np=document.getElementById('newPass').value.trim();
+  var recEmail=document.getElementById('recoveryEmail').value.trim();
+  if(np){ if(np.length<3) return; adminPass=np; localStorage.setItem('stand_pass',adminPass); }
+  if(recEmail){ localStorage.setItem('stand_recovery_email',recEmail); }
+  document.getElementById('passMsg').textContent='✅ '+Tget('alertSaved');
+  document.getElementById('newPass').value='';
+  save();
+}
+
+/* ---------- 28. LANGUAGE ---------- */
+function buildLangFilterOptions(){
+  var fl=document.getElementById('langFilter');
+  if(!fl) return;
+  var codes=['el','en','de','ru','sq','ro','ar','fa','fr','es','it','pl','hr','bg','uk','hu','hy','tr','sr'];
+  var html='<option value="all" data-i18n="optAllLangs">'+Tget('optAllLangs')+'</option>';
+  codes.forEach(function(c){
+    var key='lang'+c.charAt(0).toUpperCase()+c.slice(1);
+    html+='<option value="'+c+'" data-i18n="'+key+'">'+Tget(key)+'</option>';
+  });
+  fl.innerHTML=html;
+}
+function setL(l){
+  curLang=l;
+  localStorage.setItem('stand_lang',l);
+  document.documentElement.lang=l;
+  buildLangFilterOptions();
   applyLang();
-  updateJwDatalist();
+  renderUsers();
+  renderUserSelectList();
   render();
-  initCloudElements();
+}
+function applyLang(){
+  var nodes=document.querySelectorAll('[data-i18n]');
+  for(var i=0;i<nodes.length;i++){
+    var el=nodes[i];
+    var val=Tget(el.getAttribute('data-i18n'));
+    if(val) el.textContent=val;
+  }
+  var phs=document.querySelectorAll('[data-i18n-ph]');
+  for(var j=0;j<phs.length;j++){
+    var p=phs[j];
+    var v=Tget(p.getAttribute('data-i18n-ph'));
+    if(v) p.placeholder=v;
+  }
+  ['el','en','de','ru'].forEach(function(l){
+    var b=document.getElementById('bl-'+l);
+    if(b){ if(l===curLang) b.classList.add('active'); else b.classList.remove('active'); }
+  });
+  setSyncState(syncState);
+  updateUserChip();
+  renderToday();
+  renderLog();  /* ★ re-render log for current language */
+}
+
+/* ---------- 29. MISC ---------- */
+function updateAddButtons(){}
+function setAddType(t){
+  document.getElementById('addType').value=t;
+  var btns=document.querySelectorAll('[id^=a-]');
+  for(var i=0;i<btns.length;i++) btns[i].classList.remove('active');
+  var map={'Φυλλάδιο':'a-flyer','Περιοδικό':'a-mag','Βιβλιάριο':'a-booklet','Βιβλίο':'a-book','Πόστερ':'a-poster'};
+  if(map[t]){ var e=document.getElementById(map[t]); if(e) e.classList.add('active'); }
+}
+window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferredPrompt=e; var b=document.getElementById('bInstall'); if(b) b.style.display='inline-block'; });
+function installPWA(){
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(c){ if(c.outcome==='accepted'){ var b=document.getElementById('bInstall'); if(b) b.style.display='none'; } deferredPrompt=null; });
+  }
+}
+function checkLowStockAndNotify(only){
+  var need=only?[only]:items.filter(function(x){return x.qty<=x.min;});
+  if(need.length==0) return;
+  if('Notification' in window && Notification.permission==='granted'){
+    new Notification('Stand Manager', {body: need.length+' — '+need.slice(0,3).map(getDisplayName).join(', ')});
+  }
+}
+
+/* ---------- 30. INIT ---------- */
+function init(){
+  applyTheme();
+  applyFont();
+  buildLangFilterOptions();
+  applyLang();
+  updateUserChip();
+  render();
+  renderUsers();
+  renderUserSelectList();
+  updatePermsFromRole();
   setSyncState('offline');
   if(cloudEnabled) setTimeout(initFirebase,1000);
+  if(!currentUserId || !users.find(function(u){return u.id==currentUserId;})){
+    setTimeout(openUserSelector, 800);
+  }
 }
 document.addEventListener('DOMContentLoaded', init);
 setTimeout(init, 100);

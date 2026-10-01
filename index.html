@@ -59,7 +59,9 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 .photo-thumb{width:40px;height:40px;border-radius:6px;object-fit:cover;background:var(--card);flex-shrink:0}
 .voice-active{animation:pulse 1s infinite;background:#ef4444!important}
 @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
-.log-entry{font-size:0.8em;padding:4px 0;border-bottom:1px solid var(--border)}
+.log-entry{font-size:0.8em;padding:6px 0;border-bottom:1px solid var(--border);line-height:1.4}
+.log-entry .log-who{color:#a855f7;font-weight:bold}
+.log-entry .log-time{color:var(--muted);font-weight:bold}
 .count-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:10px}
 .count-box{background:var(--card2);border-radius:8px;padding:10px;text-align:center;border:1px solid var(--border)}
 .count-box .num{font-size:1.5em;font-weight:bold;color:#f59e0b}
@@ -67,9 +69,20 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 .count-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:0.85em}
 .count-table th{background:var(--card2);padding:8px;text-align:left;color:#f59e0b}
 .count-table td{padding:8px;border-bottom:1px solid var(--border)}
-#ccOverlay,#rnOverlay,#undOverlay,#qcOverlay,#userOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:99999;justify-content:center;align-items:center;padding:20px;box-sizing:border-box}
-#ccOverlay.show,#rnOverlay.show,#undOverlay.show,#qcOverlay.show,#userOverlay.show{display:flex}
+#ccOverlay,#rnOverlay,#undOverlay,#qcOverlay,#userOverlay,#onboardOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px;box-sizing:border-box}
+#ccOverlay.show,#rnOverlay.show,#undOverlay.show,#qcOverlay.show,#userOverlay.show,#onboardOverlay.show{display:flex}
+#onboardOverlay{z-index:999999;background:var(--bg)}
 #ccBox,#rnBox,#userBox{background:var(--card);border:2px solid #f59e0b;border-radius:14px;padding:22px 18px;max-width:440px;width:100%;text-align:center;max-height:90vh;overflow:auto}
+#onboardBox{background:var(--card);border:2px solid #f59e0b;border-radius:14px;padding:24px 20px;max-width:400px;width:100%;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.5)}
+#onboardBox h2{color:#f59e0b;margin:0 0 8px;font-size:1.5em}
+#onboardBox .onb-icon{font-size:3em;margin-bottom:8px}
+#onboardBox .onb-desc{color:var(--muted);font-size:0.9em;margin:10px 0 18px;line-height:1.5}
+#onboardBox .onb-input-wrap{position:relative;margin-bottom:14px}
+#onboardBox .onb-input-wrap input{padding-right:44px;text-align:center;font-family:monospace;font-size:1.1em;letter-spacing:1px}
+#onboardBox .onb-toggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:transparent;color:var(--muted);border:0;padding:8px;cursor:pointer;font-size:1.2em}
+#onboardBox .onb-btn{width:100%;padding:14px;font-size:1.05em;background:#22c55e;color:#000;border-radius:10px;border:0;font-weight:bold;cursor:pointer}
+#onboardBox .onb-error{color:#ef4444;font-size:0.85em;margin-top:10px;min-height:1.2em}
+#onboardBox .onb-info{color:#06b6d4;font-size:0.85em;margin-top:10px;min-height:1.2em}
 #ccTitle,#rnBox h3,#userBox h3{color:#f59e0b;font-size:1.15em;font-weight:bold;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);text-align:center}
 #ccMsg{color:var(--text);font-size:1.05em;line-height:1.5;margin-bottom:20px;word-wrap:break-word}
 #ccButtons{display:flex;gap:10px}
@@ -255,11 +268,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 </div>
 
-<div class="card">
-<b data-i18n="lLog">👥 Ιστορικό</b>
-<div id="logList" style="margin-top:8px;max-height:150px;overflow:auto"></div>
-<button onclick="clearLog()" class="sec" style="width:100%;margin-top:6px" data-i18n="bClearLog">Καθαρισμός</button>
-</div>
+<!-- ★ ΙΣΤΟΡΙΚΟ ΑΦΑΙΡΕΘΗΚΕ ΑΠΟ ΤΗΝ ΚΥΡΙΑ ΟΘΟΝΗ — ΠΗΓΕ ΣΤΟ ADMIN -->
 
 <div class="card" id="dangerCard" style="border:2px solid #ef4444;background:var(--card)">
 <b style="color:#ef4444" data-i18n="lDangerZone">⚠️ Επικίνδυνη Ζώνη</b>
@@ -332,28 +341,31 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <button class="sec" onclick="addBulk()" id="btnAddBulk" style="width:100%;margin-top:4px">📋</button>
 </div>
 </div>
-
 </div>
 
 <div id="adminScreen">
 <div class="card" style="max-width:750px;margin:0 auto;border:2px solid #f59e0b">
 <h2 style="color:#f59e0b;text-align:center" data-i18n="aTitle">👑 ADMIN</h2>
 <div style="text-align:center"><button class="sec" onclick="closeAdmin()" data-i18n="bClose">✕ Κλείσιμο</button></div>
-
 <div id="loginBox" style="margin-top:12px">
 <label data-i18n="lLoginLabel">Κωδικός Admin</label>
 <input id="pinCheck" type="password" placeholder="••••">
 <button onclick="checkAdmin()" style="width:100%;margin-top:8px" data-i18n="bLogin">Είσοδος</button>
 </div>
-
 <div id="adminContent" style="display:none;margin-top:12px">
+
+<!-- ★ ΙΣΤΟΡΙΚΟ — ΜΟΝΟ ΓΙΑ ADMIN -->
+<div class="card" style="border:2px solid #a855f7;background:var(--card)">
+<b style="color:#a855f7" data-i18n="lLogAdmin">👥 Ιστορικό Ενεργειών</b>
+<div class="small" style="color:var(--muted);margin-top:4px" data-i18n="lLogAdminDesc">Ποιος μπήκε, τι άλλαξε, πότε — όλα τα γεγονότα.</div>
+<div id="logList" style="margin-top:10px;max-height:400px;overflow:auto;background:var(--card2);border-radius:8px;padding:10px"></div>
+<button onclick="clearLog()" class="sec" style="width:100%;margin-top:10px" data-i18n="bClearLog">Καθαρισμός</button>
+</div>
 
 <div class="card" style="border:2px solid #a855f7;background:var(--card)">
 <b style="color:#a855f7" data-i18n="lUsersTitle">👥 Διαχείριση Χρηστών</b>
 <div class="small" style="color:var(--muted);margin-top:4px" data-i18n="lUsersDesc">Πρόσθεσε άτομα. Όλοι βλέπουν τα ίδια έντυπα.</div>
-
 <div id="usersList" style="margin-top:12px"></div>
-
 <div style="background:var(--card2);border:1px dashed #22c55e;border-radius:8px;padding:10px;margin-top:12px">
 <b style="color:#22c55e;font-size:0.95em" data-i18n="addUserTitle">➕ Προσθήκη χρήστη</b>
 <label data-i18n="userName">Όνομα</label>
@@ -394,6 +406,10 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <label style="margin-top:10px" data-i18n="lCloudConfig">Firebase Config</label>
 <textarea id="fbConfig" style="height:60px;font-size:10px"></textarea>
 <button onclick="saveFbConfig()" class="sec" style="width:100%;margin-top:4px" data-i18n="bSaveConfig">💾 Αποθήκευση</button>
+<div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">
+<div class="small" style="color:var(--muted);margin-bottom:6px" data-i18n="resetOnboardHelp">Αν κάποιος χρήστης μπερδευτεί με το Stand ID, ζήτα του να το ξαναβάλει:</div>
+<button class="sec" onclick="resetOnboarding()" style="width:100%;font-size:0.85em" data-i18n="resetOnboardBtn">🔄 Επαναφορά Onboarding</button>
+</div>
 </div>
 
 <div class="card" style="border:2px solid #06b6d4;background:var(--card)">
@@ -422,6 +438,22 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 
 </div>
+</div>
+</div>
+
+<div id="onboardOverlay">
+<div id="onboardBox">
+<div class="onb-icon">🔗</div>
+<h2 data-i18n="onbTitle">Σύνδεση</h2>
+<div class="onb-desc" data-i18n="onbDesc">Βάλε τον κωδικό σύνδεσης που σου έδωσε ο διαχειριστής. Θα χρειαστεί μόνο μία φορά.</div>
+<div class="onb-input-wrap">
+<input id="onbInput" type="password" data-i18n-ph="onbPlaceholder" placeholder="π.χ. stand-agios-2026" autocomplete="off" spellcheck="false">
+<button type="button" class="onb-toggle" onclick="toggleOnbShow()" id="onbToggle">👁️</button>
+</div>
+<button class="onb-btn" onclick="submitOnboarding()" data-i18n="onbConnect">✓ Σύνδεση</button>
+<div class="onb-error" id="onbError"></div>
+<div class="onb-info" id="onbInfo"></div>
+<button class="sec" onclick="skipOnboarding()" style="width:100%;margin-top:14px;font-size:0.85em;background:transparent;color:var(--muted);border:1px solid var(--border)" data-i18n="onbSkip">Παράλειψη (τοπική χρήση μόνο)</button>
 </div>
 </div>
 
@@ -482,7 +514,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 
 <script>
 /* =========================================================================
-   STAND MANAGER PRO — FULL i18n + Structured Log
+   STAND MANAGER PRO — Final with Admin-Only Log
    ========================================================================= */
 
 /* ---------- 1. UTILITIES ---------- */
@@ -586,7 +618,6 @@ var T = {
   aStudyTract:{el:"📃 Φυλλάδιο Διαφημιστικό",en:"📃 Study Tract",de:"📃 Studium",ru:"📃 Брошюра для изучения"},
   lOrder:{el:"⚠️ ΛΙΣΤΑ ΠΑΡΑΓΓΕΛΙΑΣ",en:"⚠️ ORDER LIST",de:"⚠️ BESTELLLISTE",ru:"⚠️ СПИСОК ЗАКАЗА"},
   bCopy:{el:"Αντιγραφή",en:"Copy",de:"Kopieren",ru:"Копировать"},
-  lLog:{el:"👥 Ιστορικό",en:"👥 History",de:"👥 Verlauf",ru:"👥 История"},
   bClearLog:{el:"Καθαρισμός",en:"Clear",de:"Löschen",ru:"Очистить"},
   logEmpty:{el:"Κανένα ιστορικό",en:"No history",de:"Kein Verlauf",ru:"Нет истории"},
   lDangerZone:{el:"⚠️ Επικίνδυνη Ζώνη",en:"⚠️ Danger Zone",de:"⚠️ Gefahrenzone",ru:"⚠️ Опасная зона"},
@@ -605,7 +636,9 @@ var T = {
   lCloudConfig:{el:"Firebase Config",en:"Firebase Config",de:"Firebase-Konfiguration",ru:"Настройки Firebase"},
   bSaveConfig:{el:"💾 Αποθήκευση",en:"💾 Save",de:"💾 Speichern",ru:"💾 Сохранить"},
   bApply:{el:"🔄 Εφαρμογή",en:"🔄 Apply",de:"🔄 Anwenden",ru:"🔄 Применить"},
-  syncHelp:{el:"Πες σε όλους τον ίδιο Stand ID.",en:"Give everyone the same Stand ID.",de:"Gib allen dieselbe Stand-ID.",ru:"Дай всем тот же Stand ID."},
+  syncHelp:{el:"Πες σε όλους τον ίδιο κωδικό Stand ID.",en:"Give everyone the same Stand ID.",de:"Gib allen dieselbe Stand-ID.",ru:"Дай всем тот же Stand ID."},
+  resetOnboardHelp:{el:"Αν κάποιος χρήστης μπερδευτεί με το Stand ID, ζήτα του να το ξαναβάλει:",en:"If a user messed up the Stand ID, ask them to enter it again:",de:"Wenn ein Benutzer die falsche Stand-ID eingegeben hat:",ru:"Если пользователь ошибся с Stand ID:"},
+  resetOnboardBtn:{el:"🔄 Επαναφορά Onboarding",en:"🔄 Reset Onboarding",de:"🔄 Onboarding zurücksetzen",ru:"🔄 Сброс подключения"},
   lChangePass:{el:"🔐 Κωδικός Admin",en:"🔐 Admin password",de:"🔐 Admin-Passwort",ru:"🔐 Пароль админа"},
   lNewPass:{el:"Νέος κωδικός",en:"New password",de:"Neues Passwort",ru:"Новый пароль"},
   lRecEmail:{el:"📧 Email",en:"📧 Email",de:"📧 E-Mail",ru:"📧 Email"},
@@ -667,6 +700,8 @@ var T = {
   logUndo:{el:"Αναίρεση",en:"Undo",de:"Rückgängig",ru:"Отмена"},
   logDeleteAll:{el:"Διαγραφή όλων",en:"Delete all",de:"Alle löschen",ru:"Удалить всё"},
   logQty:{el:"Ποσότητα",en:"Quantity",de:"Menge",ru:"Количество"},
+  lLogAdmin:{el:"👥 Ιστορικό Ενεργειών",en:"👥 Activity Log",de:"👥 Aktivitätsprotokoll",ru:"👥 Журнал действий"},
+  lLogAdminDesc:{el:"Ποιος μπήκε, τι άλλαξε, πότε — όλα τα γεγονότα. Μόνο ο διαχειριστής βλέπει αυτό το ιστορικό.",en:"Who logged in, what changed, when — all events. Only admin sees this log.",de:"Wer eingeloggt, was geändert, wann — alle Ereignisse. Nur der Admin sieht dieses Protokoll.",ru:"Кто вошёл, что изменил, когда — все события. Этот журнал виден только администратору."},
   alertNoName:{el:"Βάλε όνομα!",en:"Enter name!",de:"Name eingeben!",ru:"Введите имя!"},
   alertNoTitle:{el:"Βάλε τίτλο!",en:"Enter title!",de:"Titel eingeben!",ru:"Введите название!"},
   alertWrongPass:{el:"Λάθος κωδικός",en:"Wrong password",de:"Falsches Passwort",ru:"Неверный пароль"},
@@ -678,6 +713,15 @@ var T = {
   alertNoDB:{el:"Δεν υπάρχει βάση δεδομένων",en:"No database",de:"Keine Datenbank",ru:"Нет базы данных"},
   alertError:{el:"Σφάλμα",en:"Error",de:"Fehler",ru:"Ошибка"},
   alertCopied:{el:"Αντιγράφηκε",en:"Copied",de:"Kopiert",ru:"Скопировано"},
+  onbTitle:{el:"Σύνδεση",en:"Connect",de:"Verbinden",ru:"Подключение"},
+  onbDesc:{el:"Βάλε τον κωδικό σύνδεσης που σου έδωσε ο διαχειριστής. Θα χρειαστεί μόνο μία φορά.",en:"Enter the connection code from your admin. You only need it once.",de:"Gib den Verbindungscode deines Admins ein. Nur einmal nötig.",ru:"Введи код подключения от администратора. Только один раз."},
+  onbPlaceholder:{el:"π.χ. stand-agios-2026",en:"e.g. stand-agios-2026",de:"z.B. stand-agios-2026",ru:"напр. stand-agios-2026"},
+  onbConnect:{el:"✓ Σύνδεση",en:"✓ Connect",de:"✓ Verbinden",ru:"✓ Подключиться"},
+  onbSkip:{el:"Παράλειψη (τοπική χρήση μόνο)",en:"Skip (local use only)",de:"Überspringen (nur lokal)",ru:"Пропустить (только локально)"},
+  onbPleaseFill:{el:"⚠️ Βάλε τον κωδικό σύνδεσης",en:"⚠️ Enter the connection code",de:"⚠️ Verbindungscode eingeben",ru:"⚠️ Введи код подключения"},
+  onbConnecting:{el:"⏳ Σύνδεση... παρακαλώ περίμενε",en:"⏳ Connecting... please wait",de:"⏳ Verbinden... bitte warten",ru:"⏳ Подключение... подожди"},
+  onbBadCode:{el:"❌ Λάθος κωδικός ή δεν υπάρχει σύνδεση. Έλεγξε τον κωδικό.",en:"❌ Wrong code or no connection. Check the code.",de:"❌ Falscher Code oder keine Verbindung.",ru:"❌ Неверный код или нет связи."},
+  onbSuccess:{el:"✅ Συνδέθηκε!",en:"✅ Connected!",de:"✅ Verbunden!",ru:"✅ Подключено!"},
   langEl:{el:"🇬🇷 Ελληνικά",en:"🇬🇷 Greek",de:"🇬🇷 Griechisch",ru:"🇬🇷 Греческий"},
   langEn:{el:"🇬🇧 English",en:"🇬🇧 English",de:"🇬🇧 Englisch",ru:"🇬🇧 Английский"},
   langDe:{el:"🇩🇪 Deutsch",en:"🇩🇪 German",de:"🇩🇪 Deutsch",ru:"🇩🇪 Немецкий"},
@@ -738,7 +782,7 @@ var html5Qrcode=null, scanBusy=false;
 var chartMainInst=null;
 var deferredPrompt=null;
 var cloudEnabled = localStorage.getItem('stand_cloud_enabled') !== 'false';
-var cloudId = localStorage.getItem('stand_cloud_id') || 'stand-athens-1';
+var cloudId = localStorage.getItem('stand_cloud_id') || '';
 var fbConfigStr=localStorage.getItem('stand_fb_config')||'{"apiKey":"AIzaSyCKoGOE84zPuc4t6UQrDYMbooCR43p0FyQ","authDomain":"stand-management-a46a7.firebaseapp.com","projectId":"stand-management-a46a7","storageBucket":"stand-management-a46a7.firebasestorage.app","messagingSenderId":"304875768432","appId":"1:304875768432:web:470adb4707b8a3680482b5"}';
 var cloudApp=null, cloudDb=null, cloudUnsub=null, cloudPushTimeout=null, isSyncingFromCloud=false;
 var lastSyncStr='';
@@ -747,7 +791,6 @@ var currentPhotoBase64='';
 var lastAction=null;
 var undoTimer=null;
 
-/* Legacy log action mapping */
 var LEGACY_LOG_ACTIONS = {
   'Προσθήκη':'logAdd','Διαγραφή':'logDelete','Μετονομασία':'logRename',
   'Νέος χρήστης':'logNewUser','Σύνδεση':'logLogin','Αναίρεση':'logUndo',
@@ -865,10 +908,7 @@ function getDisplayCat(it){ if(it.cat && typeof it.cat==='object') return it.cat
 function getTypeClass(tp){ if((tp||'').indexOf('Φυλλάδιο')>=0) return 't-flyer'; if(tp==='Περιοδικό') return 't-mag'; if(tp==='Βιβλιάριο') return 't-booklet'; if(tp==='Πόστερ') return 't-poster'; return 't-book'; }
 function getTypeDisplay(tp){ if(TYPE_TRANS[tp] && TYPE_TRANS[tp][curLang]) return TYPE_TRANS[tp][curLang]; for(var k in TYPE_TRANS){ if((tp||'').indexOf(k)>=0 && TYPE_TRANS[k][curLang]) return TYPE_TRANS[k][curLang]; } return tp; }
 function getItemLanguage(it){ if(it.lang) return it.lang; if(it.magazineLang) return it.magazineLang; return 'el'; }
-function getLangDisplay(code){
-  var key = 'lang' + code.charAt(0).toUpperCase() + code.slice(1);
-  return Tget(key);
-}
+function getLangDisplay(code){ var key = 'lang' + code.charAt(0).toUpperCase() + code.slice(1); return Tget(key); }
 function getLangBadge(it){
   var lang=getItemLanguage(it);
   var label=getLangDisplay(lang);
@@ -905,6 +945,14 @@ function setSyncState(state){
   txt.textContent=label;
   if(state==='synced'){ lastSyncStr=new Date().toLocaleTimeString(LOC[curLang]||'el-GR'); }
 }
+function showSyncInfo(){
+  var u=getCurrentUser();
+  if(u && u.role==='admin'){
+    alert('Stand ID: '+cloudId+'\n\n'+syncState);
+  } else {
+    alert(syncState);
+  }
+}
 
 /* ---------- 9. SAVE / LOG / TODAY ---------- */
 function save(){
@@ -920,30 +968,28 @@ function save(){
     cloudPushTimeout=setTimeout(function(){ try{ pushToCloud(); }catch(e){} },1500);
   }
 }
-
-/* ★ STRUCTURED LOG — αποθηκεύει ΔΕΔΟΜΕΝΑ αντί για κείμενο */
 function addLog(actionKey, detail){
   var u=getCurrentUser();
   var who = u ? u.name : '';
   var entry = {ts:Date.now(), time:new Date().toLocaleString(), who:who, actionKey:actionKey};
   if(detail == null){ /* nothing */ }
   else if(typeof detail === 'object'){
-    if(detail.names) entry.names = detail.names;                    // for items
-    if(detail.userName) entry.userName = detail.userName;           // for user logs
+    if(detail.names) entry.names = detail.names;
+    if(detail.userName) entry.userName = detail.userName;
     if(detail.userRole) entry.userRole = detail.userRole;
     if(detail.extra != null) entry.extra = String(detail.extra);
-  } else {
-    entry.detail = String(detail);
-  }
+  } else { entry.detail = String(detail); }
   historyLog.unshift(entry);
   if(historyLog.length>200) historyLog.pop();
   save(); renderLog();
 }
 
-/* ★ renderLog — μεταφράζει τα πάντα live */
+/* ★ renderLog — τρέχει ΠΑΝΤΑ, αλλά το logList υπάρχει ΜΟΝΟ μέσα στο Admin */
 function renderLog(){
+  var el=document.getElementById('logList');
+  if(!el) return;
   var h='';
-  for(var i=0;i<Math.min(historyLog.length,30);i++){
+  for(var i=0;i<Math.min(historyLog.length,50);i++){
     var l=historyLog[i];
     var tm=l.ts?new Date(l.ts).toLocaleString(LOC[curLang]||'el-GR'):l.time;
     var action='';
@@ -960,16 +1006,13 @@ function renderLog(){
     } else if(l.detail != null){
       detail = String(l.detail);
     }
-    h+='<div class="log-entry"><b>'+esc(tm)+'</b> '+(l.who?'<span style="color:#a855f7">['+esc(l.who)+']</span> ':'')+esc(action)+(detail?': '+esc(detail):'')+'</div>';
+    h+='<div class="log-entry"><span class="log-time">'+esc(tm)+'</span> '+(l.who?'<span class="log-who">['+esc(l.who)+']</span> ':'')+'<b>'+esc(action)+'</b>'+(detail?': '+esc(detail):'')+'</div>';
   }
-  var el=document.getElementById('logList');
-  if(el) el.innerHTML=h||'<span class="small">'+Tget('logEmpty')+'</span>';
+  el.innerHTML=h||'<span class="small">'+Tget('logEmpty')+'</span>';
 }
 function clearLog(){ customConfirm(Tget('ccClearLog'), function(){ historyLog=[]; save(); renderLog(); }); }
 function bumpToday(type, n){
-  if(todayStats.date !== new Date().toDateString()){
-    todayStats = {date: new Date().toDateString(), added:0, removed:0};
-  }
+  if(todayStats.date !== new Date().toDateString()){ todayStats = {date: new Date().toDateString(), added:0, removed:0}; }
   if(type==='add') todayStats.added += n;
   else if(type==='rem') todayStats.removed += n;
   save(); renderToday();
@@ -1050,19 +1093,14 @@ function render(){
     if(matchQ && matchT && matchL) filtered.push(it);
   }
   filtered.sort(function(a,b){
-    if(curSort==='low'){
-      var aNeed=(a.qty<=a.min?0:1), bNeed=(b.qty<=b.min?0:1);
-      if(aNeed!==bNeed) return aNeed-bNeed;
-      return a.qty-b.qty;
-    } else if(curSort==='fav'){ return (b.favorite?1:0)-(a.favorite?1:0); }
+    if(curSort==='low'){ var aNeed=(a.qty<=a.min?0:1), bNeed=(b.qty<=b.min?0:1); if(aNeed!==bNeed) return aNeed-bNeed; return a.qty-b.qty; }
+    else if(curSort==='fav'){ return (b.favorite?1:0)-(a.favorite?1:0); }
     else if(curSort==='name'){ return getDisplayName(a).localeCompare(getDisplayName(b)); }
     else if(curSort==='qty'){ return b.qty-a.qty; }
     else if(curSort==='new'){ return (b.id||0)-(a.id||0); }
     return 0;
   });
-  if(curSort!=='fav'){
-    filtered.sort(function(a,b){ return (b.favorite?1:0)-(a.favorite?1:0); });
-  }
+  if(curSort!=='fav'){ filtered.sort(function(a,b){ return (b.favorite?1:0)-(a.favorite?1:0); }); }
   var total=0,cFly=0,cMag=0,cBooklet=0,cPoster=0;
   for(var i=0;i<items.length;i++){
     total+=items[i].qty;
@@ -1183,7 +1221,7 @@ function deleteItem(id){
     if(!it) return;
     var backup = JSON.parse(JSON.stringify(it));
     items=items.filter(function(x){return x.id!=id;});
-    addLog('logDelete', {names: it.names});  /* ★ store names object */
+    addLog('logDelete', {names: it.names});
     save(); render();
     showUndo('🗑️ '+(it.names[curLang]||it.names.el||''), function(){
       items.push(backup);
@@ -1325,7 +1363,7 @@ function addUser(){
   document.getElementById('newUserName').value='';
   updatePermsFromRole();
   save(); renderUsers(); renderUserSelectList();
-  addLog('logNewUser', {userName: name, userRole: role});  /* ★ structured */
+  addLog('logNewUser', {userName: name, userRole: role});
 }
 function deleteUser(id){
   customConfirm(Tget('ccDeleteUser'), function(){
@@ -1365,7 +1403,7 @@ function pickUser(id){
   currentUserId=id;
   localStorage.setItem('stand_current_user_id', id);
   var u=getCurrentUser();
-  addLog('logLogin', {userName: u ? u.name : ''});  /* ★ structured */
+  addLog('logLogin', {userName: u ? u.name : ''});
   updateUserChip();
   closeUserSelector();
   render();
@@ -1408,11 +1446,7 @@ function qcChange(id,d){ changeQty(id,d); renderQuickCount(); }
 function renderCountByLang(){
   var container=document.getElementById('countByLang'); if(!container) return;
   var counts={}, total=0;
-  for(var i=0;i<items.length;i++){
-    var lang=getItemLanguage(items[i]);
-    counts[lang]=(counts[lang]||0)+items[i].qty;
-    total+=items[i].qty;
-  }
+  for(var i=0;i<items.length;i++){ var lang=getItemLanguage(items[i]); counts[lang]=(counts[lang]||0)+items[i].qty; total+=items[i].qty; }
   var html='';
   for(var lang in counts){
     var name=getLangDisplay(lang);
@@ -1424,12 +1458,9 @@ function renderCountByLang(){
 }
 function renderCountByType(){
   var container=document.getElementById('countByType'); if(!container) return;
-  var counts={flyer:0,mag:0,booklet:0,book:0,poster:0,card:0};
-  var total=0;
+  var counts={flyer:0,mag:0,booklet:0,book:0,poster:0,card:0}; var total=0;
   for(var i=0;i<items.length;i++){
-    var tt=(items[i].type||'').toLowerCase();
-    var qty=items[i].qty||0;
-    total+=qty;
+    var tt=(items[i].type||'').toLowerCase(); var qty=items[i].qty||0; total+=qty;
     if(tt.indexOf('φυλλάδιο')>=0 || tt.indexOf('tract')>=0) counts.flyer+=qty;
     else if(tt.indexOf('περιοδικό')>=0 || tt.indexOf('magazine')>=0) counts.mag+=qty;
     else if(tt.indexOf('βιβλιάριο')>=0 || tt.indexOf('booklet')>=0) counts.booklet+=qty;
@@ -1454,8 +1485,7 @@ function renderCountByLangType(){
   for(var i=0;i<items.length;i++){
     var lang=getItemLanguage(items[i]);
     if(!langs[lang]) langs[lang]={flyer:0,mag:0,booklet:0,book:0,poster:0,card:0,total:0};
-    var tt=(items[i].type||'').toLowerCase();
-    var qty=items[i].qty||0;
+    var tt=(items[i].type||'').toLowerCase(); var qty=items[i].qty||0;
     if(tt.indexOf('φυλλάδιο')>=0 || tt.indexOf('tract')>=0) langs[lang].flyer+=qty;
     else if(tt.indexOf('περιοδικό')>=0 || tt.indexOf('magazine')>=0) langs[lang].mag+=qty;
     else if(tt.indexOf('βιβλιάριο')>=0 || tt.indexOf('booklet')>=0) langs[lang].booklet+=qty;
@@ -1470,11 +1500,8 @@ function renderCountByLangType(){
     totals.flyer+=d.flyer; totals.mag+=d.mag; totals.booklet+=d.booklet; totals.book+=d.book; totals.poster+=d.poster; totals.card+=d.card; totals.total+=d.total;
     html+='<tr><td><b>'+getLangDisplay(lang)+'</b></td><td>'+d.flyer+'</td><td>'+d.mag+'</td><td>'+d.booklet+'</td><td>'+d.book+'</td><td>'+d.poster+'</td><td>'+d.card+'</td><td><b>'+d.total+'</b></td></tr>';
   }
-  if(html){
-    html+='<tr style="background:var(--card2);font-weight:bold;border-top:2px solid #f59e0b"><td>'+Tget('thTotal')+'</td><td>'+totals.flyer+'</td><td>'+totals.mag+'</td><td>'+totals.booklet+'</td><td>'+totals.book+'</td><td>'+totals.poster+'</td><td>'+totals.card+'</td><td>'+totals.total+'</td></tr>';
-  } else {
-    html='<tr><td colspan="8" style="text-align:center">—</td></tr>';
-  }
+  if(html){ html+='<tr style="background:var(--card2);font-weight:bold;border-top:2px solid #f59e0b"><td>'+Tget('thTotal')+'</td><td>'+totals.flyer+'</td><td>'+totals.mag+'</td><td>'+totals.booklet+'</td><td>'+totals.book+'</td><td>'+totals.poster+'</td><td>'+totals.card+'</td><td>'+totals.total+'</td></tr>'; }
+  else { html='<tr><td colspan="8" style="text-align:center">—</td></tr>'; }
   tbody.innerHTML=html;
 }
 function exportCountCSV(){
@@ -1484,11 +1511,7 @@ function exportCountCSV(){
     var rows=tbody.querySelectorAll('tr');
     for(var i=0;i<rows.length;i++){
       var cols=rows[i].querySelectorAll('td');
-      if(cols.length>=8){
-        var line=[];
-        for(var j=0;j<cols.length;j++) line.push('"'+cols[j].textContent.trim()+'"');
-        lines.push(line.join(','));
-      }
+      if(cols.length>=8){ var line=[]; for(var j=0;j<cols.length;j++) line.push('"'+cols[j].textContent.trim()+'"'); lines.push(line.join(',')); }
     }
   }
   var blob=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8'});
@@ -1550,25 +1573,18 @@ function startVoice(){
   var rec=new SpeechRec();
   rec.lang=curLang==='el'?'el-GR':curLang==='de'?'de-DE':curLang==='ru'?'ru-RU':'en-US';
   rec.interimResults=false; rec.maxAlternatives=1;
-  var voiceBox=document.getElementById('voiceBox');
-  var voiceText=document.getElementById('voiceText');
-  voiceBox.style.display='block';
-  voiceText.textContent='🎙️...';
+  var voiceBox=document.getElementById('voiceBox'); var voiceText=document.getElementById('voiceText');
+  voiceBox.style.display='block'; voiceText.textContent='🎙️...';
   rec.start();
   rec.onresult=function(event){
     var spoken=event.results[0][0].transcript;
     voiceText.textContent='"'+spoken+'"';
     var parts=spoken.trim().split(' ');
-    var last=parts[parts.length-1];
-    var qty=parseInt(last);
-    var titlePart=spoken;
+    var last=parts[parts.length-1]; var qty=parseInt(last); var titlePart=spoken;
     if(!isNaN(qty)){ titlePart=parts.slice(0,-1).join(' ').trim(); } else qty=1;
     if(!titlePart){ setTimeout(function(){ voiceBox.style.display='none'; },3000); return; }
     var found=null;
-    for(var i=0;i<items.length;i++){
-      var nm=getDisplayName(items[i]).toLowerCase();
-      if(nm.indexOf(titlePart.toLowerCase())>=0){ found=items[i]; break; }
-    }
+    for(var i=0;i<items.length;i++){ var nm=getDisplayName(items[i]).toLowerCase(); if(nm.indexOf(titlePart.toLowerCase())>=0){ found=items[i]; break; } }
     if(found){ var diff=qty-found.qty; if(diff!==0){ changeQty(found.id, diff); voiceText.textContent+=' → '+getDisplayName(found)+'='+found.qty; } }
     setTimeout(function(){ voiceBox.style.display='none'; },3000);
   };
@@ -1583,6 +1599,7 @@ function saveCloudId(){
   localStorage.setItem('stand_cloud_id',cloudId);
   cloudEnabled=true;
   localStorage.setItem('stand_cloud_enabled','true');
+  localStorage.setItem('stand_onboarded','true');
   alert('✅ '+Tget('alertSaved'));
   initFirebase();
 }
@@ -1617,9 +1634,7 @@ async function initFirebase(){
           users=cleanUsers(data.users);
           users = users.map(function(u){
             if(!u.perms) u.perms = {};
-            PERM_KEYS.forEach(function(k){
-              if(typeof u.perms[k] !== 'boolean') u.perms[k] = (PERMS_PRESETS[u.role] || PERMS_PRESETS.counter)[k] || false;
-            });
+            PERM_KEYS.forEach(function(k){ if(typeof u.perms[k] !== 'boolean') u.perms[k] = (PERMS_PRESETS[u.role] || PERMS_PRESETS.counter)[k] || false; });
             return u;
           });
           if(!users.find(function(u){ return u.role === 'admin'; })){
@@ -1641,14 +1656,14 @@ async function initFirebase(){
   }catch(e){ setSyncState('error'); }
 }
 async function pushToCloud(){
-  if(!cloudEnabled){ alert(Tget('alertCloudOff')); return; }
-  if(!cloudDb){ alert(Tget('alertNoDB')); return; }
+  if(!cloudEnabled){ return; }
+  if(!cloudDb){ return; }
   try{
     setSyncState('pushing');
     var dRef=window._fb.doc(cloudDb,'stands',cloudId);
     await window._fb.setDoc(dRef,{items:items,users:users,adminPass:adminPass,history:historyLog,updated:Date.now()},{merge:true});
     setSyncState('synced');
-  }catch(e){ setSyncState('error'); alert(e.message); }
+  }catch(e){ setSyncState('error'); }
 }
 async function pullFromCloud(){
   if(!cloudEnabled){ alert(Tget('alertCloudOff')); return; }
@@ -1676,15 +1691,14 @@ async function pullFromCloud(){
     } else { setSyncState('synced'); alert(Tget('alertNothing')); }
   }catch(e){ setSyncState('error'); alert(e.message); }
 }
-function showSyncInfo(){ alert('Stand ID: '+cloudId+'\n\n'+syncState); }
 
 /* ---------- 27. ADMIN ---------- */
 function openAdmin(){
   document.getElementById('adminScreen').style.display='block';
   document.getElementById('cloudId').value=cloudId;
   document.getElementById('fbConfig').value=fbConfigStr;
-  document.getElementById('recoveryEmail').value=localStorage.getItem('stand_recovery_email')||'';
   applyFont();
+  renderLog();  /* ★ Γέμισε το ιστορικό όταν ανοίγει το Admin */
 }
 function closeAdmin(){ document.getElementById('adminScreen').style.display='none'; document.getElementById('adminContent').style.display='none'; document.getElementById('loginBox').style.display='block'; document.getElementById('pinCheck').value=''; }
 function checkAdmin(){
@@ -1693,6 +1707,7 @@ function checkAdmin(){
     document.getElementById('loginBox').style.display='none';
     renderUsers(); applyFont();
     updatePermsFromRole();
+    renderLog();  /* ★ Γέμισε το ιστορικό μετά το login */
   } else alert(Tget('alertWrongPass'));
 }
 function saveNewPass(){
@@ -1705,7 +1720,114 @@ function saveNewPass(){
   save();
 }
 
-/* ---------- 28. LANGUAGE ---------- */
+/* ---------- 28. ONBOARDING ---------- */
+function showOnboarding(){
+  document.getElementById('onboardOverlay').classList.add('show');
+  document.getElementById('onbError').textContent='';
+  document.getElementById('onbInfo').textContent='';
+  document.getElementById('onbInput').value='';
+  document.getElementById('onbInput').type='password';
+  document.getElementById('onbToggle').textContent='👁️';
+  setTimeout(function(){ document.getElementById('onbInput').focus(); }, 300);
+}
+function hideOnboarding(){ document.getElementById('onboardOverlay').classList.remove('show'); }
+function toggleOnbShow(){
+  var inp=document.getElementById('onbInput');
+  var btn=document.getElementById('onbToggle');
+  if(inp.type==='password'){ inp.type='text'; btn.textContent='🙈'; }
+  else { inp.type='password'; btn.textContent='👁️'; }
+}
+function skipOnboarding(){
+  localStorage.setItem('stand_onboarded','true');
+  cloudEnabled=false;
+  localStorage.setItem('stand_cloud_enabled','false');
+  hideOnboarding();
+  setSyncState('offline');
+}
+function submitOnboarding(){
+  var code=document.getElementById('onbInput').value.trim();
+  var errEl=document.getElementById('onbError');
+  var infoEl=document.getElementById('onbInfo');
+  errEl.textContent='';
+  infoEl.textContent='';
+  if(!code){ errEl.textContent=Tget('onbPleaseFill'); return; }
+  if(code.length<4 || /\s/.test(code)){ errEl.textContent=Tget('onbBadCode'); return; }
+  infoEl.textContent=Tget('onbConnecting');
+  cloudId=code;
+  localStorage.setItem('stand_cloud_id',code);
+  cloudEnabled=true;
+  localStorage.setItem('stand_cloud_enabled','true');
+  var tryCount=0;
+  var maxTry=6;
+  var checkResult=function(){
+    tryCount++;
+    if(cloudApp && cloudDb){
+      var dRef;
+      try { dRef=window._fb.doc(cloudDb,'stands',cloudId); }
+      catch(e){ errEl.textContent=Tget('onbBadCode'); return; }
+      window._fb.getDoc(dRef).then(function(snap){
+        if(snap.exists() && snap.data().items){
+          isSyncingFromCloud=true;
+          var data=snap.data();
+          items=cleanItems(data.items).filter(function(it){
+            if(it.presetId===31) return false;
+            if(it.type === 'Μαγνητικό Πόστερ') return false;
+            var n_el=(it.names && it.names.el) || '';
+            if(n_el.indexOf('Μελέτης')>=0) return false;
+            return true;
+          });
+          if(data.users && Array.isArray(data.users)){
+            users=cleanUsers(data.users);
+            users = users.map(function(u){
+              if(!u.perms) u.perms = {};
+              PERM_KEYS.forEach(function(k){ if(typeof u.perms[k] !== 'boolean') u.perms[k] = (PERMS_PRESETS[u.role] || PERMS_PRESETS.counter)[k] || false; });
+              return u;
+            });
+            if(!users.find(function(u){ return u.role === 'admin'; })){
+              users.unshift({id: Date.now(), name:'Admin', role:'admin', perms: JSON.parse(JSON.stringify(PERMS_PRESETS.admin))});
+            }
+          }
+          if(data.adminPass) adminPass=data.adminPass;
+          if(data.history && Array.isArray(data.history)) historyLog = data.history;
+          save();
+          isSyncingFromCloud=false;
+          localStorage.setItem('stand_onboarded','true');
+          infoEl.style.color='#22c55e';
+          infoEl.textContent=Tget('onbSuccess');
+          var adm = users.find(function(u){ return u.role === 'admin'; });
+          if(adm){ currentUserId = adm.id; localStorage.setItem('stand_current_user_id',currentUserId); }
+          setTimeout(function(){
+            hideOnboarding();
+            updateUserChip();
+            render(); renderUsers(); renderUserSelectList();
+            setTimeout(openUserSelector, 400);
+          }, 800);
+          return;
+        } else {
+          infoEl.textContent='';
+          errEl.textContent=Tget('onbBadCode');
+        }
+      }).catch(function(e){
+        errEl.textContent=Tget('onbBadCode');
+      });
+    } else if(tryCount < maxTry){
+      setTimeout(checkResult, 1000);
+    } else {
+      errEl.textContent=Tget('onbBadCode');
+    }
+  };
+  initFirebase();
+  setTimeout(checkResult, 1200);
+}
+function resetOnboarding(){
+  localStorage.removeItem('stand_onboarded');
+  localStorage.removeItem('stand_cloud_id');
+  cloudId='';
+  alert(Tget('resetOnboardBtn'));
+  setTimeout(function(){ showOnboarding(); }, 300);
+}
+
+/* ---------- 29. LANGUAGE ---------- */
 function buildLangFilterOptions(){
   var fl=document.getElementById('langFilter');
   if(!fl) return;
@@ -1726,6 +1848,7 @@ function setL(l){
   renderUsers();
   renderUserSelectList();
   render();
+  renderLog();
 }
 function applyLang(){
   var nodes=document.querySelectorAll('[data-i18n]');
@@ -1747,10 +1870,10 @@ function applyLang(){
   setSyncState(syncState);
   updateUserChip();
   renderToday();
-  renderLog();  /* ★ re-render log for current language */
+  renderLog();
 }
 
-/* ---------- 29. MISC ---------- */
+/* ---------- 30. MISC ---------- */
 function updateAddButtons(){}
 function setAddType(t){
   document.getElementById('addType').value=t;
@@ -1774,7 +1897,7 @@ function checkLowStockAndNotify(only){
   }
 }
 
-/* ---------- 30. INIT ---------- */
+/* ---------- 31. INIT ---------- */
 function init(){
   applyTheme();
   applyFont();
@@ -1786,9 +1909,25 @@ function init(){
   renderUserSelectList();
   updatePermsFromRole();
   setSyncState('offline');
-  if(cloudEnabled) setTimeout(initFirebase,1000);
-  if(!currentUserId || !users.find(function(u){return u.id==currentUserId;})){
-    setTimeout(openUserSelector, 800);
+
+  var savedCloudId = localStorage.getItem('stand_cloud_id')||'';
+  var isOnboarded = localStorage.getItem('stand_onboarded')==='true';
+
+  if(savedCloudId && isOnboarded && cloudEnabled){
+    cloudId = savedCloudId;
+    setTimeout(initFirebase, 500);
+    if(!currentUserId || !users.find(function(u){return u.id==currentUserId;})){
+      setTimeout(openUserSelector, 800);
+    }
+  } else if(savedCloudId && cloudEnabled){
+    cloudId = savedCloudId;
+    localStorage.setItem('stand_onboarded','true');
+    setTimeout(initFirebase, 500);
+    if(!currentUserId || !users.find(function(u){return u.id==currentUserId;})){
+      setTimeout(openUserSelector, 800);
+    }
+  } else {
+    setTimeout(showOnboarding, 400);
   }
 }
 document.addEventListener('DOMContentLoaded', init);

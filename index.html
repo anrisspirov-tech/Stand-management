@@ -40,6 +40,7 @@ option{background:var(--card2);color:var(--text)}
 .item .item-name{font-size:var(--list-font-size,13px);font-weight:bold;line-height:1.3;word-break:break-word;color:var(--text)}
 .item .item-cat{font-size:calc(var(--list-font-size,13px)*0.8);color:var(--muted);line-height:1.2}
 .item .item-extra{font-size:calc(var(--list-font-size,13px)*0.8);color:#06b6d4;font-weight:bold;line-height:1.2;margin-top:2px}
+.item .item-theme{font-size:calc(var(--list-font-size,13px)*0.85);color:#a855f7;font-style:italic;line-height:1.2;margin-top:2px}
 .item .item-badge{font-size:calc(var(--list-font-size,13px)*0.75);padding:3px 8px;border-radius:99px;font-weight:bold;display:inline-block;margin-top:3px}
 .item .type-label{font-size:calc(var(--list-font-size,13px)*0.7);padding:2px 6px;border-radius:99px;font-weight:bold}
 .item .qty-display{font-size:calc(var(--list-font-size,13px)*1.05);padding:0 10px;font-weight:bold;min-width:32px;text-align:center;color:var(--text)}
@@ -68,10 +69,12 @@ option{background:var(--card2);color:var(--text)}
 .count-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:0.85em}
 .count-table th{background:var(--card2);padding:8px;text-align:left;color:var(--primary)}
 .count-table td{padding:8px;border-bottom:1px solid var(--border);color:var(--text)}
-#ccOverlay,#rnOverlay,#userOverlay,#onboardOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
-#ccOverlay.show,#rnOverlay.show,#userOverlay.show,#onboardOverlay.show{display:flex}
+#ccOverlay,#rnOverlay,#userOverlay,#onboardOverlay,#suggOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
+#ccOverlay.show,#rnOverlay.show,#userOverlay.show,#onboardOverlay.show,#suggOverlay.show{display:flex}
 #onboardOverlay{z-index:999999;background:var(--bg)}
-#ccBox,#rnBox,#userBox{background:var(--card);border:2px solid var(--primary);border-radius:14px;padding:22px 18px;max-width:440px;width:100%;text-align:center;max-height:90vh;overflow:auto}
+#ccBox,#rnBox,#userBox,#suggBox{background:var(--card);border:2px solid var(--primary);border-radius:14px;padding:22px 18px;max-width:440px;width:100%;text-align:center;max-height:90vh;overflow:auto}
+#suggBox{max-width:520px;text-align:left}
+#suggBox h3{color:var(--primary);text-align:center;margin:0 0 6px;font-size:1.1em}
 #onboardBox{background:var(--card);border:2px solid var(--primary);border-radius:14px;padding:24px 20px;max-width:400px;width:100%;text-align:center}
 #onboardBox h2{color:var(--primary);margin:0 0 8px;font-size:1.5em}
 #onboardBox .onb-icon{font-size:3em;margin-bottom:8px}
@@ -144,37 +147,16 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 .recent-row{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;font-size:0.85em;border-bottom:1px solid var(--border);gap:8px}
 .recent-row:last-child{border:0}
 .recent-row .rc-count{background:#22c55e;color:#000;font-weight:bold;padding:2px 10px;border-radius:99px;font-size:0.85em}
-.reminder-box{background:var(--card2);border-radius:10px;padding:12px;margin:10px 0;border:1px solid var(--border)}
-.reminder-box h4{margin:0 0 8px;color:var(--primary);font-size:1em}
-.reminder-info{background:var(--card);border-radius:8px;padding:10px;margin-top:10px;font-size:0.85em;line-height:1.5}
-.reminder-success{border-left:4px solid #22c55e}
-.day-picker{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
-.day-picker .day-chip{flex:1;min-width:44px;padding:8px 4px;text-align:center;background:var(--btn-bg);border:1px solid var(--btn-border);border-radius:6px;font-size:0.8em;font-weight:bold;cursor:pointer;user-select:none}
-.day-picker .day-chip.on{background:var(--primary);color:var(--primary-text);border-color:var(--primary)}
-#histOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.88);z-index:99998;justify-content:center;align-items:flex-start;padding:10px;overflow:auto}
-#histOverlay.show{display:flex}
-#histBox{background:var(--card);border:2px solid var(--primary);border-radius:14px;padding:16px;max-width:640px;width:100%;margin-top:20px;max-height:92vh;overflow:auto}
-#histBox h3{color:var(--primary);font-size:1.1em;font-weight:bold;margin:0 0 6px;text-align:center}
-#histBox .hist-sub{color:var(--muted);font-size:0.8em;text-align:center;margin-bottom:14px}
-.hist-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px;margin-bottom:14px}
-.hist-stat{background:var(--card2);border-radius:8px;padding:8px;text-align:center;border:1px solid var(--border)}
-.hist-stat .num{font-size:1.3em;font-weight:bold}
-.hist-stat .label{font-size:0.7em;color:var(--muted);margin-top:2px}
-.hist-stat.pos .num{color:#22c55e}.hist-stat.neg .num{color:#ef4444}.hist-stat.info .num{color:#06b6d4}
-#histChartWrap{margin-bottom:14px;background:var(--card2);border-radius:8px;padding:8px}
-.hist-list{background:var(--card2);border-radius:8px;padding:4px;max-height:320px;overflow:auto}
-.hist-row{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-bottom:1px solid var(--border);gap:10px;font-size:0.85em}
-.hist-row:last-child{border:0}
-.hist-row .hist-date{color:var(--muted);font-size:0.75em;min-width:110px}
-.hist-row .hist-who{color:#a855f7;font-weight:bold;font-size:0.85em}
-.hist-row .hist-delta{font-weight:bold;padding:3px 10px;border-radius:99px;min-width:50px;text-align:center;font-size:0.9em}
-.hist-row .hist-delta.plus{background:#22c55e;color:#000}
-.hist-row .hist-delta.minus{background:#ef4444;color:#fff}
-.hist-row .hist-delta.neutral{background:var(--card);color:var(--text);border:1px solid var(--btn-border)}
-.hist-empty{text-align:center;padding:30px;color:var(--muted);font-size:0.9em}
-.hist-actions{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap}
-.hist-actions button{flex:1;min-width:120px}
-.hist-forecast{background:var(--card2);border-radius:8px;padding:10px;margin-bottom:14px;font-size:0.85em;border-left:4px solid #06b6d4;line-height:1.5}
+.sugg-row{display:flex;align-items:center;gap:6px;padding:6px 4px;border-bottom:1px solid var(--border)}
+.sugg-row:last-child{border:0}
+.sugg-tag{font-size:0.68em;padding:2px 7px;border-radius:99px;font-weight:bold;flex-shrink:0}
+.sugg-tag.theme{background:#a855f7;color:#fff}
+.sugg-tag.title{background:#f59e0b;color:#000}
+.sugg-text{flex:1;font-size:0.85em;word-break:break-word;line-height:1.3;color:var(--text)}
+.sugg-del{background:#ef4444;color:#fff;border:0;padding:5px 9px;border-radius:6px;cursor:pointer;font-size:0.85em;font-weight:bold;margin:0;flex-shrink:0}
+.title-chip{display:inline-flex;align-items:center;gap:2px;background:var(--card2);border:1px solid #a855f7;border-radius:99px;padding:2px 4px 2px 10px;font-size:0.75em;color:var(--text);max-width:100%}
+.title-chip .chip-text{cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px;color:#a855f7;font-weight:bold}
+.title-chip .chip-del{background:transparent;border:0;color:#ef4444;font-weight:bold;cursor:pointer;padding:0 6px;font-size:1.05em;margin:0;line-height:1}
 #quickFab{position:fixed;bottom:20px;right:20px;z-index:490;display:none;flex-direction:column;align-items:center;gap:4px;animation:fabIn 0.4s cubic-bezier(0.34,1.56,0.64,1)}
 #quickFab.show{display:flex}
 @keyframes fabIn{from{opacity:0;transform:scale(0.5) translateY(30px)}to{opacity:1;transform:scale(1) translateY(0)}}
@@ -320,9 +302,13 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </select>
 <div class="type-help" id="typeHelp"></div>
 
-<label data-i18n="lblTitle">📝 Название *</label>
-<input id="title" list="jwTitlesList" placeholder="напр. Сторожевая башня" autocomplete="off">
+<div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0 3px">
+<label style="margin:0" data-i18n="lblTitle">📝 Название *</label>
+<button type="button" onclick="openSuggManager()" style="padding:4px 10px;font-size:0.72em;background:var(--btn-bg);color:var(--primary);border:1px solid var(--primary);margin:0;font-weight:bold">📝 Подсказки</button>
+</div>
+<input id="title" list="jwTitlesList" placeholder="напр. Сторожевая башня" autocomplete="off" oninput="renderTitleChips()">
 <datalist id="jwTitlesList"></datalist>
+<div id="titleChips" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px"></div>
 
 <div class="row">
 <div>
@@ -377,6 +363,18 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <button onclick="exportBackup()" style="width:100%;margin-top:10px;background:#22c55e;color:#000">💾 Скачать копию</button>
 <label for="importInput" class="file-btn" style="margin-top:8px">📥 Восстановить</label>
 <input type="file" id="importInput" accept=".json" onchange="importBackup(event)" style="display:none">
+</div>
+
+<div class="card" style="border:2px solid #06b6d4">
+<b style="color:#06b6d4">📝 Подсказки (названия и темы)</b>
+<div class="small" style="margin:8px 0;color:var(--muted);line-height:1.4">Список того, что появляется при вводе в поле «Название». Удалите лишнее — оно больше не будет предлагаться.</div>
+<div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
+<input id="suggSearch" placeholder="🔍 Поиск..." oninput="renderSuggestions()" style="flex:1;padding:8px">
+<span class="small" id="suggCount" style="white-space:nowrap">—</span>
+</div>
+<div id="suggList" style="max-height:340px;overflow:auto;background:var(--card2);border-radius:8px;padding:4px 8px"></div>
+<button onclick="clearAllSuggestions()" style="width:100%;margin-top:8px;background:#ef4444;color:#fff">🗑️ Очистить ВСЕ подсказки</button>
+<button onclick="clearOnlyThemes()" class="sec" style="width:100%;margin-top:4px">💡 Удалить только темы</button>
 </div>
 
 <div class="card" style="border:2px solid #ec4899">
@@ -505,6 +503,20 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 </div>
 
+<div id="suggOverlay" onclick="if(event.target===this)closeSuggManager()">
+<div id="suggBox" onclick="event.stopPropagation()">
+<h3>📝 Подсказки</h3>
+<div class="small" style="text-align:center;color:var(--muted);margin-bottom:10px">Удалите лишнее — оно больше не будет предлагаться в поле «Название»</div>
+<input id="suggMgrSearch" placeholder="🔍 Поиск..." oninput="renderSuggManager()" style="margin-bottom:8px">
+<div id="suggMgrList" style="max-height:45vh;overflow:auto;background:var(--card2);border-radius:8px;padding:4px 8px"></div>
+<div style="display:flex;gap:8px;margin-top:12px">
+<button class="sec" onclick="closeSuggManager()" style="flex:1;padding:12px">✕ Закрыть</button>
+<button onclick="clearAllSuggestions()" style="flex:1;padding:12px;background:#ef4444;color:#fff">🗑️ Всё</button>
+</div>
+<button onclick="clearOnlyThemes()" class="sec" style="width:100%;margin-top:6px">💡 Удалить только темы</button>
+</div>
+</div>
+
 <div id="qcOverlay">
 <div id="qcContent">
 <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--card);border-radius:12px;margin:8px 0">
@@ -555,219 +567,73 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 /* ============= ТОЛЬКО РУССКИЙ ============= */
 var curLang = 'ru';
 
-/* ============= ПРЕДЗАПОЛНЕННЫЕ ЖУРНАЛЫ (Сторожевая башня + Пробудитесь! + буклеты) ============= */
+/* ============= ПРЕДЗАПОЛНЕННЫЕ ЖУРНАЛЫ С ТЕМАМИ ============= */
 var PRESET_ITEMS = [
-  /* ★★★ СТОРОЖЕВАЯ БАШНЯ 2026 ★★★ */
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2026', year:'2026', issueNum:'1'},
-  /* ★★★ СТОРОЖЕВАЯ БАШНЯ 2025 ★★★ */
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2025', year:'2025', issueNum:'1'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2025', year:'2025', issueNum:'2'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2025', year:'2025', issueNum:'3'},
-  /* ★★★ СТОРОЖЕВАЯ БАШНЯ 2024 ★★★ */
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2024', year:'2024', issueNum:'1'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2024', year:'2024', issueNum:'2'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2024', year:'2024', issueNum:'3'},
-  /* ★★★ СТОРОЖЕВАЯ БАШНЯ 2023 ★★★ */
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2023', year:'2023', issueNum:'1'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2023', year:'2023', issueNum:'2'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2023', year:'2023', issueNum:'3'},
-  /* ★★★ СТОРОЖЕВАЯ БАШНЯ 2022 ★★★ */
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2022', year:'2022', issueNum:'1'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2022', year:'2022', issueNum:'2'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2022', year:'2022', issueNum:'3'},
-  /* ★★★ СТОРОЖЕВАЯ БАШНЯ 2021 ★★★ */
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2021', year:'2021', issueNum:'1'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2021', year:'2021', issueNum:'2'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2021', year:'2021', issueNum:'3'},
-  /* ★★★ СТОРОЖЕВАЯ БАШНЯ 2020 ★★★ */
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2020', year:'2020', issueNum:'1'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2020', year:'2020', issueNum:'2'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2020', year:'2020', issueNum:'3'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2026', year:'2026', issueNum:'1', theme:'Ищите истину'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2025', year:'2025', issueNum:'1', theme:'Библия — книга надежды'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2025', year:'2025', issueNum:'2', theme:'Мир без войн — когда?'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2025', year:'2025', issueNum:'3', theme:'Счастье — как его найти?'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2024', year:'2024', issueNum:'1', theme:'Что такое Царство Бога?'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2024', year:'2024', issueNum:'2', theme:'Почему Бог допускает страдания?'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2024', year:'2024', issueNum:'3', theme:'Кто такой Иисус Христос?'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2023', year:'2023', issueNum:'1', theme:'В чём смысл жизни?'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2023', year:'2023', issueNum:'2', theme:'Что происходит после смерти?'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2023', year:'2023', issueNum:'3', theme:'Как молиться и быть услышанным?'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2022', year:'2022', issueNum:'1', theme:'Есть ли Бог?'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2022', year:'2022', issueNum:'2', theme:'Как обрести мир в семье?'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2022', year:'2022', issueNum:'3', theme:'Будущее человечества — что говорит Библия?'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2021', year:'2021', issueNum:'1', theme:'Что такое настоящая любовь?'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2021', year:'2021', issueNum:'2', theme:'Как справиться с тревогой?'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2021', year:'2021', issueNum:'3', theme:'Надежда для умерших близких'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2020', year:'2020', issueNum:'1', theme:'Как стать счастливым?'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2020', year:'2020', issueNum:'2', theme:'Что происходит с миром?'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2020', year:'2020', issueNum:'3', theme:'Зачем мы здесь?'},
 
-  /* ★★★ ПРОБУДИТЕСЬ! 2026 ★★★ */
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2026', year:'2026', issueNum:'1'},
-  /* ★★★ ПРОБУДИТЕСЬ! 2025 ★★★ */
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2025', year:'2025', issueNum:'1'},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2025', year:'2025', issueNum:'2'},
-  /* ★★★ ПРОБУДИТЕСЬ! 2024 ★★★ */
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2024', year:'2024', issueNum:'1'},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2024', year:'2024', issueNum:'2'},
-  /* ★★★ ПРОБУДИТЕСЬ! 2023 ★★★ */
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2023', year:'2023', issueNum:'1'},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2023', year:'2023', issueNum:'2'},
-  /* ★★★ ПРОБУДИТЕСЬ! 2022 ★★★ */
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2022', year:'2022', issueNum:'1'},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2022', year:'2022', issueNum:'2'},
-  /* ★★★ ПРОБУДИТЕСЬ! 2021 ★★★ */
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2021', year:'2021', issueNum:'1'},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2021', year:'2021', issueNum:'2'},
-  /* ★★★ ПРОБУДИТЕСЬ! 2020 ★★★ */
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2020', year:'2020', issueNum:'1'},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2020', year:'2020', issueNum:'2'},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 3 2020', year:'2020', issueNum:'3'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2026', year:'2026', issueNum:'1', theme:'Как победить одиночество'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2025', year:'2025', issueNum:'1', theme:'Как справиться со стрессом?'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2025', year:'2025', issueNum:'2', theme:'Здоровье и благополучие'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2024', year:'2024', issueNum:'1', theme:'Уважение к другим'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2024', year:'2024', issueNum:'2', theme:'Как сохранить семью?'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2023', year:'2023', issueNum:'1', theme:'Выживет ли наша планета? Причины для оптимизма'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2023', year:'2023', issueNum:'2', theme:'Дружба и отношения'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2022', year:'2022', issueNum:'1', theme:'Мир, в котором хочется жить'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2022', year:'2022', issueNum:'2', theme:'Забота о планете'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2021', year:'2021', issueNum:'1', theme:'Что нас ждёт в будущем?'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2021', year:'2021', issueNum:'2', theme:'Настоящие друзья'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2020', year:'2020', issueNum:'1', theme:'Счастливая семья'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2020', year:'2020', issueNum:'2', theme:'Как справиться с потерей?'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 3 2020', year:'2020', issueNum:'3', theme:'Настоящий успех'},
 
-  /* ★★★ БУКЛЕТЫ ★★★ */
-  {type:'Брошюра', cat:'Брошюра', title:'Радуйтесь жизни вечно!', year:'', issueNum:''},
-  {type:'Брошюра', cat:'Брошюра', title:'Добрая весть от Бога!', year:'', issueNum:''},
-  {type:'Брошюра', cat:'Брошюра', title:'Чему на самом деле учит Библия?', year:'', issueNum:''},
-  {type:'Брошюра', cat:'Брошюра', title:'Была ли жизнь создана?', year:'', issueNum:''},
-  {type:'Брошюра', cat:'Брошюра', title:'Происхождение жизни. Пять вопросов, которые стоит обдумать', year:'', issueNum:''},
-  {type:'Брошюра', cat:'Брошюра', title:'Как обрести счастье в семейной жизни', year:'', issueNum:''},
-  {type:'Брошюра', cat:'Брошюра', title:'Ваша семья может быть счастливой', year:'', issueNum:''},
-  {type:'Брошюра', cat:'Брошюра', title:'Молодые люди спрашивают — ответы, которые работают', year:'', issueNum:''},
-  {type:'Брошюра', cat:'Брошюра', title:'Руководство для тех, кто изучает Библию', year:'', issueNum:''},
-  {type:'Брошюра', cat:'Брошюра', title:'Иегова — наш любящий Отец', year:'', issueNum:''}
+  {type:'Брошюра', cat:'Брошюра', title:'Радуйтесь жизни сейчас и вечно!', year:'', issueNum:'', theme:''},
+  {type:'Брошюра', cat:'Брошюра', title:'Руководство для тех, кто изучает Библию', year:'', issueNum:'', theme:''}
 ];
 
-/* ============= ПЕРЕВОДЫ (только русский) ============= */
 var T = {
   searchPh: {ru:'🔍 Поиск...'},
   allItemsTitle: {ru:'📦 Все издания'},
   listHint: {ru:'📜 история • 📌 +1'},
-  sortLow: {ru:'⚠️ Низкий запас'},
-  sortFav: {ru:'⭐ Избранные'},
-  sortName: {ru:'🔤 По алфавиту'},
-  sortQty: {ru:'📊 Количество'},
-  sortNew: {ru:'🆕 Новые'},
-  fAll: {ru:'Все типы'},
-  fMag: {ru:'📰 Журналы'},
-  fBooklet: {ru:'📖 Брошюры'},
-  fPoster: {ru:'🖼️ Постеры'},
-  tAdded: {ru:'Добавлено'},
-  tRemoved: {ru:'Убрано'},
-  tOrders: {ru:'Заказы'},
-  bSend: {ru:'☁️ Отправить'},
-  bReceive: {ru:'⬇️ Получить'},
-  bScan: {ru:'📷 Скан'},
-  bVoice: {ru:'🎙️ Голос'},
+  tAdded: {ru:'Добавлено'},tRemoved: {ru:'Убрано'},tOrders: {ru:'Заказы'},
+  bSend: {ru:'☁️ Отправить'},bReceive: {ru:'⬇️ Получить'},bScan: {ru:'📷 Скан'},bVoice: {ru:'🎙️ Голос'},
   voiceHint: {ru:'Скажите название и число'},
-  lPieces: {ru:'Штук'},
-  lTitles: {ru:'Названий'},
-  lOrder: {ru:'Заказ'},
-  syncOffline: {ru:'Офлайн'},
-  syncConnecting: {ru:'Подключение...'},
-  syncSynced: {ru:'Синхронизировано'},
-  syncPushing: {ru:'Отправка...'},
-  syncPulling: {ru:'Получение...'},
-  syncError: {ru:'Ошибка'},
-  countByType: {ru:'📚 Подсчёт по типам'},
-  countLangType: {ru:'🌍 Таблица'},
-  chartsTitle: {ru:'📊 Графики'},
-  thLang: {ru:'Тип'},
-  thTotal: {ru:'Всего'},
-  thTotalUp: {ru:'ВСЕГО'},
-  cMag: {ru:'📰 Журналы'},
-  cBooklet: {ru:'📖 Брошюры'},
-  cPoster: {ru:'🖼️ Постеры'},
+  lPieces: {ru:'Штук'},lTitles: {ru:'Названий'},lOrder: {ru:'Заказ'},
+  countByType: {ru:'📚 Подсчёт по типам'},countLangType: {ru:'🌍 Таблица'},chartsTitle: {ru:'📊 Графики'},
+  thLang: {ru:'Тип'},thTotal: {ru:'Всего'},
   addFormTitle: {ru:'➕ Добавить новое издание'},
   lblQuickAdd: {ru:'⚡ Быстрое добавление'},
   lblQuickAddHint: {ru:'Один клик — тип, категория и название заполняются автоматически.'},
-  lblType: {ru:'📋 Тип издания'},
-  lblTitle: {ru:'📝 Название *'},
-  lblYear: {ru:'📅 Год'},
-  lblIssueNum: {ru:'🔢 Номер выпуска'},
-  lblCat: {ru:'🏷️ Категория'},
-  lblQty: {ru:'📦 Количество'},
-  lblMin: {ru:'⚠️ Минимум'},
-  lblBarcode: {ru:'🔍 Штрихкод'},
-  lblPhoto: {ru:'📸 Фото'},
-  btnChooseFile: {ru:'📁 Выбрать файл'},
-  btnAdd: {ru:'➕ Добавить'},
-  lblBulk: {ru:'⚡ Несколько изданий сразу'},
-  btnAddAll: {ru:'📋 Добавить все'},
-  dangerTitle: {ru:'⚠️ Опасная зона'},
-  btnDeleteAll: {ru:'🗑️ Удалить ВСЁ'},
-  orderTitle: {ru:'⚠️ СПИСОК ЗАКАЗА'},
-  btnCopy: {ru:'Копировать'},
-  smartOrderPrefix: {ru:'🤖 Совет:'},
-  ccTitle: {ru:'Подтверждение'},
-  ccCancel: {ru:'Отмена'},
-  ccOk: {ru:'OK'},
-  ccDeleteItem: {ru:'Удалить?'},
-  ccDeleteAll: {ru:'Удалить ВСЁ? Нельзя отменить!'},
-  ccClearLog: {ru:'Очистить историю?'},
-  ccDeleteUser: {ru:'Удалить пользователя?'},
-  ccRestore: {ru:'Восстановить из резервной копии?'},
-  ccClearItemHist: {ru:'Очистить историю издания?'},
-  alertNeedTitle: {ru:'Введите название!'},
-  alertNeedName: {ru:'Введите имя!'},
-  alertNoPerm: {ru:'Нет прав'},
-  alertWrongPass: {ru:'Неверный пароль'},
-  alertSaved: {ru:'✅ Сохранено'},
-  alertCopied: {ru:'📋 Скопировано'},
-  alertBackupDone: {ru:'💾 Копия загружена'},
-  alertRestoreDone: {ru:'✅ Восстановление завершено!'},
-  alertWrongFile: {ru:'❌ Неверный файл'},
-  alertNoLast: {ru:'Нет последнего'},
-  alertNoUndo: {ru:'Нечего отменять'},
-  alertNoRedo: {ru:'Нечего повторить'},
-  alertCleared: {ru:'✕ Очищено'},
-  alertChrome: {ru:'Требуется Chrome'},
-  alertPopups: {ru:'Разрешите всплывающие окна'},
-  alertCloudOff: {ru:'Облако выключено'},
-  alertNoDB: {ru:'Нет базы данных'},
-  alertNoData: {ru:'Ничего нет'},
-  alertDeleteItemPrefix: {ru:'🗑️ Удалено: '},
-  alertAllDeleted: {ru:'🗑️ Всё удалено'},
-  alertNewUser: {ru:'✅ Новый пользователь: '},
-  alertAdded: {ru:'✅ Добавлено: '},
-  alertAddedN: {ru:'✅ Добавлено'},
-  alertItems: {ru:'изданий'},
-  alertPlus1: {ru:'➕ +1 '},
-  alertUnknownBarcode: {ru:'❓ Неизвестный штрихкод: '},
-  alertScanning: {ru:'📷 Сканируйте...'},
-  alertScanError: {ru:'Ошибка: '},
-  alertFillTitleBarcode: {ru:'📝 Заполните название'},
-  alertQuickAdded: {ru:'⚡ Готово — заполнено'},
-  roleAdmin: {ru:'👑 Админ'},
-  roleManager: {ru:'📦 Менеджер'},
-  roleCounter: {ru:'🔢 Счётчик'},
-  roleViewer: {ru:'👀 Наблюдатель'},
-  btnClose: {ru:'✕ Закрыть'},
-  btnCloseShort: {ru:'✕'},
-  adminPassword: {ru:'Пароль'},
-  btnLogin: {ru:'Войти'},
-  btnClear: {ru:'Очистить'},
-  btnReset: {ru:'↺ Сброс'},
-  btnSave: {ru:'💾 Сохранить'},
-  btnApply: {ru:'🔄 Применить'},
-  btnResetOnboarding: {ru:'🔄 Сброс'},
-  btnAddUser: {ru:'➕ Добавить'},
-  btnDownload: {ru:'💾 Скачать копию'},
-  btnRestore: {ru:'📥 Восстановить'},
-  btnAddNewBarcode: {ru:'➕ Добавить новый штрихкод'},
-  themeLight: {ru:'☀️ День'},
-  themeNight: {ru:'🌙 Ночь'},
-  yes: {ru:'Включено'},
-  no: {ru:'Отключено'},
-  fallbackBadge: {ru:'Другой язык'},
-  fallbackTitle: {ru:'Название на другом языке'},
-  histTitle: {ru:'📜 История'},
-  histQty: {ru:'Количество:'},
-  histMin: {ru:'Минимум:'},
-  histAdded: {ru:'Добавлено'},
-  histRemoved: {ru:'Убрано'},
-  histMoves: {ru:'Движения'},
-  histAvg: {ru:'Сред./день'},
-  histForecast: {ru:'🔮 Прогноз:'},
-  histNoHist: {ru:'Недостаточно истории.'},
-  hist30days: {ru:'📈 Движения за 30 дней'},
-  histRecent: {ru:'📋 Последние движения'},
-  histEmpty: {ru:'Нет истории.'},
-  histByUser: {ru:'👥 По пользователям'},
-  histClose: {ru:'✕ Закрыть'},
-  histCSV: {ru:'📊 CSV'},
-  histClearBtn: {ru:'🗑️ Очистить'},
-  histForecastTodayOrTomorrow: {ru:'закончится сегодня или завтра!'},
-  histForecastWillRunOut: {ru:'закончится через'},
-  histForecastWithRate: {ru:'С темпом'},
-  histForecastPcs: {ru:'шт./день'},
-  histForecastDays: {ru:'дней'}
+  lblType: {ru:'📋 Тип издания'},lblTitle: {ru:'📝 Название *'},
+  lblYear: {ru:'📅 Год'},lblIssueNum: {ru:'🔢 Номер выпуска'},
+  lblCat: {ru:'🏷️ Категория'},lblQty: {ru:'📦 Количество'},
+  lblMin: {ru:'⚠️ Минимум'},lblBarcode: {ru:'🔍 Штрихкод'},lblPhoto: {ru:'📸 Фото'},
+  btnChooseFile: {ru:'📁 Выбрать файл'},btnAdd: {ru:'➕ Добавить'},
+  lblBulk: {ru:'⚡ Несколько изданий сразу'},btnAddAll: {ru:'📋 Добавить все'},
+  dangerTitle: {ru:'⚠️ Опасная зона'},btnDeleteAll: {ru:'🗑️ Удалить ВСЁ'},
+  orderTitle: {ru:'⚠️ СПИСОК ЗАКАЗА'},btnCopy: {ru:'Копировать'},
+  btnClose: {ru:'✕ Закрыть'},btnCloseShort: {ru:'✕'},
+  adminPassword: {ru:'Пароль'},btnLogin: {ru:'Войти'},btnClear: {ru:'Очистить'}
 };
-
 function Tget(key){ var a=T[key]; if(!a) return key; return a.ru || key; }
 
-/* ============= QUICK PRESETS ============= */
 var QUICK_PRESETS = {
   watchtower: { type: 'Журнал', cat: 'Сторожевая башня (для публики)', names: 'Сторожевая башня (для публики)' },
   awake: { type: 'Журнал', cat: 'Пробудитесь!', names: 'Пробудитесь!' },
@@ -819,10 +685,12 @@ function cleanItems(arr){
     if(o.lang!=null) o.lang=cleanStr(o.lang);
     if(o.year!=null) o.year=cleanStr(o.year);
     if(o.issueNum!=null) o.issueNum=cleanStr(o.issueNum);
+    if(o.theme!=null) o.theme=cleanStr(o.theme);
     o.qty=parseInt(o.qty)||0; o.min=parseInt(o.min)||0;
     if(!/^data:image\/[a-z+.-]+;base64,[A-Za-z0-9+\/=]+$/.test(o.photo||'')) o.photo='';
     if(!Array.isArray(o.history)) o.history = [];
     o.history = o.history.filter(function(h){ return h && typeof h === 'object' && h.ts; }).slice(0, 50);
+    o.favorite = !!o.favorite;
     return o;
   });
 }
@@ -834,7 +702,7 @@ function cleanUsers(arr){
 }
 function printDoc(title, bodyHtml){
   var w=window.open('','_blank');
-  if(!w){ alert(Tget('alertPopups')); return false; }
+  if(!w){ alert('Разрешите всплывающие окна'); return false; }
   w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+esc(title)+'</title></head><body style="font-family:Arial;margin:20px;color:#000">'+bodyHtml+'</body></html>');
   w.document.close(); w.focus(); setTimeout(function(){ w.print(); },400); return true;
 }
@@ -846,11 +714,7 @@ var PERMS_PRESETS = {
   counter:{count:true,add:false,del:false,rename:true,sync:true,order:false,scan:true,voice:true},
   viewer:{count:false,add:false,del:false,rename:false,sync:true,order:true,scan:false,voice:false}
 };
-var TYPE_TRANS={
-  "Журнал":{ru:"Журнал"},
-  "Брошюра":{ru:"Брошюра"},
-  "Постер":{ru:"Постер"}
-};
+var TYPE_TRANS={ "Журнал":{ru:"Журнал"}, "Брошюра":{ru:"Брошюра"}, "Постер":{ru:"Постер"} };
 var TYPE_HELP={
   'Журнал':{ru:'<b>📰 Журнал</b> — Сторожевая башня, Пробудитесь!'},
   'Брошюра':{ru:'<b>📖 Брошюра</b> — 20-30 страниц.'},
@@ -893,20 +757,23 @@ if(!Array.isArray(savedTitles)) savedTitles=[];
 if(!Array.isArray(savedYears)) savedYears=[];
 if(!Array.isArray(savedIssueNums)) savedIssueNums=[];
 
-/* ★ Заполнить базовые списки из PRESET_ITEMS при первом запуске */
+var PRESETS_VERSION = 4;
 (function initPresets(){
-  var hasInit = localStorage.getItem('stand_presets_ru_init') === 'true';
-  if(!hasInit){
-    PRESET_ITEMS.forEach(function(p){
-      if(savedTitles.indexOf(p.title) < 0) savedTitles.push(p.title);
-      if(p.year && savedYears.indexOf(p.year) < 0) savedYears.push(p.year);
-      if(p.issueNum && savedIssueNums.indexOf(p.issueNum) < 0) savedIssueNums.push(p.issueNum);
+  var cur = parseInt(localStorage.getItem('stand_presets_ver') || '0', 10);
+  if(cur === PRESETS_VERSION) return;
+  PRESET_ITEMS.forEach(function(p){
+    var fullWithTheme = p.theme ? (p.title + ' — ' + p.theme) : p.title;
+    [fullWithTheme, p.title].forEach(function(v){
+      if(v && savedTitles.indexOf(v) < 0) savedTitles.push(v);
     });
-    localStorage.setItem('stand_saved_titles', JSON.stringify(savedTitles));
-    localStorage.setItem('stand_saved_years', JSON.stringify(savedYears));
-    localStorage.setItem('stand_saved_issue_nums', JSON.stringify(savedIssueNums));
-    localStorage.setItem('stand_presets_ru_init', 'true');
-  }
+    if(p.theme && savedTitles.indexOf(p.theme) < 0) savedTitles.push(p.theme);
+    if(p.year && savedYears.indexOf(p.year) < 0) savedYears.push(p.year);
+    if(p.issueNum && savedIssueNums.indexOf(p.issueNum) < 0) savedIssueNums.push(p.issueNum);
+  });
+  localStorage.setItem('stand_saved_titles', JSON.stringify(savedTitles));
+  localStorage.setItem('stand_saved_years', JSON.stringify(savedYears));
+  localStorage.setItem('stand_saved_issue_nums', JSON.stringify(savedIssueNums));
+  localStorage.setItem('stand_presets_ver', String(PRESETS_VERSION));
 })();
 
 try{ items=cleanItems(JSON.parse(localStorage.getItem('stand_items_v4')||'[]')); }catch(e){ items=[]; }
@@ -931,10 +798,13 @@ function addToSavedList(listName, value){
   var idx = list.indexOf(value);
   if(idx >= 0) list.splice(idx, 1);
   list.unshift(value);
-  if(list.length > 300) list.length = 300;
+  if(list.length > 500) list.length = 500;
   if(listName === 'titles') localStorage.setItem('stand_saved_titles', JSON.stringify(list));
   else if(listName === 'years') localStorage.setItem('stand_saved_years', JSON.stringify(list));
   else localStorage.setItem('stand_saved_issue_nums', JSON.stringify(list));
+  try{ renderTitleChips(); }catch(e){}
+  try{ renderSuggestions(); }catch(e){}
+  try{ renderSuggManager(); }catch(e){}
 }
 function populateDatalists(){
   var tdl = document.getElementById('jwTitlesList');
@@ -947,7 +817,7 @@ function populateDatalists(){
       }
     });
     var h = '';
-    titles.slice(0, 300).forEach(function(t){ h += '<option value="'+esc(t)+'">'; });
+    titles.slice(0, 500).forEach(function(t){ h += '<option value="'+esc(t)+'">'; });
     tdl.innerHTML = h;
   }
   var ydl = document.getElementById('yearList');
@@ -971,6 +841,7 @@ function populateDatalists(){
     nums.slice(0, 100).forEach(function(n){ h3 += '<option value="'+esc(n)+'">'; });
     idl.innerHTML = h3;
   }
+  try{ renderTitleChips(); }catch(e){}
 }
 function getItemExtraInfo(it){
   var parts = [];
@@ -998,6 +869,130 @@ function getCurrentUser(){ return users.find(function(u){ return u.id==currentUs
 function hasPerm(perm){ var u=getCurrentUser(); if(!u) return false; if(u.role==='admin') return true; return !!(u.perms && u.perms[perm]); }
 function getRoleDisplay(role){ var m={admin:'👑 Админ',manager:'📦 Менеджер',counter:'🔢 Счётчик',viewer:'👀 Наблюдатель'}; return m[role]||role; }
 
+/* ============= ПОДСКАЗКИ / ТЕМЫ ============= */
+function isThemeSuggestion(str){
+  if(!str) return false;
+  if(/№\s*\d/.test(str)) return false;
+  if(/^(Сторожевая|Пробудитесь|Брошюра|Постер|Радуйтесь|Руководство)/.test(str)) return false;
+  return true;
+}
+
+/* Полоска тем под полем Название */
+function renderTitleChips(){
+  var el = document.getElementById('titleChips'); if(!el) return;
+  var current = ((document.getElementById('title')||{}).value||'').toLowerCase();
+  var themes = savedTitles.filter(function(t){ return isThemeSuggestion(t); });
+  if(themes.length === 0){ el.innerHTML=''; return; }
+  if(current){
+    themes.sort(function(a,b){
+      var aS = a.toLowerCase().indexOf(current)===0 ? 0 : (a.toLowerCase().indexOf(current)>=0 ? 1 : 2);
+      var bS = b.toLowerCase().indexOf(current)===0 ? 0 : (b.toLowerCase().indexOf(current)>=0 ? 1 : 2);
+      return aS-bS;
+    });
+  }
+  var h = '';
+  themes.slice(0, 20).forEach(function(t){
+    var safe = esc(t);
+    h += '<span class="title-chip"><span class="chip-text" data-chip="'+safe+'" onclick="pickTitleChip(this.getAttribute(\'data-chip\'))">💡 '+safe+'</span><button class="chip-del" data-chip="'+safe+'" onclick="event.stopPropagation();deleteSuggestion(this.getAttribute(\'data-chip\'))" title="Удалить из подсказок">✕</button></span>';
+  });
+  el.innerHTML = h;
+}
+function pickTitleChip(value){
+  var el = document.getElementById('title'); if(!el) return;
+  el.value = value;
+  renderTitleChips();
+  el.focus();
+}
+
+/* Модалка управления подсказками из формы добавления */
+function openSuggManager(){
+  var ov = document.getElementById('suggOverlay'); if(!ov) return;
+  ov.classList.add('show');
+  var s = document.getElementById('suggMgrSearch'); if(s) s.value='';
+  renderSuggManager();
+}
+function closeSuggManager(){
+  var ov = document.getElementById('suggOverlay'); if(ov) ov.classList.remove('show');
+}
+function renderSuggManager(){
+  var el = document.getElementById('suggMgrList'); if(!el) return;
+  var q = (((document.getElementById('suggMgrSearch')||{}).value)||'').toLowerCase().trim();
+  var all = savedTitles.slice();
+  var filtered = q ? all.filter(function(t){ return String(t).toLowerCase().indexOf(q) >= 0; }) : all;
+  if(filtered.length === 0){ el.innerHTML = '<div class="small" style="text-align:center;padding:20px">—</div>'; return; }
+  var h = '';
+  filtered.slice(0, 500).forEach(function(t){
+    var isTheme = isThemeSuggestion(t);
+    var tag = isTheme ? '<span class="sugg-tag theme">💡 тема</span>' : '<span class="sugg-tag title">📰 назв.</span>';
+    var safe = esc(t);
+    h += '<div class="sugg-row">'+tag+'<span class="sugg-text">'+safe+'</span><button class="sugg-del" data-chip="'+safe+'" onclick="deleteSuggestion(this.getAttribute(\'data-chip\'))">🗑️</button></div>';
+  });
+  if(filtered.length > 500) h += '<div class="small" style="text-align:center;padding:8px">...показано 500 из '+filtered.length+'</div>';
+  el.innerHTML = h;
+}
+
+/* Список в админке */
+function renderSuggestions(){
+  var el = document.getElementById('suggList'); if(!el) return;
+  var cnt = document.getElementById('suggCount');
+  var q = (((document.getElementById('suggSearch')||{}).value)||'').toLowerCase().trim();
+  var all = savedTitles.slice();
+  var filtered = q ? all.filter(function(t){ return String(t).toLowerCase().indexOf(q) >= 0; }) : all;
+  if(cnt) cnt.textContent = filtered.length + ' / ' + all.length;
+  if(filtered.length === 0){ el.innerHTML = '<div class="small" style="text-align:center;padding:20px">—</div>'; return; }
+  var h = '';
+  filtered.slice(0, 300).forEach(function(t){
+    var isTheme = isThemeSuggestion(t);
+    var tag = isTheme ? '<span class="sugg-tag theme">💡 тема</span>' : '<span class="sugg-tag title">📰 назв.</span>';
+    var safe = esc(t);
+    h += '<div class="sugg-row">'+tag+'<span class="sugg-text">'+safe+'</span><button class="sugg-del" data-chip="'+safe+'" onclick="deleteSuggestion(this.getAttribute(\'data-chip\'))">🗑️</button></div>';
+  });
+  if(filtered.length > 300) h += '<div class="small" style="text-align:center;padding:8px">...показано 300 из '+filtered.length+'</div>';
+  el.innerHTML = h;
+}
+
+/* Удалить одну подсказку */
+function deleteSuggestion(value){
+  var idx = savedTitles.indexOf(value);
+  if(idx < 0){ toast('Уже удалено'); renderTitleChips(); renderSuggestions(); renderSuggManager(); return; }
+  savedTitles.splice(idx, 1);
+  localStorage.setItem('stand_saved_titles', JSON.stringify(savedTitles));
+  populateDatalists();
+  renderTitleChips();
+  renderSuggestions();
+  renderSuggManager();
+  toast('🗑️ Удалено из подсказок');
+}
+
+/* Очистить все подсказки */
+function clearAllSuggestions(){
+  customConfirm('Удалить ВСЕ подсказки? Названия у изданий останутся, но в списке автодополнения их не будет.', function(){
+    savedTitles = [];
+    localStorage.setItem('stand_saved_titles', JSON.stringify([]));
+    populateDatalists();
+    renderTitleChips();
+    renderSuggestions();
+    renderSuggManager();
+    toast('✕ Все подсказки очищены');
+  });
+}
+
+/* Удалить только темы */
+function clearOnlyThemes(){
+  customConfirm('Удалить из подсказок только темы (💡)? Названия останутся.', function(){
+    var before = savedTitles.length;
+    savedTitles = savedTitles.filter(function(t){ return !isThemeSuggestion(t); });
+    localStorage.setItem('stand_saved_titles', JSON.stringify(savedTitles));
+    populateDatalists();
+    renderTitleChips();
+    renderSuggestions();
+    renderSuggManager();
+    var removed = before - savedTitles.length;
+    toast('💡 Удалено тем: '+removed);
+  });
+}
+
+/* ============= СИНХРОНИЗАЦИЯ / СЕТЬ ============= */
 function setSyncState(state){
   syncState=state;
   var chip=document.getElementById('syncChip'),txt=document.getElementById('syncChipText');
@@ -1112,18 +1107,24 @@ function debouncedRender(){ clearTimeout(renderTimer); renderTimer=setTimeout(re
 function quickAdd(kind){
   var preset = QUICK_PRESETS[kind];
   if(!preset) return;
-  document.getElementById('addType').value = preset.type;
-  updateAddButtons();
-  document.getElementById('cat').value = preset.cat;
-  document.getElementById('title').value = preset.names;
-  if(preset.type === 'Журнал'){
-    var yEl = document.getElementById('year');
-    if(yEl && !yEl.value.trim()) yEl.value = String(new Date().getFullYear());
-  }
-  document.getElementById('title').focus();
-  document.getElementById('title').select();
-  toast('⚡ Готово — заполнено');
-  beepOk();
+  var doFill = function(){
+    document.getElementById('addType').value = preset.type;
+    updateAddButtons();
+    document.getElementById('cat').value = preset.cat;
+    document.getElementById('title').value = preset.names;
+    if(preset.type === 'Журнал'){
+      var yEl = document.getElementById('year');
+      if(yEl && !yEl.value.trim()) yEl.value = String(new Date().getFullYear());
+    }
+    renderTitleChips();
+    document.getElementById('title').focus();
+    document.getElementById('title').select();
+    toast('⚡ Готово — заполнено');
+    beepOk();
+  };
+  var titleEl = document.getElementById('title');
+  if(titleEl.value.trim()){ customConfirm('Заменить текущее название?', doFill); }
+  else doFill();
 }
 
 var MAX_HISTORY_PER_ITEM = 50;
@@ -1199,7 +1200,11 @@ function renderHistoryContent(it){
     h += '</div>';
   }
   document.getElementById('histContent').innerHTML = h;
-  setTimeout(function(){ renderHistoryChart(stats); }, 50);
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      if(document.getElementById('histChart') && currentHistItemId === it.id){ renderHistoryChart(stats); }
+    });
+  });
 }
 function renderHistoryChart(stats){
   try{
@@ -1287,7 +1292,6 @@ function quickPlusOne(){
   if(!hasPerm('count')){ toast('Нет прав'); return; }
   changeQty(it.id, 1); toast('➕ +1 ' + getDisplayName(it)); beepOk();
 }
-function saveFabSetting(){ var v=document.getElementById('fabEnabled').value; localStorage.setItem('stand_fab_enabled',v); updateQuickFab(); toast('✅ Сохранено'); }
 function loadFabSetting(){ var v=localStorage.getItem('stand_fab_enabled'); if(v===null) v='true'; var sel=document.getElementById('fabEnabled'); if(sel) sel.value=v; }
 
 function render(){
@@ -1307,13 +1311,13 @@ function render(){
     at.innerHTML = '<option value="Журнал">📰 Журнал — Сторожевая башня, Пробудитесь!</option><option value="Брошюра">📖 Брошюра — 20-30 страниц</option><option value="Постер">🖼️ Постер — большой формат</option>';
     at.value = curAt;
   }
-
   var q=(document.getElementById('search').value||'').toLowerCase();
   var filtered=[];
   for(var i=0;i<items.length;i++){
     var it=items[i];
     var name=getDisplayName(it).toLowerCase(); var cat=getDisplayCat(it).toLowerCase();
-    var matchQ=name.indexOf(q)>=0 || cat.indexOf(q)>=0 || (it.barcode&&it.barcode.toLowerCase().indexOf(q)>=0) || (it.year&&String(it.year).toLowerCase().indexOf(q)>=0) || (it.issueNum&&String(it.issueNum).toLowerCase().indexOf(q)>=0);
+    var themeStr=(it.theme||'').toLowerCase();
+    var matchQ=name.indexOf(q)>=0 || cat.indexOf(q)>=0 || themeStr.indexOf(q)>=0 || (it.barcode&&it.barcode.toLowerCase().indexOf(q)>=0) || (it.year&&String(it.year).toLowerCase().indexOf(q)>=0) || (it.issueNum&&String(it.issueNum).toLowerCase().indexOf(q)>=0);
     var matchT=curTypeFilter==='all' || it.type===curTypeFilter;
     if(matchQ && matchT) filtered.push(it);
   }
@@ -1352,12 +1356,13 @@ function render(){
     var pinBtn = canCount ? '<button class="icon-btn" onclick="setLastUsed('+it.id+')" style="color:'+(isLast?'#22c55e':'var(--text)')+'" title="+1">'+(isLast?'📌':'📍')+'</button>' : '';
     var extraInfo = getItemExtraInfo(it);
     var extraLine = extraInfo ? '<div class="item-extra">📅 '+esc(extraInfo)+'</div>' : '';
+    var themeLine = (it.theme && String(it.theme).trim()) ? '<div class="item-theme">💡 '+esc(it.theme)+'</div>' : '';
     h+='<div class="'+favCls+'">'+
       '<div class="item-main">'+photoHtml+
         '<div class="item-info">'+
           '<span class="type-label '+tcl+'">'+esc(displayType)+'</span> '+histBadge+
           '<b class="item-name" style="display:block;margin-top:4px">'+esc(getDisplayName(it))+'</b>'+
-          extraLine+
+          themeLine+extraLine+
           '<div class="item-cat">'+esc(getDisplayCat(it))+(it.barcode?' | '+esc(it.barcode):'')+'</div>'+
           '<span class="item-badge '+col+'">'+it.qty+'/'+it.min+'</span>'+
         '</div>'+
@@ -1380,7 +1385,7 @@ function render(){
   if(ob){
     if(need.length>0 && hasPerm('order')){
       ob.style.display='block';
-      var oh=''; for(var i=0;i<need.length;i++){ var eI=getItemExtraInfo(need[i]); oh+=esc(getDisplayName(need[i]))+(eI?' ('+esc(eI)+')':'')+' - '+need[i].qty+'<br>'; }
+      var oh=''; for(var i=0;i<need.length;i++){ var eI=getItemExtraInfo(need[i]); var th=need[i].theme?(' — '+need[i].theme):''; oh+=esc(getDisplayName(need[i]))+th+(eI?' ('+esc(eI)+')':'')+' - '+need[i].qty+'<br>'; }
       if($('orderList')) $('orderList').innerHTML=oh;
       var sh='<b style="color:var(--primary)">🤖 Совет:</b><br>';
       for(var i=0;i<need.length;i++){ var nit=need[i]; sh+=esc(getDisplayName(nit))+': '+(nit.min*2 - nit.qty + 3)+'<br>'; }
@@ -1427,12 +1432,12 @@ function openRename(id){
   _renamingId=id;
   var html='';
   html+='<div style="margin-bottom:8px"><label style="font-size:0.8em;margin:0 0 3px">📝 Название</label><input id="rn-ru" value="'+esc(getDisplayName(it))+'"></div>';
+  html+='<div style="margin-bottom:8px"><label style="font-size:0.8em;margin:0 0 3px">💡 Тема выпуска <span style="color:var(--muted);font-weight:normal">(очистите — тема удалится)</span></label><input id="rn-theme" value="'+esc(it.theme||'')+'" placeholder="напр. Ищите истину"></div>';
   html+='<div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">';
   html+='<div class="row">';
   html+='<div><label style="font-size:0.8em;margin:0 0 3px">📅 Год</label><input id="rn-year" value="'+esc(it.year||'')+'" placeholder="напр. 2026"></div>';
   html+='<div><label style="font-size:0.8em;margin:0 0 3px">🔢 Номер</label><input id="rn-issueNum" value="'+esc(it.issueNum||'')+'" placeholder="напр. 1"></div>';
-  html+='</div>';
-  html+='</div>';
+  html+='</div></div>';
   document.getElementById('rnFields').innerHTML=html;
   document.getElementById('rnOverlay').classList.add('show');
 }
@@ -1443,6 +1448,12 @@ function saveRename(){
   pushUndo('Переименовать');
   var nameEl=document.getElementById('rn-ru');
   if(nameEl && nameEl.value.trim()){ if(!it.names) it.names={}; it.names.ru=nameEl.value.trim(); addToSavedList('titles', nameEl.value.trim()); }
+  var tEl = document.getElementById('rn-theme');
+  if(tEl){
+    var oldTheme = it.theme || '';
+    it.theme = tEl.value.trim();
+    if(it.theme && it.theme !== oldTheme) addToSavedList('titles', it.theme);
+  }
   var yEl = document.getElementById('rn-year'); if(yEl){ it.year = yEl.value.trim(); if(it.year) addToSavedList('years', it.year); }
   var iEl = document.getElementById('rn-issueNum'); if(iEl){ it.issueNum = iEl.value.trim(); if(it.issueNum) addToSavedList('issueNums', it.issueNum); }
   addItemHistory(it.id, 'rename', 0, null, null); addLog('Переименовать',{names:it.names});
@@ -1459,7 +1470,7 @@ function addItem(){
   var yearVal=(document.getElementById('year').value||'').trim();
   var issueNumVal=(document.getElementById('issueNum').value||'').trim();
   var namesObj = { ru: titleVal };
-  var newItem={id:Date.now()+Math.random(),names:namesObj,type:document.getElementById('addType').value,cat:document.getElementById('cat').value||'-',lang:'ru',magazineLang:'ru',year:yearVal,issueNum:issueNumVal,qty:qtyVal,min:parseInt(document.getElementById('min').value)||3,barcode:document.getElementById('bar').value||'',photo:currentPhotoBase64||'',history:[]};
+  var newItem={id:Date.now()+Math.random(),names:namesObj,type:document.getElementById('addType').value,cat:document.getElementById('cat').value||'-',lang:'ru',magazineLang:'ru',year:yearVal,issueNum:issueNumVal,theme:'',qty:qtyVal,min:parseInt(document.getElementById('min').value)||3,barcode:document.getElementById('bar').value||'',photo:currentPhotoBase64||'',history:[]};
   items.push(newItem);
   addItemHistory(newItem.id,'create',qtyVal,0,qtyVal);
   addLog('Добавить',{names:newItem.names});
@@ -1472,7 +1483,7 @@ function addItem(){
   document.getElementById('photoInput').value='';
   document.getElementById('photoPreview').style.display='none';
   currentPhotoBase64='';
-  save(); render(); populateDatalists();
+  save(); render(); populateDatalists(); renderTitleChips();
   toast('✅ Добавлено: '+titleVal);
 }
 function addBulk(){
@@ -1485,14 +1496,14 @@ function addBulk(){
   for(var i=0;i<lines.length;i++){
     var tt=lines[i].trim(); if(!tt) continue;
     var namesObj={ ru: tt };
-    var nIt={id:Date.now()+c+Math.random(),names:namesObj,type:document.getElementById('addType').value,cat:'-',lang:'ru',magazineLang:'ru',year:yearVal,issueNum:issueNumVal,qty:qtyVal,min:3,barcode:'',photo:'',history:[]};
+    var nIt={id:Date.now()+c+Math.random(),names:namesObj,type:document.getElementById('addType').value,cat:'-',lang:'ru',magazineLang:'ru',year:yearVal,issueNum:issueNumVal,theme:'',qty:qtyVal,min:3,barcode:'',photo:'',history:[]};
     items.push(nIt); addItemHistory(nIt.id,'create',qtyVal,0,qtyVal);
     addToSavedList('titles', tt);
     c++;
   }
   if(yearVal) addToSavedList('years', yearVal);
   if(issueNumVal) addToSavedList('issueNums', issueNumVal);
-  document.getElementById('bulk').value=''; save(); render(); populateDatalists(); toast('✅ Добавлено '+c+' изданий');
+  document.getElementById('bulk').value=''; save(); render(); populateDatalists(); renderTitleChips(); toast('✅ Добавлено '+c+' изданий');
 }
 
 function renderUsers(){ var list=document.getElementById('usersList'); if(!list) return; if(users.length===0){ list.innerHTML='<div class="small">—</div>'; return; } var h=''; users.forEach(function(u){ h+='<div class="user-row"><div style="flex:1"><div class="uname">👤 '+esc(u.name)+' <span class="urole role-'+u.role+'">'+esc(getRoleDisplay(u.role))+'</span></div></div>'+(users.length>1?'<button class="icon-btn" style="background:#ef4444;color:#fff;border:0;padding:8px 12px;border-radius:6px" onclick="deleteUser('+u.id+')">🗑️</button>':'')+'</div>'; }); list.innerHTML=h; }
@@ -1514,10 +1525,11 @@ function renderQuickCount(){
   for(var i=0;i<items.length;i++){
     var it=items[i];
     var eI=getItemExtraInfo(it);
-    if(q && (getDisplayName(it).toLowerCase().indexOf(q)<0 && eI.toLowerCase().indexOf(q)<0)) continue;
+    if(q && (getDisplayName(it).toLowerCase().indexOf(q)<0 && eI.toLowerCase().indexOf(q)<0 && (it.theme||'').toLowerCase().indexOf(q)<0)) continue;
     var col=it.qty<=it.min?'bad':'good'; var lab=it.qty<=it.min?'⚠️':'✅';
     var extra = eI ? '<span style="color:#06b6d4;font-weight:bold"> • '+esc(eI)+'</span>' : '';
-    h+='<div class="qc-tile"><div class="qc-info"><div class="qc-name">'+getTypeIcon(it.type)+' '+esc(getDisplayName(it))+'</div><div class="qc-cat">'+extra+' <span class="badge '+col+'" style="font-size:0.7em">'+lab+'</span></div></div>'+(canCount?'<button class="qc-minus" onclick="qcChange('+it.id+',-1)">−</button>':'')+'<div class="qc-qty">'+it.qty+'</div>'+(canCount?'<button class="qc-plus" onclick="qcChange('+it.id+',1)">+</button>':'')+'</div>';
+    var themeMini = it.theme ? ' <span style="color:#a855f7;font-style:italic">💡 '+esc(it.theme)+'</span>' : '';
+    h+='<div class="qc-tile"><div class="qc-info"><div class="qc-name">'+getTypeIcon(it.type)+' '+esc(getDisplayName(it))+'</div><div class="qc-cat">'+extra+themeMini+' <span class="badge '+col+'" style="font-size:0.7em">'+lab+'</span></div></div>'+(canCount?'<button class="qc-minus" onclick="qcChange('+it.id+',-1)">−</button>':'')+'<div class="qc-qty">'+it.qty+'</div>'+(canCount?'<button class="qc-plus" onclick="qcChange('+it.id+',1)">+</button>':'')+'</div>';
   }
   list.innerHTML=h||'<div class="small" style="text-align:center;padding:20px">—</div>';
 }
@@ -1531,7 +1543,7 @@ function exportChart(){ var c=document.getElementById('chartMain'); if(!c) retur
 
 function copyOrder(){ var txt=document.getElementById('orderList').innerText; if(navigator.clipboard) navigator.clipboard.writeText(txt).then(function(){toast('📋 Скопировано');}); }
 function exportOrder(){ var b=new Blob([document.getElementById('orderList').innerText],{type:'text/plain'}); var a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='order.txt'; a.click(); }
-function exportPDF(){ var need=items.filter(function(x){return x.qty<=x.min;}); var h='<h1>STAND MANAGER</h1><p>'+new Date().toLocaleString('ru-RU')+'</p><ul>'; need.forEach(function(x){ var eI=getItemExtraInfo(x); h+='<li>'+esc(getDisplayName(x))+(eI?' ('+esc(eI)+')':'')+' - '+x.qty+'/'+x.min+'</li>'; }); h+='</ul>'; if(!need.length) h+='<p>-</p>'; printDoc('order',h); }
+function exportPDF(){ var need=items.filter(function(x){return x.qty<=x.min;}); var h='<h1>STAND MANAGER</h1><p>'+new Date().toLocaleString('ru-RU')+'</p><ul>'; need.forEach(function(x){ var eI=getItemExtraInfo(x); var th=x.theme?(' — '+x.theme):''; h+='<li>'+esc(getDisplayName(x))+esc(th)+(eI?' ('+esc(eI)+')':'')+' - '+x.qty+'/'+x.min+'</li>'; }); h+='</ul>'; if(!need.length) h+='<p>-</p>'; printDoc('order',h); }
 function shareWhatsApp(){ var txt=encodeURIComponent(document.getElementById('orderList').innerText); window.open('https://wa.me/?text='+txt,'_blank'); }
 
 function startScanner(){
@@ -1652,10 +1664,42 @@ async function initFirebase(){
 async function pushToCloud(){ if(!cloudEnabled || !cloudDb) return; try{ setSyncState('pushing'); var dRef=window._fb.doc(cloudDb,'stands',cloudId); await window._fb.setDoc(dRef,{items:items,users:users,adminPass:adminPass,history:historyLog,updated:Date.now()},{merge:true}); setSyncState('synced'); }catch(e){ setSyncState('error'); } }
 async function pullFromCloud(){ if(!cloudEnabled){ alert('Облако выключено'); return; } if(!cloudDb){ alert('Нет базы данных'); return; } try{ setSyncState('pulling'); var dRef=window._fb.doc(cloudDb,'stands',cloudId); var snap=await window._fb.getDoc(dRef); if(snap.exists() && snap.data().items){ isSyncingFromCloud=true; var data=snap.data(); items=cleanItems(data.items); if(data.users) users=cleanUsers(data.users); if(data.history && Array.isArray(data.history)) historyLog=data.history; if(data.adminPass){ adminPass=data.adminPass; localStorage.setItem('stand_pass',adminPass); } save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); populateDatalists(); setSyncState('synced'); isSyncingFromCloud=false; toast('✅ Сохранено'); } else { setSyncState('synced'); alert('Ничего нет'); } }catch(e){ setSyncState('error'); alert(e.message); } }
 
-function openAdmin(){ document.getElementById('adminScreen').style.display='block'; document.getElementById('cloudId').value=cloudId; document.getElementById('fbConfig').value=fbConfigStr; applyFont(); renderLog(); renderBgSwatches(); renderBtnSwatches(); updateThemeHints(); loadFabSetting(); }
+function openAdmin(){
+  document.getElementById('adminScreen').style.display='block';
+  document.getElementById('cloudId').value=cloudId;
+  document.getElementById('fbConfig').value=fbConfigStr;
+  document.getElementById('adminContent').style.display='none';
+  document.getElementById('loginBox').style.display='block';
+  document.getElementById('pinCheck').value='';
+  document.getElementById('passMsg').textContent='';
+  applyFont(); renderLog(); renderBgSwatches(); renderBtnSwatches();
+  updateThemeHints(); loadFabSetting();
+}
 function closeAdmin(){ document.getElementById('adminScreen').style.display='none'; document.getElementById('adminContent').style.display='none'; document.getElementById('loginBox').style.display='block'; document.getElementById('pinCheck').value=''; }
-function checkAdmin(){ if(document.getElementById('pinCheck').value===adminPass){ document.getElementById('adminContent').style.display='block'; document.getElementById('loginBox').style.display='none'; renderUsers(); applyFont(); renderBgSwatches(); renderBtnSwatches(); updateThemeHints(); loadFabSetting(); updatePermsFromRole(); renderLog(); } else alert('Неверный пароль'); }
-function saveNewPass(){ var np=document.getElementById('newPass').value.trim(); var em=document.getElementById('recoveryEmail').value.trim(); if(np){ if(np.length<3) return; adminPass=np; localStorage.setItem('stand_pass',adminPass); } if(em){ localStorage.setItem('stand_recovery_email',em); } document.getElementById('passMsg').textContent='✅ Сохранено'; document.getElementById('newPass').value=''; save(); }
+function checkAdmin(){
+  if(document.getElementById('pinCheck').value===adminPass){
+    document.getElementById('adminContent').style.display='block';
+    document.getElementById('loginBox').style.display='none';
+    renderUsers(); applyFont(); renderBgSwatches(); renderBtnSwatches();
+    updateThemeHints(); loadFabSetting(); updatePermsFromRole(); renderLog();
+    try{ renderSuggestions(); }catch(e){}
+  } else alert('Неверный пароль');
+}
+
+function saveNewPass(){
+  var np=document.getElementById('newPass').value.trim();
+  var em=document.getElementById('recoveryEmail').value.trim();
+  var msg=document.getElementById('passMsg');
+  msg.style.color='#22c55e';
+  if(np){
+    if(np.length<3){ msg.style.color='#ef4444'; msg.textContent='❌ Минимум 3 символа'; return; }
+    adminPass=np; localStorage.setItem('stand_pass',adminPass);
+  }
+  if(em){ localStorage.setItem('stand_recovery_email',em); }
+  msg.textContent='✅ Сохранено';
+  document.getElementById('newPass').value='';
+  save();
+}
 
 function showOnboarding(){ document.getElementById('onboardOverlay').classList.add('show'); document.getElementById('onbError').textContent=''; document.getElementById('onbInfo').textContent=''; document.getElementById('onbInput').value=''; setTimeout(function(){ document.getElementById('onbInput').focus(); },300); }
 function hideOnboarding(){ document.getElementById('onboardOverlay').classList.remove('show'); }
@@ -1706,8 +1750,32 @@ function updateAddButtons(){
 }
 function setAddType(t){ document.getElementById('addType').value=t; updateAddButtons(); }
 
-window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferredPrompt=e; var b=document.getElementById('bInstall'); if(b) b.style.display='inline-block'; });
-function installPWA(){ if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt.userChoice.then(function(c){ if(c.outcome==='accepted'){ var b=document.getElementById('bInstall'); if(b) b.style.display='none'; } deferredPrompt=null; }); } }
+window.addEventListener('beforeinstallprompt', function(e){
+  e.preventDefault(); deferredPrompt=e;
+  var b=document.getElementById('bInstall'); if(b) b.style.display='inline-block';
+});
+(function iosInstallHint(){
+  var ua = navigator.userAgent || '';
+  var isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+  var isStandalone = window.navigator.standalone === true;
+  if(isIOS && !isStandalone){
+    var b = document.getElementById('bInstall');
+    if(b){ b.style.display='inline-block'; }
+  }
+})();
+function installPWA(){
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(c){
+      if(c.outcome==='accepted'){ var b=document.getElementById('bInstall'); if(b) b.style.display='none'; }
+      deferredPrompt=null;
+    });
+    return;
+  }
+  var ua = navigator.userAgent || '';
+  if(/iPad|iPhone|iPod/.test(ua)){ toast('📲 Поделиться → На экран «Домой»', 4000); }
+  else { toast('📲 Откройте меню браузера → Установить', 3000); }
+}
 
 function setupPWAShortcuts(){
   try{
@@ -1749,6 +1817,7 @@ function init(){
   setSyncState('offline'); updateUndoButtons();
   loadFabSetting(); updateQuickFab(); populateDatalists();
   hideUndoBar();
+  try{ renderTitleChips(); }catch(e){}
 
   var savedCloudId = localStorage.getItem('stand_cloud_id')||'';
   var isOnboarded = localStorage.getItem('stand_onboarded')==='true';
@@ -1760,11 +1829,14 @@ function init(){
   } else if(!isOnboarded){
     setTimeout(showOnboarding, 400);
   }
-
   setTimeout(handleUrlActions, 1000);
 }
-document.addEventListener('DOMContentLoaded', init);
-setTimeout(init, 100);
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
 </script>
 </body>
 </html>

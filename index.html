@@ -22,9 +22,7 @@ button.sec{background:var(--btn-bg);color:var(--text);border:1px solid var(--btn
 button:disabled{opacity:0.5;cursor:not-allowed}
 button.typebtn{flex:1;padding:8px;font-size:0.8em;background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border)}
 button.typebtn.active{background:var(--primary);color:var(--primary-text)}
-.quick-add-btn{flex:1;min-width:100px;padding:12px 8px;background:linear-gradient(135deg,#06b6d4,#a855f7);color:#fff;border:0;border-radius:8px;font-weight:bold;cursor:pointer;font-size:0.85em;margin:0;transition:transform 0.15s}
-.quick-add-btn:active{transform:scale(0.95)}
-.quick-add-btn:hover{filter:brightness(1.1)}
+.quick-add-btn{flex:1;min-width:100px;padding:12px 8px;background:linear-gradient(135deg,#06b6d4,#a855f7);color:#fff;border:0;border-radius:8px;font-weight:bold;cursor:pointer;font-size:0.85em;margin:0}
 .quick-add-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px;margin:8px 0}
 .wrap{padding:8px;max-width:800px;margin:0 auto}
 .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;margin:8px 0}
@@ -37,13 +35,14 @@ option{background:var(--card2);color:var(--text)}
 .item-main{display:flex;gap:8px;align-items:flex-start;width:100%}
 .item-info{flex:1;min-width:0}
 .item-actions{display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:flex-end;padding-top:8px;border-top:1px dashed var(--border)}
-.item .item-name{font-size:var(--list-font-size,13px);font-weight:bold;line-height:1.3;word-break:break-word;color:var(--text)}
+.item .item-name{font-size:var(--list-font-size,13px);font-weight:bold;line-height:1.3;word-break:break-word}
 .item .item-cat{font-size:calc(var(--list-font-size,13px)*0.8);color:var(--muted);line-height:1.2}
 .item .item-extra{font-size:calc(var(--list-font-size,13px)*0.8);color:#06b6d4;font-weight:bold;line-height:1.2;margin-top:2px}
 .item .item-theme{font-size:calc(var(--list-font-size,13px)*0.85);color:#a855f7;font-style:italic;line-height:1.2;margin-top:2px}
 .item .item-badge{font-size:calc(var(--list-font-size,13px)*0.75);padding:3px 8px;border-radius:99px;font-weight:bold;display:inline-block;margin-top:3px}
 .item .type-label{font-size:calc(var(--list-font-size,13px)*0.7);padding:2px 6px;border-radius:99px;font-weight:bold}
-.item .qty-display{font-size:calc(var(--list-font-size,13px)*1.05);padding:0 10px;font-weight:bold;min-width:32px;text-align:center;color:var(--text)}
+.item .lang-label{font-size:calc(var(--list-font-size,13px)*0.7);padding:2px 7px;border-radius:99px;font-weight:bold;background:var(--btn-bg);border:1px solid var(--btn-border);color:var(--text)}
+.item .qty-display{font-size:calc(var(--list-font-size,13px)*1.05);padding:0 10px;font-weight:bold;min-width:32px;text-align:center}
 .item .qty-btn{font-size:calc(var(--list-font-size,13px)*1);padding:8px 14px;border-radius:6px;border:0;font-weight:bold;cursor:pointer;background:var(--primary);color:var(--primary-text);margin:0}
 .item .qty-btn.minus{background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border)}
 .item .icon-btn{background:var(--btn-bg);color:var(--text);padding:8px 10px;border-radius:6px;border:1px solid var(--btn-border);font-weight:bold;cursor:pointer;font-size:calc(var(--list-font-size,13px)*0.95)}
@@ -59,7 +58,7 @@ option{background:var(--card2);color:var(--text)}
 #adminScreen{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);z-index:9999;overflow:auto;display:none;padding:10px}
 #scannerBox{display:none;background:#000;padding:10px;border-radius:12px;margin:8px 0;border:2px solid #06b6d4}
 .photo-thumb{width:48px;height:48px;border-radius:6px;object-fit:cover;background:var(--card);flex-shrink:0}
-.log-entry{font-size:0.8em;padding:6px 0;border-bottom:1px solid var(--border);line-height:1.4;color:var(--text)}
+.log-entry{font-size:0.8em;padding:6px 0;border-bottom:1px solid var(--border);line-height:1.4}
 .log-entry .log-who{color:#a855f7;font-weight:bold}
 .log-entry .log-time{color:var(--muted);font-weight:bold}
 .count-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:10px}
@@ -68,7 +67,7 @@ option{background:var(--card2);color:var(--text)}
 .count-box .label{font-size:0.8em;color:var(--muted);margin-top:4px}
 .count-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:0.85em}
 .count-table th{background:var(--card2);padding:8px;text-align:left;color:var(--primary)}
-.count-table td{padding:8px;border-bottom:1px solid var(--border);color:var(--text)}
+.count-table td{padding:8px;border-bottom:1px solid var(--border)}
 #ccOverlay,#rnOverlay,#userOverlay,#onboardOverlay,#suggOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
 #ccOverlay.show,#rnOverlay.show,#userOverlay.show,#onboardOverlay.show,#suggOverlay.show{display:flex}
 #onboardOverlay{z-index:999999;background:var(--bg)}
@@ -110,7 +109,7 @@ body.day #ccCancel{background:#d0d0d0;color:#111}
 #qcContent{width:100%;max-width:800px;height:100%;overflow:auto;padding:8px;margin:0 auto}
 .qc-tile{background:var(--card2);border-radius:12px;padding:14px;margin:8px 0;display:flex;justify-content:space-between;align-items:center;gap:10px}
 .qc-tile .qc-info{flex:1;min-width:0}
-.qc-tile .qc-name{font-size:1.1em;font-weight:bold;color:var(--text)}
+.qc-tile .qc-name{font-size:1.1em;font-weight:bold}
 .qc-tile .qc-cat{font-size:0.8em;color:var(--muted);margin-top:2px}
 .qc-tile .qc-qty{font-size:1.8em;font-weight:bold;color:var(--primary);min-width:60px;text-align:center}
 .qc-plus{background:#22c55e;color:#000;width:60px;height:60px;border-radius:50%;font-size:1.5em;border:0;font-weight:bold;cursor:pointer}
@@ -119,24 +118,21 @@ body.day #ccCancel{background:#d0d0d0;color:#111}
 .perm-grid label{display:flex;align-items:center;gap:6px;font-size:0.85em;color:var(--text);font-weight:normal;background:var(--card2);padding:8px;border-radius:8px;cursor:pointer}
 .perm-grid input{width:auto;margin:0}
 .user-row{display:flex;justify-content:space-between;align-items:center;background:var(--card2);padding:10px;border-radius:8px;margin:6px 0;gap:8px}
-.user-row .uname{font-weight:bold;color:var(--text)}
+.user-row .uname{font-weight:bold}
 .user-row .urole{font-size:0.7em;padding:2px 8px;border-radius:10px;font-weight:bold}
 .role-admin{background:#ef4444;color:#fff}.role-manager{background:#f59e0b;color:#000}.role-counter{background:#22c55e;color:#000}.role-viewer{background:#6b7280;color:#fff}
 .notice-box{border-radius:8px;padding:10px;margin:8px 0;font-size:0.85em}
 body:not(.day) .notice-box{background:#3a2a00;color:#fbbf24;border:1px solid #f59e0b}
 body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 #bgSwatches,#btnSwatches{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:8px;margin-top:10px}
-.bg-swatch{cursor:pointer;border-radius:8px;height:52px;display:flex;align-items:flex-end;justify-content:center;padding:3px;font-size:0.68em;color:#fff;text-shadow:0 0 4px #000;font-weight:bold;transition:transform 0.15s}
-.bg-swatch:hover{transform:scale(1.05)}
+.bg-swatch{cursor:pointer;border-radius:8px;height:52px;display:flex;align-items:flex-end;justify-content:center;padding:3px;font-size:0.68em;color:#fff;text-shadow:0 0 4px #000;font-weight:bold}
 .bg-swatch.active{border:3px solid var(--primary)!important;box-shadow:0 0 12px rgba(245,158,11,0.6)}
 #bgColorInput,#btnColorInput{width:100%;height:50px;cursor:pointer;border-radius:8px;border:2px solid var(--border);padding:4px;background:var(--card2)}
 .theme-hint{background:var(--card2);border-radius:8px;padding:8px 10px;font-size:0.75em;color:var(--muted);margin-bottom:8px;text-align:center;border:1px solid var(--border)}
 #undoBar{position:fixed;bottom:20px;left:20px;z-index:500;display:flex;flex-direction:column;gap:10px;opacity:0;pointer-events:none;transform:translateX(-100px);transition:opacity 0.35s ease,transform 0.35s cubic-bezier(0.34,1.56,0.64,1)}
 #undoBar.show{opacity:1;pointer-events:auto;transform:translateX(0)}
-#undoBar button{width:56px;height:56px;border-radius:50%;font-size:1.7em;padding:0;background:var(--primary);color:var(--primary-text);border:3px solid var(--card);box-shadow:0 6px 20px rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;margin:0;animation:undoPop 0.4s ease}
-#undoBar button:hover{transform:scale(1.1)}
-#undoBar button:disabled{opacity:0.3;transform:scale(0.9);background:var(--btn-bg);color:var(--text)}
-@keyframes undoPop{0%{transform:scale(0)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+#undoBar button{width:56px;height:56px;border-radius:50%;font-size:1.7em;padding:0;background:var(--primary);color:var(--primary-text);border:3px solid var(--card);box-shadow:0 6px 20px rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;margin:0}
+#undoBar button:disabled{opacity:0.3;background:var(--btn-bg);color:var(--text)}
 #undoBar .undo-label{background:rgba(0,0,0,0.85);color:#fff;font-size:0.7em;padding:4px 10px;border-radius:99px;text-align:center;border:1px solid var(--primary)}
 #toastBox{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:99998;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none;max-width:92vw}
 .toast{background:rgba(0,0,0,0.92);color:#fff;padding:10px 20px;border-radius:22px;font-size:0.9em;font-weight:bold;border:2px solid var(--primary);box-shadow:0 6px 20px rgba(0,0,0,0.55);animation:toastIn 0.25s ease;text-align:center}
@@ -152,14 +148,10 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 .sugg-tag{font-size:0.68em;padding:2px 7px;border-radius:99px;font-weight:bold;flex-shrink:0}
 .sugg-tag.theme{background:#a855f7;color:#fff}
 .sugg-tag.title{background:#f59e0b;color:#000}
-.sugg-text{flex:1;font-size:0.85em;word-break:break-word;line-height:1.3;color:var(--text)}
+.sugg-text{flex:1;font-size:0.85em;word-break:break-word;line-height:1.3}
 .sugg-del{background:#ef4444;color:#fff;border:0;padding:5px 9px;border-radius:6px;cursor:pointer;font-size:0.85em;font-weight:bold;margin:0;flex-shrink:0}
-.title-chip{display:inline-flex;align-items:center;gap:2px;background:var(--card2);border:1px solid #a855f7;border-radius:99px;padding:2px 4px 2px 10px;font-size:0.75em;color:var(--text);max-width:100%}
-.title-chip .chip-text{cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px;color:#a855f7;font-weight:bold}
-.title-chip .chip-del{background:transparent;border:0;color:#ef4444;font-weight:bold;cursor:pointer;padding:0 6px;font-size:1.05em;margin:0;line-height:1}
-#quickFab{position:fixed;bottom:20px;right:20px;z-index:490;display:none;flex-direction:column;align-items:center;gap:4px;animation:fabIn 0.4s cubic-bezier(0.34,1.56,0.64,1)}
+#quickFab{position:fixed;bottom:20px;right:20px;z-index:490;display:none;flex-direction:column;align-items:center;gap:4px}
 #quickFab.show{display:flex}
-@keyframes fabIn{from{opacity:0;transform:scale(0.5) translateY(30px)}to{opacity:1;transform:scale(1) translateY(0)}}
 #quickFab #fabPlus1Btn{width:64px;height:64px;border-radius:50%;font-size:1.8em;padding:0;background:#22c55e;color:#000;border:3px solid var(--card);box-shadow:0 6px 20px rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;margin:0;cursor:pointer}
 #quickFab #fabPlus1Label{background:rgba(0,0,0,0.88);color:#fff;font-size:0.68em;padding:3px 10px;border-radius:99px;border:1px solid #22c55e;text-align:center;max-width:90px;word-break:break-word;line-height:1.2;font-weight:bold}
 #quickFab .fab-clear{background:rgba(0,0,0,0.7);color:#999;font-size:0.6em;padding:2px 8px;border-radius:99px;border:1px solid var(--border);cursor:pointer;margin:0}
@@ -184,59 +176,59 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 
 <div class="wrap">
 <div class="today-card">
-<div><div class="num" id="tAdd">0</div><div class="lbl" data-i18n="tAdded">Добавлено</div></div>
-<div><div class="num" id="tRem">0</div><div class="lbl" data-i18n="tRemoved">Убрано</div></div>
-<div><div class="num" id="tOrder">0</div><div class="lbl" data-i18n="tOrders">Заказы</div></div>
+<div><div class="num" id="tAdd">0</div><div class="lbl">Добавлено</div></div>
+<div><div class="num" id="tRem">0</div><div class="lbl">Убрано</div></div>
+<div><div class="num" id="tOrder">0</div><div class="lbl">Заказы</div></div>
 </div>
 
 <div class="card" style="text-align:center">
 <div style="display:flex;gap:6px;flex-wrap:wrap">
-<button onclick="pushToCloud()" style="flex:1;background:#06b6d4;color:#000" data-i18n="bSend">☁️ Отправить</button>
-<button onclick="pullFromCloud()" style="flex:1" class="sec" data-i18n="bReceive">⬇️ Получить</button>
-<button onclick="startScanner()" style="flex:1;background:#a855f7;color:#fff" data-i18n="bScan">📷 Скан</button>
-<button onclick="startVoice()" style="flex:1;background:#ef4444;color:#fff" data-i18n="bVoice">🎙️ Голос</button>
+<button onclick="pushToCloud()" style="flex:1;background:#06b6d4;color:#000">☁️ Отправить</button>
+<button onclick="pullFromCloud()" style="flex:1" class="sec">⬇️ Получить</button>
+<button onclick="startScanner()" style="flex:1;background:#a855f7;color:#fff">📷 Скан</button>
+<button onclick="startVoice()" style="flex:1;background:#ef4444;color:#fff">🎙️ Голос</button>
 </div>
 <div id="scannerBox">
 <div id="reader" style="width:100%"></div>
 <div style="display:flex;gap:6px;margin-top:8px">
-<button onclick="stopScanner()" class="sec" style="flex:1" data-i18n="btnCloseShort">✕</button>
-<button onclick="clearRecentScans()" class="sec" style="flex:1" data-i18n="btnClear">🗑️ Очистить</button>
+<button onclick="stopScanner()" class="sec" style="flex:1">✕</button>
+<button onclick="clearRecentScans()" class="sec" style="flex:1">🗑️ Очистить</button>
 </div>
 <div id="scanResult" class="small" style="margin-top:8px;text-align:center;font-size:1em;min-height:1.2em">📷 Сканируйте...</div>
 <div id="recentScans"></div>
-<button id="scanNewBtn" onclick="openAddFromScan()" style="display:none;width:100%;margin-top:8px;background:#22c55e;color:#000" data-i18n="btnAddNewBarcode">➕ Добавить новый штрихкод</button>
+<button id="scanNewBtn" onclick="openAddFromScan()" style="display:none;width:100%;margin-top:8px;background:#22c55e;color:#000">➕ Добавить новый штрихкод</button>
 </div>
 <div id="voiceBox" style="display:none;margin-top:8px;background:#1a0000;padding:8px;border-radius:8px;border:1px solid #ef4444">
-<span id="voiceText" class="small" data-i18n="voiceHint">Скажите название и число</span>
+<span id="voiceText" class="small">Скажите название и число</span>
 </div>
 </div>
 
 <div class="stats">
-<div class="stat"><div id="tot" style="font-weight:bold;font-size:1.2em">0</div><div class="small" data-i18n="lPieces">Штук</div></div>
-<div class="stat"><div id="tit" style="font-weight:bold">0</div><div class="small" data-i18n="lTitles">Названий</div></div>
+<div class="stat"><div id="tot" style="font-weight:bold;font-size:1.2em">0</div><div class="small">Штук</div></div>
+<div class="stat"><div id="tit" style="font-weight:bold">0</div><div class="small">Названий</div></div>
 <div class="stat"><div id="cnt-mag" style="color:#f59e0b;font-weight:bold">0</div><div class="small">📰</div></div>
 <div class="stat"><div id="cnt-booklet" style="color:#22c55e;font-weight:bold">0</div><div class="small">📖</div></div>
 <div class="stat"><div id="cnt-poster" style="color:#ec4899;font-weight:bold">0</div><div class="small">🖼️</div></div>
-<div class="stat"><div id="need" style="color:#ef4444;font-weight:bold">0</div><div class="small" data-i18n="lOrder">Заказ</div></div>
+<div class="stat"><div id="need" style="color:#ef4444;font-weight:bold">0</div><div class="small">Заказ</div></div>
 </div>
 
 <div class="card" style="border:2px solid #22c55e">
-<b style="color:#22c55e" data-i18n="countByType">📚 Подсчёт по типам</b>
+<b style="color:#22c55e">📚 Подсчёт по типам</b>
 <div id="countByType" class="count-grid" style="margin-top:10px"></div>
 </div>
 
 <div class="card" style="border:2px solid #f59e0b">
-<b style="color:#f59e0b" data-i18n="countLangType">🌍 Таблица</b>
+<b style="color:#f59e0b">🌍 Таблица</b>
 <div style="overflow:auto">
 <table class="count-table">
-<thead><tr><th data-i18n="thLang">Тип</th><th data-i18n="thTotal">Всего</th></tr></thead>
+<thead><tr><th>Тип</th><th>Всего</th></tr></thead>
 <tbody id="countLangTypeBody"></tbody>
 </table>
 </div>
 </div>
 
 <div class="card">
-<b data-i18n="chartsTitle">📊 Графики</b>
+<b>📊 Графики</b>
 <canvas id="chartMain" style="max-height:220px;margin-top:8px"></canvas>
 <div style="display:flex;gap:4px;margin-top:8px">
 <button onclick="renderCharts()" class="sec" style="flex:1">🔄</button>
@@ -246,11 +238,11 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 
 <div class="card">
 <div style="display:flex;justify-content:space-between;align-items:center">
-<b data-i18n="allItemsTitle">📦 Все издания</b>
-<span class="small" data-i18n="listHint">📜 история • 📌 +1</span>
+<b>📦 Все издания</b>
+<span class="small">📜 история • 📌 +1</span>
 </div>
 <div class="toolbar">
-<input id="search" data-i18n-ph="searchPh" placeholder="🔍 Поиск..." oninput="debouncedRender()" style="flex:2;padding:8px">
+<input id="search" placeholder="🔍 Поиск..." oninput="debouncedRender()" style="flex:2;padding:8px">
 <select id="sortSelect" onchange="setSort(this.value)" style="flex:1"></select>
 </div>
 <div class="toolbar">
@@ -260,11 +252,11 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 
 <div class="card" id="orderBox" style="display:none;border:2px solid #ef4444">
-<b style="color:#ef4444" data-i18n="orderTitle">⚠️ СПИСОК ЗАКАЗА</b>
+<b style="color:#ef4444">⚠️ СПИСОК ЗАКАЗА</b>
 <div id="orderList" style="margin-top:8px"></div>
 <div id="smartOrder" style="margin-top:10px;background:var(--card2);padding:8px;border-radius:8px;border:1px solid #f59e0b"></div>
 <div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap">
-<button onclick="copyOrder()" data-i18n="btnCopy">Копировать</button>
+<button onclick="copyOrder()">Копировать</button>
 <button onclick="exportOrder()" class="sec">TXT</button>
 <button onclick="exportPDF()" style="background:#22c55e;color:#000">📄 PDF</button>
 <button onclick="shareWhatsApp()" style="background:#25D366;color:#000">WhatsApp</button>
@@ -272,16 +264,16 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 
 <div class="card" id="dangerCard" style="border:2px solid #ef4444">
-<b style="color:#ef4444" data-i18n="dangerTitle">⚠️ Опасная зона</b>
-<button onclick="deleteAllItems()" style="width:100%;margin-top:6px;background:#ef4444;color:#fff" data-i18n="btnDeleteAll">🗑️ Удалить ВСЁ</button>
+<b style="color:#ef4444">⚠️ Опасная зона</b>
+<button onclick="deleteAllItems()" style="width:100%;margin-top:6px;background:#ef4444;color:#fff">🗑️ Удалить ВСЁ</button>
 </div>
 
 <div class="card" id="addCard" style="border:2px solid #f59e0b">
-<b style="color:#f59e0b" data-i18n="addFormTitle">➕ Добавить новое издание</b>
-<div id="addPermNotice" class="notice-box" style="display:none" data-i18n="alertNoPerm">⚠️ Нет прав.</div>
+<b style="color:#f59e0b">➕ Добавить новое издание</b>
+<div id="addPermNotice" class="notice-box" style="display:none">⚠️ Нет прав.</div>
 
-<label data-i18n="lblQuickAdd">⚡ Быстрое добавление</label>
-<div class="small" style="color:var(--muted);margin-bottom:4px" data-i18n="lblQuickAddHint">Один клик — тип, категория и название заполняются автоматически.</div>
+<label>⚡ Быстрое добавление</label>
+<div class="small" style="color:var(--muted);margin-bottom:4px">Один клик — тип, категория и название заполняются автоматически.</div>
 <div class="quick-add-bar">
 <button type="button" class="quick-add-btn" onclick="quickAdd('watchtower')">📰 Сторожевая</button>
 <button type="button" class="quick-add-btn" onclick="quickAdd('awake')">📰 Пробудитесь</button>
@@ -289,7 +281,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <button type="button" class="quick-add-btn" onclick="quickAdd('poster')">🖼️ Постер</button>
 </div>
 
-<label data-i18n="lblType">📋 Тип издания</label>
+<label>📋 Тип издания</label>
 <div style="display:flex;gap:4px;margin:8px 0;flex-wrap:wrap">
 <button onclick="setAddType('Журнал')" id="a-mag" class="typebtn active">📰 Журнал</button>
 <button onclick="setAddType('Брошюра')" id="a-booklet" class="typebtn">📖 Брошюра</button>
@@ -303,46 +295,79 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <div class="type-help" id="typeHelp"></div>
 
 <div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0 3px">
-<label style="margin:0" data-i18n="lblTitle">📝 Название *</label>
+<label style="margin:0">📝 Название *</label>
 <button type="button" onclick="openSuggManager()" style="padding:4px 10px;font-size:0.72em;background:var(--btn-bg);color:var(--primary);border:1px solid var(--primary);margin:0;font-weight:bold">📝 Подсказки</button>
 </div>
-<input id="title" list="jwTitlesList" placeholder="напр. Сторожевая башня" autocomplete="off" oninput="renderTitleChips()">
+<input id="title" list="jwTitlesList" placeholder="напр. Сторожевая башня" autocomplete="off">
 <datalist id="jwTitlesList"></datalist>
-<div id="titleChips" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px"></div>
 
 <div class="row">
 <div>
-<label data-i18n="lblYear">📅 Год</label>
+<label>📅 Год</label>
 <input id="year" list="yearList" placeholder="напр. 2026" autocomplete="off">
 <datalist id="yearList"></datalist>
 </div>
 <div>
-<label data-i18n="lblIssueNum">🔢 Номер выпуска</label>
+<label>🔢 Номер выпуска</label>
 <input id="issueNum" list="issueNumList" placeholder="напр. 1" autocomplete="off">
 <datalist id="issueNumList"></datalist>
 </div>
 </div>
 
 <div class="row">
-<div><label data-i18n="lblCat">🏷️ Категория</label><input id="cat" placeholder="напр. Сторожевая башня"></div>
-<div><label data-i18n="lblQty">📦 Количество</label><input id="qty" type="number" value="10"></div>
+<div><label>🏷️ Категория</label><input id="cat" placeholder="напр. Сторожевая башня"></div>
+<div><label>📦 Количество</label><input id="qty" type="number" value="10"></div>
 </div>
 <div class="row">
-<div><label data-i18n="lblMin">⚠️ Минимум</label><input id="min" type="number" value="3"></div>
-<div><label data-i18n="lblBarcode">🔍 Штрихкод</label><input id="bar" placeholder="опционально"></div>
+<div><label>⚠️ Минимум</label><input id="min" type="number" value="3"></div>
+<div>
+<label>🌍 Язык</label>
+<select id="lang">
+<option value="ru">🇷🇺 Русский</option>
+<option value="en">🇬🇧 English</option>
+<option value="de">🇩🇪 Deutsch</option>
+<option value="es">🇪🇸 Español</option>
+<option value="fr">🇫🇷 Français</option>
+<option value="it">🇮🇹 Italiano</option>
+<option value="pt">🇵🇹 Português</option>
+<option value="pl">🇵🇱 Polski</option>
+<option value="uk">🇺🇦 Українська</option>
+<option value="tr">🇹🇷 Türkçe</option>
+<option value="el">🇬🇷 Ελληνικά</option>
+<option value="ko">🇰🇷 한국어</option>
+<option value="ja">🇯🇵 日本語</option>
+<option value="zh">🇨🇳 中文</option>
+<option value="ro">🇷🇴 Română</option>
+<option value="hu">🇭🇺 Magyar</option>
+<option value="cs">🇨🇿 Čeština</option>
+<option value="bg">🇧🇬 Български</option>
+<option value="sr">🇷🇸 Српски</option>
+<option value="hr">🇭🇷 Hrvatski</option>
+<option value="sw">🇰🇪 Kiswahili</option>
+<option value="hi">🇮🇳 हिन्दी</option>
+<option value="ar">🇸🇦 العربية</option>
+<option value="hy">🇦🇲 Հայերեն</option>
+<option value="ka">🇬🇪 ქართული</option>
+<option value="he">🇮🇱 עברית</option>
+<option value="other">🌐 Другой</option>
+</select>
+</div>
+</div>
+<div class="row">
+<div style="flex:1"><label>🔍 Штрихкод</label><input id="bar" placeholder="опционально"></div>
 </div>
 
-<label data-i18n="lblPhoto">📸 Фото</label>
-<label for="photoInput" class="file-btn" data-i18n="btnChooseFile">📁 Выбрать файл</label>
+<label>📸 Фото</label>
+<label for="photoInput" class="file-btn">📁 Выбрать файл</label>
 <input type="file" id="photoInput" accept="image/*" onchange="previewPhoto(event)" style="display:none">
 <img id="photoPreview" style="display:none;width:80px;height:80px;object-fit:cover;border-radius:8px;margin-top:6px">
 
-<button onclick="addItem()" id="btnAddItem" style="width:100%;margin-top:16px" data-i18n="btnAdd">➕ Добавить</button>
+<button onclick="addItem()" id="btnAddItem" style="width:100%;margin-top:16px">➕ Добавить</button>
 
 <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:10px">
-<label data-i18n="lblBulk">⚡ Несколько изданий сразу</label>
+<label>⚡ Несколько изданий сразу</label>
 <textarea id="bulk" placeholder="Название 1&#10;Название 2"></textarea>
-<button class="sec" onclick="addBulk()" id="btnAddBulk" style="width:100%;margin-top:4px" data-i18n="btnAddAll">📋 Добавить все</button>
+<button class="sec" onclick="addBulk()" id="btnAddBulk" style="width:100%;margin-top:4px">📋 Добавить все</button>
 </div>
 </div>
 </div>
@@ -350,11 +375,11 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <div id="adminScreen">
 <div class="card" style="max-width:750px;margin:0 auto;border:2px solid #f59e0b">
 <h2 style="color:#f59e0b;text-align:center">👑 АДМИН</h2>
-<div style="text-align:center"><button class="sec" onclick="closeAdmin()" data-i18n="btnClose">✕ Закрыть</button></div>
+<div style="text-align:center"><button class="sec" onclick="closeAdmin()">✕ Закрыть</button></div>
 <div id="loginBox" style="margin-top:12px">
-<label data-i18n="adminPassword">Пароль</label>
+<label>Пароль</label>
 <input id="pinCheck" type="password" placeholder="••••">
-<button onclick="checkAdmin()" style="width:100%;margin-top:8px" data-i18n="btnLogin">Войти</button>
+<button onclick="checkAdmin()" style="width:100%;margin-top:8px">Войти</button>
 </div>
 <div id="adminContent" style="display:none;margin-top:12px">
 
@@ -506,7 +531,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <div id="suggOverlay" onclick="if(event.target===this)closeSuggManager()">
 <div id="suggBox" onclick="event.stopPropagation()">
 <h3>📝 Подсказки</h3>
-<div class="small" style="text-align:center;color:var(--muted);margin-bottom:10px">Удалите лишнее — оно больше не будет предлагаться в поле «Название»</div>
+<div class="small" style="text-align:center;color:var(--muted);margin-bottom:10px">Удалите лишнее — оно исчезнет из автодополнения</div>
 <input id="suggMgrSearch" placeholder="🔍 Поиск..." oninput="renderSuggManager()" style="margin-bottom:8px">
 <div id="suggMgrList" style="max-height:45vh;overflow:auto;background:var(--card2);border-radius:8px;padding:4px 8px"></div>
 <div style="display:flex;gap:8px;margin-top:12px">
@@ -557,103 +582,111 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 
 <div id="undoBar">
 <div class="undo-label" id="undoLabel">—</div>
-<button onclick="undo()" id="bUndo" disabled title="Ctrl+Z">↶</button>
-<button onclick="redo()" id="bRedo" disabled title="Ctrl+Y">↷</button>
+<button onclick="undo()" id="bUndo" disabled>↶</button>
+<button onclick="redo()" id="bRedo" disabled>↷</button>
 </div>
 
 <div id="toastBox"></div>
 
 <script>
-/* ============= ТОЛЬКО РУССКИЙ ============= */
 var curLang = 'ru';
 
-/* ============= ПРЕДЗАПОЛНЕННЫЕ ЖУРНАЛЫ С ТЕМАМИ ============= */
-var PRESET_ITEMS = [
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2026', year:'2026', issueNum:'1', theme:'Ищите истину'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2025', year:'2025', issueNum:'1', theme:'Библия — книга надежды'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2025', year:'2025', issueNum:'2', theme:'Мир без войн — когда?'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2025', year:'2025', issueNum:'3', theme:'Счастье — как его найти?'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2024', year:'2024', issueNum:'1', theme:'Что такое Царство Бога?'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2024', year:'2024', issueNum:'2', theme:'Почему Бог допускает страдания?'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2024', year:'2024', issueNum:'3', theme:'Кто такой Иисус Христос?'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2023', year:'2023', issueNum:'1', theme:'В чём смысл жизни?'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2023', year:'2023', issueNum:'2', theme:'Что происходит после смерти?'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2023', year:'2023', issueNum:'3', theme:'Как молиться и быть услышанным?'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2022', year:'2022', issueNum:'1', theme:'Есть ли Бог?'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2022', year:'2022', issueNum:'2', theme:'Как обрести мир в семье?'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2022', year:'2022', issueNum:'3', theme:'Будущее человечества — что говорит Библия?'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2021', year:'2021', issueNum:'1', theme:'Что такое настоящая любовь?'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2021', year:'2021', issueNum:'2', theme:'Как справиться с тревогой?'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2021', year:'2021', issueNum:'3', theme:'Надежда для умерших близких'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2020', year:'2020', issueNum:'1', theme:'Как стать счастливым?'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2020', year:'2020', issueNum:'2', theme:'Что происходит с миром?'},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2020', year:'2020', issueNum:'3', theme:'Зачем мы здесь?'},
+/* ============= ЯЗЫКИ ============= */
+var LANGS = {
+  ru:'🇷🇺 Русский', en:'🇬🇧 English', de:'🇩🇪 Deutsch', es:'🇪🇸 Español',
+  fr:'🇫🇷 Français', it:'🇮🇹 Italiano', pt:'🇵🇹 Português', pl:'🇵🇱 Polski',
+  uk:'🇺🇦 Українська', tr:'🇹🇷 Türkçe', el:'🇬🇷 Ελληνικά', ko:'🇰🇷 한국어',
+  ja:'🇯🇵 日本語', zh:'🇨🇳 中文', ro:'🇷🇴 Română', hu:'🇭🇺 Magyar',
+  cs:'🇨🇿 Čeština', bg:'🇧🇬 Български', sr:'🇷🇸 Српски', hr:'🇭🇷 Hrvatski',
+  sw:'🇰🇪 Kiswahili', hi:'🇮🇳 हिन्दी', ar:'🇸🇦 العربية', hy:'🇦🇲 Հայերեն',
+  ka:'🇬🇪 ქართული', he:'🇮🇱 עברית', other:'🌐 Другой'
+};
+function getLangDisplay(code){
+  if(!code) return '';
+  return LANGS[code] || ('🌐 '+code);
+}
 
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2026', year:'2026', issueNum:'1', theme:'Как победить одиночество'},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2025', year:'2025', issueNum:'1', theme:'Как справиться со стрессом?'},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2025', year:'2025', issueNum:'2', theme:'Здоровье и благополучие'},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2024', year:'2024', issueNum:'1', theme:'Уважение к другим'},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2024', year:'2024', issueNum:'2', theme:'Как сохранить семью?'},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2023', year:'2023', issueNum:'1', theme:'Выживет ли наша планета? Причины для оптимизма'},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2023', year:'2023', issueNum:'2', theme:'Дружба и отношения'},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2022', year:'2022', issueNum:'1', theme:'Мир, в котором хочется жить'},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2022', year:'2022', issueNum:'2', theme:'Забота о планете'},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2021', year:'2021', issueNum:'1', theme:'Что нас ждёт в будущем?'},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2021', year:'2021', issueNum:'2', theme:'Настоящие друзья'},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2020', year:'2020', issueNum:'1', theme:'Счастливая семья'},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2020', year:'2020', issueNum:'2', theme:'Как справиться с потерей?'},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 3 2020', year:'2020', issueNum:'3', theme:'Настоящий успех'},
+/* ============= ПРЕСЕТЫ (без тем — темы добавляет пользователь) ============= */
+var PRESET_ITEMS = [
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2026', year:'2026', issueNum:'1', theme:''},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2025', year:'2025', issueNum:'1', theme:''},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2025', year:'2025', issueNum:'2', theme:''},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2025', year:'2025', issueNum:'3', theme:''},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2024', year:'2024', issueNum:'1', theme:''},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2024', year:'2024', issueNum:'2', theme:''},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2024', year:'2024', issueNum:'3', theme:''},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2023', year:'2023', issueNum:'1', theme:''},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2023', year:'2023', issueNum:'2', theme:''},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2023', year:'2023', issueNum:'3', theme:''},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2022', year:'2022', issueNum:'1', theme:''},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2022', year:'2022', issueNum:'2', theme:''},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2022', year:'2022', issueNum:'3', theme:''},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2021', year:'2021', issueNum:'1', theme:''},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2021', year:'2021', issueNum:'2', theme:''},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2021', year:'2021', issueNum:'3', theme:''},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2020', year:'2020', issueNum:'1', theme:''},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2020', year:'2020', issueNum:'2', theme:''},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2020', year:'2020', issueNum:'3', theme:''},
+
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2026', year:'2026', issueNum:'1', theme:''},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2025', year:'2025', issueNum:'1', theme:''},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2025', year:'2025', issueNum:'2', theme:''},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2024', year:'2024', issueNum:'1', theme:''},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2024', year:'2024', issueNum:'2', theme:''},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2023', year:'2023', issueNum:'1', theme:''},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2023', year:'2023', issueNum:'2', theme:''},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2022', year:'2022', issueNum:'1', theme:''},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2022', year:'2022', issueNum:'2', theme:''},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2021', year:'2021', issueNum:'1', theme:''},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2021', year:'2021', issueNum:'2', theme:''},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2020', year:'2020', issueNum:'1', theme:''},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2020', year:'2020', issueNum:'2', theme:''},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 3 2020', year:'2020', issueNum:'3', theme:''},
 
   {type:'Брошюра', cat:'Брошюра', title:'Радуйтесь жизни сейчас и вечно!', year:'', issueNum:'', theme:''},
   {type:'Брошюра', cat:'Брошюра', title:'Руководство для тех, кто изучает Библию', year:'', issueNum:'', theme:''}
 ];
 
 var T = {
-  searchPh: {ru:'🔍 Поиск...'},
-  allItemsTitle: {ru:'📦 Все издания'},
-  listHint: {ru:'📜 история • 📌 +1'},
-  tAdded: {ru:'Добавлено'},tRemoved: {ru:'Убрано'},tOrders: {ru:'Заказы'},
-  bSend: {ru:'☁️ Отправить'},bReceive: {ru:'⬇️ Получить'},bScan: {ru:'📷 Скан'},bVoice: {ru:'🎙️ Голос'},
-  voiceHint: {ru:'Скажите название и число'},
-  lPieces: {ru:'Штук'},lTitles: {ru:'Названий'},lOrder: {ru:'Заказ'},
-  countByType: {ru:'📚 Подсчёт по типам'},countLangType: {ru:'🌍 Таблица'},chartsTitle: {ru:'📊 Графики'},
-  thLang: {ru:'Тип'},thTotal: {ru:'Всего'},
-  addFormTitle: {ru:'➕ Добавить новое издание'},
-  lblQuickAdd: {ru:'⚡ Быстрое добавление'},
-  lblQuickAddHint: {ru:'Один клик — тип, категория и название заполняются автоматически.'},
-  lblType: {ru:'📋 Тип издания'},lblTitle: {ru:'📝 Название *'},
-  lblYear: {ru:'📅 Год'},lblIssueNum: {ru:'🔢 Номер выпуска'},
-  lblCat: {ru:'🏷️ Категория'},lblQty: {ru:'📦 Количество'},
-  lblMin: {ru:'⚠️ Минимум'},lblBarcode: {ru:'🔍 Штрихкод'},lblPhoto: {ru:'📸 Фото'},
-  btnChooseFile: {ru:'📁 Выбрать файл'},btnAdd: {ru:'➕ Добавить'},
-  lblBulk: {ru:'⚡ Несколько изданий сразу'},btnAddAll: {ru:'📋 Добавить все'},
-  dangerTitle: {ru:'⚠️ Опасная зона'},btnDeleteAll: {ru:'🗑️ Удалить ВСЁ'},
-  orderTitle: {ru:'⚠️ СПИСОК ЗАКАЗА'},btnCopy: {ru:'Копировать'},
-  btnClose: {ru:'✕ Закрыть'},btnCloseShort: {ru:'✕'},
-  adminPassword: {ru:'Пароль'},btnLogin: {ru:'Войти'},btnClear: {ru:'Очистить'}
+  searchPh:{ru:'🔍 Поиск...'}, allItemsTitle:{ru:'📦 Все издания'}, listHint:{ru:'📜 история • 📌 +1'},
+  tAdded:{ru:'Добавлено'},tRemoved:{ru:'Убрано'},tOrders:{ru:'Заказы'},
+  bSend:{ru:'☁️ Отправить'},bReceive:{ru:'⬇️ Получить'},bScan:{ru:'📷 Скан'},bVoice:{ru:'🎙️ Голос'},
+  voiceHint:{ru:'Скажите название и число'},
+  lPieces:{ru:'Штук'},lTitles:{ru:'Названий'},lOrder:{ru:'Заказ'},
+  countByType:{ru:'📚 Подсчёт по типам'},countLangType:{ru:'🌍 Таблица'},chartsTitle:{ru:'📊 Графики'},
+  thLang:{ru:'Тип'},thTotal:{ru:'Всего'},
+  addFormTitle:{ru:'➕ Добавить новое издание'},
+  lblQuickAdd:{ru:'⚡ Быстрое добавление'},
+  lblQuickAddHint:{ru:'Один клик — тип, категория и название заполняются автоматически.'},
+  lblType:{ru:'📋 Тип издания'},lblTitle:{ru:'📝 Название *'},
+  lblYear:{ru:'📅 Год'},lblIssueNum:{ru:'🔢 Номер выпуска'},
+  lblCat:{ru:'🏷️ Категория'},lblQty:{ru:'📦 Количество'},
+  lblMin:{ru:'⚠️ Минимум'},lblBarcode:{ru:'🔍 Штрихкод'},lblPhoto:{ru:'📸 Фото'},
+  btnChooseFile:{ru:'📁 Выбрать файл'},btnAdd:{ru:'➕ Добавить'},
+  lblBulk:{ru:'⚡ Несколько изданий сразу'},btnAddAll:{ru:'📋 Добавить все'},
+  dangerTitle:{ru:'⚠️ Опасная зона'},btnDeleteAll:{ru:'🗑️ Удалить ВСЁ'},
+  orderTitle:{ru:'⚠️ СПИСОК ЗАКАЗА'},btnCopy:{ru:'Копировать'},
+  btnClose:{ru:'✕ Закрыть'},btnCloseShort:{ru:'✕'},
+  adminPassword:{ru:'Пароль'},btnLogin:{ru:'Войти'},btnClear:{ru:'Очистить'}
 };
 function Tget(key){ var a=T[key]; if(!a) return key; return a.ru || key; }
 
 var QUICK_PRESETS = {
-  watchtower: { type: 'Журнал', cat: 'Сторожевая башня (для публики)', names: 'Сторожевая башня (для публики)' },
-  awake: { type: 'Журнал', cat: 'Пробудитесь!', names: 'Пробудитесь!' },
-  booklet: { type: 'Брошюра', cat: 'Брошюра', names: 'Брошюра' },
-  poster: { type: 'Постер', cat: 'Постер', names: 'Постер' }
+  watchtower:{ type:'Журнал', cat:'Сторожевая башня (для публики)', names:'Сторожевая башня (для публики)' },
+  awake:{ type:'Журнал', cat:'Пробудитесь!', names:'Пробудитесь!' },
+  booklet:{ type:'Брошюра', cat:'Брошюра', names:'Брошюра' },
+  poster:{ type:'Постер', cat:'Постер', names:'Постер' }
 };
 
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 function cleanStr(v){ return String(v==null?'':v).replace(/[<>"]/g,''); }
 function vibrate(ms){ try{ if(navigator.vibrate) navigator.vibrate(ms||10); }catch(e){} }
 function isLightColor(hex){
-  try{
-    var c = String(hex||'').replace('#','');
-    if(c.length===3) c = c[0]+c[0]+c[1]+c[1]+c[2]+c[2];
-    if(c.length!==6) return false;
-    var r = parseInt(c.substr(0,2),16), g = parseInt(c.substr(2,2),16), b = parseInt(c.substr(4,2),16);
-    return (0.299*r + 0.587*g + 0.114*b)/255 > 0.55;
-  }catch(e){ return false; }
+  try{ var c=String(hex||'').replace('#',''); if(c.length===3) c=c[0]+c[0]+c[1]+c[1]+c[2]+c[2]; if(c.length!==6) return false;
+    var r=parseInt(c.substr(0,2),16),g=parseInt(c.substr(2,2),16),b=parseInt(c.substr(4,2),16);
+    return (0.299*r+0.587*g+0.114*b)/255 > 0.55; }catch(e){ return false; }
 }
-function getTextOnColor(hex){ return isLightColor(hex) ? '#111' : '#fff'; }
+function getTextOnColor(hex){ return isLightColor(hex)?'#111':'#fff'; }
 function toast(msg, ms){
   ms = ms || 2200;
   var box = document.getElementById('toastBox'); if(!box) return;
@@ -665,14 +698,14 @@ var audioCtx = null;
 function beep(freq, dur){
   try{
     if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-    var osc = audioCtx.createOscillator(); var gain = audioCtx.createGain();
+    var osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
     osc.connect(gain); gain.connect(audioCtx.destination);
-    osc.frequency.value = freq || 900; gain.gain.value = 0.08;
-    osc.start(); osc.stop(audioCtx.currentTime + (dur||0.12));
+    osc.frequency.value=freq||900; gain.gain.value=0.08;
+    osc.start(); osc.stop(audioCtx.currentTime+(dur||0.12));
   }catch(e){}
 }
-function beepOk(){ beep(1000, 0.1); setTimeout(function(){ beep(1400, 0.1); }, 100); }
-function beepFail(){ beep(300, 0.25); }
+function beepOk(){ beep(1000,0.1); setTimeout(function(){ beep(1400,0.1); },100); }
+function beepFail(){ beep(300,0.25); }
 
 function cleanItems(arr){
   if(!Array.isArray(arr)) return [];
@@ -682,7 +715,7 @@ function cleanItems(arr){
     if(o.names && typeof o.names==='object'){ var n={}; for(var l in o.names) n[l]=cleanStr(o.names[l]); o.names=n; }
     if(o.cat && typeof o.cat==='object'){ var c={}; for(var l2 in o.cat) c[l2]=cleanStr(o.cat[l2]); o.cat=c; } else o.cat=cleanStr(o.cat);
     o.type=cleanStr(o.type); o.barcode=cleanStr(o.barcode);
-    if(o.lang!=null) o.lang=cleanStr(o.lang);
+    if(o.lang!=null) o.lang=cleanStr(o.lang) || 'ru';
     if(o.year!=null) o.year=cleanStr(o.year);
     if(o.issueNum!=null) o.issueNum=cleanStr(o.issueNum);
     if(o.theme!=null) o.theme=cleanStr(o.theme);
@@ -729,6 +762,7 @@ var curFF=localStorage.getItem('stand_ff')||'Arial, sans-serif';
 var curTheme=localStorage.getItem('stand_theme')||'dark';
 var curSort=localStorage.getItem('stand_sort')||'low';
 var curTypeFilter='all';
+var curLangFilter='all';
 var bgColorDark=localStorage.getItem('stand_bg_color_dark')||'';
 var bgColorDay=localStorage.getItem('stand_bg_color_day')||'';
 var btnColorDark=localStorage.getItem('stand_btn_color_dark')||'';
@@ -749,15 +783,19 @@ var fbConfigStr=localStorage.getItem('stand_fb_config')||'{"apiKey":"AIzaSyCKoGO
 var cloudApp=null, cloudDb=null, cloudUnsub=null, cloudPushTimeout=null, isSyncingFromCloud=false;
 var syncState='offline', currentPhotoBase64='', renderTimer=null;
 
+/* ============= ПОДСКАЗКИ ============= */
 var savedTitles=[], savedYears=[], savedIssueNums=[];
+var removedSuggestions=[];
 try{ savedTitles = JSON.parse(localStorage.getItem('stand_saved_titles')||'[]'); }catch(e){ savedTitles=[]; }
 try{ savedYears = JSON.parse(localStorage.getItem('stand_saved_years')||'[]'); }catch(e){ savedYears=[]; }
 try{ savedIssueNums = JSON.parse(localStorage.getItem('stand_saved_issue_nums')||'[]'); }catch(e){ savedIssueNums=[]; }
+try{ removedSuggestions = JSON.parse(localStorage.getItem('stand_removed_suggestions')||'[]'); }catch(e){ removedSuggestions=[]; }
 if(!Array.isArray(savedTitles)) savedTitles=[];
 if(!Array.isArray(savedYears)) savedYears=[];
 if(!Array.isArray(savedIssueNums)) savedIssueNums=[];
+if(!Array.isArray(removedSuggestions)) removedSuggestions=[];
 
-var PRESETS_VERSION = 4;
+var PRESETS_VERSION = 5;
 (function initPresets(){
   var cur = parseInt(localStorage.getItem('stand_presets_ver') || '0', 10);
   if(cur === PRESETS_VERSION) return;
@@ -774,6 +812,20 @@ var PRESETS_VERSION = 4;
   localStorage.setItem('stand_saved_years', JSON.stringify(savedYears));
   localStorage.setItem('stand_saved_issue_nums', JSON.stringify(savedIssueNums));
   localStorage.setItem('stand_presets_ver', String(PRESETS_VERSION));
+})();
+
+/* ★ Одноразовая миграция: убираем из подсказок всё, что похоже на сочинённые темы */
+var THEME_CLEANUP_VERSION = 1;
+(function cleanupInventedThemes(){
+  var cur = parseInt(localStorage.getItem('stand_theme_cleanup') || '0', 10);
+  if(cur >= THEME_CLEANUP_VERSION) return;
+  savedTitles = savedTitles.filter(function(t){
+    if(/№\s*\d/.test(t)) return true;
+    if(/^(Сторожевая|Пробудитесь|Брошюра|Постер|Радуйтесь|Руководство)/.test(t)) return true;
+    return false;
+  });
+  localStorage.setItem('stand_saved_titles', JSON.stringify(savedTitles));
+  localStorage.setItem('stand_theme_cleanup', String(THEME_CLEANUP_VERSION));
 })();
 
 try{ items=cleanItems(JSON.parse(localStorage.getItem('stand_items_v4')||'[]')); }catch(e){ items=[]; }
@@ -799,21 +851,28 @@ function addToSavedList(listName, value){
   if(idx >= 0) list.splice(idx, 1);
   list.unshift(value);
   if(list.length > 500) list.length = 500;
+  // ★ Снимаем блокировку, если пользователь снова добавляет эту подсказку
+  if(listName === 'titles'){
+    var rIdx = removedSuggestions.indexOf(value);
+    if(rIdx >= 0) removedSuggestions.splice(rIdx, 1);
+    localStorage.setItem('stand_removed_suggestions', JSON.stringify(removedSuggestions));
+  }
   if(listName === 'titles') localStorage.setItem('stand_saved_titles', JSON.stringify(list));
   else if(listName === 'years') localStorage.setItem('stand_saved_years', JSON.stringify(list));
   else localStorage.setItem('stand_saved_issue_nums', JSON.stringify(list));
-  try{ renderTitleChips(); }catch(e){}
   try{ renderSuggestions(); }catch(e){}
   try{ renderSuggManager(); }catch(e){}
 }
+function isRemoved(v){ return removedSuggestions.indexOf(v) >= 0; }
+
 function populateDatalists(){
   var tdl = document.getElementById('jwTitlesList');
   if(tdl){
-    var titles = savedTitles.slice();
+    var titles = savedTitles.filter(function(t){ return !isRemoved(t); });
     items.forEach(function(it){
       if(it.names && it.names.ru){
         var v = it.names.ru;
-        if(v && titles.indexOf(v) < 0) titles.unshift(v);
+        if(v && titles.indexOf(v) < 0 && !isRemoved(v)) titles.unshift(v);
       }
     });
     var h = '';
@@ -841,7 +900,6 @@ function populateDatalists(){
     nums.slice(0, 100).forEach(function(n){ h3 += '<option value="'+esc(n)+'">'; });
     idl.innerHTML = h3;
   }
-  try{ renderTitleChips(); }catch(e){}
 }
 function getItemExtraInfo(it){
   var parts = [];
@@ -852,9 +910,7 @@ function getItemExtraInfo(it){
 function getDisplayName(it){
   if(!it) return '';
   if(it.names && it.names.ru && String(it.names.ru).trim()) return it.names.ru;
-  if(it.names && typeof it.names === 'object'){
-    for(var k in it.names){ if(it.names[k] && String(it.names[k]).trim()) return it.names[k]; }
-  }
+  if(it.names && typeof it.names === 'object'){ for(var k in it.names){ if(it.names[k] && String(it.names[k]).trim()) return it.names[k]; } }
   return it.name || '—';
 }
 function getDisplayCat(it){
@@ -869,7 +925,7 @@ function getCurrentUser(){ return users.find(function(u){ return u.id==currentUs
 function hasPerm(perm){ var u=getCurrentUser(); if(!u) return false; if(u.role==='admin') return true; return !!(u.perms && u.perms[perm]); }
 function getRoleDisplay(role){ var m={admin:'👑 Админ',manager:'📦 Менеджер',counter:'🔢 Счётчик',viewer:'👀 Наблюдатель'}; return m[role]||role; }
 
-/* ============= ПОДСКАЗКИ / ТЕМЫ ============= */
+/* ============= РАБОТА С ПОДСКАЗКАМИ ============= */
 function isThemeSuggestion(str){
   if(!str) return false;
   if(/№\s*\d/.test(str)) return false;
@@ -877,34 +933,6 @@ function isThemeSuggestion(str){
   return true;
 }
 
-/* Полоска тем под полем Название */
-function renderTitleChips(){
-  var el = document.getElementById('titleChips'); if(!el) return;
-  var current = ((document.getElementById('title')||{}).value||'').toLowerCase();
-  var themes = savedTitles.filter(function(t){ return isThemeSuggestion(t); });
-  if(themes.length === 0){ el.innerHTML=''; return; }
-  if(current){
-    themes.sort(function(a,b){
-      var aS = a.toLowerCase().indexOf(current)===0 ? 0 : (a.toLowerCase().indexOf(current)>=0 ? 1 : 2);
-      var bS = b.toLowerCase().indexOf(current)===0 ? 0 : (b.toLowerCase().indexOf(current)>=0 ? 1 : 2);
-      return aS-bS;
-    });
-  }
-  var h = '';
-  themes.slice(0, 20).forEach(function(t){
-    var safe = esc(t);
-    h += '<span class="title-chip"><span class="chip-text" data-chip="'+safe+'" onclick="pickTitleChip(this.getAttribute(\'data-chip\'))">💡 '+safe+'</span><button class="chip-del" data-chip="'+safe+'" onclick="event.stopPropagation();deleteSuggestion(this.getAttribute(\'data-chip\'))" title="Удалить из подсказок">✕</button></span>';
-  });
-  el.innerHTML = h;
-}
-function pickTitleChip(value){
-  var el = document.getElementById('title'); if(!el) return;
-  el.value = value;
-  renderTitleChips();
-  el.focus();
-}
-
-/* Модалка управления подсказками из формы добавления */
 function openSuggManager(){
   var ov = document.getElementById('suggOverlay'); if(!ov) return;
   ov.classList.add('show');
@@ -917,7 +945,7 @@ function closeSuggManager(){
 function renderSuggManager(){
   var el = document.getElementById('suggMgrList'); if(!el) return;
   var q = (((document.getElementById('suggMgrSearch')||{}).value)||'').toLowerCase().trim();
-  var all = savedTitles.slice();
+  var all = savedTitles.filter(function(t){ return !isRemoved(t); });
   var filtered = q ? all.filter(function(t){ return String(t).toLowerCase().indexOf(q) >= 0; }) : all;
   if(filtered.length === 0){ el.innerHTML = '<div class="small" style="text-align:center;padding:20px">—</div>'; return; }
   var h = '';
@@ -930,13 +958,11 @@ function renderSuggManager(){
   if(filtered.length > 500) h += '<div class="small" style="text-align:center;padding:8px">...показано 500 из '+filtered.length+'</div>';
   el.innerHTML = h;
 }
-
-/* Список в админке */
 function renderSuggestions(){
   var el = document.getElementById('suggList'); if(!el) return;
   var cnt = document.getElementById('suggCount');
   var q = (((document.getElementById('suggSearch')||{}).value)||'').toLowerCase().trim();
-  var all = savedTitles.slice();
+  var all = savedTitles.filter(function(t){ return !isRemoved(t); });
   var filtered = q ? all.filter(function(t){ return String(t).toLowerCase().indexOf(q) >= 0; }) : all;
   if(cnt) cnt.textContent = filtered.length + ' / ' + all.length;
   if(filtered.length === 0){ el.innerHTML = '<div class="small" style="text-align:center;padding:20px">—</div>'; return; }
@@ -950,49 +976,51 @@ function renderSuggestions(){
   if(filtered.length > 300) h += '<div class="small" style="text-align:center;padding:8px">...показано 300 из '+filtered.length+'</div>';
   el.innerHTML = h;
 }
-
-/* Удалить одну подсказку */
+/* ★ Удаление + блокировка: не вернётся ни из savedTitles, ни из items */
 function deleteSuggestion(value){
   var idx = savedTitles.indexOf(value);
-  if(idx < 0){ toast('Уже удалено'); renderTitleChips(); renderSuggestions(); renderSuggManager(); return; }
-  savedTitles.splice(idx, 1);
+  if(idx >= 0) savedTitles.splice(idx, 1);
+  if(removedSuggestions.indexOf(value) < 0) removedSuggestions.push(value);
   localStorage.setItem('stand_saved_titles', JSON.stringify(savedTitles));
+  localStorage.setItem('stand_removed_suggestions', JSON.stringify(removedSuggestions));
   populateDatalists();
-  renderTitleChips();
   renderSuggestions();
   renderSuggManager();
   toast('🗑️ Удалено из подсказок');
 }
-
-/* Очистить все подсказки */
 function clearAllSuggestions(){
-  customConfirm('Удалить ВСЕ подсказки? Названия у изданий останутся, но в списке автодополнения их не будет.', function(){
+  customConfirm('Удалить ВСЕ подсказки? Названия у изданий останутся, но в автодополнении их не будет.', function(){
+    savedTitles.forEach(function(t){ if(removedSuggestions.indexOf(t) < 0) removedSuggestions.push(t); });
     savedTitles = [];
     localStorage.setItem('stand_saved_titles', JSON.stringify([]));
+    localStorage.setItem('stand_removed_suggestions', JSON.stringify(removedSuggestions));
     populateDatalists();
-    renderTitleChips();
     renderSuggestions();
     renderSuggManager();
     toast('✕ Все подсказки очищены');
   });
 }
-
-/* Удалить только темы */
 function clearOnlyThemes(){
   customConfirm('Удалить из подсказок только темы (💡)? Названия останутся.', function(){
-    var before = savedTitles.length;
-    savedTitles = savedTitles.filter(function(t){ return !isThemeSuggestion(t); });
+    var removed = 0;
+    savedTitles = savedTitles.filter(function(t){
+      if(isThemeSuggestion(t)){
+        if(removedSuggestions.indexOf(t) < 0) removedSuggestions.push(t);
+        removed++;
+        return false;
+      }
+      return true;
+    });
     localStorage.setItem('stand_saved_titles', JSON.stringify(savedTitles));
+    localStorage.setItem('stand_removed_suggestions', JSON.stringify(removedSuggestions));
     populateDatalists();
-    renderTitleChips();
     renderSuggestions();
     renderSuggManager();
-    var removed = before - savedTitles.length;
     toast('💡 Удалено тем: '+removed);
   });
 }
 
-/* ============= СИНХРОНИЗАЦИЯ / СЕТЬ ============= */
+/* ============= СИНХРОНИЗАЦИЯ ============= */
 function setSyncState(state){
   syncState=state;
   var chip=document.getElementById('syncChip'),txt=document.getElementById('syncChipText');
@@ -1015,6 +1043,7 @@ function save(){
     localStorage.setItem('stand_saved_titles', JSON.stringify(savedTitles));
     localStorage.setItem('stand_saved_years', JSON.stringify(savedYears));
     localStorage.setItem('stand_saved_issue_nums', JSON.stringify(savedIssueNums));
+    localStorage.setItem('stand_removed_suggestions', JSON.stringify(removedSuggestions));
   }catch(e){}
   if(cloudEnabled && !isSyncingFromCloud && cloudDb){ clearTimeout(cloudPushTimeout); cloudPushTimeout=setTimeout(function(){ try{ pushToCloud(); }catch(e){} },1500); }
 }
@@ -1102,6 +1131,7 @@ function updateThemeHints(){ var bgH=document.getElementById('bgThemeHint'),btnH
 
 function setSort(v){ curSort=v; localStorage.setItem('stand_sort',v); render(); }
 function setTypeFilter(v){ curTypeFilter=v; render(); }
+function setLangFilter(v){ curLangFilter=v; render(); }
 function debouncedRender(){ clearTimeout(renderTimer); renderTimer=setTimeout(render,250); }
 
 function quickAdd(kind){
@@ -1116,7 +1146,6 @@ function quickAdd(kind){
       var yEl = document.getElementById('year');
       if(yEl && !yEl.value.trim()) yEl.value = String(new Date().getFullYear());
     }
-    renderTitleChips();
     document.getElementById('title').focus();
     document.getElementById('title').select();
     toast('⚡ Готово — заполнено');
@@ -1166,13 +1195,11 @@ function closeHistory(){
 }
 function renderHistoryContent(it){
   var stats = getHistoryStats(it);
-  var h = '';
-  h += '<div class="hist-stats">';
+  var h = '<div class="hist-stats">';
   h += '<div class="hist-stat pos"><div class="num">+'+stats.added+'</div><div class="label">Добавлено</div></div>';
   h += '<div class="hist-stat neg"><div class="num">-'+stats.removed+'</div><div class="label">Убрано</div></div>';
   h += '<div class="hist-stat info"><div class="num">'+stats.count+'</div><div class="label">Движения</div></div>';
-  h += '<div class="hist-stat info"><div class="num">'+stats.avgPerDay.toFixed(1)+'</div><div class="label">Сред./день</div></div>';
-  h += '</div>';
+  h += '<div class="hist-stat info"><div class="num">'+stats.avgPerDay.toFixed(1)+'</div><div class="label">Сред./день</div></div></div>';
   if(stats.forecastDays !== null && stats.forecastDays > 0){
     var warnColor = stats.forecastDays < 7 ? '#ef4444' : (stats.forecastDays < 21 ? '#f59e0b' : '#22c55e');
     h += '<div class="hist-forecast">🔮 <b>Прогноз:</b> С темпом <b>'+stats.dailyRate.toFixed(1)+'</b> шт./день, ';
@@ -1200,11 +1227,9 @@ function renderHistoryContent(it){
     h += '</div>';
   }
   document.getElementById('histContent').innerHTML = h;
-  requestAnimationFrame(function(){
-    requestAnimationFrame(function(){
-      if(document.getElementById('histChart') && currentHistItemId === it.id){ renderHistoryChart(stats); }
-    });
-  });
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){
+    if(document.getElementById('histChart') && currentHistItemId === it.id){ renderHistoryChart(stats); }
+  }); });
 }
 function renderHistoryChart(stats){
   try{
@@ -1243,7 +1268,7 @@ function clearItemHistory(){
 }
 
 var undoStack=[], redoStack=[]; var MAX_UNDO=30, lastUndoKey='', lastUndoTime=0; var undoBarTimer=null;
-function makeSnapshot(label){ return {items:JSON.parse(JSON.stringify(items)),users:JSON.parse(JSON.stringify(users)),historyLog:JSON.parse(JSON.stringify(historyLog.slice(0,30))),label:label}; }
+function makeSnapshot(label){ return {items:JSON.parse(JSON.stringify(items)),users:JSON.parse(JSON.stringify(users)),historyLog:JSON.parse(JSON.stringify(historyLog.slice(0,30))),savedTitles:savedTitles.slice(),removedSuggestions:removedSuggestions.slice(),label:label}; }
 function showUndoBar(){ var b=document.getElementById('undoBar'); if(!b) return; b.classList.add('show'); clearTimeout(undoBarTimer); undoBarTimer=setTimeout(hideUndoBar,5000); }
 function hideUndoBar(){ var b=document.getElementById('undoBar'); if(b) b.classList.remove('show'); }
 function updateUndoLabel(l){ var e=document.getElementById('undoLabel'); if(e) e.textContent = l ? ('↶ '+(l.length>30?l.substr(0,30)+'…':l)) : '—'; }
@@ -1253,7 +1278,9 @@ function undo(){
   if(!undoStack.length){ toast('Нечего отменять'); return; }
   redoStack.push(makeSnapshot('redo')); var s=undoStack.pop();
   items=s.items; users=s.users; historyLog=s.historyLog;
-  save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); updateQuickFab(); populateDatalists();
+  if(s.savedTitles) savedTitles=s.savedTitles;
+  if(s.removedSuggestions) removedSuggestions=s.removedSuggestions;
+  save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); updateQuickFab(); populateDatalists(); renderSuggestions(); renderSuggManager();
   if(currentHistItemId){ var it=items.find(function(x){return x.id==currentHistItemId;}); if(it) renderHistoryContent(it); else closeHistory(); }
   toast('↶ '+s.label); updateUndoButtons();
   if(undoStack.length>0||redoStack.length>0) showUndoBar(); else hideUndoBar();
@@ -1262,7 +1289,9 @@ function redo(){
   if(!redoStack.length){ toast('Нечего повторить'); return; }
   undoStack.push(makeSnapshot('undo')); var s=redoStack.pop();
   items=s.items; users=s.users; historyLog=s.historyLog;
-  save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); updateQuickFab(); populateDatalists();
+  if(s.savedTitles) savedTitles=s.savedTitles;
+  if(s.removedSuggestions) removedSuggestions=s.removedSuggestions;
+  save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); updateQuickFab(); populateDatalists(); renderSuggestions(); renderSuggManager();
   if(currentHistItemId){ var it=items.find(function(x){return x.id==currentHistItemId;}); if(it) renderHistoryContent(it); else closeHistory(); }
   toast('↷ Redo'); updateUndoButtons();
   if(undoStack.length>0||redoStack.length>0) showUndoBar(); else hideUndoBar();
@@ -1305,6 +1334,17 @@ function render(){
     tf.innerHTML = '<option value="all">Все типы</option><option value="Журнал">📰 Журналы</option><option value="Брошюра">📖 Брошюры</option><option value="Постер">🖼️ Постеры</option>';
     tf.value = curTypeFilter;
   }
+  var lf=document.getElementById('langFilter');
+  if(lf){
+    var opts = '<option value="all">Все языки</option>';
+    var langsInItems = {};
+    items.forEach(function(it){ if(it.lang) langsInItems[it.lang] = true; });
+    Object.keys(langsInItems).sort().forEach(function(code){
+      opts += '<option value="'+esc(code)+'">'+esc(getLangDisplay(code))+'</option>';
+    });
+    lf.innerHTML = opts;
+    lf.value = curLangFilter;
+  }
   var at=document.getElementById('addType');
   if(at){
     var curAt=at.value||'Журнал';
@@ -1319,7 +1359,8 @@ function render(){
     var themeStr=(it.theme||'').toLowerCase();
     var matchQ=name.indexOf(q)>=0 || cat.indexOf(q)>=0 || themeStr.indexOf(q)>=0 || (it.barcode&&it.barcode.toLowerCase().indexOf(q)>=0) || (it.year&&String(it.year).toLowerCase().indexOf(q)>=0) || (it.issueNum&&String(it.issueNum).toLowerCase().indexOf(q)>=0);
     var matchT=curTypeFilter==='all' || it.type===curTypeFilter;
-    if(matchQ && matchT) filtered.push(it);
+    var matchL=curLangFilter==='all' || (it.lang||'ru')===curLangFilter;
+    if(matchQ && matchT && matchL) filtered.push(it);
   }
   filtered.sort(function(a,b){
     if(curSort==='low'){ var aN=(a.qty<=a.min?0:1),bN=(b.qty<=b.min?0:1); if(aN!==bN) return aN-bN; return a.qty-b.qty; }
@@ -1357,10 +1398,11 @@ function render(){
     var extraInfo = getItemExtraInfo(it);
     var extraLine = extraInfo ? '<div class="item-extra">📅 '+esc(extraInfo)+'</div>' : '';
     var themeLine = (it.theme && String(it.theme).trim()) ? '<div class="item-theme">💡 '+esc(it.theme)+'</div>' : '';
+    var langLabel = (it.lang && it.lang!=='ru') ? ' <span class="lang-label">'+esc(getLangDisplay(it.lang))+'</span>' : '';
     h+='<div class="'+favCls+'">'+
       '<div class="item-main">'+photoHtml+
         '<div class="item-info">'+
-          '<span class="type-label '+tcl+'">'+esc(displayType)+'</span> '+histBadge+
+          '<span class="type-label '+tcl+'">'+esc(displayType)+'</span>'+langLabel+' '+histBadge+
           '<b class="item-name" style="display:block;margin-top:4px">'+esc(getDisplayName(it))+'</b>'+
           themeLine+extraLine+
           '<div class="item-cat">'+esc(getDisplayCat(it))+(it.barcode?' | '+esc(it.barcode):'')+'</div>'+
@@ -1430,9 +1472,15 @@ function openRename(id){
   if(!hasPerm('rename')) return;
   var it=items.find(function(x){return x.id==id;}); if(!it) return;
   _renamingId=id;
+  var langOpts = '';
+  Object.keys(LANGS).forEach(function(code){
+    var sel = (it.lang||'ru')===code ? ' selected' : '';
+    langOpts += '<option value="'+code+'"'+sel+'>'+esc(LANGS[code])+'</option>';
+  });
   var html='';
   html+='<div style="margin-bottom:8px"><label style="font-size:0.8em;margin:0 0 3px">📝 Название</label><input id="rn-ru" value="'+esc(getDisplayName(it))+'"></div>';
   html+='<div style="margin-bottom:8px"><label style="font-size:0.8em;margin:0 0 3px">💡 Тема выпуска <span style="color:var(--muted);font-weight:normal">(очистите — тема удалится)</span></label><input id="rn-theme" value="'+esc(it.theme||'')+'" placeholder="напр. Ищите истину"></div>';
+  html+='<div style="margin-bottom:8px"><label style="font-size:0.8em;margin:0 0 3px">🌍 Язык</label><select id="rn-lang">'+langOpts+'</select></div>';
   html+='<div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">';
   html+='<div class="row">';
   html+='<div><label style="font-size:0.8em;margin:0 0 3px">📅 Год</label><input id="rn-year" value="'+esc(it.year||'')+'" placeholder="напр. 2026"></div>';
@@ -1454,6 +1502,8 @@ function saveRename(){
     it.theme = tEl.value.trim();
     if(it.theme && it.theme !== oldTheme) addToSavedList('titles', it.theme);
   }
+  var lEl = document.getElementById('rn-lang');
+  if(lEl) it.lang = lEl.value;
   var yEl = document.getElementById('rn-year'); if(yEl){ it.year = yEl.value.trim(); if(it.year) addToSavedList('years', it.year); }
   var iEl = document.getElementById('rn-issueNum'); if(iEl){ it.issueNum = iEl.value.trim(); if(it.issueNum) addToSavedList('issueNums', it.issueNum); }
   addItemHistory(it.id, 'rename', 0, null, null); addLog('Переименовать',{names:it.names});
@@ -1469,8 +1519,8 @@ function addItem(){
   var qtyVal=parseInt(document.getElementById('qty').value)||0;
   var yearVal=(document.getElementById('year').value||'').trim();
   var issueNumVal=(document.getElementById('issueNum').value||'').trim();
-  var namesObj = { ru: titleVal };
-  var newItem={id:Date.now()+Math.random(),names:namesObj,type:document.getElementById('addType').value,cat:document.getElementById('cat').value||'-',lang:'ru',magazineLang:'ru',year:yearVal,issueNum:issueNumVal,theme:'',qty:qtyVal,min:parseInt(document.getElementById('min').value)||3,barcode:document.getElementById('bar').value||'',photo:currentPhotoBase64||'',history:[]};
+  var langVal = (document.getElementById('lang')||{}).value || 'ru';
+  var newItem={id:Date.now()+Math.random(),names:{ru:titleVal},type:document.getElementById('addType').value,cat:document.getElementById('cat').value||'-',lang:langVal,magazineLang:langVal,year:yearVal,issueNum:issueNumVal,theme:'',qty:qtyVal,min:parseInt(document.getElementById('min').value)||3,barcode:document.getElementById('bar').value||'',photo:currentPhotoBase64||'',history:[]};
   items.push(newItem);
   addItemHistory(newItem.id,'create',qtyVal,0,qtyVal);
   addLog('Добавить',{names:newItem.names});
@@ -1483,7 +1533,7 @@ function addItem(){
   document.getElementById('photoInput').value='';
   document.getElementById('photoPreview').style.display='none';
   currentPhotoBase64='';
-  save(); render(); populateDatalists(); renderTitleChips();
+  save(); render(); populateDatalists();
   toast('✅ Добавлено: '+titleVal);
 }
 function addBulk(){
@@ -1493,17 +1543,17 @@ function addBulk(){
   var qtyVal=parseInt(document.getElementById('qty').value)||0;
   var yearVal=(document.getElementById('year').value||'').trim();
   var issueNumVal=(document.getElementById('issueNum').value||'').trim();
+  var langVal = (document.getElementById('lang')||{}).value || 'ru';
   for(var i=0;i<lines.length;i++){
     var tt=lines[i].trim(); if(!tt) continue;
-    var namesObj={ ru: tt };
-    var nIt={id:Date.now()+c+Math.random(),names:namesObj,type:document.getElementById('addType').value,cat:'-',lang:'ru',magazineLang:'ru',year:yearVal,issueNum:issueNumVal,theme:'',qty:qtyVal,min:3,barcode:'',photo:'',history:[]};
+    var nIt={id:Date.now()+c+Math.random(),names:{ru:tt},type:document.getElementById('addType').value,cat:'-',lang:langVal,magazineLang:langVal,year:yearVal,issueNum:issueNumVal,theme:'',qty:qtyVal,min:3,barcode:'',photo:'',history:[]};
     items.push(nIt); addItemHistory(nIt.id,'create',qtyVal,0,qtyVal);
     addToSavedList('titles', tt);
     c++;
   }
   if(yearVal) addToSavedList('years', yearVal);
   if(issueNumVal) addToSavedList('issueNums', issueNumVal);
-  document.getElementById('bulk').value=''; save(); render(); populateDatalists(); renderTitleChips(); toast('✅ Добавлено '+c+' изданий');
+  document.getElementById('bulk').value=''; save(); render(); populateDatalists(); toast('✅ Добавлено '+c+' изданий');
 }
 
 function renderUsers(){ var list=document.getElementById('usersList'); if(!list) return; if(users.length===0){ list.innerHTML='<div class="small">—</div>'; return; } var h=''; users.forEach(function(u){ h+='<div class="user-row"><div style="flex:1"><div class="uname">👤 '+esc(u.name)+' <span class="urole role-'+u.role+'">'+esc(getRoleDisplay(u.role))+'</span></div></div>'+(users.length>1?'<button class="icon-btn" style="background:#ef4444;color:#fff;border:0;padding:8px 12px;border-radius:6px" onclick="deleteUser('+u.id+')">🗑️</button>':'')+'</div>'; }); list.innerHTML=h; }
@@ -1512,7 +1562,7 @@ function deleteUser(id){ customConfirm('Удалить пользователя?
 function updatePermsFromRole(){ var role=document.getElementById('newUserRole').value; var p=PERMS_PRESETS[role]||PERMS_PRESETS.counter; PERM_KEYS.forEach(function(k){ var el=document.getElementById('p_'+k); if(el) el.checked=!!p[k]; }); }
 function openUserSelector(){ renderUserSelectList(); document.getElementById('userOverlay').classList.add('show'); }
 function closeUserSelector(){ document.getElementById('userOverlay').classList.remove('show'); }
-function renderUserSelectList(){ var list=document.getElementById('userSelectList'); if(!list) return; if(users.length===0){ list.innerHTML='<div class="small" style="text-align:center;padding:20px">—</div>'; return; } var h=''; users.forEach(function(u){ var isCur=u.id==currentUserId; h+='<div onclick="pickUser('+u.id+')" style="background:var(--card2);padding:14px;border-radius:10px;margin:6px 0;cursor:pointer;border:2px solid '+(isCur?'#22c55e':'transparent')+'"><b style="font-size:1.1em;color:var(--text)">👤 '+esc(u.name)+'</b> <span class="urole role-'+u.role+'">'+esc(getRoleDisplay(u.role))+'</span></div>'; }); list.innerHTML=h; }
+function renderUserSelectList(){ var list=document.getElementById('userSelectList'); if(!list) return; if(users.length===0){ list.innerHTML='<div class="small" style="text-align:center;padding:20px">—</div>'; return; } var h=''; users.forEach(function(u){ var isCur=u.id==currentUserId; h+='<div onclick="pickUser('+u.id+')" style="background:var(--card2);padding:14px;border-radius:10px;margin:6px 0;cursor:pointer;border:2px solid '+(isCur?'#22c55e':'transparent')+'"><b style="font-size:1.1em">👤 '+esc(u.name)+'</b> <span class="urole role-'+u.role+'">'+esc(getRoleDisplay(u.role))+'</span></div>'; }); list.innerHTML=h; }
 function pickUser(id){ currentUserId=id; localStorage.setItem('stand_current_user_id',id); var u=getCurrentUser(); addLog('Соединение',{userName:u?u.name:''}); updateUserChip(); closeUserSelector(); render(); }
 function updateUserChip(){ var u=getCurrentUser(); var chip=document.getElementById('userChip'),txt=document.getElementById('userChipText'); if(!chip||!txt) return; if(u){ chip.className='user-chip'; txt.textContent=u.name; } else { chip.className='user-chip no-user'; txt.textContent='👤'; } }
 
@@ -1590,7 +1640,7 @@ function startVoice(){
   rec.onerror=function(){ setTimeout(function(){ vb.style.display='none'; },2000); };
 }
 
-function exportBackup(){ var backup={version:4,ts:Date.now(),app:'StandManagerPRO',items:items,users:users,historyLog:historyLog,adminPass:adminPass,savedTitles:savedTitles,savedYears:savedYears,savedIssueNums:savedIssueNums,settings:{fs:curFS,lfs:curLFS,ff:curFF,theme:curTheme,sort:curSort,bgColorDark:bgColorDark,bgColorDay:bgColorDay,btnColorDark:btnColorDark,btnColorDay:btnColorDay,cloudId:cloudId,cloudEnabled:cloudEnabled,fabEnabled:localStorage.getItem('stand_fab_enabled'),lastUsedItem:localStorage.getItem('stand_last_used_item')}}; var blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='stand-backup-'+new Date().toISOString().slice(0,10)+'.json'; a.click(); toast('💾 Копия загружена'); }
+function exportBackup(){ var backup={version:5,ts:Date.now(),app:'StandManagerPRO',items:items,users:users,historyLog:historyLog,adminPass:adminPass,savedTitles:savedTitles,savedYears:savedYears,savedIssueNums:savedIssueNums,removedSuggestions:removedSuggestions,settings:{fs:curFS,lfs:curLFS,ff:curFF,theme:curTheme,sort:curSort,bgColorDark:bgColorDark,bgColorDay:bgColorDay,btnColorDark:btnColorDark,btnColorDay:btnColorDay,cloudId:cloudId,cloudEnabled:cloudEnabled,fabEnabled:localStorage.getItem('stand_fab_enabled'),lastUsedItem:localStorage.getItem('stand_last_used_item')}}; var blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='stand-backup-'+new Date().toISOString().slice(0,10)+'.json'; a.click(); toast('💾 Копия загружена'); }
 function importBackup(e){
   var file=e.target.files[0]; if(!file) return;
   var reader=new FileReader();
@@ -1607,6 +1657,7 @@ function importBackup(e){
         if(Array.isArray(data.savedTitles)) savedTitles=data.savedTitles;
         if(Array.isArray(data.savedYears)) savedYears=data.savedYears;
         if(Array.isArray(data.savedIssueNums)) savedIssueNums=data.savedIssueNums;
+        if(Array.isArray(data.removedSuggestions)) removedSuggestions=data.removedSuggestions;
         if(data.settings){
           var s=data.settings;
           if(s.fs){ curFS=s.fs; localStorage.setItem('stand_fs',s.fs); }
@@ -1655,14 +1706,16 @@ async function initFirebase(){
       if(data.users && Array.isArray(data.users)){ users=cleanUsers(data.users); }
       if(data.adminPass && data.adminPass!==adminPass){ adminPass=data.adminPass; localStorage.setItem('stand_pass',adminPass); }
       if(data.history && Array.isArray(data.history)){ historyLog=data.history; }
+      if(data.savedTitles && Array.isArray(data.savedTitles)) savedTitles = data.savedTitles;
+      if(data.removedSuggestions && Array.isArray(data.removedSuggestions)) removedSuggestions = data.removedSuggestions;
       save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); updateQuickFab(); populateDatalists();
       setSyncState('synced'); isSyncingFromCloud=false;
     });
     setSyncState('synced');
   }catch(e){ setSyncState('error'); }
 }
-async function pushToCloud(){ if(!cloudEnabled || !cloudDb) return; try{ setSyncState('pushing'); var dRef=window._fb.doc(cloudDb,'stands',cloudId); await window._fb.setDoc(dRef,{items:items,users:users,adminPass:adminPass,history:historyLog,updated:Date.now()},{merge:true}); setSyncState('synced'); }catch(e){ setSyncState('error'); } }
-async function pullFromCloud(){ if(!cloudEnabled){ alert('Облако выключено'); return; } if(!cloudDb){ alert('Нет базы данных'); return; } try{ setSyncState('pulling'); var dRef=window._fb.doc(cloudDb,'stands',cloudId); var snap=await window._fb.getDoc(dRef); if(snap.exists() && snap.data().items){ isSyncingFromCloud=true; var data=snap.data(); items=cleanItems(data.items); if(data.users) users=cleanUsers(data.users); if(data.history && Array.isArray(data.history)) historyLog=data.history; if(data.adminPass){ adminPass=data.adminPass; localStorage.setItem('stand_pass',adminPass); } save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); populateDatalists(); setSyncState('synced'); isSyncingFromCloud=false; toast('✅ Сохранено'); } else { setSyncState('synced'); alert('Ничего нет'); } }catch(e){ setSyncState('error'); alert(e.message); } }
+async function pushToCloud(){ if(!cloudEnabled || !cloudDb) return; try{ setSyncState('pushing'); var dRef=window._fb.doc(cloudDb,'stands',cloudId); await window._fb.setDoc(dRef,{items:items,users:users,adminPass:adminPass,history:historyLog,savedTitles:savedTitles,removedSuggestions:removedSuggestions,updated:Date.now()},{merge:true}); setSyncState('synced'); }catch(e){ setSyncState('error'); } }
+async function pullFromCloud(){ if(!cloudEnabled){ alert('Облако выключено'); return; } if(!cloudDb){ alert('Нет базы данных'); return; } try{ setSyncState('pulling'); var dRef=window._fb.doc(cloudDb,'stands',cloudId); var snap=await window._fb.getDoc(dRef); if(snap.exists() && snap.data().items){ isSyncingFromCloud=true; var data=snap.data(); items=cleanItems(data.items); if(data.users) users=cleanUsers(data.users); if(data.history && Array.isArray(data.history)) historyLog=data.history; if(data.adminPass){ adminPass=data.adminPass; localStorage.setItem('stand_pass',adminPass); } if(data.savedTitles) savedTitles=data.savedTitles; if(data.removedSuggestions) removedSuggestions=data.removedSuggestions; save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); populateDatalists(); setSyncState('synced'); isSyncingFromCloud=false; toast('✅ Сохранено'); } else { setSyncState('synced'); alert('Ничего нет'); } }catch(e){ setSyncState('error'); alert(e.message); } }
 
 function openAdmin(){
   document.getElementById('adminScreen').style.display='block';
@@ -1691,10 +1744,7 @@ function saveNewPass(){
   var em=document.getElementById('recoveryEmail').value.trim();
   var msg=document.getElementById('passMsg');
   msg.style.color='#22c55e';
-  if(np){
-    if(np.length<3){ msg.style.color='#ef4444'; msg.textContent='❌ Минимум 3 символа'; return; }
-    adminPass=np; localStorage.setItem('stand_pass',adminPass);
-  }
+  if(np){ if(np.length<3){ msg.style.color='#ef4444'; msg.textContent='❌ Минимум 3 символа'; return; } adminPass=np; localStorage.setItem('stand_pass',adminPass); }
   if(em){ localStorage.setItem('stand_recovery_email',em); }
   msg.textContent='✅ Сохранено';
   document.getElementById('newPass').value='';
@@ -1721,6 +1771,8 @@ function submitOnboarding(){
           isSyncingFromCloud=true; var data=snap.data(); items=cleanItems(data.items);
           if(data.users) users=cleanUsers(data.users); if(data.adminPass) adminPass=data.adminPass;
           if(data.history && Array.isArray(data.history)) historyLog=data.history;
+          if(data.savedTitles) savedTitles=data.savedTitles;
+          if(data.removedSuggestions) removedSuggestions=data.removedSuggestions;
           save(); isSyncingFromCloud=false; localStorage.setItem('stand_onboarded','true');
           infoEl.style.color='#22c55e'; infoEl.textContent='✅ Подключено!';
           var adm=users.find(function(u){ return u.role==='admin'; }); if(adm){ currentUserId=adm.id; localStorage.setItem('stand_current_user_id',currentUserId); }
@@ -1750,31 +1802,17 @@ function updateAddButtons(){
 }
 function setAddType(t){ document.getElementById('addType').value=t; updateAddButtons(); }
 
-window.addEventListener('beforeinstallprompt', function(e){
-  e.preventDefault(); deferredPrompt=e;
-  var b=document.getElementById('bInstall'); if(b) b.style.display='inline-block';
-});
+window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferredPrompt=e; var b=document.getElementById('bInstall'); if(b) b.style.display='inline-block'; });
 (function iosInstallHint(){
   var ua = navigator.userAgent || '';
   var isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
-  var isStandalone = window.navigator.standalone === true;
-  if(isIOS && !isStandalone){
-    var b = document.getElementById('bInstall');
-    if(b){ b.style.display='inline-block'; }
-  }
+  if(isIOS && window.navigator.standalone !== true){ var b=document.getElementById('bInstall'); if(b) b.style.display='inline-block'; }
 })();
 function installPWA(){
-  if(deferredPrompt){
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(function(c){
-      if(c.outcome==='accepted'){ var b=document.getElementById('bInstall'); if(b) b.style.display='none'; }
-      deferredPrompt=null;
-    });
-    return;
-  }
+  if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt.userChoice.then(function(c){ if(c.outcome==='accepted'){ var b=document.getElementById('bInstall'); if(b) b.style.display='none'; } deferredPrompt=null; }); return; }
   var ua = navigator.userAgent || '';
-  if(/iPad|iPhone|iPod/.test(ua)){ toast('📲 Поделиться → На экран «Домой»', 4000); }
-  else { toast('📲 Откройте меню браузера → Установить', 3000); }
+  if(/iPad|iPhone|iPod/.test(ua)) toast('📲 Поделиться → На экран «Домой»', 4000);
+  else toast('📲 Откройте меню браузера → Установить', 3000);
 }
 
 function setupPWAShortcuts(){
@@ -1817,7 +1855,6 @@ function init(){
   setSyncState('offline'); updateUndoButtons();
   loadFabSetting(); updateQuickFab(); populateDatalists();
   hideUndoBar();
-  try{ renderTitleChips(); }catch(e){}
 
   var savedCloudId = localStorage.getItem('stand_cloud_id')||'';
   var isOnboarded = localStorage.getItem('stand_onboarded')==='true';

@@ -7,7 +7,6 @@
 <title>Stand Manager PRO</title>
 <link id="manifestLink" rel="manifest" href='data:application/json;base64,eyJuYW1lIjoiU3RhbmQgTWFuYWdlciBQUk8iLCJzaG9ydF9uYW1lIjoiU3RhbmRQUk8iLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzBmMGYwZiIsInRoZW1lX2NvbG9yIjoiI2Y1OWUwYiIsImljb25zIjpbXX0='>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
 :root{--bg:#0f0f0f;--card:#1e1e1e;--card2:#252525;--text:#fff;--muted:#999;--border:#333;--header:#1a1a1a;--btn-bg:#2f2f2f;--btn-border:#4a4a4a;--primary:#f59e0b;--primary-text:#000}
 body.day{--bg:#f5f5f5;--card:#ffffff;--card2:#f0f0f0;--text:#111;--muted:#666;--border:#ddd;--header:#ffffff;--btn-bg:#e2e2e2;--btn-border:#b8b8b8}
@@ -56,8 +55,6 @@ option{background:var(--card2);color:var(--text)}
 .stats{display:flex;gap:5px;flex-wrap:wrap}
 .stat{flex:1;min-width:60px;text-align:center;background:var(--card2);border-radius:8px;padding:8px 4px}
 #adminScreen{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);z-index:9999;overflow:auto;display:none;padding:10px}
-#scannerBox{display:none;background:#000;padding:10px;border-radius:12px;margin:8px 0;border:2px solid #06b6d4}
-.photo-thumb{width:48px;height:48px;border-radius:6px;object-fit:cover;background:var(--card);flex-shrink:0}
 .log-entry{font-size:0.8em;padding:6px 0;border-bottom:1px solid var(--border);line-height:1.4}
 .log-entry .log-who{color:#a855f7;font-weight:bold}
 .log-entry .log-time{color:var(--muted);font-weight:bold}
@@ -68,6 +65,7 @@ option{background:var(--card2);color:var(--text)}
 .count-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:0.85em}
 .count-table th{background:var(--card2);padding:8px;text-align:left;color:var(--primary)}
 .count-table td{padding:8px;border-bottom:1px solid var(--border)}
+.count-table tr.total-row td{font-weight:bold;background:var(--card2)}
 #ccOverlay,#rnOverlay,#userOverlay,#onboardOverlay,#suggOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
 #ccOverlay.show,#rnOverlay.show,#userOverlay.show,#onboardOverlay.show,#suggOverlay.show{display:flex}
 #onboardOverlay{z-index:999999;background:var(--bg)}
@@ -99,9 +97,6 @@ body.day #ccCancel{background:#d0d0d0;color:#111}
 @keyframes pulse2{0%,100%{opacity:1}50%{opacity:0.4}}
 .user-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;background:#a855f7;color:#fff;font-size:0.85em;font-weight:bold;cursor:pointer}
 .user-chip.no-user{background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border)}
-.today-card{background:linear-gradient(135deg,var(--primary) 0%,#ec4899 100%);color:#fff;border-radius:12px;padding:12px;margin:8px 0;display:flex;justify-content:space-around;text-align:center}
-.today-card .num{font-size:1.6em;font-weight:bold}
-.today-card .lbl{font-size:0.75em;opacity:0.9}
 .toolbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px}
 .toolbar select{padding:6px 8px;font-size:0.85em;flex:1;min-width:120px}
 #qcOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);z-index:99999;padding:0}
@@ -139,10 +134,6 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 @keyframes toastIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .toast.out{animation:toastOut 0.25s ease forwards}
 @keyframes toastOut{to{opacity:0;transform:translateY(-15px)}}
-#recentScans{margin-top:8px;max-height:180px;overflow:auto;background:var(--card2);border-radius:8px;padding:6px}
-.recent-row{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;font-size:0.85em;border-bottom:1px solid var(--border);gap:8px}
-.recent-row:last-child{border:0}
-.recent-row .rc-count{background:#22c55e;color:#000;font-weight:bold;padding:2px 10px;border-radius:99px;font-size:0.85em}
 .sugg-row{display:flex;align-items:center;gap:6px;padding:6px 4px;border-bottom:1px solid var(--border)}
 .sugg-row:last-child{border:0}
 .sugg-tag{font-size:0.68em;padding:2px 7px;border-radius:99px;font-weight:bold;flex-shrink:0}
@@ -150,11 +141,6 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 .sugg-tag.title{background:#f59e0b;color:#000}
 .sugg-text{flex:1;font-size:0.85em;word-break:break-word;line-height:1.3}
 .sugg-del{background:#ef4444;color:#fff;border:0;padding:5px 9px;border-radius:6px;cursor:pointer;font-size:0.85em;font-weight:bold;margin:0;flex-shrink:0}
-#quickFab{position:fixed;bottom:20px;right:20px;z-index:490;display:none;flex-direction:column;align-items:center;gap:4px}
-#quickFab.show{display:flex}
-#quickFab #fabPlus1Btn{width:64px;height:64px;border-radius:50%;font-size:1.8em;padding:0;background:#22c55e;color:#000;border:3px solid var(--card);box-shadow:0 6px 20px rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;margin:0;cursor:pointer}
-#quickFab #fabPlus1Label{background:rgba(0,0,0,0.88);color:#fff;font-size:0.68em;padding:3px 10px;border-radius:99px;border:1px solid #22c55e;text-align:center;max-width:90px;word-break:break-word;line-height:1.2;font-weight:bold}
-#quickFab .fab-clear{background:rgba(0,0,0,0.7);color:#999;font-size:0.6em;padding:2px 8px;border-radius:99px;border:1px solid var(--border);cursor:pointer;margin:0}
 </style>
 </head>
 <body>
@@ -175,33 +161,6 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 
 <div class="wrap">
-<div class="today-card">
-<div><div class="num" id="tAdd">0</div><div class="lbl">Добавлено</div></div>
-<div><div class="num" id="tRem">0</div><div class="lbl">Убрано</div></div>
-<div><div class="num" id="tOrder">0</div><div class="lbl">Заказы</div></div>
-</div>
-
-<div class="card" style="text-align:center">
-<div style="display:flex;gap:6px;flex-wrap:wrap">
-<button onclick="pushToCloud()" style="flex:1;background:#06b6d4;color:#000">☁️ Отправить</button>
-<button onclick="pullFromCloud()" style="flex:1" class="sec">⬇️ Получить</button>
-<button onclick="startScanner()" style="flex:1;background:#a855f7;color:#fff">📷 Скан</button>
-<button onclick="startVoice()" style="flex:1;background:#ef4444;color:#fff">🎙️ Голос</button>
-</div>
-<div id="scannerBox">
-<div id="reader" style="width:100%"></div>
-<div style="display:flex;gap:6px;margin-top:8px">
-<button onclick="stopScanner()" class="sec" style="flex:1">✕</button>
-<button onclick="clearRecentScans()" class="sec" style="flex:1">🗑️ Очистить</button>
-</div>
-<div id="scanResult" class="small" style="margin-top:8px;text-align:center;font-size:1em;min-height:1.2em">📷 Сканируйте...</div>
-<div id="recentScans"></div>
-<button id="scanNewBtn" onclick="openAddFromScan()" style="display:none;width:100%;margin-top:8px;background:#22c55e;color:#000">➕ Добавить новый штрихкод</button>
-</div>
-<div id="voiceBox" style="display:none;margin-top:8px;background:#1a0000;padding:8px;border-radius:8px;border:1px solid #ef4444">
-<span id="voiceText" class="small">Скажите название и число</span>
-</div>
-</div>
 
 <div class="stats">
 <div class="stat"><div id="tot" style="font-weight:bold;font-size:1.2em">0</div><div class="small">Штук</div></div>
@@ -218,10 +177,10 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 
 <div class="card" style="border:2px solid #f59e0b">
-<b style="color:#f59e0b">🌍 Таблица</b>
+<b style="color:#f59e0b">🌍 По языкам</b>
 <div style="overflow:auto">
 <table class="count-table">
-<thead><tr><th>Тип</th><th>Всего</th></tr></thead>
+<thead><tr><th>Язык</th><th>📰</th><th>📖</th><th>🖼️</th><th>Всего</th></tr></thead>
 <tbody id="countLangTypeBody"></tbody>
 </table>
 </div>
@@ -239,7 +198,6 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <div class="card">
 <div style="display:flex;justify-content:space-between;align-items:center">
 <b>📦 Все издания</b>
-<span class="small">📜 история • 📌 +1</span>
 </div>
 <div class="toolbar">
 <input id="search" placeholder="🔍 Поиск..." oninput="debouncedRender()" style="flex:2;padding:8px">
@@ -247,6 +205,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 <div class="toolbar">
 <select id="typeFilter" onchange="setTypeFilter(this.value)" style="flex:1"></select>
+<select id="langFilter" onchange="setLangFilter(this.value)" style="flex:1"></select>
 </div>
 <div id="list" style="margin-top:8px"></div>
 </div>
@@ -318,57 +277,39 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <div><label>🏷️ Категория</label><input id="cat" placeholder="напр. Сторожевая башня"></div>
 <div><label>📦 Количество</label><input id="qty" type="number" value="10"></div>
 </div>
-<div class="row">
-<div><label>⚠️ Минимум</label><input id="min" type="number" value="3"></div>
-<div>
+
 <label>🌍 Язык</label>
 <select id="lang">
 <option value="ru">🇷🇺 Русский</option>
-<option value="en">🇬🇧 English</option>
-<option value="de">🇩🇪 Deutsch</option>
-<option value="es">🇪🇸 Español</option>
-<option value="fr">🇫🇷 Français</option>
-<option value="it">🇮🇹 Italiano</option>
-<option value="pt">🇵🇹 Português</option>
-<option value="pl">🇵🇱 Polski</option>
-<option value="uk">🇺🇦 Українська</option>
-<option value="tr">🇹🇷 Türkçe</option>
-<option value="el">🇬🇷 Ελληνικά</option>
-<option value="ko">🇰🇷 한국어</option>
-<option value="ja">🇯🇵 日本語</option>
-<option value="zh">🇨🇳 中文</option>
-<option value="ro">🇷🇴 Română</option>
-<option value="hu">🇭🇺 Magyar</option>
-<option value="cs">🇨🇿 Čeština</option>
-<option value="bg">🇧🇬 Български</option>
-<option value="sr">🇷🇸 Српски</option>
-<option value="hr">🇭🇷 Hrvatski</option>
-<option value="sw">🇰🇪 Kiswahili</option>
-<option value="hi">🇮🇳 हिन्दी</option>
-<option value="ar">🇸🇦 العربية</option>
-<option value="hy">🇦🇲 Հայերեն</option>
-<option value="ka">🇬🇪 ქართული</option>
-<option value="he">🇮🇱 עברית</option>
+<option value="en">🇬🇧 Английский</option>
+<option value="de">🇩🇪 Немецкий</option>
+<option value="es">🇪🇸 Испанский</option>
+<option value="fr">🇫🇷 Французский</option>
+<option value="it">🇮🇹 Итальянский</option>
+<option value="pt">🇵🇹 Португальский</option>
+<option value="pl">🇵🇱 Польский</option>
+<option value="uk">🇺🇦 Украинский</option>
+<option value="tr">🇹🇷 Турецкий</option>
+<option value="el">🇬🇷 Греческий</option>
+<option value="ko">🇰🇷 Корейский</option>
+<option value="ja">🇯🇵 Японский</option>
+<option value="zh">🇨🇳 Китайский</option>
+<option value="ro">🇷🇴 Румынский</option>
+<option value="hu">🇭🇺 Венгерский</option>
+<option value="cs">🇨🇿 Чешский</option>
+<option value="bg">🇧🇬 Болгарский</option>
+<option value="sr">🇷🇸 Сербский</option>
+<option value="hr">🇭🇷 Хорватский</option>
+<option value="sw">🇰🇪 Суахили</option>
+<option value="hi">🇮🇳 Хинди</option>
+<option value="ar">🇸🇦 Арабский</option>
+<option value="hy">🇦🇲 Армянский</option>
+<option value="ka">🇬🇪 Грузинский</option>
+<option value="he">🇮🇱 Иврит</option>
 <option value="other">🌐 Другой</option>
 </select>
-</div>
-</div>
-<div class="row">
-<div style="flex:1"><label>🔍 Штрихкод</label><input id="bar" placeholder="опционально"></div>
-</div>
-
-<label>📸 Фото</label>
-<label for="photoInput" class="file-btn">📁 Выбрать файл</label>
-<input type="file" id="photoInput" accept="image/*" onchange="previewPhoto(event)" style="display:none">
-<img id="photoPreview" style="display:none;width:80px;height:80px;object-fit:cover;border-radius:8px;margin-top:6px">
 
 <button onclick="addItem()" id="btnAddItem" style="width:100%;margin-top:16px">➕ Добавить</button>
-
-<div style="margin-top:16px;border-top:1px solid var(--border);padding-top:10px">
-<label>⚡ Несколько изданий сразу</label>
-<textarea id="bulk" placeholder="Название 1&#10;Название 2"></textarea>
-<button class="sec" onclick="addBulk()" id="btnAddBulk" style="width:100%;margin-top:4px">📋 Добавить все</button>
-</div>
 </div>
 </div>
 
@@ -382,6 +323,24 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <button onclick="checkAdmin()" style="width:100%;margin-top:8px">Войти</button>
 </div>
 <div id="adminContent" style="display:none;margin-top:12px">
+
+<div class="card" style="border:2px solid #06b6d4">
+<b style="color:#06b6d4">☁️ Синхронизация</b>
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
+<button onclick="pushToCloud()" style="flex:1;background:#06b6d4;color:#000">☁️ Отправить</button>
+<button onclick="pullFromCloud()" style="flex:1" class="sec">⬇️ Получить</button>
+</div>
+<label style="margin-top:10px">Stand ID</label>
+<div style="display:flex;gap:4px">
+<input id="cloudId" style="flex:1;font-family:monospace">
+<button onclick="copyCloudId()" class="sec">📋</button>
+</div>
+<button onclick="saveCloudId()" style="width:100%;margin-top:8px;background:#22c55e;color:#000">🔄 Применить</button>
+<label style="margin-top:10px">Firebase Config</label>
+<textarea id="fbConfig" style="height:60px;font-size:10px"></textarea>
+<button onclick="saveFbConfig()" class="sec" style="width:100%;margin-top:4px">💾 Сохранить</button>
+<button class="sec" onclick="resetOnboarding()" style="width:100%;margin-top:10px;font-size:0.85em">🔄 Сброс</button>
+</div>
 
 <div class="card" style="border:2px solid #22c55e">
 <b style="color:#22c55e">💾 Резервная копия</b>
@@ -449,20 +408,6 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 <button onclick="addUser()" style="width:100%;margin-top:8px;background:#22c55e;color:#000">➕ Добавить</button>
 </div>
-</div>
-
-<div class="card" style="border:2px solid #06b6d4">
-<b style="color:#06b6d4">☁️ Синхронизация</b>
-<label>Stand ID</label>
-<div style="display:flex;gap:4px">
-<input id="cloudId" style="flex:1;font-family:monospace">
-<button onclick="copyCloudId()" class="sec">📋</button>
-</div>
-<button onclick="saveCloudId()" style="width:100%;margin-top:8px;background:#22c55e;color:#000">🔄 Применить</button>
-<label style="margin-top:10px">Firebase Config</label>
-<textarea id="fbConfig" style="height:60px;font-size:10px"></textarea>
-<button onclick="saveFbConfig()" class="sec" style="width:100%;margin-top:4px">💾 Сохранить</button>
-<button class="sec" onclick="resetOnboarding()" style="width:100%;margin-top:10px;font-size:0.85em">🔄 Сброс</button>
 </div>
 
 <div class="card" style="border:2px solid #06b6d4">
@@ -561,25 +506,6 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 </div>
 
-<div id="histOverlay" onclick="if(event.target===this)closeHistory()">
-<div id="histBox" onclick="event.stopPropagation()">
-<h3 id="histTitle">📜 История</h3>
-<div class="hist-sub" id="histSubtitle"></div>
-<div id="histContent"></div>
-<div class="hist-actions">
-<button onclick="closeHistory()" class="sec">✕ Закрыть</button>
-<button onclick="exportHistoryCSV()" class="sec">📊 CSV</button>
-<button onclick="clearItemHistory()" style="background:#ef4444;color:#fff">🗑️ Очистить</button>
-</div>
-</div>
-</div>
-
-<div id="quickFab">
-<button id="fabPlus1Btn" onclick="quickPlusOne()" title="+1">➕</button>
-<div id="fabPlus1Label">—</div>
-<button class="fab-clear" onclick="clearQuickFab()">✕</button>
-</div>
-
 <div id="undoBar">
 <div class="undo-label" id="undoLabel">—</div>
 <button onclick="undo()" id="bUndo" disabled>↶</button>
@@ -591,85 +517,73 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <script>
 var curLang = 'ru';
 
-/* ============= ЯЗЫКИ ============= */
 var LANGS = {
-  ru:'🇷🇺 Русский', en:'🇬🇧 English', de:'🇩🇪 Deutsch', es:'🇪🇸 Español',
-  fr:'🇫🇷 Français', it:'🇮🇹 Italiano', pt:'🇵🇹 Português', pl:'🇵🇱 Polski',
-  uk:'🇺🇦 Українська', tr:'🇹🇷 Türkçe', el:'🇬🇷 Ελληνικά', ko:'🇰🇷 한국어',
-  ja:'🇯🇵 日本語', zh:'🇨🇳 中文', ro:'🇷🇴 Română', hu:'🇭🇺 Magyar',
-  cs:'🇨🇿 Čeština', bg:'🇧🇬 Български', sr:'🇷🇸 Српски', hr:'🇭🇷 Hrvatski',
-  sw:'🇰🇪 Kiswahili', hi:'🇮🇳 हिन्दी', ar:'🇸🇦 العربية', hy:'🇦🇲 Հայերեն',
-  ka:'🇬🇪 ქართული', he:'🇮🇱 עברית', other:'🌐 Другой'
+  ru:'Русский', en:'Английский', de:'Немецкий', es:'Испанский',
+  fr:'Французский', it:'Итальянский', pt:'Португальский', pl:'Польский',
+  uk:'Украинский', tr:'Турецкий', el:'Греческий', ko:'Корейский',
+  ja:'Японский', zh:'Китайский', ro:'Румынский', hu:'Венгерский',
+  cs:'Чешский', bg:'Болгарский', sr:'Сербский', hr:'Хорватский',
+  sw:'Суахили', hi:'Хинди', ar:'Арабский', hy:'Армянский',
+  ka:'Грузинский', he:'Иврит', other:'Другой'
 };
+
+var LANG_FLAGS = {
+  ru:'🇷🇺', en:'🇬🇧', de:'🇩🇪', es:'🇪🇸', fr:'🇫🇷', it:'🇮🇹', pt:'🇵🇹',
+  pl:'🇵🇱', uk:'🇺🇦', tr:'🇹🇷', el:'🇬🇷', ko:'🇰🇷', ja:'🇯🇵', zh:'🇨🇳',
+  ro:'🇷🇴', hu:'🇭🇺', cs:'🇨🇿', bg:'🇧🇬', sr:'🇷🇸', hr:'🇭🇷', sw:'🇰🇪',
+  hi:'🇮🇳', ar:'🇸🇦', hy:'🇦🇲', ka:'🇬🇪', he:'🇮🇱', other:'🌐'
+};
+
 function getLangDisplay(code){
   if(!code) return '';
-  return LANGS[code] || ('🌐 '+code);
+  var name = LANGS[code] || code;
+  var flag = LANG_FLAGS[code] || '🌐';
+  return flag + ' ' + name;
+}
+function getLangNameOnly(code){
+  if(!code) return '';
+  return LANGS[code] || code;
 }
 
-/* ============= ПРЕСЕТЫ (без тем — темы добавляет пользователь) ============= */
 var PRESET_ITEMS = [
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2026', year:'2026', issueNum:'1', theme:''},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2025', year:'2025', issueNum:'1', theme:''},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2025', year:'2025', issueNum:'2', theme:''},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2025', year:'2025', issueNum:'3', theme:''},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2024', year:'2024', issueNum:'1', theme:''},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2024', year:'2024', issueNum:'2', theme:''},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2024', year:'2024', issueNum:'3', theme:''},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2023', year:'2023', issueNum:'1', theme:''},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2023', year:'2023', issueNum:'2', theme:''},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2023', year:'2023', issueNum:'3', theme:''},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2022', year:'2022', issueNum:'1', theme:''},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2022', year:'2022', issueNum:'2', theme:''},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2022', year:'2022', issueNum:'3', theme:''},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2021', year:'2021', issueNum:'1', theme:''},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2021', year:'2021', issueNum:'2', theme:''},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2021', year:'2021', issueNum:'3', theme:''},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2020', year:'2020', issueNum:'1', theme:''},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2020', year:'2020', issueNum:'2', theme:''},
-  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2020', year:'2020', issueNum:'3', theme:''},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2026', year:'2026', issueNum:'1'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2025', year:'2025', issueNum:'1'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2025', year:'2025', issueNum:'2'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2025', year:'2025', issueNum:'3'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2024', year:'2024', issueNum:'1'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2024', year:'2024', issueNum:'2'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2024', year:'2024', issueNum:'3'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2023', year:'2023', issueNum:'1'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2023', year:'2023', issueNum:'2'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2023', year:'2023', issueNum:'3'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2022', year:'2022', issueNum:'1'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2022', year:'2022', issueNum:'2'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2022', year:'2022', issueNum:'3'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2021', year:'2021', issueNum:'1'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2021', year:'2021', issueNum:'2'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2021', year:'2021', issueNum:'3'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2020', year:'2020', issueNum:'1'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2020', year:'2020', issueNum:'2'},
+  {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2020', year:'2020', issueNum:'3'},
 
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2026', year:'2026', issueNum:'1', theme:''},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2025', year:'2025', issueNum:'1', theme:''},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2025', year:'2025', issueNum:'2', theme:''},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2024', year:'2024', issueNum:'1', theme:''},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2024', year:'2024', issueNum:'2', theme:''},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2023', year:'2023', issueNum:'1', theme:''},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2023', year:'2023', issueNum:'2', theme:''},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2022', year:'2022', issueNum:'1', theme:''},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2022', year:'2022', issueNum:'2', theme:''},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2021', year:'2021', issueNum:'1', theme:''},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2021', year:'2021', issueNum:'2', theme:''},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2020', year:'2020', issueNum:'1', theme:''},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2020', year:'2020', issueNum:'2', theme:''},
-  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 3 2020', year:'2020', issueNum:'3', theme:''},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2026', year:'2026', issueNum:'1'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2025', year:'2025', issueNum:'1'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2025', year:'2025', issueNum:'2'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2024', year:'2024', issueNum:'1'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2024', year:'2024', issueNum:'2'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2023', year:'2023', issueNum:'1'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2023', year:'2023', issueNum:'2'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2022', year:'2022', issueNum:'1'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2022', year:'2022', issueNum:'2'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2021', year:'2021', issueNum:'1'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2021', year:'2021', issueNum:'2'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2020', year:'2020', issueNum:'1'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2020', year:'2020', issueNum:'2'},
+  {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 3 2020', year:'2020', issueNum:'3'},
 
-  {type:'Брошюра', cat:'Брошюра', title:'Радуйтесь жизни сейчас и вечно!', year:'', issueNum:'', theme:''},
-  {type:'Брошюра', cat:'Брошюра', title:'Руководство для тех, кто изучает Библию', year:'', issueNum:'', theme:''}
+  {type:'Брошюра', cat:'Брошюра', title:'Радуйтесь жизни сейчас и вечно!', year:'', issueNum:''},
+  {type:'Брошюра', cat:'Брошюра', title:'Руководство для тех, кто изучает Библию', year:'', issueNum:''}
 ];
-
-var T = {
-  searchPh:{ru:'🔍 Поиск...'}, allItemsTitle:{ru:'📦 Все издания'}, listHint:{ru:'📜 история • 📌 +1'},
-  tAdded:{ru:'Добавлено'},tRemoved:{ru:'Убрано'},tOrders:{ru:'Заказы'},
-  bSend:{ru:'☁️ Отправить'},bReceive:{ru:'⬇️ Получить'},bScan:{ru:'📷 Скан'},bVoice:{ru:'🎙️ Голос'},
-  voiceHint:{ru:'Скажите название и число'},
-  lPieces:{ru:'Штук'},lTitles:{ru:'Названий'},lOrder:{ru:'Заказ'},
-  countByType:{ru:'📚 Подсчёт по типам'},countLangType:{ru:'🌍 Таблица'},chartsTitle:{ru:'📊 Графики'},
-  thLang:{ru:'Тип'},thTotal:{ru:'Всего'},
-  addFormTitle:{ru:'➕ Добавить новое издание'},
-  lblQuickAdd:{ru:'⚡ Быстрое добавление'},
-  lblQuickAddHint:{ru:'Один клик — тип, категория и название заполняются автоматически.'},
-  lblType:{ru:'📋 Тип издания'},lblTitle:{ru:'📝 Название *'},
-  lblYear:{ru:'📅 Год'},lblIssueNum:{ru:'🔢 Номер выпуска'},
-  lblCat:{ru:'🏷️ Категория'},lblQty:{ru:'📦 Количество'},
-  lblMin:{ru:'⚠️ Минимум'},lblBarcode:{ru:'🔍 Штрихкод'},lblPhoto:{ru:'📸 Фото'},
-  btnChooseFile:{ru:'📁 Выбрать файл'},btnAdd:{ru:'➕ Добавить'},
-  lblBulk:{ru:'⚡ Несколько изданий сразу'},btnAddAll:{ru:'📋 Добавить все'},
-  dangerTitle:{ru:'⚠️ Опасная зона'},btnDeleteAll:{ru:'🗑️ Удалить ВСЁ'},
-  orderTitle:{ru:'⚠️ СПИСОК ЗАКАЗА'},btnCopy:{ru:'Копировать'},
-  btnClose:{ru:'✕ Закрыть'},btnCloseShort:{ru:'✕'},
-  adminPassword:{ru:'Пароль'},btnLogin:{ru:'Войти'},btnClear:{ru:'Очистить'}
-};
-function Tget(key){ var a=T[key]; if(!a) return key; return a.ru || key; }
 
 var QUICK_PRESETS = {
   watchtower:{ type:'Журнал', cat:'Сторожевая башня (для публики)', names:'Сторожевая башня (для публики)' },
@@ -705,7 +619,6 @@ function beep(freq, dur){
   }catch(e){}
 }
 function beepOk(){ beep(1000,0.1); setTimeout(function(){ beep(1400,0.1); },100); }
-function beepFail(){ beep(300,0.25); }
 
 function cleanItems(arr){
   if(!Array.isArray(arr)) return [];
@@ -714,13 +627,15 @@ function cleanItems(arr){
     var id=parseFloat(o.id); o.id=isNaN(id)?Date.now()+Math.random():id;
     if(o.names && typeof o.names==='object'){ var n={}; for(var l in o.names) n[l]=cleanStr(o.names[l]); o.names=n; }
     if(o.cat && typeof o.cat==='object'){ var c={}; for(var l2 in o.cat) c[l2]=cleanStr(o.cat[l2]); o.cat=c; } else o.cat=cleanStr(o.cat);
-    o.type=cleanStr(o.type); o.barcode=cleanStr(o.barcode);
+    o.type=cleanStr(o.type);
     if(o.lang!=null) o.lang=cleanStr(o.lang) || 'ru';
     if(o.year!=null) o.year=cleanStr(o.year);
     if(o.issueNum!=null) o.issueNum=cleanStr(o.issueNum);
     if(o.theme!=null) o.theme=cleanStr(o.theme);
-    o.qty=parseInt(o.qty)||0; o.min=parseInt(o.min)||0;
-    if(!/^data:image\/[a-z+.-]+;base64,[A-Za-z0-9+\/=]+$/.test(o.photo||'')) o.photo='';
+    o.qty=parseInt(o.qty)||0;
+    o.photo='';
+    o.barcode='';
+    o.min=0;
     if(!Array.isArray(o.history)) o.history = [];
     o.history = o.history.filter(function(h){ return h && typeof h === 'object' && h.ts; }).slice(0, 50);
     o.favorite = !!o.favorite;
@@ -729,7 +644,7 @@ function cleanItems(arr){
 }
 function cleanUsers(arr){
   if(!Array.isArray(arr)) return [];
-  return arr.filter(function(u){ return u && typeof u==='object'; }).map(function(u){
+  return arr.filter(function(u){ return u && typeof u === 'object'; }).map(function(u){
     return { id: parseFloat(u.id)||Date.now()+Math.random(), name: cleanStr(u.name||''), role: cleanStr(u.role||'counter'), perms: u.perms || {} };
   });
 }
@@ -772,18 +687,13 @@ var curBtnColor=(curTheme==='day')?btnColorDay:btnColorDark;
 var items=[], users=[], historyLog=[];
 var currentUserId=parseFloat(localStorage.getItem('stand_current_user_id'))||null;
 var adminPass=localStorage.getItem('stand_pass')||'1234';
-var todayStats={date:new Date().toDateString(),added:0,removed:0};
-try{ var ts=JSON.parse(localStorage.getItem('stand_today')||'null'); if(ts && ts.date===todayStats.date) todayStats=ts; }catch(e){}
-var html5Qrcode=null, scanBusy=false;
-var lastScan={code:'',time:0}; var recentScans=[]; var pendingNewBarcode='';
 var chartMainInst=null, deferredPrompt=null;
 var cloudEnabled=localStorage.getItem('stand_cloud_enabled')!=='false';
 var cloudId=localStorage.getItem('stand_cloud_id')||'';
 var fbConfigStr=localStorage.getItem('stand_fb_config')||'{"apiKey":"AIzaSyCKoGOE84zPuc4t6UQrDYMbooCR43p0FyQ","authDomain":"stand-management-a46a7.firebaseapp.com","projectId":"stand-management-a46a7","storageBucket":"stand-management-a46a7.firebasestorage.app","messagingSenderId":"304875768432","appId":"1:304875768432:web:470adb4707b8a3680482b5"}';
 var cloudApp=null, cloudDb=null, cloudUnsub=null, cloudPushTimeout=null, isSyncingFromCloud=false;
-var syncState='offline', currentPhotoBase64='', renderTimer=null;
+var syncState='offline', renderTimer=null;
 
-/* ============= ПОДСКАЗКИ ============= */
 var savedTitles=[], savedYears=[], savedIssueNums=[];
 var removedSuggestions=[];
 try{ savedTitles = JSON.parse(localStorage.getItem('stand_saved_titles')||'[]'); }catch(e){ savedTitles=[]; }
@@ -795,16 +705,12 @@ if(!Array.isArray(savedYears)) savedYears=[];
 if(!Array.isArray(savedIssueNums)) savedIssueNums=[];
 if(!Array.isArray(removedSuggestions)) removedSuggestions=[];
 
-var PRESETS_VERSION = 5;
+var PRESETS_VERSION = 6;
 (function initPresets(){
   var cur = parseInt(localStorage.getItem('stand_presets_ver') || '0', 10);
   if(cur === PRESETS_VERSION) return;
   PRESET_ITEMS.forEach(function(p){
-    var fullWithTheme = p.theme ? (p.title + ' — ' + p.theme) : p.title;
-    [fullWithTheme, p.title].forEach(function(v){
-      if(v && savedTitles.indexOf(v) < 0) savedTitles.push(v);
-    });
-    if(p.theme && savedTitles.indexOf(p.theme) < 0) savedTitles.push(p.theme);
+    if(savedTitles.indexOf(p.title) < 0) savedTitles.push(p.title);
     if(p.year && savedYears.indexOf(p.year) < 0) savedYears.push(p.year);
     if(p.issueNum && savedIssueNums.indexOf(p.issueNum) < 0) savedIssueNums.push(p.issueNum);
   });
@@ -814,8 +720,7 @@ var PRESETS_VERSION = 5;
   localStorage.setItem('stand_presets_ver', String(PRESETS_VERSION));
 })();
 
-/* ★ Одноразовая миграция: убираем из подсказок всё, что похоже на сочинённые темы */
-var THEME_CLEANUP_VERSION = 1;
+var THEME_CLEANUP_VERSION = 2;
 (function cleanupInventedThemes(){
   var cur = parseInt(localStorage.getItem('stand_theme_cleanup') || '0', 10);
   if(cur >= THEME_CLEANUP_VERSION) return;
@@ -851,7 +756,6 @@ function addToSavedList(listName, value){
   if(idx >= 0) list.splice(idx, 1);
   list.unshift(value);
   if(list.length > 500) list.length = 500;
-  // ★ Снимаем блокировку, если пользователь снова добавляет эту подсказку
   if(listName === 'titles'){
     var rIdx = removedSuggestions.indexOf(value);
     if(rIdx >= 0) removedSuggestions.splice(rIdx, 1);
@@ -925,7 +829,6 @@ function getCurrentUser(){ return users.find(function(u){ return u.id==currentUs
 function hasPerm(perm){ var u=getCurrentUser(); if(!u) return false; if(u.role==='admin') return true; return !!(u.perms && u.perms[perm]); }
 function getRoleDisplay(role){ var m={admin:'👑 Админ',manager:'📦 Менеджер',counter:'🔢 Счётчик',viewer:'👀 Наблюдатель'}; return m[role]||role; }
 
-/* ============= РАБОТА С ПОДСКАЗКАМИ ============= */
 function isThemeSuggestion(str){
   if(!str) return false;
   if(/№\s*\d/.test(str)) return false;
@@ -976,7 +879,6 @@ function renderSuggestions(){
   if(filtered.length > 300) h += '<div class="small" style="text-align:center;padding:8px">...показано 300 из '+filtered.length+'</div>';
   el.innerHTML = h;
 }
-/* ★ Удаление + блокировка: не вернётся ни из savedTitles, ни из items */
 function deleteSuggestion(value){
   var idx = savedTitles.indexOf(value);
   if(idx >= 0) savedTitles.splice(idx, 1);
@@ -1020,7 +922,6 @@ function clearOnlyThemes(){
   });
 }
 
-/* ============= СИНХРОНИЗАЦИЯ ============= */
 function setSyncState(state){
   syncState=state;
   var chip=document.getElementById('syncChip'),txt=document.getElementById('syncChipText');
@@ -1038,7 +939,6 @@ function save(){
     localStorage.setItem('stand_items_v4',JSON.stringify(items));
     localStorage.setItem('stand_users_v1',JSON.stringify(users));
     localStorage.setItem('stand_history',JSON.stringify(historyLog));
-    localStorage.setItem('stand_today',JSON.stringify(todayStats));
     localStorage.setItem('stand_current_user_id', currentUserId);
     localStorage.setItem('stand_saved_titles', JSON.stringify(savedTitles));
     localStorage.setItem('stand_saved_years', JSON.stringify(savedYears));
@@ -1068,17 +968,6 @@ function renderLog(){
   el.innerHTML=h||'<span class="small">—</span>';
 }
 function clearLog(){ customConfirm('Очистить историю?', function(){ pushUndo('Очистить'); historyLog=[]; save(); renderLog(); }); }
-function bumpToday(type, n){
-  if(todayStats.date !== new Date().toDateString()){ todayStats={date:new Date().toDateString(),added:0,removed:0}; }
-  if(type==='add') todayStats.added+=n; else if(type==='rem') todayStats.removed+=n;
-  save(); renderToday();
-}
-function renderToday(){
-  var $=function(id){return document.getElementById(id);};
-  if($('tAdd')) $('tAdd').textContent=todayStats.added||0;
-  if($('tRem')) $('tRem').textContent=todayStats.removed||0;
-  if($('tOrder')) $('tOrder').textContent=items.filter(function(x){return x.qty<=x.min;}).length;
-}
 
 var _ccCallback=null;
 function customConfirm(msg, cb){
@@ -1164,108 +1053,6 @@ function addItemHistory(itemId, action, delta, oldQty, newQty, note){
   it.history.unshift({ ts: Date.now(), who: u?u.name:'', action: action, delta: parseInt(delta)||0, oldQty: (oldQty!=null?parseInt(oldQty):null), newQty: (newQty!=null?parseInt(newQty):null), note: note||'' });
   if(it.history.length > MAX_HISTORY_PER_ITEM) it.history = it.history.slice(0, MAX_HISTORY_PER_ITEM);
 }
-function getHistoryStats(it){
-  var now = Date.now(); var added=0, removed=0, dayBuckets={}, byUser={};
-  for(var i=29;i>=0;i--){ var d=new Date(now-i*86400000); var key=d.toISOString().slice(0,10); dayBuckets[key]={add:0,rem:0}; }
-  (it.history||[]).forEach(function(h){
-    if(h.delta>0) added+=h.delta; else if(h.delta<0) removed+=Math.abs(h.delta);
-    var dk = new Date(h.ts).toISOString().slice(0,10);
-    if(dayBuckets[dk]){ if(h.delta>0) dayBuckets[dk].add+=h.delta; else if(h.delta<0) dayBuckets[dk].rem+=Math.abs(h.delta); }
-    var who = h.who || '—'; if(!byUser[who]) byUser[who]=0; byUser[who]+=Math.abs(h.delta||0);
-  });
-  var avgPerDay = (added+removed)/30;
-  var removed30 = 0; Object.keys(dayBuckets).forEach(function(k){ removed30 += dayBuckets[k].rem; });
-  var dailyRate = removed30/30;
-  var forecastDays = (dailyRate > 0 && it.qty > 0) ? Math.round(it.qty/dailyRate) : null;
-  return {added:added, removed:removed, totalMoved:added+removed, avgPerDay:avgPerDay, dailyRate:dailyRate, forecastDays:forecastDays, dayBuckets:dayBuckets, byUser:byUser, count:(it.history||[]).length};
-}
-var currentHistItemId = null, histChartInst = null;
-function openItemHistory(itemId){
-  var it = items.find(function(x){ return x.id == itemId; }); if(!it) return;
-  currentHistItemId = itemId;
-  document.getElementById('histTitle').textContent = '📜 ' + getDisplayName(it);
-  document.getElementById('histSubtitle').textContent = 'Количество: '+it.qty+' | Минимум: '+it.min;
-  renderHistoryContent(it);
-  document.getElementById('histOverlay').classList.add('show');
-}
-function closeHistory(){
-  document.getElementById('histOverlay').classList.remove('show');
-  currentHistItemId = null;
-  if(histChartInst){ try{ histChartInst.destroy(); }catch(e){} histChartInst=null; }
-}
-function renderHistoryContent(it){
-  var stats = getHistoryStats(it);
-  var h = '<div class="hist-stats">';
-  h += '<div class="hist-stat pos"><div class="num">+'+stats.added+'</div><div class="label">Добавлено</div></div>';
-  h += '<div class="hist-stat neg"><div class="num">-'+stats.removed+'</div><div class="label">Убрано</div></div>';
-  h += '<div class="hist-stat info"><div class="num">'+stats.count+'</div><div class="label">Движения</div></div>';
-  h += '<div class="hist-stat info"><div class="num">'+stats.avgPerDay.toFixed(1)+'</div><div class="label">Сред./день</div></div></div>';
-  if(stats.forecastDays !== null && stats.forecastDays > 0){
-    var warnColor = stats.forecastDays < 7 ? '#ef4444' : (stats.forecastDays < 21 ? '#f59e0b' : '#22c55e');
-    h += '<div class="hist-forecast">🔮 <b>Прогноз:</b> С темпом <b>'+stats.dailyRate.toFixed(1)+'</b> шт./день, ';
-    if(stats.forecastDays <= 1) h += 'закончится сегодня или завтра!';
-    else h += 'закончится через <b style="color:'+warnColor+'">'+stats.forecastDays+' дней</b>.';
-    h += '</div>';
-  } else if(it.qty > 0 && stats.removed === 0){
-    h += '<div class="hist-forecast">🔮 <b>Прогноз:</b> Недостаточно истории.</div>';
-  }
-  h += '<div id="histChartWrap"><div class="small" style="text-align:center;margin-bottom:6px">📈 Движения за 30 дней</div><canvas id="histChart" style="max-height:180px"></canvas></div>';
-  h += '<div style="margin-top:10px;margin-bottom:6px;font-weight:bold;font-size:0.9em;color:var(--primary)">📋 Последние движения</div>';
-  if(!it.history || it.history.length === 0){ h += '<div class="hist-list"><div class="hist-empty">Нет истории.</div></div>'; }
-  else {
-    h += '<div class="hist-list">';
-    it.history.slice(0, 30).forEach(function(e){
-      var d = new Date(e.ts);
-      var dateStr = d.toLocaleDateString('ru-RU') + ' ' + d.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
-      var deltaCls='neutral', deltaTxt='';
-      if(e.delta>0){ deltaCls='plus'; deltaTxt='+'+e.delta; }
-      else if(e.delta<0){ deltaCls='minus'; deltaTxt=''+e.delta; }
-      else { deltaTxt = e.action||''; }
-      var qtyInfo = (e.oldQty != null && e.newQty != null && e.oldQty !== e.newQty) ? ' <span style="color:var(--muted);font-size:0.75em">('+e.oldQty+' → '+e.newQty+')</span>' : '';
-      h += '<div class="hist-row"><span class="hist-date">'+esc(dateStr)+'</span><span class="hist-who">'+esc(e.who||'—')+'</span><span class="hist-delta '+deltaCls+'">'+esc(deltaTxt)+'</span>'+qtyInfo+'</div>';
-    });
-    h += '</div>';
-  }
-  document.getElementById('histContent').innerHTML = h;
-  requestAnimationFrame(function(){ requestAnimationFrame(function(){
-    if(document.getElementById('histChart') && currentHistItemId === it.id){ renderHistoryChart(stats); }
-  }); });
-}
-function renderHistoryChart(stats){
-  try{
-    var ctx = document.getElementById('histChart'); if(!ctx) return;
-    if(histChartInst){ histChartInst.destroy(); histChartInst=null; }
-    var keys = Object.keys(stats.dayBuckets).sort();
-    var labels = keys.map(function(k){ var d=new Date(k+'T00:00:00'); return d.getDate()+'/'+(d.getMonth()+1); });
-    var addData = keys.map(function(k){ return stats.dayBuckets[k].add; });
-    var remData = keys.map(function(k){ return stats.dayBuckets[k].rem; });
-    var isDay = document.body.classList.contains('day') || (curBgColor && isLightColor(curBgColor));
-    histChartInst = new Chart(ctx, {type:'bar',data:{labels:labels,datasets:[{label:'+',data:addData,backgroundColor:'#22c55e'},{label:'−',data:remData,backgroundColor:'#ef4444'}]},options:{responsive:true,plugins:{legend:{labels:{color:isDay?'#111':'#fff',boxWidth:12,font:{size:11}}}},scales:{x:{ticks:{color:isDay?'#111':'#fff',font:{size:9},maxRotation:0,autoSkipPadding:10},grid:{display:false}},y:{ticks:{color:isDay?'#111':'#fff',font:{size:10},precision:0},grid:{color:isDay?'#ddd':'#333'}}}}});
-  }catch(e){}
-}
-function exportHistoryCSV(){
-  if(!currentHistItemId) return;
-  var it = items.find(function(x){ return x.id == currentHistItemId; }); if(!it) return;
-  var lines = ['Date,Time,User,Action,Delta,OldQty,NewQty'];
-  (it.history||[]).forEach(function(e){
-    var d = new Date(e.ts);
-    lines.push(['"'+d.toLocaleDateString('ru-RU')+'"','"'+d.toLocaleTimeString('ru-RU')+'"','"'+(e.who||'').replace(/"/g,'""')+'"','"'+(e.action||'')+'"',e.delta||0,e.oldQty!=null?e.oldQty:'',e.newQty!=null?e.newQty:''].join(','));
-  });
-  var blob = new Blob(['\uFEFF'+lines.join('\n')],{type:'text/csv;charset=utf-8'});
-  var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = 'history-'+getDisplayName(it).replace(/[^a-zA-Z0-9а-яА-Я]/g,'_').substr(0,30)+'.csv'; a.click();
-  toast('📋 Скопировано');
-}
-function clearItemHistory(){
-  if(!currentHistItemId) return;
-  var it = items.find(function(x){ return x.id == currentHistItemId; }); if(!it) return;
-  customConfirm('Очистить историю издания?', function(){
-    pushUndo('Очистить');
-    it.history = []; save(); render();
-    if(currentHistItemId) renderHistoryContent(it);
-    toast('✕ Очищено');
-  });
-}
 
 var undoStack=[], redoStack=[]; var MAX_UNDO=30, lastUndoKey='', lastUndoTime=0; var undoBarTimer=null;
 function makeSnapshot(label){ return {items:JSON.parse(JSON.stringify(items)),users:JSON.parse(JSON.stringify(users)),historyLog:JSON.parse(JSON.stringify(historyLog.slice(0,30))),savedTitles:savedTitles.slice(),removedSuggestions:removedSuggestions.slice(),label:label}; }
@@ -1280,8 +1067,7 @@ function undo(){
   items=s.items; users=s.users; historyLog=s.historyLog;
   if(s.savedTitles) savedTitles=s.savedTitles;
   if(s.removedSuggestions) removedSuggestions=s.removedSuggestions;
-  save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); updateQuickFab(); populateDatalists(); renderSuggestions(); renderSuggManager();
-  if(currentHistItemId){ var it=items.find(function(x){return x.id==currentHistItemId;}); if(it) renderHistoryContent(it); else closeHistory(); }
+  save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); populateDatalists(); renderSuggestions(); renderSuggManager();
   toast('↶ '+s.label); updateUndoButtons();
   if(undoStack.length>0||redoStack.length>0) showUndoBar(); else hideUndoBar();
 }
@@ -1291,8 +1077,7 @@ function redo(){
   items=s.items; users=s.users; historyLog=s.historyLog;
   if(s.savedTitles) savedTitles=s.savedTitles;
   if(s.removedSuggestions) removedSuggestions=s.removedSuggestions;
-  save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); updateQuickFab(); populateDatalists(); renderSuggestions(); renderSuggManager();
-  if(currentHistItemId){ var it=items.find(function(x){return x.id==currentHistItemId;}); if(it) renderHistoryContent(it); else closeHistory(); }
+  save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); populateDatalists(); renderSuggestions(); renderSuggManager();
   toast('↷ Redo'); updateUndoButtons();
   if(undoStack.length>0||redoStack.length>0) showUndoBar(); else hideUndoBar();
 }
@@ -1304,29 +1089,58 @@ document.addEventListener('keydown', function(e){
   else if(e.key==='y'||e.key==='Y'){ e.preventDefault(); redo(); }
 });
 
-function setLastUsed(itemId){ if(!itemId) return; localStorage.setItem('stand_last_used_item', String(itemId)); updateQuickFab(); }
-function getLastUsed(){ var v=localStorage.getItem('stand_last_used_item'); if(!v) return null; var id=parseFloat(v); if(isNaN(id)) return null; return items.find(function(x){ return x.id == id; }) || null; }
-function updateQuickFab(){
-  var fab = document.getElementById('quickFab'); if(!fab) return;
-  if(localStorage.getItem('stand_fab_enabled') === 'false'){ fab.classList.remove('show'); return; }
-  var it = getLastUsed();
-  if(!it){ fab.classList.remove('show'); return; }
-  fab.classList.add('show');
-  var lbl = document.getElementById('fabPlus1Label');
-  if(lbl){ var nm = getDisplayName(it); lbl.textContent = (nm.length > 12 ? nm.substr(0,12)+'…' : nm) + ' ('+it.qty+')'; }
+function renderCountByType(){ var c=document.getElementById('countByType'); if(!c) return; var counts={mag:0,booklet:0,poster:0,total:0}; for(var i=0;i<items.length;i++){ var tt=(items[i].type||''); var q=items[i].qty||0; counts.total+=q; if(tt==='Журнал') counts.mag+=q; else if(tt==='Брошюра') counts.booklet+=q; else if(tt==='Постер') counts.poster+=q; } var p=function(n){ return counts.total>0?Math.round(n/counts.total*100):0; }; var h=''; h+='<div class="count-box"><div class="num" style="color:#f59e0b">'+counts.mag+'</div><div class="label">📰 Журналы</div><div class="small">'+p(counts.mag)+'%</div></div>'; h+='<div class="count-box"><div class="num" style="color:#22c55e">'+counts.booklet+'</div><div class="label">📖 Брошюры</div><div class="small">'+p(counts.booklet)+'%</div></div>'; h+='<div class="count-box"><div class="num" style="color:#ec4899">'+counts.poster+'</div><div class="label">🖼️ Постеры</div><div class="small">'+p(counts.poster)+'%</div></div>'; h+='<div class="count-box" style="border:2px solid var(--primary)"><div class="num" style="color:var(--primary)">'+counts.total+'</div><div class="label">📦</div><div class="small">100%</div></div>'; c.innerHTML=h; }
+
+function renderCountByLangType(){
+  var tb=document.getElementById('countLangTypeBody'); if(!tb) return;
+  var byLang = {};
+  var totals = {mag:0, booklet:0, poster:0, total:0};
+  for(var i=0;i<items.length;i++){
+    var it=items[i];
+    var code = it.lang || 'ru';
+    if(!byLang[code]) byLang[code] = {mag:0, booklet:0, poster:0, total:0};
+    var tt = it.type||'';
+    var q = it.qty||0;
+    if(tt==='Журнал'){ byLang[code].mag+=q; totals.mag+=q; }
+    else if(tt==='Брошюра'){ byLang[code].booklet+=q; totals.booklet+=q; }
+    else if(tt==='Постер'){ byLang[code].poster+=q; totals.poster+=q; }
+    byLang[code].total+=q;
+    totals.total+=q;
+  }
+  var langs = Object.keys(byLang).sort(function(a,b){
+    if(a==='ru') return -1;
+    if(b==='ru') return 1;
+    return byLang[b].total - byLang[a].total;
+  });
+  if(langs.length===0){ tb.innerHTML='<tr><td colspan="5" style="text-align:center">—</td></tr>'; return; }
+  var h='';
+  langs.forEach(function(code){
+    var c = byLang[code];
+    h += '<tr>';
+    h += '<td><b>'+esc(getLangDisplay(code))+'</b></td>';
+    h += '<td>'+c.mag+'</td>';
+    h += '<td>'+c.booklet+'</td>';
+    h += '<td>'+c.poster+'</td>';
+    h += '<td><b>'+c.total+'</b></td>';
+    h += '</tr>';
+  });
+  h += '<tr class="total-row">';
+  h += '<td>ВСЕГО</td>';
+  h += '<td>'+totals.mag+'</td>';
+  h += '<td>'+totals.booklet+'</td>';
+  h += '<td>'+totals.poster+'</td>';
+  h += '<td>'+totals.total+'</td>';
+  h += '</tr>';
+  tb.innerHTML = h;
 }
-function clearQuickFab(){ localStorage.removeItem('stand_last_used_item'); updateQuickFab(); toast('✕ Очищено'); }
-function quickPlusOne(){
-  var it = getLastUsed(); if(!it){ toast('Нет последнего'); return; }
-  if(!hasPerm('count')){ toast('Нет прав'); return; }
-  changeQty(it.id, 1); toast('➕ +1 ' + getDisplayName(it)); beepOk();
-}
-function loadFabSetting(){ var v=localStorage.getItem('stand_fab_enabled'); if(v===null) v='true'; var sel=document.getElementById('fabEnabled'); if(sel) sel.value=v; }
+
+function renderCharts(){ try{ var ctx=document.getElementById('chartMain'); if(!ctx) return; var tc={}; for(var i=0;i<items.length;i++){ var tp=getTypeDisplay(items[i].type); tc[tp]=(tc[tp]||0)+items[i].qty; } var labels=Object.keys(tc), data=Object.values(tc); var isDay=document.body.classList.contains('day')||(curBgColor && isLightColor(curBgColor)); if(chartMainInst) chartMainInst.destroy(); chartMainInst=new Chart(ctx,{type:'doughnut',data:{labels:labels,datasets:[{data:data,backgroundColor:['#f59e0b','#22c55e','#ec4899','#06b6d4']}]},options:{responsive:true,plugins:{legend:{labels:{color:isDay?'#111':'#fff'}}}}}); }catch(e){} }
+function exportChart(){ var c=document.getElementById('chartMain'); if(!c) return; var a=document.createElement('a'); a.download='chart.png'; a.href=c.toDataURL(); a.click(); }
 
 function render(){
   var sortSel=document.getElementById('sortSelect');
   if(sortSel){
-    sortSel.innerHTML = '<option value="low">⚠️ Низкий запас</option><option value="fav">⭐ Избранные</option><option value="name">🔤 По алфавиту</option><option value="qty">📊 Количество</option><option value="new">🆕 Новые</option>';
+    sortSel.innerHTML = '<option value="low">📊 Мало</option><option value="fav">⭐ Избранные</option><option value="name">🔤 По алфавиту</option><option value="qty">📈 Много</option><option value="new">🆕 Новые</option>';
     sortSel.value = curSort;
   }
   var tf=document.getElementById('typeFilter');
@@ -1357,13 +1171,13 @@ function render(){
     var it=items[i];
     var name=getDisplayName(it).toLowerCase(); var cat=getDisplayCat(it).toLowerCase();
     var themeStr=(it.theme||'').toLowerCase();
-    var matchQ=name.indexOf(q)>=0 || cat.indexOf(q)>=0 || themeStr.indexOf(q)>=0 || (it.barcode&&it.barcode.toLowerCase().indexOf(q)>=0) || (it.year&&String(it.year).toLowerCase().indexOf(q)>=0) || (it.issueNum&&String(it.issueNum).toLowerCase().indexOf(q)>=0);
+    var matchQ=name.indexOf(q)>=0 || cat.indexOf(q)>=0 || themeStr.indexOf(q)>=0 || (it.year&&String(it.year).toLowerCase().indexOf(q)>=0) || (it.issueNum&&String(it.issueNum).toLowerCase().indexOf(q)>=0);
     var matchT=curTypeFilter==='all' || it.type===curTypeFilter;
     var matchL=curLangFilter==='all' || (it.lang||'ru')===curLangFilter;
     if(matchQ && matchT && matchL) filtered.push(it);
   }
   filtered.sort(function(a,b){
-    if(curSort==='low'){ var aN=(a.qty<=a.min?0:1),bN=(b.qty<=b.min?0:1); if(aN!==bN) return aN-bN; return a.qty-b.qty; }
+    if(curSort==='low') return a.qty - b.qty;
     else if(curSort==='fav') return (b.favorite?1:0)-(a.favorite?1:0);
     else if(curSort==='name') return getDisplayName(a).localeCompare(getDisplayName(b));
     else if(curSort==='qty') return b.qty-a.qty;
@@ -1371,9 +1185,10 @@ function render(){
     return 0;
   });
   if(curSort!=='fav'){ filtered.sort(function(a,b){ return (b.favorite?1:0)-(a.favorite?1:0); }); }
+
   var total=0,cMag=0,cBooklet=0,cPoster=0;
   for(var i=0;i<items.length;i++){ total+=items[i].qty; var tp=items[i].type||''; if(tp==='Журнал') cMag+=items[i].qty; else if(tp==='Брошюра') cBooklet+=items[i].qty; else if(tp==='Постер') cPoster+=items[i].qty; }
-  var need=[]; for(var i=0;i<items.length;i++) if(items[i].qty<=items[i].min) need.push(items[i]);
+  var need=[]; for(var i=0;i<items.length;i++) if(items[i].qty<=0) need.push(items[i]);
   var $=function(id){return document.getElementById(id);};
   if($('tot')) $('tot').textContent=total; if($('tit')) $('tit').textContent=items.length;
   if($('cnt-mag')) $('cnt-mag').textContent=cMag;
@@ -1381,32 +1196,26 @@ function render(){
   if($('need')) $('need').textContent=need.length;
 
   var canCount=hasPerm('count'), canRename=hasPerm('rename'), canDel=hasPerm('del');
-  var lastUsed = getLastUsed();
-  var lastUsedId = lastUsed ? lastUsed.id : null;
   var h='';
   if(filtered.length===0){ h='<div style="text-align:center;padding:30px;color:var(--muted)">📦 —</div>'; }
   for(var i=0;i<filtered.length;i++){
     var it=filtered[i];
-    var col=it.qty<=it.min?'bad':'good';
+    var col=it.qty<=0?'bad':'good';
     var tcl=getTypeClass(it.type); var icon=getTypeIcon(it.type);
     var displayType=icon+' '+getTypeDisplay(it.type);
-    var photoHtml=it.photo?'<img src="'+esc(it.photo)+'" class="photo-thumb">':'<div class="photo-thumb" style="display:flex;align-items:center;justify-content:center;font-size:18px">'+icon+'</div>';
     var favCls=it.favorite?'item fav':'item'; var favStar=it.favorite?'⭐':'☆'; var favCls2=it.favorite?'fav-btn':'fav-btn inactive';
-    var histCount=(it.history||[]).length; var histBadge=histCount>0?'<span class="small" style="color:var(--muted);font-size:0.65em;margin-left:4px">📜 '+histCount+'</span>':'';
-    var isLast = (lastUsedId === it.id);
-    var pinBtn = canCount ? '<button class="icon-btn" onclick="setLastUsed('+it.id+')" style="color:'+(isLast?'#22c55e':'var(--text)')+'" title="+1">'+(isLast?'📌':'📍')+'</button>' : '';
     var extraInfo = getItemExtraInfo(it);
     var extraLine = extraInfo ? '<div class="item-extra">📅 '+esc(extraInfo)+'</div>' : '';
     var themeLine = (it.theme && String(it.theme).trim()) ? '<div class="item-theme">💡 '+esc(it.theme)+'</div>' : '';
     var langLabel = (it.lang && it.lang!=='ru') ? ' <span class="lang-label">'+esc(getLangDisplay(it.lang))+'</span>' : '';
     h+='<div class="'+favCls+'">'+
-      '<div class="item-main">'+photoHtml+
+      '<div class="item-main">'+
         '<div class="item-info">'+
-          '<span class="type-label '+tcl+'">'+esc(displayType)+'</span>'+langLabel+' '+histBadge+
+          '<span class="type-label '+tcl+'">'+esc(displayType)+'</span>'+langLabel+
           '<b class="item-name" style="display:block;margin-top:4px">'+esc(getDisplayName(it))+'</b>'+
           themeLine+extraLine+
-          '<div class="item-cat">'+esc(getDisplayCat(it))+(it.barcode?' | '+esc(it.barcode):'')+'</div>'+
-          '<span class="item-badge '+col+'">'+it.qty+'/'+it.min+'</span>'+
+          '<div class="item-cat">'+esc(getDisplayCat(it))+'</div>'+
+          '<span class="item-badge '+col+'">'+it.qty+'</span>'+
         '</div>'+
       '</div>'+
       '<div class="item-actions">'+
@@ -1414,31 +1223,28 @@ function render(){
         (canCount?'<button class="qty-btn minus" onclick="changeQty('+it.id+',-1)">−</button>':'')+
         '<span class="qty-display">'+it.qty+'</span>'+
         (canCount?'<button class="qty-btn" onclick="changeQty('+it.id+',1)">+</button>':'')+
-        pinBtn+
-        '<button class="icon-btn" onclick="openItemHistory('+it.id+')" title="history">📜</button>'+
         (canRename?'<button class="icon-btn" onclick="openRename('+it.id+')">✏️</button>':'')+
         (canDel?'<button class="icon-btn" style="color:#ef4444" onclick="deleteItem('+it.id+')">🗑️</button>':'')+
       '</div>'+
     '</div>';
   }
-  if($('list')) $('list').innerHTML=h;
+  if(document.getElementById('list')) document.getElementById('list').innerHTML=h;
 
-  var ob=$('orderBox');
+  var ob=document.getElementById('orderBox');
   if(ob){
     if(need.length>0 && hasPerm('order')){
       ob.style.display='block';
       var oh=''; for(var i=0;i<need.length;i++){ var eI=getItemExtraInfo(need[i]); var th=need[i].theme?(' — '+need[i].theme):''; oh+=esc(getDisplayName(need[i]))+th+(eI?' ('+esc(eI)+')':'')+' - '+need[i].qty+'<br>'; }
-      if($('orderList')) $('orderList').innerHTML=oh;
+      if(document.getElementById('orderList')) document.getElementById('orderList').innerHTML=oh;
       var sh='<b style="color:var(--primary)">🤖 Совет:</b><br>';
-      for(var i=0;i<need.length;i++){ var nit=need[i]; sh+=esc(getDisplayName(nit))+': '+(nit.min*2 - nit.qty + 3)+'<br>'; }
-      if($('smartOrder')) $('smartOrder').innerHTML=sh;
+      for(var i=0;i<need.length;i++){ var nit=need[i]; sh+=esc(getDisplayName(nit))+': '+(nit.qty+5)+'<br>'; }
+      if(document.getElementById('smartOrder')) document.getElementById('smartOrder').innerHTML=sh;
     } else ob.style.display='none';
   }
-  var dc=$('dangerCard'); if(dc) dc.style.display=hasPerm('del')?'block':'none';
-  var an=$('addPermNotice'); var canAdd=hasPerm('add'); if(an) an.style.display=canAdd?'none':'block';
+  var dc=document.getElementById('dangerCard'); if(dc) dc.style.display=hasPerm('del')?'block':'none';
+  var an=document.getElementById('addPermNotice'); var canAdd=hasPerm('add'); if(an) an.style.display=canAdd?'none':'block';
   var btnAdd=document.getElementById('btnAddItem'); if(btnAdd) btnAdd.disabled=!canAdd;
-  var btnBulk=document.getElementById('btnAddBulk'); if(btnBulk) btnBulk.disabled=!canAdd;
-  try{ renderCountByType(); }catch(e){} try{ renderCountByLangType(); }catch(e){} try{ renderLog(); }catch(e){} try{ renderCharts(); }catch(e){} try{ renderToday(); }catch(e){} try{ updateQuickFab(); }catch(e){}
+  try{ renderCountByType(); }catch(e){} try{ renderCountByLangType(); }catch(e){} try{ renderLog(); }catch(e){} try{ renderCharts(); }catch(e){}
 }
 
 function toggleFav(id){ var it=items.find(function(x){return x.id==id;}); if(!it) return; it.favorite=!it.favorite; vibrate(15); save(); render(); }
@@ -1450,10 +1256,7 @@ function changeQty(id,d){
   pushUndoSmart('qty-'+id, (d>0?'+':'')+d+' '+getDisplayName(it));
   it.qty=newQty;
   addItemHistory(id, d>0?'add':'remove', d, old, newQty);
-  setLastUsed(id);
-  var diff=newQty-old; if(diff>0) bumpToday('add',diff); else if(diff<0) bumpToday('rem',-diff);
   vibrate(10); save(); render();
-  if(currentHistItemId == id) renderHistoryContent(it);
 }
 function deleteItem(id){
   if(!hasPerm('del')) return;
@@ -1461,11 +1264,10 @@ function deleteItem(id){
     var it=items.find(function(x){return x.id==id;}); if(!it) return;
     pushUndo('Удалить: '+getDisplayName(it));
     items=items.filter(function(x){return x.id!=id;}); addLog('Удалить',{names:it.names});
-    if(getLastUsed() && getLastUsed().id === id) localStorage.removeItem('stand_last_used_item');
     save(); render(); populateDatalists(); toast('🗑️ Удалено: '+getDisplayName(it));
   });
 }
-function deleteAllItems(){ if(!hasPerm('del')) return; customConfirm('Удалить ВСЁ? Нельзя отменить!', function(){ pushUndo('Удалить всё'); items=[]; localStorage.removeItem('stand_last_used_item'); addLog('Удалить всё',''); save(); render(); populateDatalists(); toast('🗑️ Всё удалено'); }); }
+function deleteAllItems(){ if(!hasPerm('del')) return; customConfirm('Удалить ВСЁ? Нельзя отменить!', function(){ pushUndo('Удалить всё'); items=[]; addLog('Удалить всё',''); save(); render(); populateDatalists(); toast('🗑️ Всё удалено'); }); }
 
 var _renamingId=null;
 function openRename(id){
@@ -1475,7 +1277,7 @@ function openRename(id){
   var langOpts = '';
   Object.keys(LANGS).forEach(function(code){
     var sel = (it.lang||'ru')===code ? ' selected' : '';
-    langOpts += '<option value="'+code+'"'+sel+'>'+esc(LANGS[code])+'</option>';
+    langOpts += '<option value="'+code+'"'+sel+'>'+esc(getLangDisplay(code))+'</option>';
   });
   var html='';
   html+='<div style="margin-bottom:8px"><label style="font-size:0.8em;margin:0 0 3px">📝 Название</label><input id="rn-ru" value="'+esc(getDisplayName(it))+'"></div>';
@@ -1510,8 +1312,6 @@ function saveRename(){
   closeRename(); save(); render(); populateDatalists();
 }
 
-function previewPhoto(e){ var file=e.target.files[0]; if(!file) return; var reader=new FileReader(); reader.onload=function(ev){ var img=new Image(); img.onload=function(){ var MAX=400,w=img.width,h=img.height; if(w>MAX||h>MAX){ if(w>h){h=Math.round(h*MAX/w);w=MAX;} else {w=Math.round(w*MAX/h);h=MAX;} } var canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h; canvas.getContext('2d').drawImage(img,0,0,w,h); currentPhotoBase64=canvas.toDataURL('image/jpeg',0.7); var prev=document.getElementById('photoPreview'); prev.src=currentPhotoBase64; prev.style.display='block'; }; img.src=ev.target.result; }; reader.readAsDataURL(file); }
-
 function addItem(){
   if(!hasPerm('add')){ alert('Нет прав'); return; }
   var titleVal=document.getElementById('title').value.trim(); if(!titleVal){ alert('Введите название!'); return; }
@@ -1520,7 +1320,7 @@ function addItem(){
   var yearVal=(document.getElementById('year').value||'').trim();
   var issueNumVal=(document.getElementById('issueNum').value||'').trim();
   var langVal = (document.getElementById('lang')||{}).value || 'ru';
-  var newItem={id:Date.now()+Math.random(),names:{ru:titleVal},type:document.getElementById('addType').value,cat:document.getElementById('cat').value||'-',lang:langVal,magazineLang:langVal,year:yearVal,issueNum:issueNumVal,theme:'',qty:qtyVal,min:parseInt(document.getElementById('min').value)||3,barcode:document.getElementById('bar').value||'',photo:currentPhotoBase64||'',history:[]};
+  var newItem={id:Date.now()+Math.random(),names:{ru:titleVal},type:document.getElementById('addType').value,cat:document.getElementById('cat').value||'-',lang:langVal,magazineLang:langVal,year:yearVal,issueNum:issueNumVal,theme:'',qty:qtyVal,min:0,photo:'',barcode:'',history:[]};
   items.push(newItem);
   addItemHistory(newItem.id,'create',qtyVal,0,qtyVal);
   addLog('Добавить',{names:newItem.names});
@@ -1530,30 +1330,8 @@ function addItem(){
   document.getElementById('title').value='';
   document.getElementById('year').value='';
   document.getElementById('issueNum').value='';
-  document.getElementById('photoInput').value='';
-  document.getElementById('photoPreview').style.display='none';
-  currentPhotoBase64='';
   save(); render(); populateDatalists();
   toast('✅ Добавлено: '+titleVal);
-}
-function addBulk(){
-  if(!hasPerm('add')){ alert('Нет прав'); return; }
-  var txt=document.getElementById('bulk').value.trim(); if(!txt) return;
-  var lines=txt.split('\n'); var c=0; pushUndo('Добавить много');
-  var qtyVal=parseInt(document.getElementById('qty').value)||0;
-  var yearVal=(document.getElementById('year').value||'').trim();
-  var issueNumVal=(document.getElementById('issueNum').value||'').trim();
-  var langVal = (document.getElementById('lang')||{}).value || 'ru';
-  for(var i=0;i<lines.length;i++){
-    var tt=lines[i].trim(); if(!tt) continue;
-    var nIt={id:Date.now()+c+Math.random(),names:{ru:tt},type:document.getElementById('addType').value,cat:'-',lang:langVal,magazineLang:langVal,year:yearVal,issueNum:issueNumVal,theme:'',qty:qtyVal,min:3,barcode:'',photo:'',history:[]};
-    items.push(nIt); addItemHistory(nIt.id,'create',qtyVal,0,qtyVal);
-    addToSavedList('titles', tt);
-    c++;
-  }
-  if(yearVal) addToSavedList('years', yearVal);
-  if(issueNumVal) addToSavedList('issueNums', issueNumVal);
-  document.getElementById('bulk').value=''; save(); render(); populateDatalists(); toast('✅ Добавлено '+c+' изданий');
 }
 
 function renderUsers(){ var list=document.getElementById('usersList'); if(!list) return; if(users.length===0){ list.innerHTML='<div class="small">—</div>'; return; } var h=''; users.forEach(function(u){ h+='<div class="user-row"><div style="flex:1"><div class="uname">👤 '+esc(u.name)+' <span class="urole role-'+u.role+'">'+esc(getRoleDisplay(u.role))+'</span></div></div>'+(users.length>1?'<button class="icon-btn" style="background:#ef4444;color:#fff;border:0;padding:8px 12px;border-radius:6px" onclick="deleteUser('+u.id+')">🗑️</button>':'')+'</div>'; }); list.innerHTML=h; }
@@ -1576,71 +1354,20 @@ function renderQuickCount(){
     var it=items[i];
     var eI=getItemExtraInfo(it);
     if(q && (getDisplayName(it).toLowerCase().indexOf(q)<0 && eI.toLowerCase().indexOf(q)<0 && (it.theme||'').toLowerCase().indexOf(q)<0)) continue;
-    var col=it.qty<=it.min?'bad':'good'; var lab=it.qty<=it.min?'⚠️':'✅';
     var extra = eI ? '<span style="color:#06b6d4;font-weight:bold"> • '+esc(eI)+'</span>' : '';
     var themeMini = it.theme ? ' <span style="color:#a855f7;font-style:italic">💡 '+esc(it.theme)+'</span>' : '';
-    h+='<div class="qc-tile"><div class="qc-info"><div class="qc-name">'+getTypeIcon(it.type)+' '+esc(getDisplayName(it))+'</div><div class="qc-cat">'+extra+themeMini+' <span class="badge '+col+'" style="font-size:0.7em">'+lab+'</span></div></div>'+(canCount?'<button class="qc-minus" onclick="qcChange('+it.id+',-1)">−</button>':'')+'<div class="qc-qty">'+it.qty+'</div>'+(canCount?'<button class="qc-plus" onclick="qcChange('+it.id+',1)">+</button>':'')+'</div>';
+    h+='<div class="qc-tile"><div class="qc-info"><div class="qc-name">'+getTypeIcon(it.type)+' '+esc(getDisplayName(it))+'</div><div class="qc-cat">'+extra+themeMini+'</div></div>'+(canCount?'<button class="qc-minus" onclick="qcChange('+it.id+',-1)">−</button>':'')+'<div class="qc-qty">'+it.qty+'</div>'+(canCount?'<button class="qc-plus" onclick="qcChange('+it.id+',1)">+</button>':'')+'</div>';
   }
   list.innerHTML=h||'<div class="small" style="text-align:center;padding:20px">—</div>';
 }
 function qcChange(id,d){ changeQty(id,d); renderQuickCount(); }
 
-function renderCountByType(){ var c=document.getElementById('countByType'); if(!c) return; var counts={mag:0,booklet:0,poster:0,total:0}; for(var i=0;i<items.length;i++){ var tt=(items[i].type||''); var q=items[i].qty||0; counts.total+=q; if(tt==='Журнал') counts.mag+=q; else if(tt==='Брошюра') counts.booklet+=q; else if(tt==='Постер') counts.poster+=q; } var p=function(n){ return counts.total>0?Math.round(n/counts.total*100):0; }; var h=''; h+='<div class="count-box"><div class="num" style="color:#f59e0b">'+counts.mag+'</div><div class="label">📰 Журналы</div><div class="small">'+p(counts.mag)+'%</div></div>'; h+='<div class="count-box"><div class="num" style="color:#22c55e">'+counts.booklet+'</div><div class="label">📖 Брошюры</div><div class="small">'+p(counts.booklet)+'%</div></div>'; h+='<div class="count-box"><div class="num" style="color:#ec4899">'+counts.poster+'</div><div class="label">🖼️ Постеры</div><div class="small">'+p(counts.poster)+'%</div></div>'; h+='<div class="count-box" style="border:2px solid var(--primary)"><div class="num" style="color:var(--primary)">'+counts.total+'</div><div class="label">📦</div><div class="small">100%</div></div>'; c.innerHTML=h; }
-function renderCountByLangType(){ var tb=document.getElementById('countLangTypeBody'); if(!tb) return; var counts={mag:0,booklet:0,poster:0,total:0}; for(var i=0;i<items.length;i++){ var tt=(items[i].type||''); var q=items[i].qty||0; if(tt==='Журнал') counts.mag+=q; else if(tt==='Брошюра') counts.booklet+=q; else if(tt==='Постер') counts.poster+=q; counts.total+=q; } var h=''; if(counts.total>0){ if(counts.mag>0) h+='<tr><td><b>📰 Журналы</b></td><td><b>'+counts.mag+'</b></td></tr>'; if(counts.booklet>0) h+='<tr><td><b>📖 Брошюры</b></td><td><b>'+counts.booklet+'</b></td></tr>'; if(counts.poster>0) h+='<tr><td><b>🖼️ Постеры</b></td><td><b>'+counts.poster+'</b></td></tr>'; h+='<tr style="background:var(--card2);font-weight:bold"><td>ВСЕГО</td><td>'+counts.total+'</td></tr>'; } else h='<tr><td colspan="2" style="text-align:center">—</td></tr>'; tb.innerHTML=h; }
-
-function renderCharts(){ try{ var ctx=document.getElementById('chartMain'); if(!ctx) return; var tc={}; for(var i=0;i<items.length;i++){ var tp=getTypeDisplay(items[i].type); tc[tp]=(tc[tp]||0)+items[i].qty; } var labels=Object.keys(tc), data=Object.values(tc); var isDay=document.body.classList.contains('day')||(curBgColor && isLightColor(curBgColor)); if(chartMainInst) chartMainInst.destroy(); chartMainInst=new Chart(ctx,{type:'doughnut',data:{labels:labels,datasets:[{data:data,backgroundColor:['#f59e0b','#22c55e','#ec4899','#06b6d4']}]},options:{responsive:true,plugins:{legend:{labels:{color:isDay?'#111':'#fff'}}}}}); }catch(e){} }
-function exportChart(){ var c=document.getElementById('chartMain'); if(!c) return; var a=document.createElement('a'); a.download='chart.png'; a.href=c.toDataURL(); a.click(); }
-
 function copyOrder(){ var txt=document.getElementById('orderList').innerText; if(navigator.clipboard) navigator.clipboard.writeText(txt).then(function(){toast('📋 Скопировано');}); }
 function exportOrder(){ var b=new Blob([document.getElementById('orderList').innerText],{type:'text/plain'}); var a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='order.txt'; a.click(); }
-function exportPDF(){ var need=items.filter(function(x){return x.qty<=x.min;}); var h='<h1>STAND MANAGER</h1><p>'+new Date().toLocaleString('ru-RU')+'</p><ul>'; need.forEach(function(x){ var eI=getItemExtraInfo(x); var th=x.theme?(' — '+x.theme):''; h+='<li>'+esc(getDisplayName(x))+esc(th)+(eI?' ('+esc(eI)+')':'')+' - '+x.qty+'/'+x.min+'</li>'; }); h+='</ul>'; if(!need.length) h+='<p>-</p>'; printDoc('order',h); }
+function exportPDF(){ var need=items.filter(function(x){return x.qty<=0;}); var h='<h1>STAND MANAGER</h1><p>'+new Date().toLocaleString('ru-RU')+'</p><ul>'; need.forEach(function(x){ var eI=getItemExtraInfo(x); var th=x.theme?(' — '+x.theme):''; h+='<li>'+esc(getDisplayName(x))+esc(th)+(eI?' ('+esc(eI)+')':'')+' - '+x.qty+'</li>'; }); h+='</ul>'; if(!need.length) h+='<p>-</p>'; printDoc('order',h); }
 function shareWhatsApp(){ var txt=encodeURIComponent(document.getElementById('orderList').innerText); window.open('https://wa.me/?text='+txt,'_blank'); }
 
-function startScanner(){
-  if(!hasPerm('scan')) return;
-  document.getElementById('scannerBox').style.display='block';
-  document.getElementById('scanNewBtn').style.display='none'; document.getElementById('recentScans').innerHTML='';
-  recentScans=[]; lastScan={code:'',time:0}; scanBusy=false;
-  document.getElementById('scanResult').textContent='📷 Сканируйте...';
-  if(!html5Qrcode) html5Qrcode=new Html5Qrcode('reader');
-  html5Qrcode.start({facingMode:'environment'},{fps:10,qrbox:250},
-    function(decodedText){
-      var now=Date.now(); if(lastScan.code===decodedText && now-lastScan.time<1500) return;
-      lastScan={code:decodedText,time:now};
-      var found=items.find(function(it){ return it.barcode && it.barcode===decodedText; });
-      if(found){ pushUndoSmart('scan-'+found.id, '+1 '+getDisplayName(found)); changeQty(found.id, 1); addRecentScan(found); beepOk(); vibrate(30); document.getElementById('scanResult').innerHTML='✅ +1 '+esc(getDisplayName(found))+' ('+found.qty+')'; }
-      else { beepFail(); vibrate([50,30,50]); document.getElementById('scanResult').innerHTML='❓ Неизвестный штрихкод: '+esc(decodedText); pendingNewBarcode=decodedText; document.getElementById('scanNewBtn').style.display='inline-block'; }
-    },
-    function(err){}
-  ).catch(function(e){ document.getElementById('scanResult').textContent='Ошибка: '+e; });
-}
-function stopScanner(){ if(html5Qrcode){ try{ var p=html5Qrcode.stop(); if(p&&p.catch) p.catch(function(){}); }catch(e){} } document.getElementById('scannerBox').style.display='none'; pendingNewBarcode=''; document.getElementById('scanNewBtn').style.display='none'; render(); }
-function addRecentScan(it){ var ex=recentScans.find(function(r){ return r.id===it.id; }); if(ex) ex.count++; else recentScans.unshift({id:it.id,name:getDisplayName(it),count:1}); if(recentScans.length>8) recentScans.pop(); renderRecentScans(); }
-function renderRecentScans(){ var el=document.getElementById('recentScans'); if(!el) return; if(recentScans.length===0){ el.innerHTML=''; return; } var h='<div style="font-size:0.75em;color:var(--muted);text-align:center;margin-bottom:4px">📊</div>'; recentScans.forEach(function(r){ h+='<div class="recent-row"><span>'+esc(r.name)+'</span><span class="rc-count">+'+r.count+'</span></div>'; }); el.innerHTML=h; }
-function clearRecentScans(){ recentScans=[]; renderRecentScans(); }
-function openAddFromScan(){ if(!pendingNewBarcode) return; document.getElementById('bar').value=pendingNewBarcode; stopScanner(); document.getElementById('addCard').scrollIntoView({behavior:'smooth'}); document.getElementById('title').focus(); toast('📝 Заполните название'); }
-
-function startVoice(){
-  if(!hasPerm('voice')) return;
-  if(!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)){ alert('Требуется Chrome'); return; }
-  var SpeechRec=window.SpeechRecognition||window.webkitSpeechRecognition; var rec=new SpeechRec();
-  rec.lang='ru-RU';
-  rec.interimResults=false; rec.maxAlternatives=1;
-  var vb=document.getElementById('voiceBox'), vt=document.getElementById('voiceText');
-  vb.style.display='block'; vt.textContent='🎙️...'; rec.start();
-  rec.onresult=function(event){
-    var spoken=event.results[0][0].transcript; vt.textContent='"'+spoken+'"';
-    var parts=spoken.trim().split(' '); var last=parts[parts.length-1]; var qty=parseInt(last); var tp=spoken;
-    if(!isNaN(qty)){ tp=parts.slice(0,-1).join(' ').trim(); } else qty=1;
-    if(!tp){ setTimeout(function(){ vb.style.display='none'; },3000); return; }
-    var found=null; for(var i=0;i<items.length;i++){ var nm=getDisplayName(items[i]).toLowerCase(); if(nm.indexOf(tp.toLowerCase())>=0){ found=items[i]; break; } }
-    if(found){ var diff=qty-found.qty; if(diff!==0){ changeQty(found.id, diff); vt.textContent+=' → '+getDisplayName(found)+'='+found.qty; } }
-    setTimeout(function(){ vb.style.display='none'; },3000);
-  };
-  rec.onerror=function(){ setTimeout(function(){ vb.style.display='none'; },2000); };
-}
-
-function exportBackup(){ var backup={version:5,ts:Date.now(),app:'StandManagerPRO',items:items,users:users,historyLog:historyLog,adminPass:adminPass,savedTitles:savedTitles,savedYears:savedYears,savedIssueNums:savedIssueNums,removedSuggestions:removedSuggestions,settings:{fs:curFS,lfs:curLFS,ff:curFF,theme:curTheme,sort:curSort,bgColorDark:bgColorDark,bgColorDay:bgColorDay,btnColorDark:btnColorDark,btnColorDay:btnColorDay,cloudId:cloudId,cloudEnabled:cloudEnabled,fabEnabled:localStorage.getItem('stand_fab_enabled'),lastUsedItem:localStorage.getItem('stand_last_used_item')}}; var blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='stand-backup-'+new Date().toISOString().slice(0,10)+'.json'; a.click(); toast('💾 Копия загружена'); }
+function exportBackup(){ var backup={version:6,ts:Date.now(),app:'StandManagerPRO',items:items,users:users,historyLog:historyLog,adminPass:adminPass,savedTitles:savedTitles,savedYears:savedYears,savedIssueNums:savedIssueNums,removedSuggestions:removedSuggestions,settings:{fs:curFS,lfs:curLFS,ff:curFF,theme:curTheme,sort:curSort,bgColorDark:bgColorDark,bgColorDay:bgColorDay,btnColorDark:btnColorDark,btnColorDay:btnColorDay,cloudId:cloudId,cloudEnabled:cloudEnabled}}; var blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='stand-backup-'+new Date().toISOString().slice(0,10)+'.json'; a.click(); toast('💾 Копия загружена'); }
 function importBackup(e){
   var file=e.target.files[0]; if(!file) return;
   var reader=new FileReader();
@@ -1671,13 +1398,11 @@ function importBackup(e){
           if(s.btnColorDay!==undefined){ btnColorDay=s.btnColorDay; localStorage.setItem('stand_btn_color_day',btnColorDay); }
           if(s.cloudId!==undefined){ cloudId=s.cloudId; localStorage.setItem('stand_cloud_id',cloudId); }
           if(s.cloudEnabled!==undefined){ cloudEnabled=s.cloudEnabled; localStorage.setItem('stand_cloud_enabled',cloudEnabled?'true':'false'); }
-          if(s.fabEnabled) localStorage.setItem('stand_fab_enabled',s.fabEnabled);
-          if(s.lastUsedItem) localStorage.setItem('stand_last_used_item',s.lastUsedItem);
           curBgColor=(curTheme==='day')?bgColorDay:bgColorDark; curBtnColor=(curTheme==='day')?btnColorDay:btnColorDark;
         }
         save(); applyTheme(); applyFont(); applyBgColor(); applyBtnColor();
         render(); renderUsers(); renderUserSelectList(); updateUserChip();
-        renderBgSwatches(); renderBtnSwatches(); updateThemeHints(); loadFabSetting(); updateQuickFab(); populateDatalists();
+        renderBgSwatches(); renderBtnSwatches(); updateThemeHints(); populateDatalists();
         toast('✅ Восстановление завершено!');
       });
     }catch(err){ alert('❌ Неверный файл'); }
@@ -1708,7 +1433,7 @@ async function initFirebase(){
       if(data.history && Array.isArray(data.history)){ historyLog=data.history; }
       if(data.savedTitles && Array.isArray(data.savedTitles)) savedTitles = data.savedTitles;
       if(data.removedSuggestions && Array.isArray(data.removedSuggestions)) removedSuggestions = data.removedSuggestions;
-      save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); updateQuickFab(); populateDatalists();
+      save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); populateDatalists();
       setSyncState('synced'); isSyncingFromCloud=false;
     });
     setSyncState('synced');
@@ -1726,7 +1451,7 @@ function openAdmin(){
   document.getElementById('pinCheck').value='';
   document.getElementById('passMsg').textContent='';
   applyFont(); renderLog(); renderBgSwatches(); renderBtnSwatches();
-  updateThemeHints(); loadFabSetting();
+  updateThemeHints();
 }
 function closeAdmin(){ document.getElementById('adminScreen').style.display='none'; document.getElementById('adminContent').style.display='none'; document.getElementById('loginBox').style.display='block'; document.getElementById('pinCheck').value=''; }
 function checkAdmin(){
@@ -1734,7 +1459,7 @@ function checkAdmin(){
     document.getElementById('adminContent').style.display='block';
     document.getElementById('loginBox').style.display='none';
     renderUsers(); applyFont(); renderBgSwatches(); renderBtnSwatches();
-    updateThemeHints(); loadFabSetting(); updatePermsFromRole(); renderLog();
+    updateThemeHints(); updatePermsFromRole(); renderLog();
     try{ renderSuggestions(); }catch(e){}
   } else alert('Неверный пароль');
 }
@@ -1815,45 +1540,14 @@ function installPWA(){
   else toast('📲 Откройте меню браузера → Установить', 3000);
 }
 
-function setupPWAShortcuts(){
-  try{
-    var manifestData = { name:"Stand Manager PRO", short_name:"StandPRO", start_url:".", display:"standalone", background_color:"#0f0f0f", theme_color:"#f59e0b", icons:[], shortcuts:[
-      {name:"🎯 Быстрый подсчёт", short_name:"Подсчёт", url:"./?action=quick"},
-      {name:"📷 Скан", short_name:"Скан", url:"./?action=scan"},
-      {name:"➕ +1 Последнее", short_name:"+1", url:"./?action=plus1"},
-      {name:"📋 Список заказа", short_name:"Заказ", url:"./?action=order"}
-    ]};
-    var blob = new Blob([JSON.stringify(manifestData)], {type: 'application/manifest+json'});
-    var url = URL.createObjectURL(blob);
-    var link = document.getElementById('manifestLink');
-    if(link) link.href = url;
-  }catch(e){}
-}
-
-function handleUrlActions(){
-  try{
-    var params = new URLSearchParams(window.location.search);
-    var action = params.get('action');
-    if(!action) return;
-    try{ if(window.history && window.history.replaceState){ window.history.replaceState({}, document.title, window.location.pathname); } }catch(e){}
-    setTimeout(function(){
-      if(action === 'quick'){ openQuickCount(); }
-      else if(action === 'scan'){ startScanner(); }
-      else if(action === 'plus1'){ quickPlusOne(); }
-      else if(action === 'order'){ var ob=document.getElementById('orderBox'); if(ob && ob.style.display !== 'none'){ ob.scrollIntoView({behavior:'smooth'}); } }
-    }, 700);
-  }catch(e){}
-}
-
 function init(){
-  setupPWAShortcuts();
   applyTheme(); applyFont(); applyBgColor(); applyBtnColor();
   updateUserChip();
   renderBgSwatches(); renderBtnSwatches(); updateThemeHints();
   render(); renderUsers(); renderUserSelectList();
   updatePermsFromRole(); updateTypeHelp();
   setSyncState('offline'); updateUndoButtons();
-  loadFabSetting(); updateQuickFab(); populateDatalists();
+  populateDatalists();
   hideUndoBar();
 
   var savedCloudId = localStorage.getItem('stand_cloud_id')||'';
@@ -1866,7 +1560,6 @@ function init(){
   } else if(!isOnboarded){
     setTimeout(showOnboarding, 400);
   }
-  setTimeout(handleUrlActions, 1000);
 }
 
 if (document.readyState === 'loading') {

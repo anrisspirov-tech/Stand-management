@@ -28,7 +28,6 @@ button.typebtn.active{background:var(--primary);color:var(--primary-text)}
 label{color:var(--primary);font-size:0.85em;font-weight:bold;display:block;margin:8px 0 3px}
 input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:1em}
 option{background:var(--card2);color:var(--text)}
-.type-help{background:var(--card2);border-left:3px solid #06b6d4;border-radius:6px;padding:8px 10px;margin-top:6px;font-size:0.8em;color:var(--text);line-height:1.4}
 .item{background:var(--card2);padding:10px;border-radius:8px;margin:6px 0;display:flex;flex-direction:column;gap:8px}
 .item.fav{border-left:3px solid var(--primary)}
 .item-main{display:flex;gap:8px;align-items:flex-start;width:100%}
@@ -191,7 +190,6 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <canvas id="chartMain" style="max-height:220px;margin-top:8px"></canvas>
 <div style="display:flex;gap:4px;margin-top:8px">
 <button onclick="renderCharts()" class="sec" style="flex:1">🔄</button>
-<button onclick="exportChart()" class="sec" style="flex:1">📸</button>
 </div>
 </div>
 
@@ -242,16 +240,10 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 
 <label>📋 Тип издания</label>
 <div style="display:flex;gap:4px;margin:8px 0;flex-wrap:wrap">
-<button onclick="setAddType('Журнал')" id="a-mag" class="typebtn active">📰 Журнал</button>
-<button onclick="setAddType('Брошюра')" id="a-booklet" class="typebtn">📖 Брошюра</button>
-<button onclick="setAddType('Постер')" id="a-poster" class="typebtn">🖼️ Постер</button>
+<button type="button" onclick="setAddType('Журнал')" id="a-mag" class="typebtn active">📰 Журнал</button>
+<button type="button" onclick="setAddType('Брошюра')" id="a-booklet" class="typebtn">📖 Брошюра</button>
+<button type="button" onclick="setAddType('Постер')" id="a-poster" class="typebtn">🖼️ Постер</button>
 </div>
-<select id="addType" onchange="updateAddButtons()">
-<option value="Журнал" selected>📰 Журнал — Сторожевая башня, Пробудитесь!</option>
-<option value="Брошюра">📖 Брошюра — 20-30 страниц</option>
-<option value="Постер">🖼️ Постер — большой формат</option>
-</select>
-<div class="type-help" id="typeHelp"></div>
 
 <div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0 3px">
 <label style="margin:0">📝 Название *</label>
@@ -516,6 +508,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 
 <script>
 var curLang = 'ru';
+var currentAddType = 'Журнал';
 
 var LANGS = {
   ru:'Русский', en:'Английский', de:'Немецкий', es:'Испанский',
@@ -539,10 +532,6 @@ function getLangDisplay(code){
   var name = LANGS[code] || code;
   var flag = LANG_FLAGS[code] || '🌐';
   return flag + ' ' + name;
-}
-function getLangNameOnly(code){
-  if(!code) return '';
-  return LANGS[code] || code;
 }
 
 var PRESET_ITEMS = [
@@ -663,11 +652,6 @@ var PERMS_PRESETS = {
   viewer:{count:false,add:false,del:false,rename:false,sync:true,order:true,scan:false,voice:false}
 };
 var TYPE_TRANS={ "Журнал":{ru:"Журнал"}, "Брошюра":{ru:"Брошюра"}, "Постер":{ru:"Постер"} };
-var TYPE_HELP={
-  'Журнал':{ru:'<b>📰 Журнал</b> — Сторожевая башня, Пробудитесь!'},
-  'Брошюра':{ru:'<b>📖 Брошюра</b> — 20-30 страниц.'},
-  'Постер':{ru:'<b>🖼️ Постер</b>'}
-};
 var BG_COLORS=[{name:"По умолчанию",value:""},{name:"Чёрный",value:"#000000"},{name:"Тёмно-синий",value:"#0a1929"},{name:"Тёмно-фиолетовый",value:"#1a0b2e"},{name:"Тёмно-зелёный",value:"#0a1f0a"},{name:"Тёмно-красный",value:"#2a0a0a"},{name:"Кремовый",value:"#faf3e0"},{name:"Розовый",value:"#fce4ec"},{name:"Нежно-голубой",value:"#e3f2fd"},{name:"Нежно-зелёный",value:"#e8f5e9"},{name:"Нежно-жёлтый",value:"#fff9c4"},{name:"Лавандовый",value:"#f3e5f5"},{name:"Серый",value:"#e0e0e0"}];
 var BTN_COLORS=[{name:"Оранжевый",value:"#f59e0b",text:"#000"},{name:"Синий",value:"#3b82f6",text:"#fff"},{name:"Зелёный",value:"#22c55e",text:"#000"},{name:"Фиолетовый",value:"#a855f7",text:"#fff"},{name:"Красный",value:"#ef4444",text:"#fff"},{name:"Розовый",value:"#ec4899",text:"#fff"},{name:"Голубой",value:"#06b6d4",text:"#000"},{name:"Бирюзовый",value:"#14b8a6",text:"#000"},{name:"Индиго",value:"#6366f1",text:"#fff"},{name:"Жёлтый",value:"#eab308",text:"#000"},{name:"Лайм",value:"#84cc16",text:"#000"},{name:"Фуксия",value:"#d946ef",text:"#fff"},{name:"Сиреневый",value:"#8b5cf6",text:"#fff"},{name:"Изумрудный",value:"#10b981",text:"#000"},{name:"Сланцевый",value:"#64748b",text:"#fff"},{name:"Серебристый",value:"#94a3b8",text:"#000"}];
 
@@ -1027,8 +1011,7 @@ function quickAdd(kind){
   var preset = QUICK_PRESETS[kind];
   if(!preset) return;
   var doFill = function(){
-    document.getElementById('addType').value = preset.type;
-    updateAddButtons();
+    setAddType(preset.type);
     document.getElementById('cat').value = preset.cat;
     document.getElementById('title').value = preset.names;
     if(preset.type === 'Журнал'){
@@ -1135,7 +1118,6 @@ function renderCountByLangType(){
 }
 
 function renderCharts(){ try{ var ctx=document.getElementById('chartMain'); if(!ctx) return; var tc={}; for(var i=0;i<items.length;i++){ var tp=getTypeDisplay(items[i].type); tc[tp]=(tc[tp]||0)+items[i].qty; } var labels=Object.keys(tc), data=Object.values(tc); var isDay=document.body.classList.contains('day')||(curBgColor && isLightColor(curBgColor)); if(chartMainInst) chartMainInst.destroy(); chartMainInst=new Chart(ctx,{type:'doughnut',data:{labels:labels,datasets:[{data:data,backgroundColor:['#f59e0b','#22c55e','#ec4899','#06b6d4']}]},options:{responsive:true,plugins:{legend:{labels:{color:isDay?'#111':'#fff'}}}}}); }catch(e){} }
-function exportChart(){ var c=document.getElementById('chartMain'); if(!c) return; var a=document.createElement('a'); a.download='chart.png'; a.href=c.toDataURL(); a.click(); }
 
 function render(){
   var sortSel=document.getElementById('sortSelect');
@@ -1158,12 +1140,6 @@ function render(){
     });
     lf.innerHTML = opts;
     lf.value = curLangFilter;
-  }
-  var at=document.getElementById('addType');
-  if(at){
-    var curAt=at.value||'Журнал';
-    at.innerHTML = '<option value="Журнал">📰 Журнал — Сторожевая башня, Пробудитесь!</option><option value="Брошюра">📖 Брошюра — 20-30 страниц</option><option value="Постер">🖼️ Постер — большой формат</option>';
-    at.value = curAt;
   }
   var q=(document.getElementById('search').value||'').toLowerCase();
   var filtered=[];
@@ -1320,7 +1296,7 @@ function addItem(){
   var yearVal=(document.getElementById('year').value||'').trim();
   var issueNumVal=(document.getElementById('issueNum').value||'').trim();
   var langVal = (document.getElementById('lang')||{}).value || 'ru';
-  var newItem={id:Date.now()+Math.random(),names:{ru:titleVal},type:document.getElementById('addType').value,cat:document.getElementById('cat').value||'-',lang:langVal,magazineLang:langVal,year:yearVal,issueNum:issueNumVal,theme:'',qty:qtyVal,min:0,photo:'',barcode:'',history:[]};
+  var newItem={id:Date.now()+Math.random(),names:{ru:titleVal},type:currentAddType,cat:document.getElementById('cat').value||'-',lang:langVal,magazineLang:langVal,year:yearVal,issueNum:issueNumVal,theme:'',qty:qtyVal,min:0,photo:'',barcode:'',history:[]};
   items.push(newItem);
   addItemHistory(newItem.id,'create',qtyVal,0,qtyVal);
   addLog('Добавить',{names:newItem.names});
@@ -1511,21 +1487,13 @@ function submitOnboarding(){
 }
 function resetOnboarding(){ localStorage.removeItem('stand_onboarded'); localStorage.removeItem('stand_cloud_id'); cloudId=''; alert('Сброс'); setTimeout(showOnboarding,300); }
 
-function updateTypeHelp(){
-  var sel=document.getElementById('addType'), help=document.getElementById('typeHelp');
-  if(!sel || !help) return;
-  var h=TYPE_HELP[sel.value];
-  if(h){ help.innerHTML=h.ru||h.el; }
-}
-function updateAddButtons(){
-  var sel=document.getElementById('addType');
-  var map={'Журнал':'a-mag','Брошюра':'a-booklet','Постер':'a-poster'};
-  var btns=document.querySelectorAll('[id^=a-]');
+function setAddType(t){
+  currentAddType = t;
+  var map = {'Журнал':'a-mag','Брошюра':'a-booklet','Постер':'a-poster'};
+  var btns = document.querySelectorAll('.typebtn');
   for(var i=0;i<btns.length;i++) btns[i].classList.remove('active');
-  if(sel && map[sel.value]){ var e=document.getElementById(map[sel.value]); if(e) e.classList.add('active'); }
-  updateTypeHelp();
+  if(map[t]){ var e = document.getElementById(map[t]); if(e) e.classList.add('active'); }
 }
-function setAddType(t){ document.getElementById('addType').value=t; updateAddButtons(); }
 
 window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferredPrompt=e; var b=document.getElementById('bInstall'); if(b) b.style.display='inline-block'; });
 (function iosInstallHint(){
@@ -1545,7 +1513,7 @@ function init(){
   updateUserChip();
   renderBgSwatches(); renderBtnSwatches(); updateThemeHints();
   render(); renderUsers(); renderUserSelectList();
-  updatePermsFromRole(); updateTypeHelp();
+  updatePermsFromRole();
   setSyncState('offline'); updateUndoButtons();
   populateDatalists();
   hideUndoBar();

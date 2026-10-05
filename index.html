@@ -67,8 +67,6 @@ option{background:var(--card2);color:var(--text)}
 .count-table th{background:var(--card2);padding:8px;text-align:left;color:var(--primary)}
 .count-table td{padding:8px;border-bottom:1px solid var(--border)}
 .count-table tr.total-row td{font-weight:bold;background:var(--card2)}
-
-/* ★ Новое: статистика по названиям литературы */
 .item-lang-stat{background:var(--card2);border-radius:10px;margin:6px 0;border:1px solid var(--border);overflow:hidden}
 .item-lang-stat .stat-head{padding:10px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;user-select:none;transition:background 0.15s}
 .item-lang-stat .stat-head:hover{background:rgba(168,85,247,0.1)}
@@ -85,7 +83,6 @@ option{background:var(--card2);color:var(--text)}
 .item-lang-stat .stat-lang-name{color:var(--text);flex:1;min-width:0;word-break:break-word}
 .item-lang-stat .stat-lang-qty{font-weight:bold;color:#a855f7;padding:2px 10px;border-radius:99px;background:rgba(168,85,247,0.15);white-space:nowrap}
 .item-lang-stat .stat-lang-qty.zero{background:rgba(239,68,68,0.15);color:#ef4444}
-
 #ccOverlay,#rnOverlay,#userOverlay,#onboardOverlay,#suggOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
 #ccOverlay.show,#rnOverlay.show,#userOverlay.show,#onboardOverlay.show,#suggOverlay.show{display:flex}
 #onboardOverlay{z-index:999999;background:var(--bg)}
@@ -539,6 +536,9 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 var curLang = 'ru';
 var currentAddType = 'Журнал';
 
+/* ★ ФИКС: отслеживаем наши собственные пуши, чтобы не затирать свежие данные эхом */
+var pendingPushTs = {};
+
 var LANGS = {
   ru:'Русский', en:'Английский', de:'Немецкий', es:'Испанский',
   fr:'Французский', it:'Итальянский', pt:'Португальский', pl:'Польский',
@@ -978,7 +978,7 @@ function save(){
     localStorage.setItem('stand_saved_issue_nums', JSON.stringify(savedIssueNums));
     localStorage.setItem('stand_removed_suggestions', JSON.stringify(removedSuggestions));
   }catch(e){}
-  if(cloudEnabled && !isSyncingFromCloud && cloudDb){ clearTimeout(cloudPushTimeout); cloudPushTimeout=setTimeout(function(){ try{ pushToCloud(); }catch(e){} },1500); }
+  if(cloudEnabled && !isSyncingFromCloud && cloudDb){ clearTimeout(cloudPushTimeout); cloudPushTimeout=setTimeout(function(){ try{ pushToCloud(); }catch(e){} },800); }
 }
 function addLog(actionKey, detail){
   var u=getCurrentUser();
@@ -1123,7 +1123,6 @@ document.addEventListener('keydown', function(e){
 
 function renderCountByType(){ var c=document.getElementById('countByType'); if(!c) return; var counts={mag:0,booklet:0,poster:0,total:0}; for(var i=0;i<items.length;i++){ var tt=(items[i].type||''); var q=items[i].qty||0; counts.total+=q; if(tt==='Журнал') counts.mag+=q; else if(tt==='Брошюра') counts.booklet+=q; else if(tt==='Постер') counts.poster+=q; } var p=function(n){ return counts.total>0?Math.round(n/counts.total*100):0; }; var h=''; h+='<div class="count-box"><div class="num" style="color:#f59e0b">'+counts.mag+'</div><div class="label">📰 Журналы</div><div class="small">'+p(counts.mag)+'%</div></div>'; h+='<div class="count-box"><div class="num" style="color:#22c55e">'+counts.booklet+'</div><div class="label">📖 Брошюры</div><div class="small">'+p(counts.booklet)+'%</div></div>'; h+='<div class="count-box"><div class="num" style="color:#ec4899">'+counts.poster+'</div><div class="label">🖼️ Постеры</div><div class="small">'+p(counts.poster)+'%</div></div>'; h+='<div class="count-box" style="border:2px solid var(--primary)"><div class="num" style="color:var(--primary)">'+counts.total+'</div><div class="label">📦</div><div class="small">100%</div></div>'; c.innerHTML=h; }
 
-/* ★ НОВОЕ: группировка по названию — на скольких языках и сколько всего */
 function renderItemLangStats(){
   var cont = document.getElementById('itemLangStats'); if(!cont) return;
   var q = (((document.getElementById('langStatSearch')||{}).value)||'').toLowerCase().trim();
@@ -1146,10 +1145,7 @@ function renderItemLangStats(){
     if(bLangs !== aLangs) return bLangs - aLangs;
     return b.totalQty - a.totalQty;
   });
-  if(list.length === 0){
-    cont.innerHTML = '<div class="small" style="text-align:center;padding:20px">—</div>';
-    return;
-  }
+  if(list.length === 0){ cont.innerHTML = '<div class="small" style="text-align:center;padding:20px">—</div>'; return; }
   var h = '';
   list.forEach(function(g, idx){
     var langsArr = Object.keys(g.langs).map(function(code){ return { code: code, qty: g.langs[code] }; });
@@ -1523,6 +1519,8 @@ function copyCloudId(){ if(navigator.clipboard) navigator.clipboard.writeText(cl
 function saveCloudId(){ cloudId=document.getElementById('cloudId').value.trim()||'stand-athens-1'; localStorage.setItem('stand_cloud_id',cloudId); cloudEnabled=true; localStorage.setItem('stand_cloud_enabled','true'); localStorage.setItem('stand_onboarded','true'); toast('✅ Сохранено'); initFirebase(); }
 function saveFbConfig(){ fbConfigStr=document.getElementById('fbConfig').value.trim(); localStorage.setItem('stand_fb_config',fbConfigStr); if(cloudEnabled) initFirebase(); }
 function getFirebaseConfig(){ try{ return JSON.parse(fbConfigStr); }catch(e){ return null; } }
+
+/* ★ ФИКС: правильная синхронизация без потери свежих локальных данных */
 async function initFirebase(){
   setSyncState('connecting'); var cfg=getFirebaseConfig(); if(!cfg){ setSyncState('error'); return; }
   try{
@@ -1534,6 +1532,14 @@ async function initFirebase(){
     cloudUnsub=window._fb.onSnapshot(dRef, function(snap){
       if(!snap.exists()){ setSyncState('synced'); return; }
       var data=snap.data(); if(!data || isSyncingFromCloud) return;
+
+      // ★ ФИКС: если пришло эхо нашей собственной отправки — пропускаем его,
+      // чтобы не затирать свежие локальные изменения (тема, название, количество).
+      if(data.updated && pendingPushTs[data.updated]){
+        setSyncState('synced');
+        return;
+      }
+
       isSyncingFromCloud=true;
       if(data.items) items=cleanItems(data.items);
       if(data.users && Array.isArray(data.users)){ users=cleanUsers(data.users); }
@@ -1547,8 +1553,52 @@ async function initFirebase(){
     setSyncState('synced');
   }catch(e){ setSyncState('error'); }
 }
-async function pushToCloud(){ if(!cloudEnabled || !cloudDb) return; try{ setSyncState('pushing'); var dRef=window._fb.doc(cloudDb,'stands',cloudId); await window._fb.setDoc(dRef,{items:items,users:users,adminPass:adminPass,history:historyLog,savedTitles:savedTitles,removedSuggestions:removedSuggestions,updated:Date.now()},{merge:true}); setSyncState('synced'); }catch(e){ setSyncState('error'); } }
-async function pullFromCloud(){ if(!cloudEnabled){ alert('Облако выключено'); return; } if(!cloudDb){ alert('Нет базы данных'); return; } try{ setSyncState('pulling'); var dRef=window._fb.doc(cloudDb,'stands',cloudId); var snap=await window._fb.getDoc(dRef); if(snap.exists() && snap.data().items){ isSyncingFromCloud=true; var data=snap.data(); items=cleanItems(data.items); if(data.users) users=cleanUsers(data.users); if(data.history && Array.isArray(data.history)) historyLog=data.history; if(data.adminPass){ adminPass=data.adminPass; localStorage.setItem('stand_pass',adminPass); } if(data.savedTitles) savedTitles=data.savedTitles; if(data.removedSuggestions) removedSuggestions=data.removedSuggestions; save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); populateDatalists(); setSyncState('synced'); isSyncingFromCloud=false; toast('✅ Сохранено'); } else { setSyncState('synced'); alert('Ничего нет'); } }catch(e){ setSyncState('error'); alert(e.message); } }
+
+async function pushToCloud(){
+  if(!cloudEnabled || !cloudDb) return;
+  try{
+    setSyncState('pushing');
+    var dRef=window._fb.doc(cloudDb,'stands',cloudId);
+    var ts = Date.now();
+    // ★ ФИКС: помечаем наш собственный ts, чтобы распознать эхо и не затереть локальные данные
+    pendingPushTs[ts] = true;
+    // Автоочистка метки через 15 секунд
+    setTimeout(function(){ delete pendingPushTs[ts]; }, 15000);
+    await window._fb.setDoc(dRef,{
+      items:items,
+      users:users,
+      adminPass:adminPass,
+      history:historyLog,
+      savedTitles:savedTitles,
+      removedSuggestions:removedSuggestions,
+      updated: ts
+    },{merge:true});
+    setSyncState('synced');
+  }catch(e){ setSyncState('error'); }
+}
+
+async function pullFromCloud(){
+  if(!cloudEnabled){ alert('Облако выключено'); return; }
+  if(!cloudDb){ alert('Нет базы данных'); return; }
+  try{
+    setSyncState('pulling');
+    var dRef=window._fb.doc(cloudDb,'stands',cloudId);
+    var snap=await window._fb.getDoc(dRef);
+    if(snap.exists() && snap.data().items){
+      isSyncingFromCloud=true;
+      var data=snap.data();
+      items=cleanItems(data.items);
+      if(data.users) users=cleanUsers(data.users);
+      if(data.history && Array.isArray(data.history)) historyLog=data.history;
+      if(data.adminPass){ adminPass=data.adminPass; localStorage.setItem('stand_pass',adminPass); }
+      if(data.savedTitles) savedTitles=data.savedTitles;
+      if(data.removedSuggestions) removedSuggestions=data.removedSuggestions;
+      save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); populateDatalists();
+      setSyncState('synced'); isSyncingFromCloud=false;
+      toast('✅ Получено из облака');
+    } else { setSyncState('synced'); alert('Ничего нет'); }
+  }catch(e){ setSyncState('error'); alert(e.message); }
+}
 
 function openAdmin(){
   document.getElementById('adminScreen').style.display='block';

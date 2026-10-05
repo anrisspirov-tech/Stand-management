@@ -30,6 +30,7 @@ input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid
 option{background:var(--card2);color:var(--text)}
 .item{background:var(--card2);padding:10px;border-radius:8px;margin:6px 0;display:flex;flex-direction:column;gap:8px}
 .item.fav{border-left:3px solid var(--primary)}
+.item.grouped{border-left:3px solid #06b6d4}
 .item-main{display:flex;gap:8px;align-items:flex-start;width:100%}
 .item-info{flex:1;min-width:0}
 .item-actions{display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:flex-end;padding-top:8px;border-top:1px dashed var(--border)}
@@ -37,6 +38,7 @@ option{background:var(--card2);color:var(--text)}
 .item .item-cat{font-size:calc(var(--list-font-size,13px)*0.8);color:var(--muted);line-height:1.2}
 .item .item-extra{font-size:calc(var(--list-font-size,13px)*0.8);color:#06b6d4;font-weight:bold;line-height:1.2;margin-top:2px}
 .item .item-theme{font-size:calc(var(--list-font-size,13px)*0.85);color:#a855f7;font-style:italic;line-height:1.2;margin-top:2px}
+.item .item-langs{font-size:calc(var(--list-font-size,13px)*0.8);color:#06b6d4;font-weight:bold;line-height:1.4;margin-top:4px;background:rgba(6,182,212,0.12);padding:4px 8px;border-radius:6px;border-left:3px solid #06b6d4}
 .item .item-badge{font-size:calc(var(--list-font-size,13px)*0.75);padding:3px 8px;border-radius:99px;font-weight:bold;display:inline-block;margin-top:3px}
 .item .type-label{font-size:calc(var(--list-font-size,13px)*0.7);padding:2px 6px;border-radius:99px;font-weight:bold}
 .item .lang-label{font-size:calc(var(--list-font-size,13px)*0.7);padding:2px 7px;border-radius:99px;font-weight:bold;background:var(--btn-bg);border:1px solid var(--btn-border);color:var(--text)}
@@ -532,6 +534,11 @@ function getLangDisplay(code){
   var flag = LANG_FLAGS[code] || '🌐';
   return flag + ' ' + name;
 }
+function getLangShort(code){
+  if(!code) return '';
+  var flag = LANG_FLAGS[code] || '🌐';
+  return flag + ' ' + code.toUpperCase();
+}
 
 var PRESET_ITEMS = [
   {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2026', year:'2026', issueNum:'1'},
@@ -811,6 +818,22 @@ function getTypeDisplay(tp){ if(TYPE_TRANS[tp]) return TYPE_TRANS[tp].ru; return
 function getCurrentUser(){ return users.find(function(u){ return u.id==currentUserId; }) || null; }
 function hasPerm(perm){ var u=getCurrentUser(); if(!u) return false; if(u.role==='admin') return true; return !!(u.perms && u.perms[perm]); }
 function getRoleDisplay(role){ var m={admin:'👑 Админ',manager:'📦 Менеджер',counter:'🔢 Счётчик',viewer:'👀 Наблюдатель'}; return m[role]||role; }
+
+/* ★ Возвращает языки, на которых есть то же название (кроме текущего языка), с суммарным количеством */
+function getOtherLangsForItem(currentItem){
+  var name = getDisplayName(currentItem);
+  if(!name) return [];
+  var map = {};
+  items.forEach(function(it){
+    if(it.id === currentItem.id) return;
+    if(getDisplayName(it) !== name) return;
+    var code = it.lang || 'ru';
+    if(code === (currentItem.lang || 'ru')) return;
+    if(!map[code]) map[code] = 0;
+    map[code] += parseInt(it.qty)||0;
+  });
+  return Object.keys(map).map(function(code){ return { code: code, qty: map[code] }; });
+}
 
 function isThemeSuggestion(str){
   if(!str) return false;
@@ -1121,7 +1144,13 @@ function renderCharts(){ try{ var ctx=document.getElementById('chartMain'); if(!
 function render(){
   var sortSel=document.getElementById('sortSelect');
   if(sortSel){
-    sortSel.innerHTML = '<option value="low">📊 Мало</option><option value="fav">⭐ Избранные</option><option value="name">🔤 По алфавиту</option><option value="qty">📈 Много</option><option value="new">🆕 Новые</option>';
+    sortSel.innerHTML =
+      '<option value="low">📊 Мало</option>'+
+      '<option value="fav">⭐ Избранные</option>'+
+      '<option value="name">🔤 По алфавиту</option>'+
+      '<option value="langs">🌍 Название + языки</option>'+
+      '<option value="qty">📈 Много</option>'+
+      '<option value="new">🆕 Новые</option>';
     sortSel.value = curSort;
   }
   var tf=document.getElementById('typeFilter');
@@ -1155,6 +1184,11 @@ function render(){
     if(curSort==='low') return a.qty - b.qty;
     else if(curSort==='fav') return (b.favorite?1:0)-(a.favorite?1:0);
     else if(curSort==='name') return getDisplayName(a).localeCompare(getDisplayName(b));
+    else if(curSort==='langs'){
+      var cmp = getDisplayName(a).localeCompare(getDisplayName(b));
+      if(cmp !== 0) return cmp;
+      return (a.lang||'ru').localeCompare(b.lang||'ru');
+    }
     else if(curSort==='qty') return b.qty-a.qty;
     else if(curSort==='new') return (b.id||0)-(a.id||0);
     return 0;
@@ -1178,11 +1212,28 @@ function render(){
     var col=it.qty<=0?'bad':'good';
     var tcl=getTypeClass(it.type); var icon=getTypeIcon(it.type);
     var displayType=icon+' '+getTypeDisplay(it.type);
-    var favCls=it.favorite?'item fav':'item'; var favStar=it.favorite?'⭐':'☆'; var favCls2=it.favorite?'fav-btn':'fav-btn inactive';
+    var favCls=it.favorite?'item fav':'item';
+    if(curSort==='langs') favCls += ' grouped';
+    var favStar=it.favorite?'⭐':'☆'; var favCls2=it.favorite?'fav-btn':'fav-btn inactive';
     var extraInfo = getItemExtraInfo(it);
     var extraLine = extraInfo ? '<div class="item-extra">📅 '+esc(extraInfo)+'</div>' : '';
     var themeLine = (it.theme && String(it.theme).trim()) ? '<div class="item-theme">💡 '+esc(it.theme)+'</div>' : '';
     var langLabel = (it.lang && it.lang!=='ru') ? ' <span class="lang-label">'+esc(getLangDisplay(it.lang))+'</span>' : '';
+
+    /* ★ В режиме «Название + языки» — показываем блок с другими языками этого названия */
+    var langsBlock = '';
+    if(curSort === 'langs'){
+      var others = getOtherLangsForItem(it);
+      if(others.length > 0){
+        var parts = others.map(function(o){
+          return '<span style="display:inline-block;background:var(--card);padding:2px 8px;border-radius:99px;margin:2px 3px 0 0;border:1px solid #06b6d4">'+esc(getLangShort(o.code))+' · '+o.qty+' шт.</span>';
+        }).join('');
+        langsBlock = '<div class="item-langs">🌍 Также есть на: '+parts+'</div>';
+      } else {
+        langsBlock = '<div class="item-langs" style="opacity:0.55">🌍 Только на этом языке</div>';
+      }
+    }
+
     h+='<div class="'+favCls+'">'+
       '<div class="item-main">'+
         '<div class="item-info">'+
@@ -1190,6 +1241,7 @@ function render(){
           '<b class="item-name" style="display:block;margin-top:4px">'+esc(getDisplayName(it))+'</b>'+
           themeLine+extraLine+
           '<div class="item-cat">'+esc(getDisplayCat(it))+'</div>'+
+          langsBlock+
           '<span class="item-badge '+col+'">'+it.qty+'</span>'+
         '</div>'+
       '</div>'+

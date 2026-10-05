@@ -67,6 +67,25 @@ option{background:var(--card2);color:var(--text)}
 .count-table th{background:var(--card2);padding:8px;text-align:left;color:var(--primary)}
 .count-table td{padding:8px;border-bottom:1px solid var(--border)}
 .count-table tr.total-row td{font-weight:bold;background:var(--card2)}
+
+/* ★ Новое: статистика по названиям литературы */
+.item-lang-stat{background:var(--card2);border-radius:10px;margin:6px 0;border:1px solid var(--border);overflow:hidden}
+.item-lang-stat .stat-head{padding:10px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;user-select:none;transition:background 0.15s}
+.item-lang-stat .stat-head:hover{background:rgba(168,85,247,0.1)}
+.item-lang-stat .stat-head-left{flex:1;min-width:0}
+.item-lang-stat .stat-name{font-weight:bold;font-size:0.95em;line-height:1.3;word-break:break-word;color:var(--text)}
+.item-lang-stat .stat-summary{font-size:0.78em;color:var(--muted);margin-top:3px}
+.item-lang-stat .stat-summary b{color:#a855f7}
+.item-lang-stat .stat-arrow{color:var(--muted);font-size:1em;flex-shrink:0;transition:transform 0.2s}
+.item-lang-stat.open .stat-arrow{transform:rotate(90deg)}
+.item-lang-stat .stat-body{display:none;padding:0 12px 10px;border-top:1px dashed var(--border)}
+.item-lang-stat.open .stat-body{display:block}
+.item-lang-stat .stat-lang-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.85em;gap:8px}
+.item-lang-stat .stat-lang-row:last-child{border-bottom:0}
+.item-lang-stat .stat-lang-name{color:var(--text);flex:1;min-width:0;word-break:break-word}
+.item-lang-stat .stat-lang-qty{font-weight:bold;color:#a855f7;padding:2px 10px;border-radius:99px;background:rgba(168,85,247,0.15);white-space:nowrap}
+.item-lang-stat .stat-lang-qty.zero{background:rgba(239,68,68,0.15);color:#ef4444}
+
 #ccOverlay,#rnOverlay,#userOverlay,#onboardOverlay,#suggOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
 #ccOverlay.show,#rnOverlay.show,#userOverlay.show,#onboardOverlay.show,#suggOverlay.show{display:flex}
 #onboardOverlay{z-index:999999;background:var(--bg)}
@@ -174,6 +193,15 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <div class="card" style="border:2px solid #22c55e">
 <b style="color:#22c55e">📚 Подсчёт по типам</b>
 <div id="countByType" class="count-grid" style="margin-top:10px"></div>
+</div>
+
+<div class="card" style="border:2px solid #a855f7">
+<b style="color:#a855f7">📚 Литература по языкам</b>
+<div class="small" style="margin:6px 0 8px;color:var(--muted)">На скольких языках есть каждое название и сколько всего штук. Нажмите на строку — раскроются языки.</div>
+<div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
+<input id="langStatSearch" placeholder="🔍 Поиск по названию..." oninput="renderItemLangStats()" style="flex:1;padding:8px">
+</div>
+<div id="itemLangStats"></div>
 </div>
 
 <div class="card" style="border:2px solid #f59e0b">
@@ -819,7 +847,6 @@ function getCurrentUser(){ return users.find(function(u){ return u.id==currentUs
 function hasPerm(perm){ var u=getCurrentUser(); if(!u) return false; if(u.role==='admin') return true; return !!(u.perms && u.perms[perm]); }
 function getRoleDisplay(role){ var m={admin:'👑 Админ',manager:'📦 Менеджер',counter:'🔢 Счётчик',viewer:'👀 Наблюдатель'}; return m[role]||role; }
 
-/* ★ Возвращает языки, на которых есть то же название (кроме текущего языка), с суммарным количеством */
 function getOtherLangsForItem(currentItem){
   var name = getDisplayName(currentItem);
   if(!name) return [];
@@ -1096,6 +1123,61 @@ document.addEventListener('keydown', function(e){
 
 function renderCountByType(){ var c=document.getElementById('countByType'); if(!c) return; var counts={mag:0,booklet:0,poster:0,total:0}; for(var i=0;i<items.length;i++){ var tt=(items[i].type||''); var q=items[i].qty||0; counts.total+=q; if(tt==='Журнал') counts.mag+=q; else if(tt==='Брошюра') counts.booklet+=q; else if(tt==='Постер') counts.poster+=q; } var p=function(n){ return counts.total>0?Math.round(n/counts.total*100):0; }; var h=''; h+='<div class="count-box"><div class="num" style="color:#f59e0b">'+counts.mag+'</div><div class="label">📰 Журналы</div><div class="small">'+p(counts.mag)+'%</div></div>'; h+='<div class="count-box"><div class="num" style="color:#22c55e">'+counts.booklet+'</div><div class="label">📖 Брошюры</div><div class="small">'+p(counts.booklet)+'%</div></div>'; h+='<div class="count-box"><div class="num" style="color:#ec4899">'+counts.poster+'</div><div class="label">🖼️ Постеры</div><div class="small">'+p(counts.poster)+'%</div></div>'; h+='<div class="count-box" style="border:2px solid var(--primary)"><div class="num" style="color:var(--primary)">'+counts.total+'</div><div class="label">📦</div><div class="small">100%</div></div>'; c.innerHTML=h; }
 
+/* ★ НОВОЕ: группировка по названию — на скольких языках и сколько всего */
+function renderItemLangStats(){
+  var cont = document.getElementById('itemLangStats'); if(!cont) return;
+  var q = (((document.getElementById('langStatSearch')||{}).value)||'').toLowerCase().trim();
+  var groups = {};
+  items.forEach(function(it){
+    var name = getDisplayName(it);
+    if(!name) return;
+    if(!groups[name]) groups[name] = { name: name, langs: {}, totalQty: 0, recordsCount: 0 };
+    var code = it.lang || 'ru';
+    if(!groups[name].langs[code]) groups[name].langs[code] = 0;
+    groups[name].langs[code] += parseInt(it.qty)||0;
+    groups[name].totalQty += parseInt(it.qty)||0;
+    groups[name].recordsCount++;
+  });
+  var list = Object.keys(groups).map(function(k){ return groups[k]; });
+  if(q){ list = list.filter(function(g){ return g.name.toLowerCase().indexOf(q) >= 0; }); }
+  list.sort(function(a,b){
+    var aLangs = Object.keys(a.langs).length;
+    var bLangs = Object.keys(b.langs).length;
+    if(bLangs !== aLangs) return bLangs - aLangs;
+    return b.totalQty - a.totalQty;
+  });
+  if(list.length === 0){
+    cont.innerHTML = '<div class="small" style="text-align:center;padding:20px">—</div>';
+    return;
+  }
+  var h = '';
+  list.forEach(function(g, idx){
+    var langsArr = Object.keys(g.langs).map(function(code){ return { code: code, qty: g.langs[code] }; });
+    langsArr.sort(function(a,b){ return b.qty - a.qty; });
+    var langsCount = langsArr.length;
+    var langWord = langsCount === 1 ? 'язык' : (langsCount < 5 ? 'языка' : 'языков');
+    var details = langsArr.map(function(o){
+      var zero = o.qty <= 0 ? ' zero' : '';
+      return '<div class="stat-lang-row"><span class="stat-lang-name">'+esc(getLangDisplay(o.code))+'</span><span class="stat-lang-qty'+zero+'">'+o.qty+' шт.</span></div>';
+    }).join('');
+    h += '<div class="item-lang-stat" data-idx="'+idx+'">'+
+      '<div class="stat-head" onclick="toggleLangStat(this)">'+
+        '<div class="stat-head-left">'+
+          '<div class="stat-name">'+esc(g.name)+'</div>'+
+          '<div class="stat-summary">🌍 <b>'+langsCount+'</b> '+langWord+' · 📦 <b>'+g.totalQty+'</b> шт. всего</div>'+
+        '</div>'+
+        '<div class="stat-arrow">▶</div>'+
+      '</div>'+
+      '<div class="stat-body">'+details+'</div>'+
+    '</div>';
+  });
+  cont.innerHTML = h;
+}
+function toggleLangStat(headEl){
+  var parent = headEl.parentNode;
+  if(parent) parent.classList.toggle('open');
+}
+
 function renderCountByLangType(){
   var tb=document.getElementById('countLangTypeBody'); if(!tb) return;
   var byLang = {};
@@ -1220,7 +1302,6 @@ function render(){
     var themeLine = (it.theme && String(it.theme).trim()) ? '<div class="item-theme">💡 '+esc(it.theme)+'</div>' : '';
     var langLabel = (it.lang && it.lang!=='ru') ? ' <span class="lang-label">'+esc(getLangDisplay(it.lang))+'</span>' : '';
 
-    /* ★ В режиме «Название + языки» — показываем блок с другими языками этого названия */
     var langsBlock = '';
     if(curSort === 'langs'){
       var others = getOtherLangsForItem(it);
@@ -1271,7 +1352,7 @@ function render(){
   var dc=document.getElementById('dangerCard'); if(dc) dc.style.display=hasPerm('del')?'block':'none';
   var an=document.getElementById('addPermNotice'); var canAdd=hasPerm('add'); if(an) an.style.display=canAdd?'none':'block';
   var btnAdd=document.getElementById('btnAddItem'); if(btnAdd) btnAdd.disabled=!canAdd;
-  try{ renderCountByType(); }catch(e){} try{ renderCountByLangType(); }catch(e){} try{ renderLog(); }catch(e){} try{ renderCharts(); }catch(e){}
+  try{ renderCountByType(); }catch(e){} try{ renderItemLangStats(); }catch(e){} try{ renderCountByLangType(); }catch(e){} try{ renderLog(); }catch(e){} try{ renderCharts(); }catch(e){}
 }
 
 function toggleFav(id){ var it=items.find(function(x){return x.id==id;}); if(!it) return; it.favorite=!it.favorite; vibrate(15); save(); render(); }

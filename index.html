@@ -42,10 +42,14 @@ option{background:var(--card2);color:var(--text)}
 .item .item-badge{font-size:calc(var(--list-font-size,13px)*0.75);padding:3px 8px;border-radius:99px;font-weight:bold;display:inline-block;margin-top:3px}
 .item .type-label{font-size:calc(var(--list-font-size,13px)*0.7);padding:2px 6px;border-radius:99px;font-weight:bold}
 .item .lang-label{font-size:calc(var(--list-font-size,13px)*0.7);padding:2px 7px;border-radius:99px;font-weight:bold;background:var(--btn-bg);border:1px solid var(--btn-border);color:var(--text)}
-.item .qty-display{font-size:calc(var(--list-font-size,13px)*1.05);padding:0 10px;font-weight:bold;min-width:32px;text-align:center}
+.item .qty-display{font-size:calc(var(--list-font-size,13px)*1.05);padding:8px 4px;font-weight:bold;width:60px;min-width:44px;text-align:center;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:6px;font-family:inherit;-moz-appearance:textfield}
+.item .qty-display::-webkit-outer-spin-button,.item .qty-display::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.item .qty-display:focus{outline:2px solid var(--primary);border-color:var(--primary)}
 .item .qty-btn{font-size:calc(var(--list-font-size,13px)*1);padding:8px 14px;border-radius:6px;border:0;font-weight:bold;cursor:pointer;background:var(--primary);color:var(--primary-text);margin:0}
 .item .qty-btn.minus{background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border)}
 .item .icon-btn{background:var(--btn-bg);color:var(--text);padding:8px 10px;border-radius:6px;border:1px solid var(--btn-border);font-weight:bold;cursor:pointer;font-size:calc(var(--list-font-size,13px)*0.95)}
+.item .stand-btn{background:#0d3d47;color:#06b6d4;border:1px solid #06b6d4;padding:6px 10px;border-radius:6px;font-weight:bold;cursor:pointer;font-size:calc(var(--list-font-size,13px)*0.85);margin:0}
+.item .stand-btn.has{background:#06b6d4;color:#000}
 .item .fav-btn{background:transparent;color:var(--primary);font-size:1.3em;padding:4px 8px;border:0;cursor:pointer}
 .item .fav-btn.inactive{color:var(--muted);opacity:0.5}
 .badge{padding:3px 8px;border-radius:99px;font-weight:bold}
@@ -83,6 +87,47 @@ option{background:var(--card2);color:var(--text)}
 .item-lang-stat .stat-lang-name{color:var(--text);flex:1;min-width:0;word-break:break-word}
 .item-lang-stat .stat-lang-qty{font-weight:bold;color:#a855f7;padding:2px 10px;border-radius:99px;background:rgba(168,85,247,0.15);white-space:nowrap}
 .item-lang-stat .stat-lang-qty.zero{background:rgba(239,68,68,0.15);color:#ef4444}
+
+/* ★ СВОРАЧИВАЕМЫЕ КАРТОЧКИ */
+.card[data-collapsible] > *:first-child{cursor:pointer;user-select:none;position:relative;padding-right:26px;min-height:20px}
+.card[data-collapsible] > *:first-child::after{content:'▾';position:absolute;right:4px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:1em;font-weight:normal;transition:transform 0.2s;line-height:1}
+.card[data-collapsible].collapsed > *:first-child::after{content:'▸'}
+.card[data-collapsible].collapsed > *:not(:first-child){display:none!important}
+
+/* Стенды */
+.stand-tab{flex:1;padding:10px 6px;font-size:0.9em;font-weight:bold;background:var(--btn-bg);color:var(--text);border:2px solid var(--btn-border);border-radius:8px;cursor:pointer;margin:0;transition:all 0.15s;text-align:center;position:relative}
+.stand-tab.active{background:#06b6d4;color:#000;border-color:#06b6d4;box-shadow:0 0 10px rgba(6,182,212,0.5)}
+.stand-tab .cnt{display:block;font-size:0.7em;opacity:0.85;font-weight:normal;margin-top:2px}
+.stand-tabs{display:flex;gap:5px;margin-top:10px}
+.stand-box{background:var(--card2);border-radius:10px;padding:12px;margin-top:10px;border-left:4px solid #06b6d4}
+.stand-title{font-size:1.15em;font-weight:bold;color:#06b6d4;margin-bottom:4px}
+.stand-summary{color:var(--muted);font-size:0.85em;margin-bottom:10px}
+.stand-summary b{color:var(--text)}
+.stand-section-title{font-size:0.75em;color:var(--primary);font-weight:bold;text-transform:uppercase;letter-spacing:0.5px;margin:10px 0 5px}
+.stand-row{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:var(--card);border-radius:6px;margin:3px 0;font-size:0.85em;gap:8px}
+.stand-row .t-left{flex:1;min-width:0;word-break:break-word}
+.stand-row .t-right{font-weight:bold;color:#06b6d4;white-space:nowrap}
+.stand-item{padding:8px 10px;background:var(--card);border-radius:6px;margin:4px 0;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:0.85em}
+.stand-item .ti-info{flex:1;min-width:0}
+.stand-item .ti-name{font-weight:bold;word-break:break-word}
+.stand-item .ti-meta{color:var(--muted);font-size:0.78em;margin-top:2px}
+.stand-item .ti-qty{font-weight:bold;color:#06b6d4;font-size:1.05em;white-space:nowrap;text-align:right}
+.stand-item .ti-qty .in-total{font-size:0.7em;color:var(--muted);font-weight:normal;display:block}
+.stand-empty{text-align:center;padding:20px;color:var(--muted);font-size:0.9em}
+.stand-field{background:var(--card);border-radius:8px;padding:10px;margin:6px 0;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.stand-field .sf-label{font-weight:bold;color:#06b6d4;font-size:1em}
+.stand-field select{width:110px;padding:8px;font-weight:bold;font-size:1.05em;text-align:center}
+
+#standOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
+#standOverlay.show{display:flex}
+#standBox{background:var(--card);border:2px solid #06b6d4;border-radius:14px;padding:20px;max-width:420px;width:100%;max-height:90vh;overflow:auto}
+#standBox h3{color:#06b6d4;text-align:center;margin:0 0 12px;font-size:1.1em;line-height:1.3}
+.stand-info{background:var(--card2);border-radius:8px;padding:10px;text-align:center;font-size:0.85em;color:var(--muted);line-height:1.6;margin-bottom:12px}
+.stand-info b{color:var(--text)}
+.stand-info .ok{color:#22c55e;font-weight:bold}
+.stand-info .warn{color:#f59e0b;font-weight:bold}
+.stand-info .err{color:#ef4444;font-weight:bold}
+
 #ccOverlay,#rnOverlay,#userOverlay,#onboardOverlay,#suggOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
 #ccOverlay.show,#rnOverlay.show,#userOverlay.show,#onboardOverlay.show,#suggOverlay.show{display:flex}
 #onboardOverlay{z-index:999999;background:var(--bg)}
@@ -124,6 +169,9 @@ body.day #ccCancel{background:#d0d0d0;color:#111}
 .qc-tile .qc-name{font-size:1.1em;font-weight:bold}
 .qc-tile .qc-cat{font-size:0.8em;color:var(--muted);margin-top:2px}
 .qc-tile .qc-qty{font-size:1.8em;font-weight:bold;color:var(--primary);min-width:60px;text-align:center}
+.qc-qty-input{font-size:1.5em;font-weight:bold;color:var(--primary);width:80px;text-align:center;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 4px;font-family:inherit;-moz-appearance:textfield}
+.qc-qty-input::-webkit-outer-spin-button,.qc-qty-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.qc-qty-input:focus{outline:2px solid var(--primary);border-color:var(--primary)}
 .qc-plus{background:#22c55e;color:#000;width:60px;height:60px;border-radius:50%;font-size:1.5em;border:0;font-weight:bold;cursor:pointer}
 .qc-minus{background:var(--btn-bg);color:var(--text);width:60px;height:60px;border-radius:50%;font-size:1.5em;border:1px solid var(--btn-border);font-weight:bold;cursor:pointer}
 .perm-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}
@@ -158,6 +206,10 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 .sugg-tag.title{background:#f59e0b;color:#000}
 .sugg-text{flex:1;font-size:0.85em;word-break:break-word;line-height:1.3}
 .sugg-del{background:#ef4444;color:#fff;border:0;padding:5px 9px;border-radius:6px;cursor:pointer;font-size:0.85em;font-weight:bold;margin:0;flex-shrink:0}
+
+/* Кнопки свернуть/развернуть */
+.card-controls{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:6px 0}
+.card-controls button{padding:6px 12px;font-size:0.78em;background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border);border-radius:99px;margin:0}
 </style>
 </head>
 <body>
@@ -187,21 +239,38 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <div class="stat"><div id="need" style="color:#ef4444;font-weight:bold">0</div><div class="small">Заказ</div></div>
 </div>
 
-<div class="card" style="border:2px solid #22c55e">
+<div class="card-controls">
+<button onclick="collapseAllCards()">⬆️ Свернуть всё</button>
+<button onclick="expandAllCards()">⬇️ Развернуть всё</button>
+</div>
+
+<div class="card" data-collapsible="types" style="border:2px solid #22c55e">
 <b style="color:#22c55e">📚 Подсчёт по типам</b>
 <div id="countByType" class="count-grid" style="margin-top:10px"></div>
 </div>
 
-<div class="card" style="border:2px solid #a855f7">
+<div class="card" data-collapsible="stands" style="border:2px solid #06b6d4">
+<b style="color:#06b6d4">🏛️ Стенды</b>
+<div class="small" style="margin:6px 0 0;color:var(--muted)">Сколько из общего количества стоит на каждом стенде.</div>
+<div class="stand-tabs">
+<button type="button" id="st-1" class="stand-tab active" onclick="showStand(1)">🏛️ 1<span class="cnt" id="stc-1">—</span></button>
+<button type="button" id="st-2" class="stand-tab" onclick="showStand(2)">🏛️ 2<span class="cnt" id="stc-2">—</span></button>
+<button type="button" id="st-3" class="stand-tab" onclick="showStand(3)">🏛️ 3<span class="cnt" id="stc-3">—</span></button>
+<button type="button" id="st-4" class="stand-tab" onclick="showStand(4)">🏛️ 4<span class="cnt" id="stc-4">—</span></button>
+</div>
+<div id="standContent" style="margin-top:10px"></div>
+</div>
+
+<div class="card" data-collapsible="langstats" style="border:2px solid #a855f7">
 <b style="color:#a855f7">📚 Литература по языкам</b>
-<div class="small" style="margin:6px 0 8px;color:var(--muted)">На скольких языках есть каждое название и сколько всего штук. Нажмите на строку — раскроются языки.</div>
+<div class="small" style="margin:6px 0 8px;color:var(--muted)">На скольких языках есть каждое название и сколько всего штук.</div>
 <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
 <input id="langStatSearch" placeholder="🔍 Поиск по названию..." oninput="renderItemLangStats()" style="flex:1;padding:8px">
 </div>
 <div id="itemLangStats"></div>
 </div>
 
-<div class="card" style="border:2px solid #f59e0b">
+<div class="card" data-collapsible="langtable" style="border:2px solid #f59e0b">
 <b style="color:#f59e0b">🌍 По языкам</b>
 <div style="overflow:auto">
 <table class="count-table">
@@ -211,7 +280,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 </div>
 
-<div class="card">
+<div class="card" data-collapsible="charts">
 <b>📊 Графики</b>
 <canvas id="chartMain" style="max-height:220px;margin-top:8px"></canvas>
 <div style="display:flex;gap:4px;margin-top:8px">
@@ -219,7 +288,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 </div>
 
-<div class="card">
+<div class="card" data-collapsible="items">
 <div style="display:flex;justify-content:space-between;align-items:center">
 <b>📦 Все издания</b>
 </div>
@@ -246,12 +315,12 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 </div>
 
-<div class="card" id="dangerCard" style="border:2px solid #ef4444">
+<div class="card" data-collapsible="danger" id="dangerCard" style="border:2px solid #ef4444">
 <b style="color:#ef4444">⚠️ Опасная зона</b>
 <button onclick="deleteAllItems()" style="width:100%;margin-top:6px;background:#ef4444;color:#fff">🗑️ Удалить ВСЁ</button>
 </div>
 
-<div class="card" id="addCard" style="border:2px solid #f59e0b">
+<div class="card" data-collapsible="add" id="addCard" style="border:2px solid #f59e0b">
 <b style="color:#f59e0b">➕ Добавить новое издание</b>
 <div id="addPermNotice" class="notice-box" style="display:none">⚠️ Нет прав.</div>
 
@@ -293,7 +362,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 
 <div class="row">
 <div><label>🏷️ Категория</label><input id="cat" placeholder="напр. Сторожевая башня"></div>
-<div><label>📦 Количество</label><input id="qty" type="number" value="10"></div>
+<div><label>📦 Всего штук</label><input id="qty" type="number" inputmode="numeric" value="10"></div>
 </div>
 
 <label>🌍 Язык</label>
@@ -326,6 +395,17 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <option value="he">🇮🇱 Иврит</option>
 <option value="other">🌐 Другой</option>
 </select>
+
+<label>🏛️ Разложить по стендам (необязательно)</label>
+<div class="small" style="color:var(--muted);margin-bottom:6px">Выбери из списка, сколько поставить на каждый стенд (0–10).</div>
+<div class="row">
+<div><label style="font-size:0.8em">🏛️ Стенд 1</label><select id="s1"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
+<div><label style="font-size:0.8em">🏛️ Стенд 2</label><select id="s2"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
+</div>
+<div class="row">
+<div><label style="font-size:0.8em">🏛️ Стенд 3</label><select id="s3"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
+<div><label style="font-size:0.8em">🏛️ Стенд 4</label><select id="s4"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
+</div>
 
 <button onclick="addItem()" id="btnAddItem" style="width:100%;margin-top:16px">➕ Добавить</button>
 </div>
@@ -368,8 +448,8 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 
 <div class="card" style="border:2px solid #06b6d4">
-<b style="color:#06b6d4">📝 Подсказки (названия и темы)</b>
-<div class="small" style="margin:8px 0;color:var(--muted);line-height:1.4">Список того, что появляется при вводе в поле «Название». Удалите лишнее — оно больше не будет предлагаться.</div>
+<b style="color:#06b6d4">📝 Подсказки</b>
+<div class="small" style="margin:8px 0;color:var(--muted);line-height:1.4">Список того, что появляется при вводе в поле «Название».</div>
 <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
 <input id="suggSearch" placeholder="🔍 Поиск..." oninput="renderSuggestions()" style="flex:1;padding:8px">
 <span class="small" id="suggCount" style="white-space:nowrap">—</span>
@@ -480,6 +560,13 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 </div>
 
+<div id="standOverlay" onclick="if(event.target===this)closeStandEditor()">
+<div id="standBox" onclick="event.stopPropagation()">
+<h3 id="standTitle">🏛️ Разложить по стендам</h3>
+<div id="standEditorContent"></div>
+</div>
+</div>
+
 <div id="ccOverlay">
 <div id="ccBox">
 <div id="ccTitle" style="color:var(--primary);font-size:1.15em;font-weight:bold;margin-bottom:12px;text-align:center">Подтверждение</div>
@@ -535,9 +622,10 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <script>
 var curLang = 'ru';
 var currentAddType = 'Журнал';
-
-/* ★ ФИКС: отслеживаем наши собственные пуши, чтобы не затирать свежие данные эхом */
 var pendingPushTs = {};
+var curStand = 1;
+var _standItemId = null;
+var STAND_MAX = 10;
 
 var LANGS = {
   ru:'Русский', en:'Английский', de:'Немецкий', es:'Испанский',
@@ -548,24 +636,62 @@ var LANGS = {
   sw:'Суахили', hi:'Хинди', ar:'Арабский', hy:'Армянский',
   ka:'Грузинский', he:'Иврит', other:'Другой'
 };
-
 var LANG_FLAGS = {
   ru:'🇷🇺', en:'🇬🇧', de:'🇩🇪', es:'🇪🇸', fr:'🇫🇷', it:'🇮🇹', pt:'🇵🇹',
   pl:'🇵🇱', uk:'🇺🇦', tr:'🇹🇷', el:'🇬🇷', ko:'🇰🇷', ja:'🇯🇵', zh:'🇨🇳',
   ro:'🇷🇴', hu:'🇭🇺', cs:'🇨🇿', bg:'🇧🇬', sr:'🇷🇸', hr:'🇭🇷', sw:'🇰🇪',
   hi:'🇮🇳', ar:'🇸🇦', hy:'🇦🇲', ka:'🇬🇪', he:'🇮🇱', other:'🌐'
 };
-
 function getLangDisplay(code){
   if(!code) return '';
-  var name = LANGS[code] || code;
-  var flag = LANG_FLAGS[code] || '🌐';
-  return flag + ' ' + name;
+  return (LANG_FLAGS[code]||'🌐') + ' ' + (LANGS[code]||code);
 }
 function getLangShort(code){
   if(!code) return '';
-  var flag = LANG_FLAGS[code] || '🌐';
-  return flag + ' ' + code.toUpperCase();
+  return (LANG_FLAGS[code]||'🌐') + ' ' + code.toUpperCase();
+}
+
+/* ★ Сворачиваемые карточки */
+function getCardStates(){
+  try{ return JSON.parse(localStorage.getItem('stand_cards_collapsed')||'{}'); }catch(e){ return {}; }
+}
+function saveCardStates(states){
+  localStorage.setItem('stand_cards_collapsed', JSON.stringify(states||{}));
+}
+function setupCollapsibleCards(){
+  var states = getCardStates();
+  document.querySelectorAll('.card[data-collapsible]').forEach(function(card){
+    var id = card.getAttribute('data-collapsible');
+    if(states[id]) card.classList.add('collapsed');
+    var head = card.firstElementChild;
+    if(head && !head.__cbBound){
+      head.__cbBound = true;
+      head.addEventListener('click', function(e){
+        var t = (e.target.tagName||'').toUpperCase();
+        if(t==='BUTTON'||t==='INPUT'||t==='SELECT'||t==='TEXTAREA'||t==='LABEL'||t==='A') return;
+        card.classList.toggle('collapsed');
+        var s = getCardStates();
+        s[id] = card.classList.contains('collapsed');
+        saveCardStates(s);
+      });
+    }
+  });
+}
+function collapseAllCards(){
+  var s = {};
+  document.querySelectorAll('.card[data-collapsible]').forEach(function(c){
+    c.classList.add('collapsed');
+    s[c.getAttribute('data-collapsible')] = true;
+  });
+  saveCardStates(s);
+  toast('⬆️ Все разделы свёрнуты');
+}
+function expandAllCards(){
+  document.querySelectorAll('.card[data-collapsible]').forEach(function(c){
+    c.classList.remove('collapsed');
+  });
+  saveCardStates({});
+  toast('⬇️ Все разделы развёрнуты');
 }
 
 var PRESET_ITEMS = [
@@ -588,7 +714,6 @@ var PRESET_ITEMS = [
   {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 1 2020', year:'2020', issueNum:'1'},
   {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 2 2020', year:'2020', issueNum:'2'},
   {type:'Журнал', cat:'Сторожевая башня (для публики)', title:'Сторожевая башня (для публики) № 3 2020', year:'2020', issueNum:'3'},
-
   {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2026', year:'2026', issueNum:'1'},
   {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2025', year:'2025', issueNum:'1'},
   {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2025', year:'2025', issueNum:'2'},
@@ -603,7 +728,6 @@ var PRESET_ITEMS = [
   {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 1 2020', year:'2020', issueNum:'1'},
   {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 2 2020', year:'2020', issueNum:'2'},
   {type:'Журнал', cat:'Пробудитесь!', title:'Пробудитесь! № 3 2020', year:'2020', issueNum:'3'},
-
   {type:'Брошюра', cat:'Брошюра', title:'Радуйтесь жизни сейчас и вечно!', year:'', issueNum:''},
   {type:'Брошюра', cat:'Брошюра', title:'Руководство для тех, кто изучает Библию', year:'', issueNum:''}
 ];
@@ -643,6 +767,15 @@ function beep(freq, dur){
 }
 function beepOk(){ beep(1000,0.1); setTimeout(function(){ beep(1400,0.1); },100); }
 
+function buildStandOptions(selected){
+  selected = parseInt(selected)||0;
+  var h = '';
+  for(var i=0;i<=STAND_MAX;i++){
+    h += '<option value="'+i+'"'+(i===selected?' selected':'')+'>'+i+'</option>';
+  }
+  return h;
+}
+
 function cleanItems(arr){
   if(!Array.isArray(arr)) return [];
   return arr.filter(function(it){ return it && typeof it==='object'; }).map(function(it){
@@ -655,7 +788,19 @@ function cleanItems(arr){
     if(o.year!=null) o.year=cleanStr(o.year);
     if(o.issueNum!=null) o.issueNum=cleanStr(o.issueNum);
     if(o.theme!=null) o.theme=cleanStr(o.theme);
-    o.qty=parseInt(o.qty)||0;
+    o.qty=Math.max(0, parseInt(o.qty)||0);
+    var sc = {};
+    var src = o.standCounts || o.trolleyCounts || null;
+    if(src && typeof src==='object'){
+      for(var n=1;n<=4;n++) sc[n] = Math.min(STAND_MAX, Math.max(0, parseInt(src[n])||0));
+    } else {
+      for(var n2=1;n2<=4;n2++) sc[n2]=0;
+    }
+    var sumT = sc[1]+sc[2]+sc[3]+sc[4];
+    if(sumT > o.qty){ var left = o.qty; for(var n3=1;n3<=4;n3++){ var v = Math.min(sc[n3], left); sc[n3]=v; left-=v; } }
+    o.standCounts = sc;
+    delete o.trolley;
+    delete o.trolleyCounts;
     o.photo='';
     o.barcode='';
     o.min=0;
@@ -677,6 +822,10 @@ function printDoc(title, bodyHtml){
   w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+esc(title)+'</title></head><body style="font-family:Arial;margin:20px;color:#000">'+bodyHtml+'</body></html>');
   w.document.close(); w.focus(); setTimeout(function(){ w.print(); },400); return true;
 }
+
+function stGet(it, n){ return (it.standCounts && (parseInt(it.standCounts[n])||0)) || 0; }
+function stSum(it){ return stGet(it,1)+stGet(it,2)+stGet(it,3)+stGet(it,4); }
+function stStock(it){ return Math.max(0, (parseInt(it.qty)||0) - stSum(it)); }
 
 var PERM_KEYS = ['count','add','del','rename','sync','order','scan','voice'];
 var PERMS_PRESETS = {
@@ -737,7 +886,6 @@ var PRESETS_VERSION = 6;
   localStorage.setItem('stand_saved_issue_nums', JSON.stringify(savedIssueNums));
   localStorage.setItem('stand_presets_ver', String(PRESETS_VERSION));
 })();
-
 var THEME_CLEANUP_VERSION = 2;
 (function cleanupInventedThemes(){
   var cur = parseInt(localStorage.getItem('stand_theme_cleanup') || '0', 10);
@@ -862,13 +1010,157 @@ function getOtherLangsForItem(currentItem){
   return Object.keys(map).map(function(code){ return { code: code, qty: map[code] }; });
 }
 
+function showStand(n){
+  curStand = n;
+  var tabs = document.querySelectorAll('.stand-tab');
+  for(var i=0;i<tabs.length;i++) tabs[i].classList.remove('active');
+  var e = document.getElementById('st-'+n); if(e) e.classList.add('active');
+  renderStand();
+}
+
+function renderStand(){
+  var cont = document.getElementById('standContent'); if(!cont) return;
+  var list = [];
+  items.forEach(function(it){ if(stGet(it, curStand) > 0) list.push(it); });
+  if(list.length === 0){
+    cont.innerHTML = '<div class="stand-box"><div class="stand-empty">🏛️ Стенд '+curStand+' пуст<br><span style="font-size:0.85em">Откройте издание в списке и нажмите 🏛️</span></div></div>';
+    return;
+  }
+  var totalInStand = 0, totalGlobal = 0;
+  var byType = {}, byLang = {};
+  list.forEach(function(it){
+    var inSt = stGet(it, curStand);
+    var glob = parseInt(it.qty)||0;
+    totalInStand += inSt;
+    totalGlobal += glob;
+    var tp = it.type || 'Журнал';
+    if(!byType[tp]) byType[tp] = {inSt:0, glob:0};
+    byType[tp].inSt += inSt;
+    byType[tp].glob += glob;
+    var code = it.lang || 'ru';
+    if(!byLang[code]) byLang[code] = {inSt:0, glob:0};
+    byLang[code].inSt += inSt;
+    byLang[code].glob += glob;
+  });
+
+  var h = '';
+  h += '<div class="stand-box">';
+  h += '<div class="stand-title">🏛️ Стенд '+curStand+'</div>';
+  h += '<div class="stand-summary">На стенде: <b>'+totalInStand+'</b> шт. из <b>'+totalGlobal+'</b> шт. у этих изданий · позиций: <b>'+list.length+'</b></div>';
+
+  h += '<div class="stand-section-title">📋 По типам</div>';
+  ['Журнал','Брошюра','Постер'].forEach(function(tp){
+    if(!byType[tp]) return;
+    h += '<div class="stand-row"><span class="t-left">'+getTypeIcon(tp)+' '+esc(getTypeDisplay(tp))+'</span><span class="t-right">'+byType[tp].inSt+' / '+byType[tp].glob+' шт.</span></div>';
+  });
+
+  var langs = Object.keys(byLang).sort(function(a,b){ return byLang[b].inSt - byLang[a].inSt; });
+  h += '<div class="stand-section-title">🌍 По языкам</div>';
+  langs.forEach(function(code){
+    h += '<div class="stand-row"><span class="t-left">'+esc(getLangDisplay(code))+'</span><span class="t-right">'+byLang[code].inSt+' / '+byLang[code].glob+' шт.</span></div>';
+  });
+
+  h += '<div class="stand-section-title">📚 Содержимое ('+list.length+')</div>';
+  list.sort(function(a,b){ return getDisplayName(a).localeCompare(getDisplayName(b)); });
+  list.forEach(function(it){
+    var inSt = stGet(it, curStand);
+    var glob = parseInt(it.qty)||0;
+    var extra = getItemExtraInfo(it);
+    var langTag = (it.lang && it.lang!=='ru') ? ' · '+esc(getLangShort(it.lang)) : '';
+    h += '<div class="stand-item">';
+    h += '<div class="ti-info">';
+    h += '<div class="ti-name">'+getTypeIcon(it.type)+' '+esc(getDisplayName(it))+'</div>';
+    h += '<div class="ti-meta">'+esc(getDisplayCat(it))+(extra?' · '+esc(extra):'')+langTag+'</div>';
+    h += '</div>';
+    h += '<div class="ti-qty">'+inSt+' / '+glob+' шт.<span class="in-total">на стенде / всего</span></div>';
+    h += '</div>';
+  });
+  h += '</div>';
+  cont.innerHTML = h;
+}
+
+function updateStandBadges(){
+  for(var n=1;n<=4;n++){
+    var cnt = 0;
+    items.forEach(function(it){ cnt += stGet(it,n); });
+    var el = document.getElementById('stc-'+n);
+    if(el) el.textContent = cnt > 0 ? (cnt+' шт.') : '—';
+  }
+}
+
+function openStandEditor(id){
+  var it = items.find(function(x){ return x.id==id; }); if(!it) return;
+  _standItemId = id;
+  renderStandEditor();
+  document.getElementById('standOverlay').classList.add('show');
+}
+function closeStandEditor(){
+  document.getElementById('standOverlay').classList.remove('show');
+  _standItemId = null;
+}
+function renderStandEditor(){
+  if(!_standItemId) return;
+  var it = items.find(function(x){ return x.id==_standItemId; }); if(!it) return;
+  var qty = parseInt(it.qty)||0;
+  var sum = stSum(it);
+  var stock = Math.max(0, qty - sum);
+  var titleEl = document.getElementById('standTitle');
+  if(titleEl) titleEl.textContent = '🏛️ '+getDisplayName(it);
+
+  var sumCls = sum > qty ? 'err' : (sum === qty ? 'ok' : 'warn');
+  var h = '';
+  h += '<div class="stand-info" id="standInfoBox">';
+  h += 'Всего у издания: <b>'+qty+'</b> шт.<br>';
+  h += 'На стендах: <span class="'+sumCls+'">'+sum+'</span> шт. · В запасе: <b>'+stock+'</b> шт.';
+  h += '</div>';
+  h += '<div class="stand-field"><span class="sf-label">🏛️ Стенд 1</span><select id="sted-1" onchange="standLiveUpdate()">'+buildStandOptions(stGet(it,1))+'</select></div>';
+  h += '<div class="stand-field"><span class="sf-label">🏛️ Стенд 2</span><select id="sted-2" onchange="standLiveUpdate()">'+buildStandOptions(stGet(it,2))+'</select></div>';
+  h += '<div class="stand-field"><span class="sf-label">🏛️ Стенд 3</span><select id="sted-3" onchange="standLiveUpdate()">'+buildStandOptions(stGet(it,3))+'</select></div>';
+  h += '<div class="stand-field"><span class="sf-label">🏛️ Стенд 4</span><select id="sted-4" onchange="standLiveUpdate()">'+buildStandOptions(stGet(it,4))+'</select></div>';
+  h += '<div style="display:flex;gap:8px;margin-top:14px">';
+  h += '<button class="sec" onclick="closeStandEditor()" style="flex:1;padding:12px">Отмена</button>';
+  h += '<button onclick="saveStandEditor()" style="flex:1;padding:12px;background:#22c55e;color:#000">💾 Сохранить</button>';
+  h += '</div>';
+  document.getElementById('standEditorContent').innerHTML = h;
+}
+function standLiveUpdate(){
+  if(!_standItemId) return;
+  var it = items.find(function(x){ return x.id==_standItemId; }); if(!it) return;
+  var qty = parseInt(it.qty)||0;
+  var sum = 0;
+  for(var n=1;n<=4;n++){ var el = document.getElementById('sted-'+n); sum += Math.max(0, parseInt(el.value)||0); }
+  var stock = Math.max(0, qty - sum);
+  var info = document.getElementById('standInfoBox');
+  if(info){
+    var sumCls = sum > qty ? 'err' : (sum === qty ? 'ok' : 'warn');
+    info.innerHTML = 'Всего у издания: <b>'+qty+'</b> шт.<br>На стендах: <span class="'+sumCls+'">'+sum+'</span> шт. · В запасе: <b>'+stock+'</b> шт.';
+  }
+}
+function saveStandEditor(){
+  if(!_standItemId){ closeStandEditor(); return; }
+  var it = items.find(function(x){ return x.id==_standItemId; }); if(!it){ closeStandEditor(); return; }
+  var qty = parseInt(it.qty)||0;
+  var vals = {};
+  var sum = 0;
+  for(var n=1;n<=4;n++){ var v = Math.max(0, Math.min(STAND_MAX, parseInt(document.getElementById('sted-'+n).value)||0)); vals[n]=v; sum += v; }
+  if(sum > qty){ toast('❌ На стендах '+sum+' шт., а всего у издания '+qty); return; }
+  var changed = false;
+  for(var n2=1;n2<=4;n2++){ if(stGet(it,n2) !== vals[n2]){ changed=true; break; } }
+  if(!changed){ closeStandEditor(); return; }
+  pushUndo('Стенды: '+getDisplayName(it));
+  it.standCounts = vals;
+  addItemHistory(it.id, 'stand', 0, null, null, 'Стенды: '+vals[1]+'/'+vals[2]+'/'+vals[3]+'/'+vals[4]);
+  addLog('Стенды', {names:it.names});
+  save(); render(); closeStandEditor();
+  toast('✅ Сохранено');
+}
+
 function isThemeSuggestion(str){
   if(!str) return false;
   if(/№\s*\d/.test(str)) return false;
   if(/^(Сторожевая|Пробудитесь|Брошюра|Постер|Радуйтесь|Руководство)/.test(str)) return false;
   return true;
 }
-
 function openSuggManager(){
   var ov = document.getElementById('suggOverlay'); if(!ov) return;
   ov.classList.add('show');
@@ -1130,18 +1422,16 @@ function renderItemLangStats(){
   items.forEach(function(it){
     var name = getDisplayName(it);
     if(!name) return;
-    if(!groups[name]) groups[name] = { name: name, langs: {}, totalQty: 0, recordsCount: 0 };
+    if(!groups[name]) groups[name] = { name: name, langs: {}, totalQty: 0 };
     var code = it.lang || 'ru';
     if(!groups[name].langs[code]) groups[name].langs[code] = 0;
     groups[name].langs[code] += parseInt(it.qty)||0;
     groups[name].totalQty += parseInt(it.qty)||0;
-    groups[name].recordsCount++;
   });
   var list = Object.keys(groups).map(function(k){ return groups[k]; });
   if(q){ list = list.filter(function(g){ return g.name.toLowerCase().indexOf(q) >= 0; }); }
   list.sort(function(a,b){
-    var aLangs = Object.keys(a.langs).length;
-    var bLangs = Object.keys(b.langs).length;
+    var aLangs = Object.keys(a.langs).length, bLangs = Object.keys(b.langs).length;
     if(bLangs !== aLangs) return bLangs - aLangs;
     return b.totalQty - a.totalQty;
   });
@@ -1182,8 +1472,7 @@ function renderCountByLangType(){
     var it=items[i];
     var code = it.lang || 'ru';
     if(!byLang[code]) byLang[code] = {mag:0, booklet:0, poster:0, total:0};
-    var tt = it.type||'';
-    var q = it.qty||0;
+    var tt = it.type||'', q = it.qty||0;
     if(tt==='Журнал'){ byLang[code].mag+=q; totals.mag+=q; }
     else if(tt==='Брошюра'){ byLang[code].booklet+=q; totals.booklet+=q; }
     else if(tt==='Постер'){ byLang[code].poster+=q; totals.poster+=q; }
@@ -1199,21 +1488,9 @@ function renderCountByLangType(){
   var h='';
   langs.forEach(function(code){
     var c = byLang[code];
-    h += '<tr>';
-    h += '<td><b>'+esc(getLangDisplay(code))+'</b></td>';
-    h += '<td>'+c.mag+'</td>';
-    h += '<td>'+c.booklet+'</td>';
-    h += '<td>'+c.poster+'</td>';
-    h += '<td><b>'+c.total+'</b></td>';
-    h += '</tr>';
+    h += '<tr><td><b>'+esc(getLangDisplay(code))+'</b></td><td>'+c.mag+'</td><td>'+c.booklet+'</td><td>'+c.poster+'</td><td><b>'+c.total+'</b></td></tr>';
   });
-  h += '<tr class="total-row">';
-  h += '<td>ВСЕГО</td>';
-  h += '<td>'+totals.mag+'</td>';
-  h += '<td>'+totals.booklet+'</td>';
-  h += '<td>'+totals.poster+'</td>';
-  h += '<td>'+totals.total+'</td>';
-  h += '</tr>';
+  h += '<tr class="total-row"><td>ВСЕГО</td><td>'+totals.mag+'</td><td>'+totals.booklet+'</td><td>'+totals.poster+'</td><td>'+totals.total+'</td></tr>';
   tb.innerHTML = h;
 }
 
@@ -1298,6 +1575,12 @@ function render(){
     var themeLine = (it.theme && String(it.theme).trim()) ? '<div class="item-theme">💡 '+esc(it.theme)+'</div>' : '';
     var langLabel = (it.lang && it.lang!=='ru') ? ' <span class="lang-label">'+esc(getLangDisplay(it.lang))+'</span>' : '';
 
+    var stSumV = stSum(it);
+    var stParts = [];
+    for(var tn=1;tn<=4;tn++){ var tv=stGet(it,tn); if(tv>0) stParts.push(tn+':'+tv); }
+    var stText = stParts.length>0 ? ('🏛️ '+stParts.join(' · ')) : '🏛️ На стенды';
+    var stCls = 'stand-btn' + (stSumV>0?' has':'');
+
     var langsBlock = '';
     if(curSort === 'langs'){
       var others = getOtherLangsForItem(it);
@@ -1310,6 +1593,10 @@ function render(){
         langsBlock = '<div class="item-langs" style="opacity:0.55">🌍 Только на этом языке</div>';
       }
     }
+
+    var qtyField = canCount
+      ? '<input type="number" inputmode="numeric" min="0" class="qty-display" value="'+it.qty+'" onclick="this.select()" onchange="setQtyDirect('+it.id+', this.value)" onkeydown="if(event.key===\'Enter\'){event.preventDefault(); this.blur();}">'
+      : '<span class="qty-display" style="border:0;background:transparent">'+it.qty+'</span>';
 
     h+='<div class="'+favCls+'">'+
       '<div class="item-main">'+
@@ -1325,8 +1612,9 @@ function render(){
       '<div class="item-actions">'+
         '<button class="'+favCls2+'" onclick="toggleFav('+it.id+')">'+favStar+'</button>'+
         (canCount?'<button class="qty-btn minus" onclick="changeQty('+it.id+',-1)">−</button>':'')+
-        '<span class="qty-display">'+it.qty+'</span>'+
+        qtyField+
         (canCount?'<button class="qty-btn" onclick="changeQty('+it.id+',1)">+</button>':'')+
+        '<button class="'+stCls+'" onclick="openStandEditor('+it.id+')" title="Стенды">'+esc(stText)+'</button>'+
         (canRename?'<button class="icon-btn" onclick="openRename('+it.id+')">✏️</button>':'')+
         (canDel?'<button class="icon-btn" style="color:#ef4444" onclick="deleteItem('+it.id+')">🗑️</button>':'')+
       '</div>'+
@@ -1348,15 +1636,30 @@ function render(){
   var dc=document.getElementById('dangerCard'); if(dc) dc.style.display=hasPerm('del')?'block':'none';
   var an=document.getElementById('addPermNotice'); var canAdd=hasPerm('add'); if(an) an.style.display=canAdd?'none':'block';
   var btnAdd=document.getElementById('btnAddItem'); if(btnAdd) btnAdd.disabled=!canAdd;
-  try{ renderCountByType(); }catch(e){} try{ renderItemLangStats(); }catch(e){} try{ renderCountByLangType(); }catch(e){} try{ renderLog(); }catch(e){} try{ renderCharts(); }catch(e){}
+  try{ renderCountByType(); }catch(e){} try{ renderItemLangStats(); }catch(e){} try{ renderCountByLangType(); }catch(e){} try{ renderLog(); }catch(e){} try{ renderCharts(); }catch(e){} try{ updateStandBadges(); }catch(e){} try{ renderStand(); }catch(e){}
 }
 
 function toggleFav(id){ var it=items.find(function(x){return x.id==id;}); if(!it) return; it.favorite=!it.favorite; vibrate(15); save(); render(); }
+
+function setQtyDirect(id, val){
+  if(!hasPerm('count')){ toast('Нет прав'); render(); return; }
+  var it = items.find(function(x){ return x.id==id; }); if(!it) return;
+  var newQty = Math.max(0, parseInt(val)||0);
+  var old = it.qty;
+  if(newQty === old){ render(); return; }
+  var inSt = stSum(it);
+  if(newQty < inSt){ toast('❌ На стендах уже '+inSt+' шт. Сначала уберите'); render(); return; }
+  pushUndoSmart('qty-'+id, '→ '+newQty+' '+getDisplayName(it));
+  it.qty = newQty;
+  addItemHistory(id, newQty>old?'add':'remove', newQty-old, old, newQty);
+  vibrate(10); save(); render();
+}
 
 function changeQty(id,d){
   if(!hasPerm('count')) return;
   var it=null; for(var i=0;i<items.length;i++){ if(items[i].id==id){ it=items[i]; break; } } if(!it) return;
   var old=it.qty, newQty=Math.max(0, old+d); if(newQty===old) return;
+  if(d < 0 && newQty < stSum(it)){ toast('❌ На стендах уже '+stSum(it)+' шт.'); return; }
   pushUndoSmart('qty-'+id, (d>0?'+':'')+d+' '+getDisplayName(it));
   it.qty=newQty;
   addItemHistory(id, d>0?'add':'remove', d, old, newQty);
@@ -1385,7 +1688,7 @@ function openRename(id){
   });
   var html='';
   html+='<div style="margin-bottom:8px"><label style="font-size:0.8em;margin:0 0 3px">📝 Название</label><input id="rn-ru" value="'+esc(getDisplayName(it))+'"></div>';
-  html+='<div style="margin-bottom:8px"><label style="font-size:0.8em;margin:0 0 3px">💡 Тема выпуска <span style="color:var(--muted);font-weight:normal">(очистите — тема удалится)</span></label><input id="rn-theme" value="'+esc(it.theme||'')+'" placeholder="напр. Ищите истину"></div>';
+  html+='<div style="margin-bottom:8px"><label style="font-size:0.8em;margin:0 0 3px">💡 Тема выпуска</label><input id="rn-theme" value="'+esc(it.theme||'')+'" placeholder="напр. Ищите истину"></div>';
   html+='<div style="margin-bottom:8px"><label style="font-size:0.8em;margin:0 0 3px">🌍 Язык</label><select id="rn-lang">'+langOpts+'</select></div>';
   html+='<div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">';
   html+='<div class="row">';
@@ -1424,7 +1727,13 @@ function addItem(){
   var yearVal=(document.getElementById('year').value||'').trim();
   var issueNumVal=(document.getElementById('issueNum').value||'').trim();
   var langVal = (document.getElementById('lang')||{}).value || 'ru';
-  var newItem={id:Date.now()+Math.random(),names:{ru:titleVal},type:currentAddType,cat:document.getElementById('cat').value||'-',lang:langVal,magazineLang:langVal,year:yearVal,issueNum:issueNumVal,theme:'',qty:qtyVal,min:0,photo:'',barcode:'',history:[]};
+  var s1=Math.max(0, Math.min(STAND_MAX, parseInt((document.getElementById('s1')||{}).value)||0));
+  var s2=Math.max(0, Math.min(STAND_MAX, parseInt((document.getElementById('s2')||{}).value)||0));
+  var s3=Math.max(0, Math.min(STAND_MAX, parseInt((document.getElementById('s3')||{}).value)||0));
+  var s4=Math.max(0, Math.min(STAND_MAX, parseInt((document.getElementById('s4')||{}).value)||0));
+  var sSum = s1+s2+s3+s4;
+  if(sSum > qtyVal){ toast('❌ На стендах '+sSum+', а всего '+qtyVal); return; }
+  var newItem={id:Date.now()+Math.random(),names:{ru:titleVal},type:currentAddType,cat:document.getElementById('cat').value||'-',lang:langVal,magazineLang:langVal,year:yearVal,issueNum:issueNumVal,theme:'',qty:qtyVal,min:0,photo:'',barcode:'',standCounts:{1:s1,2:s2,3:s3,4:s4},history:[]};
   items.push(newItem);
   addItemHistory(newItem.id,'create',qtyVal,0,qtyVal);
   addLog('Добавить',{names:newItem.names});
@@ -1434,8 +1743,12 @@ function addItem(){
   document.getElementById('title').value='';
   document.getElementById('year').value='';
   document.getElementById('issueNum').value='';
+  document.getElementById('s1').value='0';
+  document.getElementById('s2').value='0';
+  document.getElementById('s3').value='0';
+  document.getElementById('s4').value='0';
   save(); render(); populateDatalists();
-  toast('✅ Добавлено: '+titleVal);
+  toast('✅ Добавлено: '+titleVal + (sSum>0?(' · 🏛️ '+sSum):''));
 }
 
 function renderUsers(){ var list=document.getElementById('usersList'); if(!list) return; if(users.length===0){ list.innerHTML='<div class="small">—</div>'; return; } var h=''; users.forEach(function(u){ h+='<div class="user-row"><div style="flex:1"><div class="uname">👤 '+esc(u.name)+' <span class="urole role-'+u.role+'">'+esc(getRoleDisplay(u.role))+'</span></div></div>'+(users.length>1?'<button class="icon-btn" style="background:#ef4444;color:#fff;border:0;padding:8px 12px;border-radius:6px" onclick="deleteUser('+u.id+')">🗑️</button>':'')+'</div>'; }); list.innerHTML=h; }
@@ -1460,18 +1773,24 @@ function renderQuickCount(){
     if(q && (getDisplayName(it).toLowerCase().indexOf(q)<0 && eI.toLowerCase().indexOf(q)<0 && (it.theme||'').toLowerCase().indexOf(q)<0)) continue;
     var extra = eI ? '<span style="color:#06b6d4;font-weight:bold"> • '+esc(eI)+'</span>' : '';
     var themeMini = it.theme ? ' <span style="color:#a855f7;font-style:italic">💡 '+esc(it.theme)+'</span>' : '';
-    h+='<div class="qc-tile"><div class="qc-info"><div class="qc-name">'+getTypeIcon(it.type)+' '+esc(getDisplayName(it))+'</div><div class="qc-cat">'+extra+themeMini+'</div></div>'+(canCount?'<button class="qc-minus" onclick="qcChange('+it.id+',-1)">−</button>':'')+'<div class="qc-qty">'+it.qty+'</div>'+(canCount?'<button class="qc-plus" onclick="qcChange('+it.id+',1)">+</button>':'')+'</div>';
+    var stSumV = stSum(it);
+    var stMini = stSumV>0 ? ' <span style="color:#06b6d4;font-weight:bold">🏛️ '+stSumV+'</span>' : '';
+    var qtyInput = canCount
+      ? '<input type="number" inputmode="numeric" min="0" class="qc-qty-input" value="'+it.qty+'" onclick="this.select()" onchange="qcSetQty('+it.id+', this.value)" onkeydown="if(event.key===\'Enter\'){event.preventDefault(); this.blur();}">'
+      : '<div class="qc-qty">'+it.qty+'</div>';
+    h+='<div class="qc-tile"><div class="qc-info"><div class="qc-name">'+getTypeIcon(it.type)+' '+esc(getDisplayName(it))+'</div><div class="qc-cat">'+extra+themeMini+stMini+'</div></div>'+(canCount?'<button class="qc-minus" onclick="qcChange('+it.id+',-1)">−</button>':'')+qtyInput+(canCount?'<button class="qc-plus" onclick="qcChange('+it.id+',1)">+</button>':'')+'</div>';
   }
   list.innerHTML=h||'<div class="small" style="text-align:center;padding:20px">—</div>';
 }
 function qcChange(id,d){ changeQty(id,d); renderQuickCount(); }
+function qcSetQty(id, val){ setQtyDirect(id, val); renderQuickCount(); }
 
 function copyOrder(){ var txt=document.getElementById('orderList').innerText; if(navigator.clipboard) navigator.clipboard.writeText(txt).then(function(){toast('📋 Скопировано');}); }
 function exportOrder(){ var b=new Blob([document.getElementById('orderList').innerText],{type:'text/plain'}); var a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='order.txt'; a.click(); }
 function exportPDF(){ var need=items.filter(function(x){return x.qty<=0;}); var h='<h1>STAND MANAGER</h1><p>'+new Date().toLocaleString('ru-RU')+'</p><ul>'; need.forEach(function(x){ var eI=getItemExtraInfo(x); var th=x.theme?(' — '+x.theme):''; h+='<li>'+esc(getDisplayName(x))+esc(th)+(eI?' ('+esc(eI)+')':'')+' - '+x.qty+'</li>'; }); h+='</ul>'; if(!need.length) h+='<p>-</p>'; printDoc('order',h); }
 function shareWhatsApp(){ var txt=encodeURIComponent(document.getElementById('orderList').innerText); window.open('https://wa.me/?text='+txt,'_blank'); }
 
-function exportBackup(){ var backup={version:6,ts:Date.now(),app:'StandManagerPRO',items:items,users:users,historyLog:historyLog,adminPass:adminPass,savedTitles:savedTitles,savedYears:savedYears,savedIssueNums:savedIssueNums,removedSuggestions:removedSuggestions,settings:{fs:curFS,lfs:curLFS,ff:curFF,theme:curTheme,sort:curSort,bgColorDark:bgColorDark,bgColorDay:bgColorDay,btnColorDark:btnColorDark,btnColorDay:btnColorDay,cloudId:cloudId,cloudEnabled:cloudEnabled}}; var blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='stand-backup-'+new Date().toISOString().slice(0,10)+'.json'; a.click(); toast('💾 Копия загружена'); }
+function exportBackup(){ var backup={version:9,ts:Date.now(),app:'StandManagerPRO',items:items,users:users,historyLog:historyLog,adminPass:adminPass,savedTitles:savedTitles,savedYears:savedYears,savedIssueNums:savedIssueNums,removedSuggestions:removedSuggestions,settings:{fs:curFS,lfs:curLFS,ff:curFF,theme:curTheme,sort:curSort,bgColorDark:bgColorDark,bgColorDay:bgColorDay,btnColorDark:btnColorDark,btnColorDay:btnColorDay,cloudId:cloudId,cloudEnabled:cloudEnabled,cardStates:getCardStates()}}; var blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='stand-backup-'+new Date().toISOString().slice(0,10)+'.json'; a.click(); toast('💾 Копия загружена'); }
 function importBackup(e){
   var file=e.target.files[0]; if(!file) return;
   var reader=new FileReader();
@@ -1502,11 +1821,13 @@ function importBackup(e){
           if(s.btnColorDay!==undefined){ btnColorDay=s.btnColorDay; localStorage.setItem('stand_btn_color_day',btnColorDay); }
           if(s.cloudId!==undefined){ cloudId=s.cloudId; localStorage.setItem('stand_cloud_id',cloudId); }
           if(s.cloudEnabled!==undefined){ cloudEnabled=s.cloudEnabled; localStorage.setItem('stand_cloud_enabled',cloudEnabled?'true':'false'); }
+          if(s.cardStates) saveCardStates(s.cardStates);
           curBgColor=(curTheme==='day')?bgColorDay:bgColorDark; curBtnColor=(curTheme==='day')?btnColorDay:btnColorDark;
         }
         save(); applyTheme(); applyFont(); applyBgColor(); applyBtnColor();
         render(); renderUsers(); renderUserSelectList(); updateUserChip();
         renderBgSwatches(); renderBtnSwatches(); updateThemeHints(); populateDatalists();
+        setupCollapsibleCards();
         toast('✅ Восстановление завершено!');
       });
     }catch(err){ alert('❌ Неверный файл'); }
@@ -1519,8 +1840,6 @@ function copyCloudId(){ if(navigator.clipboard) navigator.clipboard.writeText(cl
 function saveCloudId(){ cloudId=document.getElementById('cloudId').value.trim()||'stand-athens-1'; localStorage.setItem('stand_cloud_id',cloudId); cloudEnabled=true; localStorage.setItem('stand_cloud_enabled','true'); localStorage.setItem('stand_onboarded','true'); toast('✅ Сохранено'); initFirebase(); }
 function saveFbConfig(){ fbConfigStr=document.getElementById('fbConfig').value.trim(); localStorage.setItem('stand_fb_config',fbConfigStr); if(cloudEnabled) initFirebase(); }
 function getFirebaseConfig(){ try{ return JSON.parse(fbConfigStr); }catch(e){ return null; } }
-
-/* ★ ФИКС: правильная синхронизация без потери свежих локальных данных */
 async function initFirebase(){
   setSyncState('connecting'); var cfg=getFirebaseConfig(); if(!cfg){ setSyncState('error'); return; }
   try{
@@ -1532,14 +1851,7 @@ async function initFirebase(){
     cloudUnsub=window._fb.onSnapshot(dRef, function(snap){
       if(!snap.exists()){ setSyncState('synced'); return; }
       var data=snap.data(); if(!data || isSyncingFromCloud) return;
-
-      // ★ ФИКС: если пришло эхо нашей собственной отправки — пропускаем его,
-      // чтобы не затирать свежие локальные изменения (тема, название, количество).
-      if(data.updated && pendingPushTs[data.updated]){
-        setSyncState('synced');
-        return;
-      }
-
+      if(data.updated && pendingPushTs[data.updated]){ setSyncState('synced'); return; }
       isSyncingFromCloud=true;
       if(data.items) items=cleanItems(data.items);
       if(data.users && Array.isArray(data.users)){ users=cleanUsers(data.users); }
@@ -1553,30 +1865,18 @@ async function initFirebase(){
     setSyncState('synced');
   }catch(e){ setSyncState('error'); }
 }
-
 async function pushToCloud(){
   if(!cloudEnabled || !cloudDb) return;
   try{
     setSyncState('pushing');
     var dRef=window._fb.doc(cloudDb,'stands',cloudId);
     var ts = Date.now();
-    // ★ ФИКС: помечаем наш собственный ts, чтобы распознать эхо и не затереть локальные данные
     pendingPushTs[ts] = true;
-    // Автоочистка метки через 15 секунд
     setTimeout(function(){ delete pendingPushTs[ts]; }, 15000);
-    await window._fb.setDoc(dRef,{
-      items:items,
-      users:users,
-      adminPass:adminPass,
-      history:historyLog,
-      savedTitles:savedTitles,
-      removedSuggestions:removedSuggestions,
-      updated: ts
-    },{merge:true});
+    await window._fb.setDoc(dRef,{items:items,users:users,adminPass:adminPass,history:historyLog,savedTitles:savedTitles,removedSuggestions:removedSuggestions,updated:ts},{merge:true});
     setSyncState('synced');
   }catch(e){ setSyncState('error'); }
 }
-
 async function pullFromCloud(){
   if(!cloudEnabled){ alert('Облако выключено'); return; }
   if(!cloudDb){ alert('Нет базы данных'); return; }
@@ -1699,6 +1999,8 @@ function init(){
   setSyncState('offline'); updateUndoButtons();
   populateDatalists();
   hideUndoBar();
+  try{ showStand(1); }catch(e){}
+  try{ setupCollapsibleCards(); }catch(e){}
 
   var savedCloudId = localStorage.getItem('stand_cloud_id')||'';
   var isOnboarded = localStorage.getItem('stand_onboarded')==='true';

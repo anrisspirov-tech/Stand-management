@@ -87,20 +87,17 @@ option{background:var(--card2);color:var(--text)}
 .item-lang-stat .stat-lang-name{color:var(--text);flex:1;min-width:0;word-break:break-word}
 .item-lang-stat .stat-lang-qty{font-weight:bold;color:#a855f7;padding:2px 10px;border-radius:99px;background:rgba(168,85,247,0.15);white-space:nowrap}
 .item-lang-stat .stat-lang-qty.zero{background:rgba(239,68,68,0.15);color:#ef4444}
-
-/* ★ СВОРАЧИВАЕМЫЕ КАРТОЧКИ */
 .card[data-collapsible] > *:first-child{cursor:pointer;user-select:none;position:relative;padding-right:26px;min-height:20px}
 .card[data-collapsible] > *:first-child::after{content:'▾';position:absolute;right:4px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:1em;font-weight:normal;transition:transform 0.2s;line-height:1}
 .card[data-collapsible].collapsed > *:first-child::after{content:'▸'}
 .card[data-collapsible].collapsed > *:not(:first-child){display:none!important}
-
-/* Стенды */
-.stand-tab{flex:1;padding:10px 6px;font-size:0.9em;font-weight:bold;background:var(--btn-bg);color:var(--text);border:2px solid var(--btn-border);border-radius:8px;cursor:pointer;margin:0;transition:all 0.15s;text-align:center;position:relative}
+.stand-tab{flex:1;padding:10px 6px;font-size:0.9em;font-weight:bold;background:var(--btn-bg);color:var(--text);border:2px solid var(--btn-border);border-radius:8px;cursor:pointer;margin:0;transition:all 0.15s;text-align:center;position:relative;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .stand-tab.active{background:#06b6d4;color:#000;border-color:#06b6d4;box-shadow:0 0 10px rgba(6,182,212,0.5)}
 .stand-tab .cnt{display:block;font-size:0.7em;opacity:0.85;font-weight:normal;margin-top:2px}
 .stand-tabs{display:flex;gap:5px;margin-top:10px}
 .stand-box{background:var(--card2);border-radius:10px;padding:12px;margin-top:10px;border-left:4px solid #06b6d4}
-.stand-title{font-size:1.15em;font-weight:bold;color:#06b6d4;margin-bottom:4px}
+.stand-title{font-size:1.15em;font-weight:bold;color:#06b6d4;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.stand-title .st-name{flex:1;min-width:0;word-break:break-word}
 .stand-summary{color:var(--muted);font-size:0.85em;margin-bottom:10px}
 .stand-summary b{color:var(--text)}
 .stand-section-title{font-size:0.75em;color:var(--primary);font-weight:bold;text-transform:uppercase;letter-spacing:0.5px;margin:10px 0 5px}
@@ -115,9 +112,10 @@ option{background:var(--card2);color:var(--text)}
 .stand-item .ti-qty .in-total{font-size:0.7em;color:var(--muted);font-weight:normal;display:block}
 .stand-empty{text-align:center;padding:20px;color:var(--muted);font-size:0.9em}
 .stand-field{background:var(--card);border-radius:8px;padding:10px;margin:6px 0;display:flex;justify-content:space-between;align-items:center;gap:10px}
-.stand-field .sf-label{font-weight:bold;color:#06b6d4;font-size:1em}
-.stand-field select{width:110px;padding:8px;font-weight:bold;font-size:1.05em;text-align:center}
-
+.stand-field .sf-label{font-weight:bold;color:#06b6d4;font-size:1em;flex:1;min-width:0;word-break:break-word}
+.stand-field select{width:110px;padding:8px;font-weight:bold;font-size:1.05em;text-align:center;flex-shrink:0}
+.btn-mini{padding:4px 8px;font-size:0.75em;background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border);border-radius:6px;margin:0}
+.btn-print{background:#22c55e;color:#000;border:0}
 #standOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
 #standOverlay.show{display:flex}
 #standBox{background:var(--card);border:2px solid #06b6d4;border-radius:14px;padding:20px;max-width:420px;width:100%;max-height:90vh;overflow:auto}
@@ -127,7 +125,6 @@ option{background:var(--card2);color:var(--text)}
 .stand-info .ok{color:#22c55e;font-weight:bold}
 .stand-info .warn{color:#f59e0b;font-weight:bold}
 .stand-info .err{color:#ef4444;font-weight:bold}
-
 #ccOverlay,#rnOverlay,#userOverlay,#onboardOverlay,#suggOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
 #ccOverlay.show,#rnOverlay.show,#userOverlay.show,#onboardOverlay.show,#suggOverlay.show{display:flex}
 #onboardOverlay{z-index:999999;background:var(--bg)}
@@ -206,10 +203,11 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 .sugg-tag.title{background:#f59e0b;color:#000}
 .sugg-text{flex:1;font-size:0.85em;word-break:break-word;line-height:1.3}
 .sugg-del{background:#ef4444;color:#fff;border:0;padding:5px 9px;border-radius:6px;cursor:pointer;font-size:0.85em;font-weight:bold;margin:0;flex-shrink:0}
-
-/* Кнопки свернуть/развернуть */
 .card-controls{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:6px 0}
 .card-controls button{padding:6px 12px;font-size:0.78em;background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border);border-radius:99px;margin:0}
+#scrollTopBtn{position:fixed;right:20px;bottom:90px;z-index:400;width:56px;height:56px;border-radius:50%;background:var(--primary);color:var(--primary-text);border:3px solid var(--card);box-shadow:0 6px 20px rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;font-size:1.6em;font-weight:bold;cursor:pointer;opacity:0;pointer-events:none;transform:translateY(20px);transition:opacity 0.3s,transform 0.3s;padding:0;margin:0;line-height:1}
+#scrollTopBtn.show{opacity:1;pointer-events:auto;transform:translateY(0)}
+#scrollTopBtn:active{transform:scale(0.95)}
 </style>
 </head>
 <body>
@@ -239,6 +237,11 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <div class="stat"><div id="need" style="color:#ef4444;font-weight:bold">0</div><div class="small">Заказ</div></div>
 </div>
 
+<div class="stats" style="margin-top:6px">
+<div class="stat" style="border:2px solid #22c55e"><div id="tot-stock" style="font-weight:bold;font-size:1.3em;color:#22c55e">0</div><div class="small">📦 В запасе</div></div>
+<div class="stat" style="border:2px solid #06b6d4"><div id="tot-stands" style="font-weight:bold;font-size:1.3em;color:#06b6d4">0</div><div class="small">🏛️ На стендах</div></div>
+</div>
+
 <div class="card-controls">
 <button onclick="collapseAllCards()">⬆️ Свернуть всё</button>
 <button onclick="expandAllCards()">⬇️ Развернуть всё</button>
@@ -253,10 +256,10 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <b style="color:#06b6d4">🏛️ Стенды</b>
 <div class="small" style="margin:6px 0 0;color:var(--muted)">Сколько из общего количества стоит на каждом стенде.</div>
 <div class="stand-tabs">
-<button type="button" id="st-1" class="stand-tab active" onclick="showStand(1)">🏛️ 1<span class="cnt" id="stc-1">—</span></button>
-<button type="button" id="st-2" class="stand-tab" onclick="showStand(2)">🏛️ 2<span class="cnt" id="stc-2">—</span></button>
-<button type="button" id="st-3" class="stand-tab" onclick="showStand(3)">🏛️ 3<span class="cnt" id="stc-3">—</span></button>
-<button type="button" id="st-4" class="stand-tab" onclick="showStand(4)">🏛️ 4<span class="cnt" id="stc-4">—</span></button>
+<button type="button" id="st-1" class="stand-tab active" onclick="showStand(1)">🏛️ <span id="stn-1">Стенд 1</span><span class="cnt" id="stc-1">—</span></button>
+<button type="button" id="st-2" class="stand-tab" onclick="showStand(2)">🏛️ <span id="stn-2">Стенд 2</span><span class="cnt" id="stc-2">—</span></button>
+<button type="button" id="st-3" class="stand-tab" onclick="showStand(3)">🏛️ <span id="stn-3">Стенд 3</span><span class="cnt" id="stc-3">—</span></button>
+<button type="button" id="st-4" class="stand-tab" onclick="showStand(4)">🏛️ <span id="stn-4">Стенд 4</span><span class="cnt" id="stc-4">—</span></button>
 </div>
 <div id="standContent" style="margin-top:10px"></div>
 </div>
@@ -299,6 +302,9 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <div class="toolbar">
 <select id="typeFilter" onchange="setTypeFilter(this.value)" style="flex:1"></select>
 <select id="langFilter" onchange="setLangFilter(this.value)" style="flex:1"></select>
+</div>
+<div class="toolbar">
+<select id="standFilter" onchange="setStandFilter(this.value)" style="flex:1"></select>
 </div>
 <div id="list" style="margin-top:8px"></div>
 </div>
@@ -399,12 +405,12 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <label>🏛️ Разложить по стендам (необязательно)</label>
 <div class="small" style="color:var(--muted);margin-bottom:6px">Выбери из списка, сколько поставить на каждый стенд (0–10).</div>
 <div class="row">
-<div><label style="font-size:0.8em">🏛️ Стенд 1</label><select id="s1"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
-<div><label style="font-size:0.8em">🏛️ Стенд 2</label><select id="s2"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
+<div><label style="font-size:0.8em" id="addLblS1">🏛️ Стенд 1</label><select id="s1"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
+<div><label style="font-size:0.8em" id="addLblS2">🏛️ Стенд 2</label><select id="s2"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
 </div>
 <div class="row">
-<div><label style="font-size:0.8em">🏛️ Стенд 3</label><select id="s3"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
-<div><label style="font-size:0.8em">🏛️ Стенд 4</label><select id="s4"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
+<div><label style="font-size:0.8em" id="addLblS3">🏛️ Стенд 3</label><select id="s3"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
+<div><label style="font-size:0.8em" id="addLblS4">🏛️ Стенд 4</label><select id="s4"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
 </div>
 
 <button onclick="addItem()" id="btnAddItem" style="width:100%;margin-top:16px">➕ Добавить</button>
@@ -438,6 +444,17 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <textarea id="fbConfig" style="height:60px;font-size:10px"></textarea>
 <button onclick="saveFbConfig()" class="sec" style="width:100%;margin-top:4px">💾 Сохранить</button>
 <button class="sec" onclick="resetOnboarding()" style="width:100%;margin-top:10px;font-size:0.85em">🔄 Сброс</button>
+</div>
+
+<div class="card" style="border:2px solid #06b6d4">
+<b style="color:#06b6d4">🏛️ Названия стендов</b>
+<div class="small" style="margin:8px 0;color:var(--muted);line-height:1.4">Введите свои названия — они появятся везде: в табах, в списке, в печати.</div>
+<label>Стенд 1</label><input id="sname1" placeholder="напр. Стенд у метро">
+<label>Стенд 2</label><input id="sname2" placeholder="напр. Стенд в парке">
+<label>Стенд 3</label><input id="sname3" placeholder="напр. Стенд на площади">
+<label>Стенд 4</label><input id="sname4" placeholder="напр. Запасной">
+<button onclick="saveStandNames()" style="width:100%;margin-top:10px;background:#22c55e;color:#000">💾 Сохранить названия</button>
+<button class="sec" onclick="resetStandNames()" style="width:100%;margin-top:6px">↺ Сбросить к «Стенд 1…4»</button>
 </div>
 
 <div class="card" style="border:2px solid #22c55e">
@@ -617,6 +634,8 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <button onclick="redo()" id="bRedo" disabled>↷</button>
 </div>
 
+<button id="scrollTopBtn" onclick="scrollToTop()" title="Наверх">⬆️</button>
+
 <div id="toastBox"></div>
 
 <script>
@@ -626,6 +645,85 @@ var pendingPushTs = {};
 var curStand = 1;
 var _standItemId = null;
 var STAND_MAX = 10;
+
+var standNames = { 1:'Стенд 1', 2:'Стенд 2', 3:'Стенд 3', 4:'Стенд 4' };
+try{
+  var _sn = JSON.parse(localStorage.getItem('stand_names')||'null');
+  if(_sn && typeof _sn==='object'){
+    for(var _k=1;_k<=4;_k++){ if(_sn[_k]) standNames[_k] = String(_sn[_k]); }
+  }
+}catch(e){}
+function getStandName(n){ return standNames[n] || ('Стенд '+n); }
+function saveStandNamesToStorage(){ localStorage.setItem('stand_names', JSON.stringify(standNames)); }
+function loadStandNamesUI(){
+  document.getElementById('sname1').value = standNames[1];
+  document.getElementById('sname2').value = standNames[2];
+  document.getElementById('sname3').value = standNames[3];
+  document.getElementById('sname4').value = standNames[4];
+}
+function refreshStandNamesUI(){
+  for(var n=1;n<=4;n++){
+    var el = document.getElementById('stn-'+n);
+    if(el) el.textContent = getStandName(n);
+    var lbl = document.getElementById('addLblS'+n);
+    if(lbl) lbl.textContent = '🏛️ '+getStandName(n);
+  }
+  var sf = document.getElementById('standFilter');
+  if(sf){
+    var cur = sf.value||'all';
+    sf.innerHTML = '<option value="all">🏛️ Все стенды</option><option value="0">— Без стенда —</option>' +
+      '<option value="1">🏛️ '+esc(getStandName(1))+'</option>' +
+      '<option value="2">🏛️ '+esc(getStandName(2))+'</option>' +
+      '<option value="3">🏛️ '+esc(getStandName(3))+'</option>' +
+      '<option value="4">🏛️ '+esc(getStandName(4))+'</option>';
+    sf.value = cur;
+  }
+}
+function saveStandNames(){
+  var v1 = (document.getElementById('sname1').value||'').trim() || 'Стенд 1';
+  var v2 = (document.getElementById('sname2').value||'').trim() || 'Стенд 2';
+  var v3 = (document.getElementById('sname3').value||'').trim() || 'Стенд 3';
+  var v4 = (document.getElementById('sname4').value||'').trim() || 'Стенд 4';
+  pushUndo('Названия стендов');
+  standNames = { 1:v1, 2:v2, 3:v3, 4:v4 };
+  saveStandNamesToStorage();
+  refreshStandNamesUI();
+  render();
+  addLog('Названия стендов', '');
+  toast('✅ Названия сохранены');
+  if(cloudEnabled && !isSyncingFromCloud && cloudDb){ try{ pushToCloud(); }catch(e){} }
+}
+function resetStandNames(){
+  customConfirm('Сбросить названия к «Стенд 1…4»?', function(){
+    pushUndo('Сброс имён стендов');
+    standNames = { 1:'Стенд 1', 2:'Стенд 2', 3:'Стенд 3', 4:'Стенд 4' };
+    saveStandNamesToStorage();
+    loadStandNamesUI();
+    refreshStandNamesUI();
+    render();
+    toast('✅ Сброшено');
+    if(cloudEnabled && !isSyncingFromCloud && cloudDb){ try{ pushToCloud(); }catch(e){} }
+  });
+}
+function renameStandQuick(n){
+  var cur = getStandName(n);
+  var v = prompt('Название стенда '+n+':', cur);
+  if(v===null) return;
+  v = String(v).trim();
+  if(!v) return;
+  pushUndo('Переименовать стенд');
+  standNames[n] = v;
+  saveStandNamesToStorage();
+  refreshStandNamesUI();
+  render();
+  addLog('Названия стендов', '');
+  toast('✅ Переименовано');
+  if(cloudEnabled && !isSyncingFromCloud && cloudDb){ try{ pushToCloud(); }catch(e){} }
+}
+
+var curStandFilter = 'all';
+try{ curStandFilter = localStorage.getItem('stand_filter')||'all'; }catch(e){}
+function setStandFilter(v){ curStandFilter = v; try{ localStorage.setItem('stand_filter', v); }catch(e){} render(); }
 
 var LANGS = {
   ru:'Русский', en:'Английский', de:'Немецкий', es:'Испанский',
@@ -651,7 +749,6 @@ function getLangShort(code){
   return (LANG_FLAGS[code]||'🌐') + ' ' + code.toUpperCase();
 }
 
-/* ★ Сворачиваемые карточки */
 function getCardStates(){
   try{ return JSON.parse(localStorage.getItem('stand_cards_collapsed')||'{}'); }catch(e){ return {}; }
 }
@@ -1023,7 +1120,7 @@ function renderStand(){
   var list = [];
   items.forEach(function(it){ if(stGet(it, curStand) > 0) list.push(it); });
   if(list.length === 0){
-    cont.innerHTML = '<div class="stand-box"><div class="stand-empty">🏛️ Стенд '+curStand+' пуст<br><span style="font-size:0.85em">Откройте издание в списке и нажмите 🏛️</span></div></div>';
+    cont.innerHTML = '<div class="stand-box"><div class="stand-title"><span class="st-name">🏛️ '+esc(getStandName(curStand))+'</span><button class="btn-mini" onclick="renameStandQuick('+curStand+')">✏️</button><button class="btn-mini btn-print" onclick="printStand('+curStand+')">📄 Печать</button></div><div class="stand-empty">Стенд пуст<br><span style="font-size:0.85em">Откройте издание в списке и нажмите 🏛️</span></div></div>';
     return;
   }
   var totalInStand = 0, totalGlobal = 0;
@@ -1045,7 +1142,9 @@ function renderStand(){
 
   var h = '';
   h += '<div class="stand-box">';
-  h += '<div class="stand-title">🏛️ Стенд '+curStand+'</div>';
+  h += '<div class="stand-title"><span class="st-name">🏛️ '+esc(getStandName(curStand))+'</span>';
+  h += '<button class="btn-mini" onclick="renameStandQuick('+curStand+')">✏️ Переименовать</button>';
+  h += '<button class="btn-mini btn-print" onclick="printStand('+curStand+')">📄 Печать</button></div>';
   h += '<div class="stand-summary">На стенде: <b>'+totalInStand+'</b> шт. из <b>'+totalGlobal+'</b> шт. у этих изданий · позиций: <b>'+list.length+'</b></div>';
 
   h += '<div class="stand-section-title">📋 По типам</div>';
@@ -1077,6 +1176,77 @@ function renderStand(){
   });
   h += '</div>';
   cont.innerHTML = h;
+}
+
+function printStand(n){
+  var list = [];
+  items.forEach(function(it){ if(stGet(it, n) > 0) list.push(it); });
+  var name = getStandName(n);
+  var now = new Date().toLocaleString('ru-RU');
+  var h = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+esc(name)+'</title>';
+  h += '<style>body{font-family:Arial;margin:24px;color:#000}';
+  h += 'h1{margin:0 0 4px;font-size:22px}h2{margin:24px 0 8px;font-size:16px;border-bottom:2px solid #000;padding-bottom:4px}';
+  h += '.sub{color:#666;font-size:13px;margin-bottom:16px}';
+  h += 'table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}';
+  h += 'th,td{border:1px solid #999;padding:6px 8px;text-align:left}';
+  h += 'th{background:#eee}';
+  h += '.qty{text-align:right;font-weight:bold}';
+  h += '.tot{background:#f0f0f0;font-weight:bold}';
+  h += '.totals{display:flex;gap:16px;flex-wrap:wrap;margin:8px 0 4px}';
+  h += '.totals div{background:#f5f5f5;border:1px solid #ddd;border-radius:6px;padding:8px 12px;font-size:13px}';
+  h += '.totals b{font-size:16px}';
+  h += '</style></head><body>';
+  h += '<h1>🏛️ '+esc(name)+'</h1>';
+  h += '<div class="sub">Дата: '+esc(now)+'</div>';
+
+  if(list.length === 0){
+    h += '<p>Стенд пуст.</p></body></html>';
+    printDoc(name, h.replace(/^[\s\S]*<body>/,'').replace(/<\/body>[\s\S]*$/,''));
+    return;
+  }
+
+  var totIn = 0, totGlob = 0;
+  var byType = {}, byLang = {};
+  list.forEach(function(it){
+    var i = stGet(it, n), g = parseInt(it.qty)||0;
+    totIn += i; totGlob += g;
+    var tp = it.type||'Журнал';
+    if(!byType[tp]) byType[tp] = {i:0, g:0};
+    byType[tp].i += i; byType[tp].g += g;
+    var code = it.lang||'ru';
+    if(!byLang[code]) byLang[code] = {i:0, g:0};
+    byLang[code].i += i; byLang[code].g += g;
+  });
+  h += '<div class="totals">';
+  h += '<div>Всего на стенде: <b>'+totIn+'</b> шт.</div>';
+  h += '<div>Из общего запаса: <b>'+totGlob+'</b> шт.</div>';
+  h += '<div>Позиций: <b>'+list.length+'</b></div>';
+  h += '</div>';
+
+  h += '<h2>По типам</h2><table><tr><th>Тип</th><th class="qty">На стенде</th><th class="qty">Всего</th></tr>';
+  ['Журнал','Брошюра','Постер'].forEach(function(tp){
+    if(!byType[tp]) return;
+    h += '<tr><td>'+getTypeIcon(tp)+' '+esc(getTypeDisplay(tp))+'</td><td class="qty">'+byType[tp].i+'</td><td class="qty">'+byType[tp].g+'</td></tr>';
+  });
+  h += '</table>';
+
+  h += '<h2>По языкам</h2><table><tr><th>Язык</th><th class="qty">На стенде</th><th class="qty">Всего</th></tr>';
+  Object.keys(byLang).sort().forEach(function(code){
+    h += '<tr><td>'+esc(getLangDisplay(code))+'</td><td class="qty">'+byLang[code].i+'</td><td class="qty">'+byLang[code].g+'</td></tr>';
+  });
+  h += '</table>';
+
+  list.sort(function(a,b){ return getDisplayName(a).localeCompare(getDisplayName(b)); });
+  h += '<h2>Список литературы</h2><table><tr><th>№</th><th>Название</th><th>Тип</th><th>Язык</th><th class="qty">Кол-во</th></tr>';
+  list.forEach(function(it, idx){
+    var extra = getItemExtraInfo(it);
+    var title = getDisplayName(it) + (extra ? ' ('+extra+')' : '');
+    var qty = stGet(it, n);
+    h += '<tr><td>'+(idx+1)+'</td><td>'+esc(title)+'</td><td>'+esc(getTypeDisplay(it.type))+'</td><td>'+esc(getLangDisplay(it.lang||'ru'))+'</td><td class="qty">'+qty+'</td></tr>';
+  });
+  h += '</table>';
+  h += '</body></html>';
+  printDoc(name, h.replace(/^[\s\S]*<body>/,'').replace(/<\/body>[\s\S]*$/,''));
 }
 
 function updateStandBadges(){
@@ -1113,10 +1283,10 @@ function renderStandEditor(){
   h += 'Всего у издания: <b>'+qty+'</b> шт.<br>';
   h += 'На стендах: <span class="'+sumCls+'">'+sum+'</span> шт. · В запасе: <b>'+stock+'</b> шт.';
   h += '</div>';
-  h += '<div class="stand-field"><span class="sf-label">🏛️ Стенд 1</span><select id="sted-1" onchange="standLiveUpdate()">'+buildStandOptions(stGet(it,1))+'</select></div>';
-  h += '<div class="stand-field"><span class="sf-label">🏛️ Стенд 2</span><select id="sted-2" onchange="standLiveUpdate()">'+buildStandOptions(stGet(it,2))+'</select></div>';
-  h += '<div class="stand-field"><span class="sf-label">🏛️ Стенд 3</span><select id="sted-3" onchange="standLiveUpdate()">'+buildStandOptions(stGet(it,3))+'</select></div>';
-  h += '<div class="stand-field"><span class="sf-label">🏛️ Стенд 4</span><select id="sted-4" onchange="standLiveUpdate()">'+buildStandOptions(stGet(it,4))+'</select></div>';
+  h += '<div class="stand-field"><span class="sf-label">🏛️ '+esc(getStandName(1))+'</span><select id="sted-1" onchange="standLiveUpdate()">'+buildStandOptions(stGet(it,1))+'</select></div>';
+  h += '<div class="stand-field"><span class="sf-label">🏛️ '+esc(getStandName(2))+'</span><select id="sted-2" onchange="standLiveUpdate()">'+buildStandOptions(stGet(it,2))+'</select></div>';
+  h += '<div class="stand-field"><span class="sf-label">🏛️ '+esc(getStandName(3))+'</span><select id="sted-3" onchange="standLiveUpdate()">'+buildStandOptions(stGet(it,3))+'</select></div>';
+  h += '<div class="stand-field"><span class="sf-label">🏛️ '+esc(getStandName(4))+'</span><select id="sted-4" onchange="standLiveUpdate()">'+buildStandOptions(stGet(it,4))+'</select></div>';
   h += '<div style="display:flex;gap:8px;margin-top:14px">';
   h += '<button class="sec" onclick="closeStandEditor()" style="flex:1;padding:12px">Отмена</button>';
   h += '<button onclick="saveStandEditor()" style="flex:1;padding:12px;background:#22c55e;color:#000">💾 Сохранить</button>';
@@ -1127,32 +1297,49 @@ function standLiveUpdate(){
   if(!_standItemId) return;
   var it = items.find(function(x){ return x.id==_standItemId; }); if(!it) return;
   var qty = parseInt(it.qty)||0;
+  var oldSum = stSum(it);
   var sum = 0;
   for(var n=1;n<=4;n++){ var el = document.getElementById('sted-'+n); sum += Math.max(0, parseInt(el.value)||0); }
-  var stock = Math.max(0, qty - sum);
+  var removedFromTotal = Math.max(0, oldSum - sum);
+  var projectedQty = Math.max(0, qty - removedFromTotal);
+  var stock = Math.max(0, projectedQty - sum);
   var info = document.getElementById('standInfoBox');
   if(info){
-    var sumCls = sum > qty ? 'err' : (sum === qty ? 'ok' : 'warn');
-    info.innerHTML = 'Всего у издания: <b>'+qty+'</b> шт.<br>На стендах: <span class="'+sumCls+'">'+sum+'</span> шт. · В запасе: <b>'+stock+'</b> шт.';
+    var sumCls = sum > projectedQty ? 'err' : (sum === projectedQty ? 'ok' : 'warn');
+    var qtyStr = (projectedQty !== qty)
+      ? (projectedQty + ' <span style="color:#ef4444;font-size:0.85em">(−'+removedFromTotal+')</span>')
+      : projectedQty;
+    info.innerHTML = 'Всего у издания: <b>'+qtyStr+'</b> шт.<br>На стендах: <span class="'+sumCls+'">'+sum+'</span> шт. · В запасе: <b>'+stock+'</b> шт.';
   }
 }
 function saveStandEditor(){
   if(!_standItemId){ closeStandEditor(); return; }
   var it = items.find(function(x){ return x.id==_standItemId; }); if(!it){ closeStandEditor(); return; }
   var qty = parseInt(it.qty)||0;
+  var oldSum = stSum(it);
   var vals = {};
   var sum = 0;
-  for(var n=1;n<=4;n++){ var v = Math.max(0, Math.min(STAND_MAX, parseInt(document.getElementById('sted-'+n).value)||0)); vals[n]=v; sum += v; }
-  if(sum > qty){ toast('❌ На стендах '+sum+' шт., а всего у издания '+qty); return; }
+  for(var n=1;n<=4;n++){
+    var v = Math.max(0, Math.min(STAND_MAX, parseInt(document.getElementById('sted-'+n).value)||0));
+    vals[n]=v; sum += v;
+  }
+  var removedFromTotal = Math.max(0, oldSum - sum);
+  var newQty = Math.max(0, qty - removedFromTotal);
+  if(sum > newQty){ toast('❌ На стендах '+sum+' шт., а всего у издания '+newQty); return; }
   var changed = false;
   for(var n2=1;n2<=4;n2++){ if(stGet(it,n2) !== vals[n2]){ changed=true; break; } }
   if(!changed){ closeStandEditor(); return; }
   pushUndo('Стенды: '+getDisplayName(it));
+  if(removedFromTotal > 0){
+    var oldQty = it.qty;
+    it.qty = newQty;
+    addItemHistory(it.id, 'remove', -removedFromTotal, oldQty, newQty, 'Списано со стендов');
+  }
   it.standCounts = vals;
   addItemHistory(it.id, 'stand', 0, null, null, 'Стенды: '+vals[1]+'/'+vals[2]+'/'+vals[3]+'/'+vals[4]);
   addLog('Стенды', {names:it.names});
   save(); render(); closeStandEditor();
-  toast('✅ Сохранено');
+  toast('✅ Сохранено' + (removedFromTotal>0 ? (' · списано '+removedFromTotal+' шт.') : ''));
 }
 
 function isThemeSuggestion(str){
@@ -1269,6 +1456,7 @@ function save(){
     localStorage.setItem('stand_saved_years', JSON.stringify(savedYears));
     localStorage.setItem('stand_saved_issue_nums', JSON.stringify(savedIssueNums));
     localStorage.setItem('stand_removed_suggestions', JSON.stringify(removedSuggestions));
+    localStorage.setItem('stand_names', JSON.stringify(standNames));
   }catch(e){}
   if(cloudEnabled && !isSyncingFromCloud && cloudDb){ clearTimeout(cloudPushTimeout); cloudPushTimeout=setTimeout(function(){ try{ pushToCloud(); }catch(e){} },800); }
 }
@@ -1379,7 +1567,7 @@ function addItemHistory(itemId, action, delta, oldQty, newQty, note){
 }
 
 var undoStack=[], redoStack=[]; var MAX_UNDO=30, lastUndoKey='', lastUndoTime=0; var undoBarTimer=null;
-function makeSnapshot(label){ return {items:JSON.parse(JSON.stringify(items)),users:JSON.parse(JSON.stringify(users)),historyLog:JSON.parse(JSON.stringify(historyLog.slice(0,30))),savedTitles:savedTitles.slice(),removedSuggestions:removedSuggestions.slice(),label:label}; }
+function makeSnapshot(label){ return {items:JSON.parse(JSON.stringify(items)),users:JSON.parse(JSON.stringify(users)),historyLog:JSON.parse(JSON.stringify(historyLog.slice(0,30))),savedTitles:savedTitles.slice(),removedSuggestions:removedSuggestions.slice(),standNames:JSON.parse(JSON.stringify(standNames)),label:label}; }
 function showUndoBar(){ var b=document.getElementById('undoBar'); if(!b) return; b.classList.add('show'); clearTimeout(undoBarTimer); undoBarTimer=setTimeout(hideUndoBar,5000); }
 function hideUndoBar(){ var b=document.getElementById('undoBar'); if(b) b.classList.remove('show'); }
 function updateUndoLabel(l){ var e=document.getElementById('undoLabel'); if(e) e.textContent = l ? ('↶ '+(l.length>30?l.substr(0,30)+'…':l)) : '—'; }
@@ -1391,7 +1579,11 @@ function undo(){
   items=s.items; users=s.users; historyLog=s.historyLog;
   if(s.savedTitles) savedTitles=s.savedTitles;
   if(s.removedSuggestions) removedSuggestions=s.removedSuggestions;
+  if(s.standNames) standNames=s.standNames;
+  saveStandNamesToStorage();
   save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); populateDatalists(); renderSuggestions(); renderSuggManager();
+  refreshStandNamesUI();
+  if(document.getElementById('adminContent').style.display==='block') loadStandNamesUI();
   toast('↶ '+s.label); updateUndoButtons();
   if(undoStack.length>0||redoStack.length>0) showUndoBar(); else hideUndoBar();
 }
@@ -1401,7 +1593,11 @@ function redo(){
   items=s.items; users=s.users; historyLog=s.historyLog;
   if(s.savedTitles) savedTitles=s.savedTitles;
   if(s.removedSuggestions) removedSuggestions=s.removedSuggestions;
+  if(s.standNames) standNames=s.standNames;
+  saveStandNamesToStorage();
   save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); populateDatalists(); renderSuggestions(); renderSuggManager();
+  refreshStandNamesUI();
+  if(document.getElementById('adminContent').style.display==='block') loadStandNamesUI();
   toast('↷ Redo'); updateUndoButtons();
   if(undoStack.length>0||redoStack.length>0) showUndoBar(); else hideUndoBar();
 }
@@ -1524,6 +1720,16 @@ function render(){
     lf.innerHTML = opts;
     lf.value = curLangFilter;
   }
+  var sf=document.getElementById('standFilter');
+  if(sf){
+    sf.innerHTML = '<option value="all">🏛️ Все стенды</option>'+
+      '<option value="0">— Без стенда —</option>'+
+      '<option value="1">🏛️ '+esc(getStandName(1))+'</option>'+
+      '<option value="2">🏛️ '+esc(getStandName(2))+'</option>'+
+      '<option value="3">🏛️ '+esc(getStandName(3))+'</option>'+
+      '<option value="4">🏛️ '+esc(getStandName(4))+'</option>';
+    sf.value = curStandFilter;
+  }
   var q=(document.getElementById('search').value||'').toLowerCase();
   var filtered=[];
   for(var i=0;i<items.length;i++){
@@ -1533,7 +1739,10 @@ function render(){
     var matchQ=name.indexOf(q)>=0 || cat.indexOf(q)>=0 || themeStr.indexOf(q)>=0 || (it.year&&String(it.year).toLowerCase().indexOf(q)>=0) || (it.issueNum&&String(it.issueNum).toLowerCase().indexOf(q)>=0);
     var matchT=curTypeFilter==='all' || it.type===curTypeFilter;
     var matchL=curLangFilter==='all' || (it.lang||'ru')===curLangFilter;
-    if(matchQ && matchT && matchL) filtered.push(it);
+    var matchS = true;
+    if(curStandFilter==='0'){ matchS = (stSum(it) === 0); }
+    else if(curStandFilter!=='all'){ matchS = (stGet(it, parseInt(curStandFilter)) > 0); }
+    if(matchQ && matchT && matchL && matchS) filtered.push(it);
   }
   filtered.sort(function(a,b){
     if(curSort==='low') return a.qty - b.qty;
@@ -1550,14 +1759,24 @@ function render(){
   });
   if(curSort!=='fav'){ filtered.sort(function(a,b){ return (b.favorite?1:0)-(a.favorite?1:0); }); }
 
-  var total=0,cMag=0,cBooklet=0,cPoster=0;
-  for(var i=0;i<items.length;i++){ total+=items[i].qty; var tp=items[i].type||''; if(tp==='Журнал') cMag+=items[i].qty; else if(tp==='Брошюра') cBooklet+=items[i].qty; else if(tp==='Постер') cPoster+=items[i].qty; }
+  var total=0,cMag=0,cBooklet=0,cPoster=0,standsTotal=0;
+  for(var i=0;i<items.length;i++){
+    total+=items[i].qty;
+    var tp=items[i].type||'';
+    if(tp==='Журнал') cMag+=items[i].qty;
+    else if(tp==='Брошюра') cBooklet+=items[i].qty;
+    else if(tp==='Постер') cPoster+=items[i].qty;
+    standsTotal += stSum(items[i]);
+  }
+  var stockTotal = Math.max(0, total - standsTotal);
   var need=[]; for(var i=0;i<items.length;i++) if(items[i].qty<=0) need.push(items[i]);
   var $=function(id){return document.getElementById(id);};
   if($('tot')) $('tot').textContent=total; if($('tit')) $('tit').textContent=items.length;
   if($('cnt-mag')) $('cnt-mag').textContent=cMag;
   if($('cnt-booklet')) $('cnt-booklet').textContent=cBooklet; if($('cnt-poster')) $('cnt-poster').textContent=cPoster;
   if($('need')) $('need').textContent=need.length;
+  if($('tot-stock')) $('tot-stock').textContent=stockTotal;
+  if($('tot-stands')) $('tot-stands').textContent=standsTotal;
 
   var canCount=hasPerm('count'), canRename=hasPerm('rename'), canDel=hasPerm('del');
   var h='';
@@ -1748,7 +1967,7 @@ function addItem(){
   document.getElementById('s3').value='0';
   document.getElementById('s4').value='0';
   save(); render(); populateDatalists();
-  toast('✅ Добавлено: '+titleVal + (sSum>0?(' · 🏛️ '+sSum):''));
+  toast('✅ Добавлено: '+titleVal + (sSum>0?(' · стенды '+sSum):''));
 }
 
 function renderUsers(){ var list=document.getElementById('usersList'); if(!list) return; if(users.length===0){ list.innerHTML='<div class="small">—</div>'; return; } var h=''; users.forEach(function(u){ h+='<div class="user-row"><div style="flex:1"><div class="uname">👤 '+esc(u.name)+' <span class="urole role-'+u.role+'">'+esc(getRoleDisplay(u.role))+'</span></div></div>'+(users.length>1?'<button class="icon-btn" style="background:#ef4444;color:#fff;border:0;padding:8px 12px;border-radius:6px" onclick="deleteUser('+u.id+')">🗑️</button>':'')+'</div>'; }); list.innerHTML=h; }
@@ -1790,7 +2009,7 @@ function exportOrder(){ var b=new Blob([document.getElementById('orderList').inn
 function exportPDF(){ var need=items.filter(function(x){return x.qty<=0;}); var h='<h1>STAND MANAGER</h1><p>'+new Date().toLocaleString('ru-RU')+'</p><ul>'; need.forEach(function(x){ var eI=getItemExtraInfo(x); var th=x.theme?(' — '+x.theme):''; h+='<li>'+esc(getDisplayName(x))+esc(th)+(eI?' ('+esc(eI)+')':'')+' - '+x.qty+'</li>'; }); h+='</ul>'; if(!need.length) h+='<p>-</p>'; printDoc('order',h); }
 function shareWhatsApp(){ var txt=encodeURIComponent(document.getElementById('orderList').innerText); window.open('https://wa.me/?text='+txt,'_blank'); }
 
-function exportBackup(){ var backup={version:9,ts:Date.now(),app:'StandManagerPRO',items:items,users:users,historyLog:historyLog,adminPass:adminPass,savedTitles:savedTitles,savedYears:savedYears,savedIssueNums:savedIssueNums,removedSuggestions:removedSuggestions,settings:{fs:curFS,lfs:curLFS,ff:curFF,theme:curTheme,sort:curSort,bgColorDark:bgColorDark,bgColorDay:bgColorDay,btnColorDark:btnColorDark,btnColorDay:btnColorDay,cloudId:cloudId,cloudEnabled:cloudEnabled,cardStates:getCardStates()}}; var blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='stand-backup-'+new Date().toISOString().slice(0,10)+'.json'; a.click(); toast('💾 Копия загружена'); }
+function exportBackup(){ var backup={version:10,ts:Date.now(),app:'StandManagerPRO',items:items,users:users,historyLog:historyLog,adminPass:adminPass,savedTitles:savedTitles,savedYears:savedYears,savedIssueNums:savedIssueNums,removedSuggestions:removedSuggestions,standNames:standNames,settings:{fs:curFS,lfs:curLFS,ff:curFF,theme:curTheme,sort:curSort,bgColorDark:bgColorDark,bgColorDay:bgColorDay,btnColorDark:btnColorDark,btnColorDay:btnColorDay,cloudId:cloudId,cloudEnabled:cloudEnabled,standFilter:curStandFilter,cardStates:getCardStates()}}; var blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='stand-backup-'+new Date().toISOString().slice(0,10)+'.json'; a.click(); toast('💾 Копия загружена'); }
 function importBackup(e){
   var file=e.target.files[0]; if(!file) return;
   var reader=new FileReader();
@@ -1808,6 +2027,10 @@ function importBackup(e){
         if(Array.isArray(data.savedYears)) savedYears=data.savedYears;
         if(Array.isArray(data.savedIssueNums)) savedIssueNums=data.savedIssueNums;
         if(Array.isArray(data.removedSuggestions)) removedSuggestions=data.removedSuggestions;
+        if(data.standNames && typeof data.standNames==='object'){
+          for(var n=1;n<=4;n++){ if(data.standNames[n]) standNames[n] = String(data.standNames[n]); }
+          saveStandNamesToStorage();
+        }
         if(data.settings){
           var s=data.settings;
           if(s.fs){ curFS=s.fs; localStorage.setItem('stand_fs',s.fs); }
@@ -1821,6 +2044,7 @@ function importBackup(e){
           if(s.btnColorDay!==undefined){ btnColorDay=s.btnColorDay; localStorage.setItem('stand_btn_color_day',btnColorDay); }
           if(s.cloudId!==undefined){ cloudId=s.cloudId; localStorage.setItem('stand_cloud_id',cloudId); }
           if(s.cloudEnabled!==undefined){ cloudEnabled=s.cloudEnabled; localStorage.setItem('stand_cloud_enabled',cloudEnabled?'true':'false'); }
+          if(s.standFilter!==undefined){ curStandFilter=s.standFilter; try{ localStorage.setItem('stand_filter',curStandFilter); }catch(e){} }
           if(s.cardStates) saveCardStates(s.cardStates);
           curBgColor=(curTheme==='day')?bgColorDay:bgColorDark; curBtnColor=(curTheme==='day')?btnColorDay:btnColorDark;
         }
@@ -1828,6 +2052,8 @@ function importBackup(e){
         render(); renderUsers(); renderUserSelectList(); updateUserChip();
         renderBgSwatches(); renderBtnSwatches(); updateThemeHints(); populateDatalists();
         setupCollapsibleCards();
+        refreshStandNamesUI();
+        if(document.getElementById('adminContent').style.display==='block') loadStandNamesUI();
         toast('✅ Восстановление завершено!');
       });
     }catch(err){ alert('❌ Неверный файл'); }
@@ -1859,6 +2085,12 @@ async function initFirebase(){
       if(data.history && Array.isArray(data.history)){ historyLog=data.history; }
       if(data.savedTitles && Array.isArray(data.savedTitles)) savedTitles = data.savedTitles;
       if(data.removedSuggestions && Array.isArray(data.removedSuggestions)) removedSuggestions = data.removedSuggestions;
+      if(data.standNames && typeof data.standNames==='object'){
+        for(var n=1;n<=4;n++){ if(data.standNames[n]) standNames[n] = String(data.standNames[n]); }
+        saveStandNamesToStorage();
+        refreshStandNamesUI();
+        if(document.getElementById('adminContent').style.display==='block') loadStandNamesUI();
+      }
       save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); populateDatalists();
       setSyncState('synced'); isSyncingFromCloud=false;
     });
@@ -1873,7 +2105,7 @@ async function pushToCloud(){
     var ts = Date.now();
     pendingPushTs[ts] = true;
     setTimeout(function(){ delete pendingPushTs[ts]; }, 15000);
-    await window._fb.setDoc(dRef,{items:items,users:users,adminPass:adminPass,history:historyLog,savedTitles:savedTitles,removedSuggestions:removedSuggestions,updated:ts},{merge:true});
+    await window._fb.setDoc(dRef,{items:items,users:users,adminPass:adminPass,history:historyLog,savedTitles:savedTitles,removedSuggestions:removedSuggestions,standNames:standNames,updated:ts},{merge:true});
     setSyncState('synced');
   }catch(e){ setSyncState('error'); }
 }
@@ -1893,6 +2125,12 @@ async function pullFromCloud(){
       if(data.adminPass){ adminPass=data.adminPass; localStorage.setItem('stand_pass',adminPass); }
       if(data.savedTitles) savedTitles=data.savedTitles;
       if(data.removedSuggestions) removedSuggestions=data.removedSuggestions;
+      if(data.standNames && typeof data.standNames==='object'){
+        for(var n=1;n<=4;n++){ if(data.standNames[n]) standNames[n] = String(data.standNames[n]); }
+        saveStandNamesToStorage();
+        refreshStandNamesUI();
+        if(document.getElementById('adminContent').style.display==='block') loadStandNamesUI();
+      }
       save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); populateDatalists();
       setSyncState('synced'); isSyncingFromCloud=false;
       toast('✅ Получено из облака');
@@ -1918,6 +2156,7 @@ function checkAdmin(){
     document.getElementById('loginBox').style.display='none';
     renderUsers(); applyFont(); renderBgSwatches(); renderBtnSwatches();
     updateThemeHints(); updatePermsFromRole(); renderLog();
+    loadStandNamesUI();
     try{ renderSuggestions(); }catch(e){}
   } else alert('Неверный пароль');
 }
@@ -1956,10 +2195,14 @@ function submitOnboarding(){
           if(data.history && Array.isArray(data.history)) historyLog=data.history;
           if(data.savedTitles) savedTitles=data.savedTitles;
           if(data.removedSuggestions) removedSuggestions=data.removedSuggestions;
+          if(data.standNames && typeof data.standNames==='object'){
+            for(var n=1;n<=4;n++){ if(data.standNames[n]) standNames[n] = String(data.standNames[n]); }
+            saveStandNamesToStorage();
+          }
           save(); isSyncingFromCloud=false; localStorage.setItem('stand_onboarded','true');
           infoEl.style.color='#22c55e'; infoEl.textContent='✅ Подключено!';
           var adm=users.find(function(u){ return u.role==='admin'; }); if(adm){ currentUserId=adm.id; localStorage.setItem('stand_current_user_id',currentUserId); }
-          setTimeout(function(){ hideOnboarding(); updateUserChip(); render(); renderUsers(); renderUserSelectList(); populateDatalists(); setTimeout(openUserSelector,400); },800);
+          setTimeout(function(){ hideOnboarding(); updateUserChip(); render(); renderUsers(); renderUserSelectList(); populateDatalists(); refreshStandNamesUI(); setTimeout(openUserSelector,400); },800);
         } else { infoEl.textContent=''; errEl.textContent='❌ Неверный код'; }
       }).catch(function(){ errEl.textContent='❌ Ошибка подключения'; });
     } else if(tryCount<maxTry){ setTimeout(checkResult,1000); }
@@ -1990,6 +2233,16 @@ function installPWA(){
   else toast('📲 Откройте меню браузера → Установить', 3000);
 }
 
+window.addEventListener('scroll', function(){
+  var btn = document.getElementById('scrollTopBtn');
+  if(!btn) return;
+  if(window.scrollY > 300) btn.classList.add('show');
+  else btn.classList.remove('show');
+}, {passive:true});
+function scrollToTop(){
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
 function init(){
   applyTheme(); applyFont(); applyBgColor(); applyBtnColor();
   updateUserChip();
@@ -1999,6 +2252,7 @@ function init(){
   setSyncState('offline'); updateUndoButtons();
   populateDatalists();
   hideUndoBar();
+  try{ refreshStandNamesUI(); }catch(e){}
   try{ showStand(1); }catch(e){}
   try{ setupCollapsibleCards(); }catch(e){}
 

@@ -208,6 +208,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 #scrollTopBtn{position:fixed;right:20px;bottom:90px;z-index:400;width:56px;height:56px;border-radius:50%;background:var(--primary);color:var(--primary-text);border:3px solid var(--card);box-shadow:0 6px 20px rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;font-size:1.6em;font-weight:bold;cursor:pointer;opacity:0;pointer-events:none;transform:translateY(20px);transition:opacity 0.3s,transform 0.3s;padding:0;margin:0;line-height:1}
 #scrollTopBtn.show{opacity:1;pointer-events:auto;transform:translateY(0)}
 #scrollTopBtn:active{transform:scale(0.95)}
+#adminBadge{display:none;position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;border-radius:99px;padding:1px 6px;font-size:0.65em;line-height:1.2;font-weight:bold;min-width:16px;text-align:center}
 </style>
 </head>
 <body>
@@ -221,7 +222,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <div style="margin-top:6px;display:flex;gap:3px;justify-content:center;flex-wrap:wrap">
 <button onclick="toggleTheme()" id="bTheme" style="padding:6px 10px;font-size:0.85em;background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border)">🌙</button>
 <button onclick="openQuickCount()" style="padding:6px 10px;font-size:0.85em;background:#a855f7;color:#fff">🎯</button>
-<button onclick="openAdmin()" style="padding:6px 10px;font-size:0.85em;background:var(--btn-bg);color:var(--primary);border:1px solid var(--primary)">🔐</button>
+<button onclick="openAdmin()" style="padding:6px 10px;font-size:0.85em;background:var(--btn-bg);color:var(--primary);border:1px solid var(--primary);position:relative">🔐<span id="adminBadge"></span></button>
 <button onclick="installPWA()" id="bInstall" style="padding:6px 10px;font-size:0.85em;background:#06b6d4;color:#000;display:none">📲</button>
 </div>
 </div>
@@ -522,6 +523,22 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <label><input type="checkbox" id="p_voice" checked> 🎙️ Голос</label>
 </div>
 <button onclick="addUser()" style="width:100%;margin-top:8px;background:#22c55e;color:#000">➕ Добавить</button>
+</div>
+</div>
+
+<div class="card" style="border:2px solid #22c55e">
+<b style="color:#22c55e">👥 Возвещатели (приложение)</b>
+<div class="small" style="margin:8px 0;color:var(--muted);line-height:1.4">Люди, зарегистрированные в приложении для отчётов. Удалённые не смогут отправлять отчёты. Восстановить можно кнопкой ↺.</div>
+<div id="witnessList" style="max-height:340px;overflow:auto;margin-top:8px">
+<div class="small" style="text-align:center;padding:20px">— загрузка —</div>
+</div>
+</div>
+
+<div class="card" style="border:2px solid #a855f7">
+<b style="color:#a855f7">📨 Входящие отчёты</b>
+<div class="small" style="margin:8px 0;color:var(--muted);line-height:1.4">Отчёты о распространении. Списание из запаса происходит автоматически при появлении отчёта.</div>
+<div id="witnessReportsList" style="max-height:340px;overflow:auto;margin-top:8px">
+<div class="small" style="text-align:center;padding:20px">— загрузка —</div>
 </div>
 </div>
 
@@ -2095,6 +2112,7 @@ async function initFirebase(){
       setSyncState('synced'); isSyncingFromCloud=false;
     });
     setSyncState('synced');
+    try{ startWitnessSync(); }catch(e){ console.error('witness sync:', e); }
   }catch(e){ setSyncState('error'); }
 }
 async function pushToCloud(){
@@ -2138,6 +2156,186 @@ async function pullFromCloud(){
   }catch(e){ setSyncState('error'); alert(e.message); }
 }
 
+/* ============ WITNESS APP INTEGRATION ============ */
+var witnessUsers = [];
+var witnessReports = [];
+var witnessReportsUnsub = null;
+var witnessUsersUnsub = null;
+var witnessAllReportsUnsub = null;
+var processedReportIds = {};
+
+async function processIncomingReport(reportId){
+  if(processedReportIds[reportId]) return;
+  processedReportIds[reportId] = true;
+  try{
+    const {runTransaction, doc: fbDoc} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
+    const reportRef = fbDoc(cloudDb, 'stands', cloudId, 'reports', reportId);
+    const standRef = fbDoc(cloudDb, 'stands', cloudId);
+
+    var result = await runTransaction(cloudDb, async (tx) => {
+      const reportSnap = await tx.get(reportRef);
+      if(!reportSnap.exists()) return null;
+      const report = reportSnap.data();
+      if(report.processed) return null;
+
+      const standSnap = await tx.get(standRef);
+      if(!standSnap.exists()){
+        tx.update(reportRef, {processed:true, processedAt:Date.now(), appliedQty:0, note:'stand not found'});
+        return {report, applied: 0, note: 'stand not found'};
+      }
+      const stand = standSnap.data();
+      const freshItems = cleanItems(stand.items || []);
+      const freshItem = freshItems.find(x => String(x.id) === String(report.itemId));
+      if(!freshItem){
+        tx.update(reportRef, {processed:true, processedAt:Date.now(), appliedQty:0, note:'item not found'});
+        return {report, applied: 0, note: 'литература не найдена'};
+      }
+      const standSum = stSum(freshItem);
+      const available = Math.max(0, (parseInt(freshItem.qty)||0) - standSum);
+      const actual = Math.min(available, report.qty);
+      if(actual > 0){
+        freshItem.qty -= actual;
+        tx.update(standRef, {items: freshItems});
+      }
+      tx.update(reportRef, {
+        processed: true, processedAt: Date.now(), appliedQty: actual,
+        note: actual < report.qty ? 'частично (в запасе только '+actual+')' : ''
+      });
+      return {report, applied: actual, freshItems, itemId: report.itemId};
+    });
+
+    if(!result) return;
+    if(result.applied > 0){
+      items = result.freshItems;
+      addItemHistory(result.itemId, 'remove', -result.applied, null, null, 'Отчёт: ' + result.report.witnessName);
+      addLog('📤 Отчёт', {userName: result.report.witnessName + ' · ' + result.report.itemName + ' · ' + result.applied + ' шт.'});
+      render();
+      toast('📤 ' + result.report.witnessName + ': −' + result.applied + ' ' + result.report.itemName, 4000);
+    } else {
+      toast('⚠️ ' + result.report.witnessName + ': ' + (result.note || 'не списано'));
+    }
+  }catch(e){
+    console.error('Report process error:', e);
+    delete processedReportIds[reportId];
+  }
+}
+
+function startWitnessSync(){
+  if(!cloudDb) return;
+
+  if(witnessReportsUnsub) try{ witnessReportsUnsub(); }catch(e){}
+  (async () => {
+    const {collection, query, where, onSnapshot} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
+    const reportsRef = collection(cloudDb, 'stands', cloudId, 'reports');
+    const q = query(reportsRef, where('processed', '==', false));
+    witnessReportsUnsub = onSnapshot(q, snap => {
+      snap.forEach(d => {
+        if(!d.data().processed) processIncomingReport(d.id);
+      });
+    }, err => console.error('unprocessed listener:', err));
+  })();
+
+  if(witnessAllReportsUnsub) try{ witnessAllReportsUnsub(); }catch(e){}
+  (async () => {
+    const {collection, onSnapshot} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
+    const reportsRef = collection(cloudDb, 'stands', cloudId, 'reports');
+    witnessAllReportsUnsub = onSnapshot(reportsRef, snap => {
+      witnessReports = [];
+      snap.forEach(d => witnessReports.push({id: d.id, ...d.data()}));
+      witnessReports.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+      updateAdminBadge();
+      if(document.getElementById('witnessReportsList')) renderWitnessReportsUI();
+    }, err => console.error('all reports listener:', err));
+  })();
+
+  if(witnessUsersUnsub) try{ witnessUsersUnsub(); }catch(e){}
+  (async () => {
+    const {collection, onSnapshot} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
+    const usersRef = collection(cloudDb, 'stands', cloudId, 'witnesses');
+    witnessUsersUnsub = onSnapshot(usersRef, snap => {
+      witnessUsers = [];
+      snap.forEach(d => witnessUsers.push({id: d.id, ...d.data()}));
+      witnessUsers.sort((a,b) => (b.lastSeen||0) - (a.lastSeen||0));
+      updateAdminBadge();
+      if(document.getElementById('witnessList')) renderWitnessesUI();
+    }, err => console.error('witnesses listener:', err));
+  })();
+}
+
+function updateAdminBadge(){
+  var unprocessed = witnessReports.filter(r => !r.processed).length;
+  var badge = document.getElementById('adminBadge');
+  if(!badge) return;
+  if(unprocessed > 0){ badge.style.display='inline-block'; badge.textContent = unprocessed; }
+  else badge.style.display='none';
+}
+
+function renderWitnessesUI(){
+  var el = document.getElementById('witnessList'); if(!el) return;
+  if(!witnessUsers.length){
+    el.innerHTML = '<div class="small" style="text-align:center;padding:20px">— никто не зарегистрирован —</div>';
+    return;
+  }
+  el.innerHTML = witnessUsers.map(w => {
+    var active = w.active !== false;
+    var status = active ? '<span style="color:#22c55e;font-size:0.75em">● активен</span>' : '<span style="color:#ef4444;font-size:0.75em">● удалён</span>';
+    var last = w.lastSeen ? new Date(w.lastSeen).toLocaleString('ru-RU') : '—';
+    return '<div class="user-row" style="'+(active?'':'opacity:0.55')+'">'+
+      '<div style="flex:1;min-width:0">'+
+        '<div class="uname">👤 '+esc(w.name||'')+' '+esc(w.surname||'')+' '+status+'</div>'+
+        '<div class="small">'+esc(w.email||'')+' · был(а): '+esc(last)+'</div>'+
+      '</div>'+
+      (active
+        ? '<button class="icon-btn" style="background:#ef4444;color:#fff;border:0;padding:8px 12px;border-radius:6px" onclick="deleteWitness(\''+esc(w.id)+'\')">🚫</button>'
+        : '<button class="icon-btn" style="background:#22c55e;color:#000;border:0;padding:8px 12px;border-radius:6px" onclick="restoreWitness(\''+esc(w.id)+'\')">↺</button>')+
+    '</div>';
+  }).join('');
+}
+
+function renderWitnessReportsUI(){
+  var el = document.getElementById('witnessReportsList'); if(!el) return;
+  if(!witnessReports.length){
+    el.innerHTML = '<div class="small" style="text-align:center;padding:20px">— отчётов нет —</div>';
+    return;
+  }
+  el.innerHTML = witnessReports.slice(0, 30).map(r => {
+    var when = r.createdAt ? new Date(r.createdAt).toLocaleString('ru-RU') : '';
+    var status = r.processed
+      ? (r.appliedQty > 0
+          ? '<span style="color:#22c55e;font-weight:bold">✓ −'+r.appliedQty+' шт.</span>'
+          : '<span style="color:#f59e0b;font-weight:bold">⚠ не списано'+(r.note?' ('+esc(r.note)+')':'')+'</span>')
+      : '<span style="color:#a855f7;font-weight:bold">⏳ в обработке</span>';
+    return '<div class="user-row">'+
+      '<div style="flex:1;min-width:0">'+
+        '<div class="uname">'+esc(r.witnessName||r.witnessEmail||'')+'</div>'+
+        '<div class="small">'+esc(r.itemName||'')+(r.itemExtra?' — '+esc(r.itemExtra):'')+' · '+esc(getLangDisplay(r.itemLang))+' · '+esc(when)+'</div>'+
+      '</div>'+
+      '<div style="text-align:right;flex-shrink:0">'+
+        '<div style="font-weight:bold;color:var(--primary)">−'+r.qty+' шт.</div>'+
+        '<div class="small">'+status+'</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+async function deleteWitness(witnessId){
+  customConfirm('Удалить возвещателя? Он больше не сможет отправлять отчёты.', async function(){
+    try{
+      const {updateDoc, doc: fbDoc} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
+      await updateDoc(fbDoc(cloudDb, 'stands', cloudId, 'witnesses', witnessId), {active: false});
+      toast('✅ Возвещатель удалён');
+    }catch(e){ alert('Ошибка: '+e.message); }
+  });
+}
+async function restoreWitness(witnessId){
+  try{
+    const {updateDoc, doc: fbDoc} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
+    await updateDoc(fbDoc(cloudDb, 'stands', cloudId, 'witnesses', witnessId), {active: true});
+    toast('✅ Доступ восстановлен');
+  }catch(e){ alert('Ошибка: '+e.message); }
+}
+/* ============ END WITNESS APP INTEGRATION ============ */
+
 function openAdmin(){
   document.getElementById('adminScreen').style.display='block';
   document.getElementById('cloudId').value=cloudId;
@@ -2158,6 +2356,9 @@ function checkAdmin(){
     updateThemeHints(); updatePermsFromRole(); renderLog();
     loadStandNamesUI();
     try{ renderSuggestions(); }catch(e){}
+    renderWitnessesUI();
+    renderWitnessReportsUI();
+    updateAdminBadge();
   } else alert('Неверный пароль');
 }
 

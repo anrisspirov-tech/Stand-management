@@ -70,7 +70,7 @@ button:disabled{opacity:0.5;cursor:not-allowed}
     <div class="card">
       <label>🔍 Поиск литературы</label>
       <input id="searchItems" placeholder="начните вводить название..." oninput="filterItems()">
-      <label style="margin-top:12px">📚 Что ушло</label>
+      <label style="margin-top:12px">📚 Что ушло (только со стендов)</label>
       <select id="itemSelect" size="6" style="height:auto;min-height:140px"></select>
       <div id="selectedInfo" style="color:var(--muted);font-size:0.85em;margin-top:8px;min-height:1.2em"></div>
       <label style="margin-top:12px">🔢 Сколько ушло</label>
@@ -117,10 +117,15 @@ function getItemName(it){ return (it.names && it.names.ru) || it.name || '—'; 
 function getItemType(it){ return it.type || 'Журнал'; }
 function getTypeIcon(tp){ if(tp==='Журнал') return '📰'; if(tp==='Брошюра') return '📖'; if(tp==='Постер') return '🖼️'; return '📄'; }
 function getItemExtra(it){ const p=[]; if(it.issueNum) p.push('№'+it.issueNum); if(it.year) p.push(it.year); return p.join(' • '); }
+
+// Получаем количество именно НА СТЕНДАХ
+function getStandTotal(it) {
+  if(!it.standCounts) return 0;
+  const sc = it.standCounts;
+  return (parseInt(sc[1])||0) + (parseInt(sc[2])||0) + (parseInt(sc[3])||0) + (parseInt(sc[4])||0);
+}
 function getAvailable(it){
-  const sc = it.standCounts || {};
-  const sum = (parseInt(sc[1])||0)+(parseInt(sc[2])||0)+(parseInt(sc[3])||0)+(parseInt(sc[4])||0);
-  return Math.max(0, (parseInt(it.qty)||0) - sum);
+  return getStandTotal(it);
 }
 
 async function initFirebase(){
@@ -228,14 +233,19 @@ function renderItemSelect(){
     document.getElementById('selectedInfo').textContent='';
     return;
   }
+  
+  // Фильтруем: показываем только то, что физически есть на стендах
   const filtered = items.filter(it => {
+    if (getStandTotal(it) <= 0) return false;
+
     const name = getItemName(it).toLowerCase();
     const extra = getItemExtra(it).toLowerCase();
     const lang = langDisplay(it.lang).toLowerCase();
     return !search || name.includes(search) || extra.includes(search) || lang.includes(search);
   });
+
   if(!filtered.length){
-    sel.innerHTML = '<option value="">— ничего не найдено —</option>';
+    sel.innerHTML = '<option value="">— на стендах ничего нет —</option>';
     document.getElementById('selectedInfo').textContent='';
     return;
   }
@@ -245,7 +255,7 @@ function renderItemSelect(){
     const extra = getItemExtra(it);
     const lang = langDisplay(it.lang);
     const avail = getAvailable(it);
-    const label = `${icon} ${getItemName(it)}${extra?' — '+extra:''} • ${lang} (${avail})`;
+    const label = `${icon} ${getItemName(it)}${extra?' — '+extra:''} • ${lang} (${avail} шт.)`;
     return `<option value="${esc(String(it.id))}">${esc(label)}</option>`;
   }).join('');
   if(oldVal && filtered.find(it => String(it.id) === oldVal)){ sel.value = oldVal; }
@@ -263,7 +273,7 @@ function updateSelectedInfo(){
   const avail = getAvailable(it);
   const qtyInput = document.getElementById('qtyInput');
   if(qtyInput) qtyInput.max = avail;
-  info.innerHTML = `Доступно к списанию: <b style="color:var(--ok)">${avail}</b> шт.`;
+  info.innerHTML = `Доступно на стендах: <b style="color:var(--ok)">${avail}</b> шт.`;
 }
 
 document.addEventListener('change', e => { if(e.target && e.target.id === 'itemSelect') updateSelectedInfo(); });

@@ -2190,6 +2190,73 @@ async function processIncomingReport(reportId){
         tx.update(reportRef, {processed:true, processedAt:Date.now(), appliedQty:0, note:'item not found'});
         return {report, applied: 0, note: 'литература не найдена'};
       }
+      
+      const standSum = stSum(freshItem);
+      const available = standSum > 0 ? standSum : freshItem.qty;
+      const actual = Math.min(available, report.qty);
+      
+      if(actual > 0){
+        freshItem.qty -= actual; // Уменьшаем общий запас
+        
+        // Списание именно со стендов
+        let toRemove = actual;
+        for(let s=1; s<=4; s++){
+            if(toRemove <= 0) break;
+            let onStand = parseInt(freshItem.standCounts[s]) || 0;
+            let take = Math.min(onStand, toRemove);
+            freshItem.standCounts[s] -= take;
+            toRemove -= take;
+        }
+        tx.update(standRef, {items: freshItems});
+      }
+      
+      tx.update(reportRef, {
+        processed: true, processedAt: Date.now(), appliedQty: actual,
+        note: actual < report.qty ? 'частично (на стендах только '+actual+')' : ''
+      });
+      return {report, applied: actual, freshItems, itemId: report.itemId};
+    });
+
+    if(!result) return;
+    if(result.applied > 0){
+      items = result.freshItems;
+      addItemHistory(result.itemId, 'remove', -result.applied, null, null, 'Отчёт: ' + result.report.witnessName);
+      addLog('📤 Отчёт', {userName: result.report.witnessName + ' · ' + result.report.itemName + ' · ' + result.applied + ' шт.'});
+      render();
+      toast('📤 ' + result.report.witnessName + ': −' + result.applied + ' ' + result.report.itemName, 4000);
+    } else {
+      toast('⚠️ ' + result.report.witnessName + ': ' + (result.note || 'не списано'));
+    }
+  }catch(e){
+    console.error('Report process error:', e);
+    delete processedReportIds[reportId];
+  }
+}
+  if(processedReportIds[reportId]) return;
+  processedReportIds[reportId] = true;
+  try{
+    const {runTransaction, doc: fbDoc} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
+    const reportRef = fbDoc(cloudDb, 'stands', cloudId, 'reports', reportId);
+    const standRef = fbDoc(cloudDb, 'stands', cloudId);
+
+    var result = await runTransaction(cloudDb, async (tx) => {
+      const reportSnap = await tx.get(reportRef);
+      if(!reportSnap.exists()) return null;
+      const report = reportSnap.data();
+      if(report.processed) return null;
+
+      const standSnap = await tx.get(standRef);
+      if(!standSnap.exists()){
+        tx.update(reportRef, {processed:true, processedAt:Date.now(), appliedQty:0, note:'stand not found'});
+        return {report, applied: 0, note: 'stand not found'};
+      }
+      const stand = standSnap.data();
+      const freshItems = cleanItems(stand.items || []);
+      const freshItem = freshItems.find(x => String(x.id) === String(report.itemId));
+      if(!freshItem){
+        tx.update(reportRef, {processed:true, processedAt:Date.now(), appliedQty:0, note:'item not found'});
+        return {report, applied: 0, note: 'литература не найдена'};
+      }
       const standSum = stSum(freshItem);
       const available = Math.max(0, (parseInt(freshItem.qty)||0) - standSum);
       const actual = Math.min(available, report.qty);

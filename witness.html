@@ -18,6 +18,13 @@ label{color:var(--primary);font-size:0.85em;font-weight:bold;display:block;margi
 button{padding:12px;border-radius:8px;border:0;background:var(--primary);color:var(--primary-text);font-weight:bold;cursor:pointer;width:100%;font-size:1em}
 button:active{transform:scale(0.98)}
 button:disabled{opacity:0.5;cursor:not-allowed}
+
+/* Стили для вкладок стендов (как в Stand Pro) */
+.stand-tabs{display:flex;gap:5px;margin-top:10px;margin-bottom:12px}
+.stand-tab{flex:1;padding:10px 6px;font-size:0.85em;font-weight:bold;background:var(--card2);color:var(--text);border:2px solid var(--border);border-radius:8px;cursor:pointer;margin:0;transition:all 0.15s;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stand-tab.active{background:#06b6d4;color:#000;border-color:#06b6d4;box-shadow:0 0 10px rgba(6,182,212,0.5)}
+.stand-tab .cnt{display:block;font-size:0.7em;opacity:0.85;font-weight:normal;margin-top:2px}
+
 .reg-box{background:var(--card);border:2px solid var(--primary);border-radius:14px;padding:20px;max-width:400px;margin:40px auto;text-align:center}
 .reg-box h2{color:var(--primary);margin:0 0 8px}
 .reg-box .desc{color:var(--muted);font-size:0.9em;margin-bottom:16px;line-height:1.5}
@@ -43,7 +50,7 @@ button:disabled{opacity:0.5;cursor:not-allowed}
   <div class="reg-box">
     <div class="icon">📤</div>
     <h2>Отчёт о распространении</h2>
-    <div class="desc">Простое приложение. Зарегистрируйтесь и отправляйте отчёты о том, сколько литературы ушло.</div>
+    <div class="desc">Выберите стенд, укажите литературу и количество.</div>
     <label>Код стенда (у координатора)</label>
     <input id="regStandId" placeholder="напр. stand-2026" autocomplete="off">
     <label>Имя</label>
@@ -68,11 +75,18 @@ button:disabled{opacity:0.5;cursor:not-allowed}
   </div>
   <div class="wrap">
     <div class="card">
+      <label>🏛️ Выберите стенд</label>
+      <div class="stand-tabs" id="standTabs">
+        <!-- Вкладки генерируются через JS -->
+      </div>
+
       <label>🔍 Поиск литературы</label>
       <input id="searchItems" placeholder="начните вводить название..." oninput="filterItems()">
-      <label style="margin-top:12px">📚 Что ушло (только со стендов)</label>
+      
+      <label style="margin-top:12px">📚 Что ушло</label>
       <select id="itemSelect" size="6" style="height:auto;min-height:140px"></select>
       <div id="selectedInfo" style="color:var(--muted);font-size:0.85em;margin-top:8px;min-height:1.2em"></div>
+      
       <label style="margin-top:12px">🔢 Сколько ушло</label>
       <input id="qtyInput" type="number" min="1" inputmode="numeric" value="1" style="font-size:1.5em;text-align:center;font-weight:bold">
       <button onclick="submitReport()" id="submitBtn" style="margin-top:14px;background:var(--ok);color:#000;font-size:1.1em;padding:16px">✓ Отправить отчёт</button>
@@ -94,6 +108,8 @@ const FIREBASE_CONFIG = {"apiKey":"AIzaSyCKoGOE84zPuc4t6UQrDYMbooCR43p0FyQ","aut
 let cloudApp=null, cloudDb=null, cloudFns=null;
 let currentUser=null, currentStandId='';
 let items=[], myReports=[];
+let standNames = { 1:'Стенд 1', 2:'Стенд 2', 3:'Стенд 3', 4:'Стенд 4' };
+let currentWitnessStand = 1; // По умолчанию открыт Стенд 1
 let itemsUnsub=null, reportsUnsub=null;
 
 const LS_STAND='witness_stand_id';
@@ -117,16 +133,6 @@ function getItemName(it){ return (it.names && it.names.ru) || it.name || '—'; 
 function getItemType(it){ return it.type || 'Журнал'; }
 function getTypeIcon(tp){ if(tp==='Журнал') return '📰'; if(tp==='Брошюра') return '📖'; if(tp==='Постер') return '🖼️'; return '📄'; }
 function getItemExtra(it){ const p=[]; if(it.issueNum) p.push('№'+it.issueNum); if(it.year) p.push(it.year); return p.join(' • '); }
-
-// Получаем количество именно НА СТЕНДАХ
-function getStandTotal(it) {
-  if(!it.standCounts) return 0;
-  const sc = it.standCounts;
-  return (parseInt(sc[1])||0) + (parseInt(sc[2])||0) + (parseInt(sc[3])||0) + (parseInt(sc[4])||0);
-}
-function getAvailable(it){
-  return getStandTotal(it);
-}
 
 async function initFirebase(){
   const {initializeApp} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
@@ -218,47 +224,90 @@ function subscribeToItems(){
   const fns = cloudFns;
   const standRef = fns.doc(cloudDb, 'stands', currentStandId);
   itemsUnsub = fns.onSnapshot(standRef, snap => {
-    if(!snap.exists()){ items=[]; renderItemSelect(); return; }
+    if(!snap.exists()){ items=[]; renderStandTabs(); renderItemSelect(); return; }
     const data = snap.data();
     items = Array.isArray(data.items) ? data.items : [];
+    
+    // Синхронизируем названия стендов (если админ их переименовал)
+    if(data.standNames && typeof data.standNames === 'object'){
+      for(let n=1; n<=4; n++){
+        if(data.standNames[n]) standNames[n] = String(data.standNames[n]);
+      }
+    }
+    
+    renderStandTabs();
     renderItemSelect();
   }, err => { console.error(err); toast('Ошибка синхронизации','err'); });
+}
+
+function renderStandTabs(){
+  const tabsDiv = document.getElementById('standTabs');
+  if(!tabsDiv) return;
+  
+  let html = '';
+  for(let s = 1; s <= 4; s++){
+    const activeClass = (s === currentWitnessStand) ? 'active' : '';
+    
+    // Считаем общее количество литературы именно на этом стенде
+    let totalOnStand = 0;
+    items.forEach(it => {
+      totalOnStand += (it.standCounts && parseInt(it.standCounts[s])) || 0;
+    });
+
+    html += `<button type="button" class="stand-tab ${activeClass}" onclick="selectWitnessStand(${s})">
+      🏛️ ${esc(standNames[s])}
+      <span class="cnt">${totalOnStand > 0 ? totalOnStand + ' шт.' : '—'}</span>
+    </button>`;
+  }
+  tabsDiv.innerHTML = html;
+}
+
+function selectWitnessStand(s){
+  currentWitnessStand = s;
+  renderStandTabs();
+  renderItemSelect();
 }
 
 function renderItemSelect(){
   const sel = document.getElementById('itemSelect');
   const search = (document.getElementById('searchItems').value || '').toLowerCase();
-  if(!items.length){
-    sel.innerHTML = '<option value="">— нет литературы —</option>';
-    document.getElementById('selectedInfo').textContent='';
-    return;
-  }
   
-  // Фильтруем: показываем только то, что физически есть на стендах
-  const filtered = items.filter(it => {
-    if (getStandTotal(it) <= 0) return false;
-
-    const name = getItemName(it).toLowerCase();
-    const extra = getItemExtra(it).toLowerCase();
-    const lang = langDisplay(it.lang).toLowerCase();
-    return !search || name.includes(search) || extra.includes(search) || lang.includes(search);
+  // Фильтруем: оставляем только то, что лежит на ВЫБРАННОМ стенде
+  const itemsOnStand = items.filter(it => {
+    const count = (it.standCounts && parseInt(it.standCounts[currentWitnessStand])) || 0;
+    if(count <= 0) return false;
+    
+    if(search){
+      const name = getItemName(it).toLowerCase();
+      const extra = getItemExtra(it).toLowerCase();
+      const lang = langDisplay(it.lang).toLowerCase();
+      return name.includes(search) || extra.includes(search) || lang.includes(search);
+    }
+    return true;
   });
 
-  if(!filtered.length){
-    sel.innerHTML = '<option value="">— на стендах ничего нет —</option>';
+  if(!itemsOnStand.length){
+    sel.innerHTML = '<option value="">— на этом стенде ничего нет —</option>';
     document.getElementById('selectedInfo').textContent='';
     return;
   }
+
   const oldVal = sel.value;
-  sel.innerHTML = filtered.map(it => {
+  sel.innerHTML = itemsOnStand.map(it => {
+    const count = parseInt(it.standCounts[currentWitnessStand]) || 0;
     const icon = getTypeIcon(getItemType(it));
     const extra = getItemExtra(it);
     const lang = langDisplay(it.lang);
-    const avail = getAvailable(it);
-    const label = `${icon} ${getItemName(it)}${extra?' — '+extra:''} • ${lang} (${avail} шт.)`;
+    const label = `${icon} ${getItemName(it)}${extra?' — '+extra:''} • ${lang} (${count} шт.)`;
     return `<option value="${esc(String(it.id))}">${esc(label)}</option>`;
   }).join('');
-  if(oldVal && filtered.find(it => String(it.id) === oldVal)){ sel.value = oldVal; }
+  
+  if(oldVal && itemsOnStand.find(it => String(it.id) === oldVal)){ 
+    sel.value = oldVal; 
+  } else if (itemsOnStand.length > 0) {
+    sel.value = itemsOnStand[0].id;
+  }
+  
   updateSelectedInfo();
 }
 
@@ -268,12 +317,14 @@ function updateSelectedInfo(){
   const sel = document.getElementById('itemSelect');
   const info = document.getElementById('selectedInfo');
   if(!sel.value){ info.textContent=''; return; }
+  
   const it = items.find(x => String(x.id) === sel.value);
   if(!it){ info.textContent=''; return; }
-  const avail = getAvailable(it);
+  
+  const avail = (it.standCounts && parseInt(it.standCounts[currentWitnessStand])) || 0;
   const qtyInput = document.getElementById('qtyInput');
   if(qtyInput) qtyInput.max = avail;
-  info.innerHTML = `Доступно на стендах: <b style="color:var(--ok)">${avail}</b> шт.`;
+  info.innerHTML = `На стенде <b>"${esc(standNames[currentWitnessStand])}"</b> доступно: <b style="color:var(--ok)">${avail}</b> шт.`;
 }
 
 document.addEventListener('change', e => { if(e.target && e.target.id === 'itemSelect') updateSelectedInfo(); });
@@ -284,13 +335,17 @@ async function submitReport(){
   const sel = document.getElementById('itemSelect');
   const qtyEl = document.getElementById('qtyInput');
   if(!sel.value){ toast('Выберите литературу','err'); return; }
+  
   const qty = parseInt(qtyEl.value) || 0;
   if(qty <= 0){ toast('Введите количество','err'); return; }
+  
   const it = items.find(x => String(x.id) === sel.value);
   if(!it){ toast('Литература не найдена','err'); return; }
+  
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
   btn.textContent = '⏳ Отправка...';
+  
   try{
     const fns = cloudFns;
     const reportsRef = fns.collection(cloudDb, 'stands', currentStandId, 'reports');
@@ -302,6 +357,8 @@ async function submitReport(){
       itemExtra: getItemExtra(it),
       itemLang: it.lang || 'ru',
       itemType: getItemType(it),
+      standNumber: currentWitnessStand, // <--- Передаем номер стенда
+      standName: standNames[currentWitnessStand],
       qty: qty,
       processed: false,
       appliedQty: null,
@@ -344,9 +401,11 @@ function renderMyReports(){
     const status = r.processed
       ? '<span style="color:var(--ok)">✓ Принят</span>'
       : '<span style="color:var(--primary)">⏳ Ожидает</span>';
+    const standLabel = r.standName ? `🏛️ ${esc(r.standName)} · ` : '';
+    
     return `<div class="report-row ${r.processed?'':'pending'}">
       <div class="item">${esc(r.itemName)}${r.itemExtra?' — '+esc(r.itemExtra):''}</div>
-      <div class="when">${esc(langDisplay(r.itemLang))} · ${esc(when)}</div>
+      <div class="when">${standLabel}${esc(langDisplay(r.itemLang))} · ${esc(when)}</div>
       <div style="margin-top:4px"><span class="qty">−${r.qty} шт.</span> · ${status}</div>
     </div>`;
   }).join('');

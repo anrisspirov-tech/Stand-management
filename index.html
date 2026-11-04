@@ -536,7 +536,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 
 <div class="card" style="border:2px solid #a855f7">
 <b style="color:#a855f7">📨 Входящие отчёты</b>
-<div class="small" style="margin:8px 0;color:var(--muted);line-height:1.4">Отчёты о распространении. Списание из запаса происходит автоматически при появлении отчёта.</div>
+<div class="small" style="margin:8px 0;color:var(--muted);line-height:1.4">Отчёты о распространении. Списание происходит автоматически при появлении.</div>
 <div id="witnessReportsList" style="max-height:340px;overflow:auto;margin-top:8px">
 <div class="small" style="text-align:center;padding:20px">— загрузка —</div>
 </div>
@@ -2196,16 +2196,24 @@ async function processIncomingReport(reportId){
       const actual = Math.min(available, report.qty);
       
       if(actual > 0){
-        freshItem.qty -= actual; // Уменьшаем общий запас
+        freshItem.qty -= actual; // Уменьшаем общий склад
         
-        // Списание именно со стендов
-        let toRemove = actual;
-        for(let s=1; s<=4; s++){
-            if(toRemove <= 0) break;
+        if (report.standNumber) {
+            // Списание с конкретного стенда, который выбрал возвещатель
+            let s = parseInt(report.standNumber);
             let onStand = parseInt(freshItem.standCounts[s]) || 0;
-            let take = Math.min(onStand, toRemove);
+            let take = Math.min(onStand, actual);
             freshItem.standCounts[s] -= take;
-            toRemove -= take;
+        } else {
+            // Запасной вариант (для старых отчетов)
+            let toRemove = actual;
+            for(let s=1; s<=4; s++){
+                if(toRemove <= 0) break;
+                let onStand = parseInt(freshItem.standCounts[s]) || 0;
+                let take = Math.min(onStand, toRemove);
+                freshItem.standCounts[s] -= take;
+                toRemove -= take;
+            }
         }
         tx.update(standRef, {items: freshItems});
       }
@@ -2318,10 +2326,14 @@ function renderWitnessReportsUI(){
           ? '<span style="color:#22c55e;font-weight:bold">✓ −'+r.appliedQty+' шт.</span>'
           : '<span style="color:#f59e0b;font-weight:bold">⚠ не списано'+(r.note?' ('+esc(r.note)+')':'')+'</span>')
       : '<span style="color:#a855f7;font-weight:bold">⏳ в обработке</span>';
+      
+    // Добавляем отображение стенда, с которого был отчет
+    var standStr = r.standName ? ('🏛️ ' + esc(r.standName) + ' · ') : '';
+    
     return '<div class="user-row">'+
       '<div style="flex:1;min-width:0">'+
         '<div class="uname">'+esc(r.witnessName||r.witnessEmail||'')+'</div>'+
-        '<div class="small">'+esc(r.itemName||'')+(r.itemExtra?' — '+esc(r.itemExtra):'')+' · '+esc(getLangDisplay(r.itemLang))+' · '+esc(when)+'</div>'+
+        '<div class="small">'+standStr+esc(r.itemName||'')+(r.itemExtra?' — '+esc(r.itemExtra):'')+' · '+esc(getLangDisplay(r.itemLang))+' · '+esc(when)+'</div>'+
       '</div>'+
       '<div style="text-align:right;flex-shrink:0">'+
         '<div style="font-weight:bold;color:var(--primary)">−'+r.qty+' шт.</div>'+

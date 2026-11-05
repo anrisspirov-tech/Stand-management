@@ -456,11 +456,13 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 
   <div class="card" style="border:2px solid #a855f7">
   <b style="color:#a855f7">👥 Пользователи (Помощники)</b>
-  <div class="small" style="margin:8px 0;color:var(--muted);line-height:1.4">Здесь вы можете редактировать роли и права помощников.</div>
+  <div class="small" style="margin:8px 0;color:var(--muted);line-height:1.4">Здесь вы можете редактировать роли и права помощников. Email используется для входа в приложение-помощник.</div>
   <div id="usersList" style="margin-top:12px"></div>
   <div style="background:var(--card2);border:1px dashed #22c55e;border-radius:8px;padding:10px;margin-top:12px">
   <b style="color:#22c55e">➕ Новый пользователь</b>
   <label>Имя</label><input id="newUserName" placeholder="напр. Сергей">
+  <label>Email (для входа в помощник)</label>
+  <input id="newUserEmail" type="email" placeholder="напр. ivan@mail.ru" autocomplete="off">
   <label>Роль</label>
   <select id="newUserRole" onchange="updatePermsFromRole()">
   <option value="counter">🔢 Счётчик</option>
@@ -619,6 +621,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <div id="editUserBox" onclick="event.stopPropagation()">
 <h3 style="color:#06b6d4">✏️ Редактировать помощника</h3>
 <label>Имя</label><input id="editUserName" style="margin-bottom:8px">
+<label>Email (для входа в помощник)</label><input id="editUserEmail" type="email" placeholder="you@mail.ru" style="margin-bottom:8px" autocomplete="off">
 <label>Роль</label>
 <select id="editUserRole" onchange="updateEditUserPermsFromRole()" style="margin-bottom:8px">
 <option value="counter">🔢 Счётчик</option>
@@ -989,7 +992,15 @@ function cleanItems(arr){
 function cleanUsers(arr){
   if(!Array.isArray(arr)) return [];
   return arr.filter(function(u){ return u && typeof u === 'object'; }).map(function(u){
-    return { id: parseFloat(u.id)||Date.now()+Math.random(), name: cleanStr(u.name||''), role: cleanStr(u.role||'counter'), perms: u.perms || {} };
+    return {
+      id: parseFloat(u.id)||Date.now()+Math.random(),
+      name: cleanStr(u.name||''),
+      email: cleanStr(u.email||'').toLowerCase(),
+      role: cleanStr(u.role||'counter'),
+      perms: u.perms || {},
+      active: u.active !== false,
+      createdAt: u.createdAt || Date.now()
+    };
   });
 }
 function printDoc(title, bodyHtml){
@@ -1081,7 +1092,7 @@ try{ users=cleanUsers(JSON.parse(localStorage.getItem('stand_users_v1')||'[]'));
 try{ historyLog=JSON.parse(localStorage.getItem('stand_history')||'[]'); }catch(e){ historyLog=[]; }
 
 users=users.map(function(u){ if(!u.perms) u.perms={}; PERM_KEYS.forEach(function(k){ if(typeof u.perms[k]!=='boolean') u.perms[k]=(PERMS_PRESETS[u.role]||PERMS_PRESETS.counter)[k]||false; }); return u; });
-if(!users.find(function(u){ return u.role === 'admin'; })){ users.unshift({id:Date.now(),name:'Admin',role:'admin',perms:JSON.parse(JSON.stringify(PERMS_PRESETS.admin))}); }
+if(!users.find(function(u){ return u.role === 'admin'; })){ users.unshift({id:Date.now(),name:'Admin',email:'',role:'admin',perms:JSON.parse(JSON.stringify(PERMS_PRESETS.admin)),active:true}); }
 if(!currentUserId || !users.find(function(u){ return u.id == currentUserId; })){ var adm=users.find(function(u){ return u.role==='admin'; }); currentUserId=adm?adm.id:users[0].id; }
 localStorage.setItem('stand_current_user_id', currentUserId);
 localStorage.setItem('stand_users_v1', JSON.stringify(users));
@@ -2101,7 +2112,9 @@ function renderUsers(){
   if(users.length===0){ list.innerHTML='<div class="small">—</div>'; return; } 
   var h=''; 
   users.forEach(function(u){ 
-    h+='<div class="user-row"><div style="flex:1"><div class="uname">👤 '+esc(u.name)+' <span class="urole role-'+u.role+'">'+esc(getRoleDisplay(u.role))+'</span></div></div>'+
+    h+='<div class="user-row"><div style="flex:1;min-width:0"><div class="uname">👤 '+esc(u.name)+' <span class="urole role-'+u.role+'">'+esc(getRoleDisplay(u.role))+'</span></div>'+
+       (u.email ? '<div class="small" style="color:var(--muted)">📧 '+esc(u.email)+'</div>' : '<div class="small" style="color:var(--muted);opacity:0.6">📧 email не указан</div>')+
+       '</div>'+
        '<button class="icon-btn" style="background:#3b82f6;color:#fff;border:0;padding:8px 12px;border-radius:6px;margin-right:4px" onclick="openEditUser(\''+u.id+'\')">✏️</button>'+
        (users.length>1?'<button class="icon-btn" style="background:#ef4444;color:#fff;border:0;padding:8px 12px;border-radius:6px" onclick="deleteUser('+u.id+')">🗑️</button>':'')+'</div>'; 
   }); 
@@ -2113,7 +2126,8 @@ function openEditUser(id) {
   _editingUserId = id;
   var u = users.find(function(x){ return x.id == id; });
   if(!u) return;
-  document.getElementById('editUserName').value = u.name;
+  document.getElementById('editUserName').value = u.name || '';
+  document.getElementById('editUserEmail').value = u.email || '';
   document.getElementById('editUserRole').value = u.role;
   updateEditUserPermsFromRole();
   document.getElementById('editUserOverlay').classList.add('show');
@@ -2134,22 +2148,53 @@ function saveEditUser() {
   if(!_editingUserId) return;
   var u = users.find(function(x){ return x.id == _editingUserId; });
   if(!u) return;
+  var email = (document.getElementById('editUserEmail').value || '').trim().toLowerCase();
+  if(email && users.find(function(x){ return x.id != u.id && x.email && x.email.toLowerCase() === email; })){
+    toast('⚠️ Этот email уже используется другим пользователем'); return;
+  }
   pushUndo('Редактировать пользователя');
   u.name = document.getElementById('editUserName').value.trim() || u.name;
+  u.email = email;
   u.role = document.getElementById('editUserRole').value;
   PERM_KEYS.forEach(function(k){ 
     u.perms[k] = document.getElementById('ep_'+k).checked; 
   });
   save(); renderUsers(); renderUserSelectList(); closeEditUser(); 
-  toast('✅ Права обновлены');
+  toast('✅ Права и данные обновлены');
 }
 
-function addUser(){ var name=document.getElementById('newUserName').value.trim(); if(!name){ toast('⚠️ Введите имя!'); return; } pushUndo('Новый пользователь'); var role=document.getElementById('newUserRole').value; var perms={}; PERM_KEYS.forEach(function(k){ var el=document.getElementById('p_'+k); if(el) perms[k]=el.checked; }); users.push({id:Date.now()+Math.random(),name:name,role:role,perms:perms}); document.getElementById('newUserName').value=''; updatePermsFromRole(); save(); renderUsers(); renderUserSelectList(); addLog('Новый пользователь',{userName:name}); toast('✅ Новый пользователь: '+name); }
+function addUser(){
+  var name = document.getElementById('newUserName').value.trim();
+  var email = (document.getElementById('newUserEmail').value || '').trim().toLowerCase();
+  if(!name){ toast('⚠️ Введите имя!'); return; }
+  if(email && users.find(function(u){ return u.email && u.email.toLowerCase() === email; })){
+    toast('⚠️ Этот email уже используется'); return;
+  }
+  pushUndo('Новый пользователь');
+  var role = document.getElementById('newUserRole').value;
+  var perms = {};
+  PERM_KEYS.forEach(function(k){ var el = document.getElementById('p_'+k); if(el) perms[k] = el.checked; });
+  users.push({
+    id: Date.now() + Math.random(),
+    name: name,
+    email: email,
+    role: role,
+    perms: perms,
+    active: true,
+    createdAt: Date.now()
+  });
+  document.getElementById('newUserName').value = '';
+  document.getElementById('newUserEmail').value = '';
+  updatePermsFromRole();
+  save(); renderUsers(); renderUserSelectList();
+  addLog('Новый пользователь', {userName: name});
+  toast('✅ Новый пользователь: ' + name + (email ? ' (' + email + ')' : ''));
+}
 function deleteUser(id){ customConfirm('Удалить пользователя?', function(){ pushUndo('Удалить пользователя'); users=users.filter(function(u){ return u.id!=id; }); if(currentUserId==id){ var adm=users.find(function(u){ return u.role==='admin'; }); currentUserId=adm?adm.id:(users[0]?users[0].id:null); } save(); renderUsers(); renderUserSelectList(); updateUserChip(); render(); }); }
 function updatePermsFromRole(){ var role=document.getElementById('newUserRole').value; var p=PERMS_PRESETS[role]||PERMS_PRESETS.counter; PERM_KEYS.forEach(function(k){ var el=document.getElementById('p_'+k); if(el) el.checked=!!p[k]; }); }
 function openUserSelector(){ renderUserSelectList(); document.getElementById('userOverlay').classList.add('show'); }
 function closeUserSelector(){ document.getElementById('userOverlay').classList.remove('show'); }
-function renderUserSelectList(){ var list=document.getElementById('userSelectList'); if(!list) return; if(users.length===0){ list.innerHTML='<div class="small" style="text-align:center;padding:20px">—</div>'; return; } var h=''; users.forEach(function(u){ var isCur=u.id==currentUserId; h+='<div onclick="pickUser('+u.id+')" style="background:var(--card2);padding:14px;border-radius:10px;margin:6px 0;cursor:pointer;border:2px solid '+(isCur?'#22c55e':'transparent')+'"><b style="font-size:1.1em">👤 '+esc(u.name)+'</b> <span class="urole role-'+u.role+'">'+esc(getRoleDisplay(u.role))+'</span></div>'; }); list.innerHTML=h; }
+function renderUserSelectList(){ var list=document.getElementById('userSelectList'); if(!list) return; if(users.length===0){ list.innerHTML='<div class="small" style="text-align:center;padding:20px">—</div>'; return; } var h=''; users.forEach(function(u){ var isCur=u.id==currentUserId; h+='<div onclick="pickUser('+u.id+')" style="background:var(--card2);padding:14px;border-radius:10px;margin:6px 0;cursor:pointer;border:2px solid '+(isCur?'#22c55e':'transparent')+'"><b style="font-size:1.1em">👤 '+esc(u.name)+'</b> <span class="urole role-'+u.role+'">'+esc(getRoleDisplay(u.role))+'</span>'+(u.email?'<div class="small" style="color:var(--muted);margin-top:2px">📧 '+esc(u.email)+'</div>':'')+'</div>'; }); list.innerHTML=h; }
 function pickUser(id){ currentUserId=id; localStorage.setItem('stand_current_user_id',id); var u=getCurrentUser(); addLog('Соединение',{userName:u?u.name:''}); updateUserChip(); closeUserSelector(); render(); }
 function updateUserChip(){ var u=getCurrentUser(); var chip=document.getElementById('userChip'),txt=document.getElementById('userChipText'); if(!chip||!txt) return; if(u){ chip.className='user-chip'; txt.textContent=u.name; } else { chip.className='user-chip no-user'; txt.textContent='👤'; } }
 

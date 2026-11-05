@@ -50,6 +50,7 @@ option{background:var(--card2);color:var(--text)}
 .item .icon-btn{background:var(--btn-bg);color:var(--text);padding:8px 10px;border-radius:6px;border:1px solid var(--btn-border);font-weight:bold;cursor:pointer;font-size:calc(var(--list-font-size,13px)*0.95)}
 .item .stand-btn{background:#0d3d47;color:#06b6d4;border:1px solid #06b6d4;padding:6px 10px;border-radius:6px;font-weight:bold;cursor:pointer;font-size:calc(var(--list-font-size,13px)*0.85);margin:0}
 .item .stand-btn.has{background:#06b6d4;color:#000}
+.item .stand-btn.low{background:#ef4444;color:#fff;border-color:#ef4444;animation:pulse2 1.5s infinite}
 .item .fav-btn{background:transparent;color:var(--primary);font-size:1.3em;padding:4px 8px;border:0;cursor:pointer}
 .item .fav-btn.inactive{color:var(--muted);opacity:0.5}
 .badge{padding:3px 8px;border-radius:99px;font-weight:bold}
@@ -104,11 +105,15 @@ option{background:var(--card2);color:var(--text)}
 .stand-row{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:var(--card);border-radius:6px;margin:3px 0;font-size:0.85em;gap:8px}
 .stand-row .t-left{flex:1;min-width:0;word-break:break-word}
 .stand-row .t-right{font-weight:bold;color:#06b6d4;white-space:nowrap}
+.stand-row.low-stock{border:1px solid #ef4444;background:rgba(239,68,68,0.1)}
+.stand-row.low-stock .t-right{color:#ef4444}
 .stand-item{padding:8px 10px;background:var(--card);border-radius:6px;margin:4px 0;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:0.85em}
+.stand-item.low-stock{border:1px solid #ef4444;background:rgba(239,68,68,0.1)}
 .stand-item .ti-info{flex:1;min-width:0}
 .stand-item .ti-name{font-weight:bold;word-break:break-word}
 .stand-item .ti-meta{color:var(--muted);font-size:0.78em;margin-top:2px}
 .stand-item .ti-qty{font-weight:bold;color:#06b6d4;font-size:1.05em;white-space:nowrap;text-align:right}
+.stand-item.low-stock .ti-qty{color:#ef4444}
 .stand-item .ti-qty .in-total{font-size:0.7em;color:var(--muted);font-weight:normal;display:block}
 .stand-empty{text-align:center;padding:20px;color:var(--muted);font-size:0.9em}
 .stand-field{background:var(--card);border-radius:8px;padding:10px;margin:6px 0;display:flex;justify-content:space-between;align-items:center;gap:10px}
@@ -116,10 +121,10 @@ option{background:var(--card2);color:var(--text)}
 .stand-field select{width:110px;padding:8px;font-weight:bold;font-size:1.05em;text-align:center;flex-shrink:0}
 .btn-mini{padding:4px 8px;font-size:0.75em;background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border);border-radius:6px;margin:0}
 .btn-print{background:#22c55e;color:#000;border:0}
-#standOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
-#standOverlay.show{display:flex}
-#standBox{background:var(--card);border:2px solid #06b6d4;border-radius:14px;padding:20px;max-width:420px;width:100%;max-height:90vh;overflow:auto}
-#standBox h3{color:#06b6d4;text-align:center;margin:0 0 12px;font-size:1.1em;line-height:1.3}
+#standOverlay, #editWitnessOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
+#standOverlay.show, #editWitnessOverlay.show{display:flex}
+#standBox, #editWitnessBox{background:var(--card);border:2px solid #06b6d4;border-radius:14px;padding:20px;max-width:420px;width:100%;max-height:90vh;overflow:auto}
+#standBox h3, #editWitnessBox h3{color:#06b6d4;text-align:center;margin:0 0 12px;font-size:1.1em;line-height:1.3}
 .stand-info{background:var(--card2);border-radius:8px;padding:10px;text-align:center;font-size:0.85em;color:var(--muted);line-height:1.6;margin-bottom:12px}
 .stand-info b{color:var(--text)}
 .stand-info .ok{color:#22c55e;font-weight:bold}
@@ -255,7 +260,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 
 <div class="card" data-collapsible="stands" style="border:2px solid #06b6d4">
 <b style="color:#06b6d4">🏛️ Стенды</b>
-<div class="small" style="margin:6px 0 0;color:var(--muted)">Сколько из общего количества стоит на каждом стенде.</div>
+<div class="small" style="margin:6px 0 0;color:var(--muted)">Сколько из общего количества стоит на каждом стенде. Красным выделены позиции, которых осталось мало.</div>
 <div class="stand-tabs">
 <button type="button" id="st-1" class="stand-tab active" onclick="showStand(1)">🏛️ <span id="stn-1">Стенд 1</span><span class="cnt" id="stc-1">—</span></button>
 <button type="button" id="st-2" class="stand-tab" onclick="showStand(2)">🏛️ <span id="stn-2">Стенд 2</span><span class="cnt" id="stc-2">—</span></button>
@@ -528,7 +533,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 
 <div class="card" style="border:2px solid #22c55e">
 <b style="color:#22c55e">👥 Возвещатели (приложение)</b>
-<div class="small" style="margin:8px 0;color:var(--muted);line-height:1.4">Люди, зарегистрированные в приложении для отчётов. Удалённые не смогут отправлять отчёты. Восстановить можно кнопкой ↺.</div>
+<div class="small" style="margin:8px 0;color:var(--muted);line-height:1.4">Люди, зарегистрированные в приложении для отчётов. Вы можете редактировать или удалять их.</div>
 <div id="witnessList" style="max-height:340px;overflow:auto;margin-top:8px">
 <div class="small" style="text-align:center;padding:20px">— загрузка —</div>
 </div>
@@ -601,6 +606,20 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 </div>
 
+<div id="editWitnessOverlay" onclick="if(event.target===this)closeEditWitness()">
+<div id="editWitnessBox" onclick="event.stopPropagation()">
+<h3 style="color:#06b6d4">✏️ Редактировать возвещателя</h3>
+<label>Имя</label>
+<input id="editWitnessName" style="margin-bottom:8px">
+<label>Фамилия</label>
+<input id="editWitnessSurname" style="margin-bottom:8px">
+<div style="display:flex;gap:8px;margin-top:16px">
+<button class="sec" onclick="closeEditWitness()" style="flex:1;padding:12px">Отмена</button>
+<button onclick="saveEditWitness()" style="flex:1;padding:12px;background:#22c55e;color:#000">💾 Сохранить</button>
+</div>
+</div>
+</div>
+
 <div id="ccOverlay">
 <div id="ccBox">
 <div id="ccTitle" style="color:var(--primary);font-size:1.15em;font-weight:bold;margin-bottom:12px;text-align:center">Подтверждение</div>
@@ -662,6 +681,7 @@ var pendingPushTs = {};
 var curStand = 1;
 var _standItemId = null;
 var STAND_MAX = 10;
+var MIN_STAND_ALERT = 3; // Если меньше этого числа на стенде - подсвечиваем красным
 
 var standNames = { 1:'Стенд 1', 2:'Стенд 2', 3:'Стенд 3', 4:'Стенд 4' };
 try{
@@ -724,18 +744,18 @@ function resetStandNames(){
 }
 function renameStandQuick(n){
   var cur = getStandName(n);
-  var v = prompt('Название стенда '+n+':', cur);
-  if(v===null) return;
-  v = String(v).trim();
-  if(!v) return;
-  pushUndo('Переименовать стенд');
-  standNames[n] = v;
-  saveStandNamesToStorage();
-  refreshStandNamesUI();
-  render();
-  addLog('Названия стендов', '');
-  toast('✅ Переименовано');
-  if(cloudEnabled && !isSyncingFromCloud && cloudDb){ try{ pushToCloud(); }catch(e){} }
+  customPrompt('Название стенда '+n+':', cur, function(v){
+    v = String(v).trim();
+    if(!v) return;
+    pushUndo('Переименовать стенд');
+    standNames[n] = v;
+    saveStandNamesToStorage();
+    refreshStandNamesUI();
+    render();
+    addLog('Названия стендов', '');
+    toast('✅ Переименовано');
+    if(cloudEnabled && !isSyncingFromCloud && cloudDb){ try{ pushToCloud(); }catch(e){} }
+  });
 }
 
 var curStandFilter = 'all';
@@ -928,7 +948,7 @@ function cleanUsers(arr){
 }
 function printDoc(title, bodyHtml){
   var w=window.open('','_blank');
-  if(!w){ alert('Разрешите всплывающие окна'); return false; }
+  if(!w){ toast('⚠️ Разрешите всплывающие окна'); return false; }
   w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+esc(title)+'</title></head><body style="font-family:Arial;margin:20px;color:#000">'+bodyHtml+'</body></html>');
   w.document.close(); w.focus(); setTimeout(function(){ w.print(); },400); return true;
 }
@@ -1180,12 +1200,13 @@ function renderStand(){
     var glob = totalIt(it);
     var extra = getItemExtraInfo(it);
     var langTag = (it.lang && it.lang!=='ru') ? ' · '+esc(getLangShort(it.lang)) : '';
-    h += '<div class="stand-item">';
+    var isLow = inSt < MIN_STAND_ALERT && parseInt(it.qty) > 0;
+    h += '<div class="stand-item '+(isLow?'low-stock':'')+'">';
     h += '<div class="ti-info">';
     h += '<div class="ti-name">'+getTypeIcon(it.type)+' '+esc(getDisplayName(it))+'</div>';
     h += '<div class="ti-meta">'+esc(getDisplayCat(it))+(extra?' · '+esc(extra):'')+langTag+'</div>';
     h += '</div>';
-    h += '<div class="ti-qty">'+inSt+' / '+glob+' шт.<span class="in-total">на стенде / всего</span></div>';
+    h += '<div class="ti-qty">'+inSt+' / '+glob+' шт.<span class="in-total">'+(isLow?'🚨 МАЛО НА СТЕНДЕ':'на стенде / всего')+'</span></div>';
     h += '</div>';
   });
   h += '</div>';
@@ -1265,10 +1286,14 @@ function printStand(n){
 
 function updateStandBadges(){
   for(var n=1;n<=4;n++){
-    var cnt = 0;
-    items.forEach(function(it){ cnt += stGet(it,n); });
+    var cnt = 0, alert = false;
+    items.forEach(function(it){ 
+      var sc = stGet(it,n); 
+      cnt += sc; 
+      if(sc > 0 && sc < MIN_STAND_ALERT && parseInt(it.qty) > 0) alert = true;
+    });
     var el = document.getElementById('stc-'+n);
-    if(el) el.textContent = cnt > 0 ? (cnt+' шт.') : '—';
+    if(el) el.innerHTML = cnt > 0 ? (cnt+' шт.' + (alert?' <span style="color:#ef4444">🚨</span>':'')) : '—';
   }
 }
 
@@ -1485,7 +1510,7 @@ function setSyncState(state){
   chip.classList.add(cls[state]||'offline');
   txt.textContent=map[state]||'Офлайн';
 }
-function showSyncInfo(){ alert(syncState); }
+function showSyncInfo(){ toast('Статус: ' + syncState); }
 
 function save(){
   try{
@@ -1531,6 +1556,18 @@ function customConfirm(msg, cb){
   document.getElementById('ccOk').textContent='OK';
   document.getElementById('ccOverlay').classList.add('show');
   _ccCallback=cb;
+}
+function customPrompt(msg, defaultValue, cb){
+  document.getElementById('ccTitle').textContent='Ввод';
+  document.getElementById('ccMsg').innerHTML = '<div style="margin-bottom:10px;color:var(--text);font-size:1em">'+esc(msg)+'</div><input id="cpInput" type="text" value="'+esc(defaultValue||'')+'" style="width:100%;padding:12px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:1.05em" onkeydown="if(event.key===\'Enter\'){event.preventDefault(); document.getElementById(\'ccOk\').click();}">';
+  document.getElementById('ccCancel').textContent='Отмена';
+  document.getElementById('ccOk').textContent='OK';
+  document.getElementById('ccOverlay').classList.add('show');
+  _ccCallback = function() { 
+    var v = document.getElementById('cpInput').value; 
+    if(cb) cb(v); 
+  };
+  setTimeout(function(){ var inp=document.getElementById('cpInput'); if(inp){ inp.focus(); inp.select(); } }, 100);
 }
 function _ccClose(){ document.getElementById('ccOverlay').classList.remove('show'); _ccCallback=null; }
 document.getElementById('ccOk').onclick=function(){ var cb=_ccCallback; _ccClose(); if(cb) cb(); };
@@ -1841,7 +1878,9 @@ function render(){
     var stParts = [];
     for(var tn=1;tn<=4;tn++){ var tv=stGet(it,tn); if(tv>0) stParts.push(tn+':'+tv); }
     var stText = stParts.length>0 ? ('🏛️ '+stParts.join(' · ')) : '🏛️ На стенды';
-    var stCls = 'stand-btn' + (stSumV>0?' has':'');
+    var isLowAny = false;
+    for(var tn=1;tn<=4;tn++){ var tv=stGet(it,tn); if(tv > 0 && tv < MIN_STAND_ALERT && parseInt(it.qty) > 0) isLowAny = true; }
+    var stCls = 'stand-btn' + (stSumV>0?' has':'') + (isLowAny?' low':'');
 
     var langsBlock = '';
     if(curSort === 'langs'){
@@ -1983,8 +2022,8 @@ function saveRename(){
 }
 
 function addItem(){
-  if(!hasPerm('add')){ alert('Нет прав'); return; }
-  var titleVal=document.getElementById('title').value.trim(); if(!titleVal){ alert('Введите название!'); return; }
+  if(!hasPerm('add')){ toast('⚠️ Нет прав'); return; }
+  var titleVal=document.getElementById('title').value.trim(); if(!titleVal){ toast('⚠️ Введите название!'); return; }
   pushUndo('Добавить: '+titleVal);
   var totalInput=parseInt(document.getElementById('qty').value)||0;
   var yearVal=(document.getElementById('year').value||'').trim();
@@ -2016,7 +2055,7 @@ function addItem(){
 }
 
 function renderUsers(){ var list=document.getElementById('usersList'); if(!list) return; if(users.length===0){ list.innerHTML='<div class="small">—</div>'; return; } var h=''; users.forEach(function(u){ h+='<div class="user-row"><div style="flex:1"><div class="uname">👤 '+esc(u.name)+' <span class="urole role-'+u.role+'">'+esc(getRoleDisplay(u.role))+'</span></div></div>'+(users.length>1?'<button class="icon-btn" style="background:#ef4444;color:#fff;border:0;padding:8px 12px;border-radius:6px" onclick="deleteUser('+u.id+')">🗑️</button>':'')+'</div>'; }); list.innerHTML=h; }
-function addUser(){ var name=document.getElementById('newUserName').value.trim(); if(!name){ alert('Введите имя!'); return; } pushUndo('Новый пользователь'); var role=document.getElementById('newUserRole').value; var perms={}; PERM_KEYS.forEach(function(k){ var el=document.getElementById('p_'+k); if(el) perms[k]=el.checked; }); users.push({id:Date.now()+Math.random(),name:name,role:role,perms:perms}); document.getElementById('newUserName').value=''; updatePermsFromRole(); save(); renderUsers(); renderUserSelectList(); addLog('Новый пользователь',{userName:name}); toast('✅ Новый пользователь: '+name); }
+function addUser(){ var name=document.getElementById('newUserName').value.trim(); if(!name){ toast('⚠️ Введите имя!'); return; } pushUndo('Новый пользователь'); var role=document.getElementById('newUserRole').value; var perms={}; PERM_KEYS.forEach(function(k){ var el=document.getElementById('p_'+k); if(el) perms[k]=el.checked; }); users.push({id:Date.now()+Math.random(),name:name,role:role,perms:perms}); document.getElementById('newUserName').value=''; updatePermsFromRole(); save(); renderUsers(); renderUserSelectList(); addLog('Новый пользователь',{userName:name}); toast('✅ Новый пользователь: '+name); }
 function deleteUser(id){ customConfirm('Удалить пользователя?', function(){ pushUndo('Удалить пользователя'); users=users.filter(function(u){ return u.id!=id; }); if(currentUserId==id){ var adm=users.find(function(u){ return u.role==='admin'; }); currentUserId=adm?adm.id:(users[0]?users[0].id:null); } save(); renderUsers(); renderUserSelectList(); updateUserChip(); render(); }); }
 function updatePermsFromRole(){ var role=document.getElementById('newUserRole').value; var p=PERMS_PRESETS[role]||PERMS_PRESETS.counter; PERM_KEYS.forEach(function(k){ var el=document.getElementById('p_'+k); if(el) el.checked=!!p[k]; }); }
 function openUserSelector(){ renderUserSelectList(); document.getElementById('userOverlay').classList.add('show'); }
@@ -2101,7 +2140,7 @@ function importBackup(e){
         if(document.getElementById('adminContent').style.display==='block') loadStandNamesUI();
         toast('✅ Восстановление завершено!');
       });
-    }catch(err){ alert('❌ Неверный файл'); }
+    }catch(err){ toast('❌ Неверный файл'); }
     e.target.value='';
   };
   reader.readAsText(file);
@@ -2156,8 +2195,8 @@ async function pushToCloud(){
   }catch(e){ setSyncState('error'); }
 }
 async function pullFromCloud(){
-  if(!cloudEnabled){ alert('Облако выключено'); return; }
-  if(!cloudDb){ alert('Нет базы данных'); return; }
+  if(!cloudEnabled){ toast('⚠️ Облако выключено'); return; }
+  if(!cloudDb){ toast('⚠️ Нет базы данных'); return; }
   try{
     setSyncState('pulling');
     var dRef=window._fb.doc(cloudDb,'stands',cloudId);
@@ -2180,8 +2219,8 @@ async function pullFromCloud(){
       save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); populateDatalists();
       setSyncState('synced'); isSyncingFromCloud=false;
       toast('✅ Получено из облака');
-    } else { setSyncState('synced'); alert('Ничего нет'); }
-  }catch(e){ setSyncState('error'); alert(e.message); }
+    } else { setSyncState('synced'); toast('⚠️ Ничего нет'); }
+  }catch(e){ setSyncState('error'); toast('❌ Ошибка: ' + e.message); }
 }
 
 /* ============ WITNESS APP INTEGRATION ============ */
@@ -2219,7 +2258,6 @@ async function processIncomingReport(reportId){
         return {report, applied: 0, note: 'литература не найдена'};
       }
       
-      // Находим стенд для списания
       let standNum = parseInt(report.standNumber);
       if(!standNum || standNum < 1 || standNum > 4){
         for(let i=1; i<=4; i++){
@@ -2231,7 +2269,6 @@ async function processIncomingReport(reportId){
         return {report, applied: 0, note: 'стенд не определён'};
       }
       
-      // Списываем ТОЛЬКО со стенда, qty (запас) НЕ трогаем
       let onStand = parseInt(freshItem.standCounts[standNum]) || 0;
       let actual = Math.min(onStand, report.qty);
       
@@ -2323,17 +2360,50 @@ function renderWitnessesUI(){
     var active = w.active !== false;
     var status = active ? '<span style="color:#22c55e;font-size:0.75em">● активен</span>' : '<span style="color:#ef4444;font-size:0.75em">● удалён</span>';
     var last = w.lastSeen ? new Date(w.lastSeen).toLocaleString('ru-RU') : '—';
+    
+    var actions = '';
+    if(active) {
+      actions = '<button class="icon-btn" style="background:#3b82f6;color:#fff;border:0;padding:8px 12px;border-radius:6px;margin-right:4px" onclick="openEditWitness(\''+esc(w.id)+'\',\''+esc(w.name)+'\',\''+esc(w.surname)+'\')">✏️</button>'+
+                '<button class="icon-btn" style="background:#ef4444;color:#fff;border:0;padding:8px 12px;border-radius:6px" onclick="deleteWitness(\''+esc(w.id)+'\')">🚫</button>';
+    } else {
+      actions = '<button class="icon-btn" style="background:#22c55e;color:#000;border:0;padding:8px 12px;border-radius:6px" onclick="restoreWitness(\''+esc(w.id)+'\')">↺</button>';
+    }
+    
     return '<div class="user-row" style="'+(active?'':'opacity:0.55')+'">'+
       '<div style="flex:1;min-width:0">'+
         '<div class="uname">👤 '+esc(w.name||'')+' '+esc(w.surname||'')+' '+status+'</div>'+
         '<div class="small">'+esc(w.email||'')+' · был(а): '+esc(last)+'</div>'+
       '</div>'+
-      (active
-        ? '<button class="icon-btn" style="background:#ef4444;color:#fff;border:0;padding:8px 12px;border-radius:6px" onclick="deleteWitness(\''+esc(w.id)+'\')">🚫</button>'
-        : '<button class="icon-btn" style="background:#22c55e;color:#000;border:0;padding:8px 12px;border-radius:6px" onclick="restoreWitness(\''+esc(w.id)+'\')">↺</button>')+
+      '<div style="display:flex;gap:4px">'+actions+'</div>'+
     '</div>';
   }).join('');
 }
+
+/* Edit Witness Modal */
+var _editingWitnessEmail = null;
+function openEditWitness(email, name, surname) {
+  _editingWitnessEmail = email;
+  document.getElementById('editWitnessName').value = name;
+  document.getElementById('editWitnessSurname').value = surname;
+  document.getElementById('editWitnessOverlay').classList.add('show');
+}
+function closeEditWitness() {
+  document.getElementById('editWitnessOverlay').classList.remove('show');
+  _editingWitnessEmail = null;
+}
+async function saveEditWitness() {
+  if(!_editingWitnessEmail) return;
+  var name = document.getElementById('editWitnessName').value.trim();
+  var surname = document.getElementById('editWitnessSurname').value.trim();
+  if(!name || !surname) { toast('⚠️ Имя и фамилия не могут быть пустыми'); return; }
+  try{
+    const {updateDoc, doc: fbDoc} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
+    await updateDoc(fbDoc(cloudDb, 'stands', cloudId, 'witnesses', _editingWitnessEmail), {name: name, surname: surname});
+    toast('✅ Данные сохранены');
+    closeEditWitness();
+  }catch(e){ toast('❌ Ошибка: '+e.message); }
+}
+/* End Edit Witness */
 
 function renderWitnessReportsUI(){
   var el = document.getElementById('witnessReportsList'); if(!el) return;
@@ -2368,7 +2438,7 @@ async function deleteWitness(witnessId){
       const {updateDoc, doc: fbDoc} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
       await updateDoc(fbDoc(cloudDb, 'stands', cloudId, 'witnesses', witnessId), {active: false});
       toast('✅ Возвещатель удалён');
-    }catch(e){ alert('Ошибка: '+e.message); }
+    }catch(e){ toast('❌ Ошибка: '+e.message); }
   });
 }
 async function restoreWitness(witnessId){
@@ -2376,7 +2446,7 @@ async function restoreWitness(witnessId){
     const {updateDoc, doc: fbDoc} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
     await updateDoc(fbDoc(cloudDb, 'stands', cloudId, 'witnesses', witnessId), {active: true});
     toast('✅ Доступ восстановлен');
-  }catch(e){ alert('Ошибка: '+e.message); }
+  }catch(e){ toast('❌ Ошибка: '+e.message); }
 }
 /* ============ END WITNESS APP INTEGRATION ============ */
 
@@ -2403,7 +2473,7 @@ function checkAdmin(){
     renderWitnessesUI();
     renderWitnessReportsUI();
     updateAdminBadge();
-  } else alert('Неверный пароль');
+  } else toast('❌ Неверный пароль');
 }
 
 function saveNewPass(){
@@ -2455,7 +2525,7 @@ function submitOnboarding(){
   };
   initFirebase(); setTimeout(checkResult,1200);
 }
-function resetOnboarding(){ localStorage.removeItem('stand_onboarded'); localStorage.removeItem('stand_cloud_id'); cloudId=''; alert('Сброс'); setTimeout(showOnboarding,300); }
+function resetOnboarding(){ localStorage.removeItem('stand_onboarded'); localStorage.removeItem('stand_cloud_id'); cloudId=''; toast('✅ Сброс'); setTimeout(showOnboarding,300); }
 
 function setAddType(t){
   currentAddType = t;

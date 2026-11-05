@@ -230,7 +230,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <div class="wrap">
 
 <div class="stats">
-<div class="stat"><div id="tot" style="font-weight:bold;font-size:1.2em">0</div><div class="small">Штук</div></div>
+<div class="stat"><div id="tot" style="font-weight:bold;font-size:1.2em">0</div><div class="small">Всего</div></div>
 <div class="stat"><div id="tit" style="font-weight:bold">0</div><div class="small">Названий</div></div>
 <div class="stat"><div id="cnt-mag" style="color:#f59e0b;font-weight:bold">0</div><div class="small">📰</div></div>
 <div class="stat"><div id="cnt-booklet" style="color:#22c55e;font-weight:bold">0</div><div class="small">📖</div></div>
@@ -904,17 +904,13 @@ function cleanItems(arr){
     if(o.theme!=null) o.theme=cleanStr(o.theme);
     o.qty=Math.max(0, parseInt(o.qty)||0);
     var sc = {};
-    var src = o.standCounts || o.trolleyCounts || null;
+    var src = o.standCounts || null;
     if(src && typeof src==='object'){
       for(var n=1;n<=4;n++) sc[n] = Math.min(STAND_MAX, Math.max(0, parseInt(src[n])||0));
     } else {
       for(var n2=1;n2<=4;n2++) sc[n2]=0;
     }
-    var sumT = sc[1]+sc[2]+sc[3]+sc[4];
-    if(sumT > o.qty){ var left = o.qty; for(var n3=1;n3<=4;n3++){ var v = Math.min(sc[n3], left); sc[n3]=v; left-=v; } }
     o.standCounts = sc;
-    delete o.trolley;
-    delete o.trolleyCounts;
     o.photo='';
     o.barcode='';
     o.min=0;
@@ -939,7 +935,8 @@ function printDoc(title, bodyHtml){
 
 function stGet(it, n){ return (it.standCounts && (parseInt(it.standCounts[n])||0)) || 0; }
 function stSum(it){ return stGet(it,1)+stGet(it,2)+stGet(it,3)+stGet(it,4); }
-function stStock(it){ return Math.max(0, (parseInt(it.qty)||0) - stSum(it)); }
+function totalIt(it){ return (parseInt(it.qty)||0) + stSum(it); }
+function stStock(it){ return Math.max(0, parseInt(it.qty)||0); }
 
 var PERM_KEYS = ['count','add','del','rename','sync','order','scan','voice'];
 var PERMS_PRESETS = {
@@ -1119,7 +1116,7 @@ function getOtherLangsForItem(currentItem){
     var code = it.lang || 'ru';
     if(code === (currentItem.lang || 'ru')) return;
     if(!map[code]) map[code] = 0;
-    map[code] += parseInt(it.qty)||0;
+    map[code] += totalIt(it);
   });
   return Object.keys(map).map(function(code){ return { code: code, qty: map[code] }; });
 }
@@ -1144,7 +1141,7 @@ function renderStand(){
   var byType = {}, byLang = {};
   list.forEach(function(it){
     var inSt = stGet(it, curStand);
-    var glob = parseInt(it.qty)||0;
+    var glob = totalIt(it);
     totalInStand += inSt;
     totalGlobal += glob;
     var tp = it.type || 'Журнал';
@@ -1180,7 +1177,7 @@ function renderStand(){
   list.sort(function(a,b){ return getDisplayName(a).localeCompare(getDisplayName(b)); });
   list.forEach(function(it){
     var inSt = stGet(it, curStand);
-    var glob = parseInt(it.qty)||0;
+    var glob = totalIt(it);
     var extra = getItemExtraInfo(it);
     var langTag = (it.lang && it.lang!=='ru') ? ' · '+esc(getLangShort(it.lang)) : '';
     h += '<div class="stand-item">';
@@ -1225,7 +1222,7 @@ function printStand(n){
   var totIn = 0, totGlob = 0;
   var byType = {}, byLang = {};
   list.forEach(function(it){
-    var i = stGet(it, n), g = parseInt(it.qty)||0;
+    var i = stGet(it, n), g = totalIt(it);
     totIn += i; totGlob += g;
     var tp = it.type||'Журнал';
     if(!byType[tp]) byType[tp] = {i:0, g:0};
@@ -1288,24 +1285,24 @@ function closeStandEditor(){
 function renderStandEditor(){
   if(!_standItemId) return;
   var it = items.find(function(x){ return x.id==_standItemId; }); if(!it) return;
-  var qty = parseInt(it.qty)||0;
+  var stock = parseInt(it.qty)||0;
   var sum = stSum(it);
-  var stock = Math.max(0, qty - sum);
+  var total = stock + sum;
   var titleEl = document.getElementById('standTitle');
   if(titleEl) titleEl.textContent = '🏛️ '+getDisplayName(it);
 
-  var sumCls = sum > qty ? 'err' : (sum === qty ? 'ok' : 'warn');
   var h = '';
   h += '<div class="stand-info" id="standInfoBox">';
-  h += 'Всего у издания: <b>'+qty+'</b> шт.<br>';
-  h += 'На стендах: <span class="'+sumCls+'">'+sum+'</span> шт. · В запасе: <b>'+stock+'</b> шт.';
+  h += 'Всего: <b>'+total+'</b> шт. · На стендах: <b>'+sum+'</b> · В запасе: <b>'+stock+'</b>';
   h += '</div>';
   
-  h += '<div style="margin-bottom:12px;background:var(--card);padding:10px;border-radius:8px;border:1px dashed #a855f7">';
+  h += '<div style="margin-bottom:12px;background:var(--card);padding:10px;border-radius:8px;border:1px dashed #ef4444">';
   h += '<label style="display:flex;align-items:center;gap:8px;color:var(--text);cursor:pointer;margin:0">';
   h += '<input type="checkbox" id="standThemeChange" onchange="standLiveUpdate()" style="width:20px;height:20px;margin:0">';
-  h += '<span>🔄 <b>Смена темы</b> (вернуть в запас, не списывать)</span>';
-  h += '</label></div>';
+  h += '<span>🗑️ <b>Утилизация</b> (не возвращать в запас)</span>';
+  h += '</label>';
+  h += '<div class="small" style="margin-top:4px;color:var(--muted)">Если снять галочку — журналы вернутся в запас. С галочкой — список уменьшится совсем.</div>';
+  h += '</div>';
 
   h += '<div class="stand-field"><span class="sf-label">🏛️ '+esc(getStandName(1))+'</span><select id="sted-1" onchange="standLiveUpdate()">'+buildStandOptions(stGet(it,1))+'</select></div>';
   h += '<div class="stand-field"><span class="sf-label">🏛️ '+esc(getStandName(2))+'</span><select id="sted-2" onchange="standLiveUpdate()">'+buildStandOptions(stGet(it,2))+'</select></div>';
@@ -1320,61 +1317,70 @@ function renderStandEditor(){
 function standLiveUpdate(){
   if(!_standItemId) return;
   var it = items.find(function(x){ return x.id==_standItemId; }); if(!it) return;
-  var qty = parseInt(it.qty)||0;
-  var oldSum = stSum(it);
-  var sum = 0;
-  for(var n=1;n<=4;n++){ var el = document.getElementById('sted-'+n); sum += Math.max(0, parseInt(el.value)||0); }
+  var stock = parseInt(it.qty)||0;
+  var oldStands = stSum(it);
+  var newStands = 0;
+  for(var n=1;n<=4;n++){ newStands += Math.max(0, parseInt(document.getElementById('sted-'+n).value)||0); }
+  var delta = newStands - oldStands;
+  var isDiscard = document.getElementById('standThemeChange') && document.getElementById('standThemeChange').checked;
   
-  var isThemeChange = document.getElementById('standThemeChange') && document.getElementById('standThemeChange').checked;
-  var removedFromTotal = isThemeChange ? 0 : Math.max(0, oldSum - sum);
-  var projectedQty = Math.max(0, qty - removedFromTotal);
-  var stock = Math.max(0, projectedQty - sum);
+  var projStock = stock;
+  if(delta > 0){
+    projStock = stock - delta; // Берем из запаса на стенд
+  } else if(delta < 0 && !isDiscard){
+    projStock = stock + Math.abs(delta); // Возврат со стенда в запас
+  }
+  var projTotal = projStock + newStands;
   
   var info = document.getElementById('standInfoBox');
   if(info){
-    var sumCls = sum > projectedQty ? 'err' : (sum === projectedQty ? 'ok' : 'warn');
-    var qtyStr = projectedQty;
-    if(!isThemeChange && (projectedQty !== qty)) {
-        qtyStr = projectedQty + ' <span style="color:#ef4444;font-size:0.85em">(−'+removedFromTotal+')</span>';
-    } else if (isThemeChange && oldSum > sum) {
-        qtyStr = projectedQty + ' <span style="color:#a855f7;font-size:0.85em">(возврат в запас)</span>';
-    }
-    info.innerHTML = 'Всего у издания: <b>'+qtyStr+'</b> шт.<br>На стендах: <span class="'+sumCls+'">'+sum+'</span> шт. · В запасе: <b>'+stock+'</b> шт.';
+    var stockColor = projStock < 0 ? '#ef4444' : (projStock === 0 ? '#f59e0b' : '#22c55e');
+    var note = '';
+    if(delta > 0) note = '<div style="color:#06b6d4;font-size:0.8em;margin-top:4px">+'+delta+' на стенд (из запаса)</div>';
+    else if(delta < 0 && !isDiscard) note = '<div style="color:#22c55e;font-size:0.8em;margin-top:4px">'+Math.abs(delta)+' вернется в запас</div>';
+    else if(delta < 0 && isDiscard) note = '<div style="color:#ef4444;font-size:0.8em;margin-top:4px">'+Math.abs(delta)+' будет списано</div>';
+    info.innerHTML = 'Всего: <b>'+projTotal+'</b> шт. · На стендах: <b>'+newStands+'</b> · В запасе: <b style="color:'+stockColor+'">'+projStock+'</b>'+note;
   }
 }
 function saveStandEditor(){
   if(!_standItemId){ closeStandEditor(); return; }
   var it = items.find(function(x){ return x.id==_standItemId; }); if(!it){ closeStandEditor(); return; }
-  var qty = parseInt(it.qty)||0;
-  var oldSum = stSum(it);
+  var oldStands = stSum(it);
   var vals = {};
-  var sum = 0;
+  var newStands = 0;
   for(var n=1;n<=4;n++){
     var v = Math.max(0, Math.min(STAND_MAX, parseInt(document.getElementById('sted-'+n).value)||0));
-    vals[n]=v; sum += v;
+    vals[n]=v; newStands += v;
   }
+  var delta = newStands - oldStands;
+  var isDiscard = document.getElementById('standThemeChange') && document.getElementById('standThemeChange').checked;
   
-  var isThemeChange = document.getElementById('standThemeChange') && document.getElementById('standThemeChange').checked;
-  var removedFromTotal = isThemeChange ? 0 : Math.max(0, oldSum - sum);
-  var newQty = Math.max(0, qty - removedFromTotal);
-  
-  if(sum > newQty){ toast('❌ На стендах '+sum+' шт., а всего у издания '+newQty); return; }
+  if(delta > 0){
+    // Добавляем на стенд — берем из запаса
+    if((parseInt(it.qty)||0) < delta){ toast('❌ В запасе только '+it.qty+' шт.'); return; }
+    it.qty = (parseInt(it.qty)||0) - delta;
+  } else if(delta < 0){
+    if(!isDiscard){
+      // Возвращаем в запас
+      it.qty = (parseInt(it.qty)||0) + Math.abs(delta);
+    }
+    // С утилизацией — не возвращаем
+  }
   
   var changed = false;
   for(var n2=1;n2<=4;n2++){ if(stGet(it,n2) !== vals[n2]){ changed=true; break; } }
   if(!changed){ closeStandEditor(); return; }
   
   pushUndo('Стенды: '+getDisplayName(it));
-  if(removedFromTotal > 0){
-    var oldQty = it.qty;
-    it.qty = newQty;
-    addItemHistory(it.id, 'remove', -removedFromTotal, oldQty, newQty, 'Списано со стендов');
-  }
   it.standCounts = vals;
-  addItemHistory(it.id, 'stand', 0, null, null, 'Стенды: '+vals[1]+'/'+vals[2]+'/'+vals[3]+'/'+vals[4] + (isThemeChange?' (смена темы)':''));
+  addItemHistory(it.id, 'stand', 0, null, null, 'Стенды: '+vals[1]+'/'+vals[2]+'/'+vals[3]+'/'+vals[4] + (isDiscard && delta < 0 ? ' (утилизация)' : ''));
   addLog('Стенды', {names:it.names});
   save(); render(); closeStandEditor();
-  toast('✅ Сохранено' + (removedFromTotal>0 ? (' · списано '+removedFromTotal+' шт.') : (isThemeChange && oldSum > sum ? ' · возвращено в запас' : '')));
+  var msg = '✅ Сохранено';
+  if(delta > 0) msg += ' · на стенд +'+delta;
+  else if(delta < 0 && !isDiscard) msg += ' · в запас +'+Math.abs(delta);
+  else if(delta < 0 && isDiscard) msg += ' · утилизировано '+Math.abs(delta);
+  toast(msg);
 }
 
 function isThemeSuggestion(str){
@@ -1644,7 +1650,7 @@ document.addEventListener('keydown', function(e){
   else if(e.key==='y'||e.key==='Y'){ e.preventDefault(); redo(); }
 });
 
-function renderCountByType(){ var c=document.getElementById('countByType'); if(!c) return; var counts={mag:0,booklet:0,poster:0,total:0}; for(var i=0;i<items.length;i++){ var tt=(items[i].type||''); var q=items[i].qty||0; counts.total+=q; if(tt==='Журнал') counts.mag+=q; else if(tt==='Брошюра') counts.booklet+=q; else if(tt==='Постер') counts.poster+=q; } var p=function(n){ return counts.total>0?Math.round(n/counts.total*100):0; }; var h=''; h+='<div class="count-box"><div class="num" style="color:#f59e0b">'+counts.mag+'</div><div class="label">📰 Журналы</div><div class="small">'+p(counts.mag)+'%</div></div>'; h+='<div class="count-box"><div class="num" style="color:#22c55e">'+counts.booklet+'</div><div class="label">📖 Брошюры</div><div class="small">'+p(counts.booklet)+'%</div></div>'; h+='<div class="count-box"><div class="num" style="color:#ec4899">'+counts.poster+'</div><div class="label">🖼️ Постеры</div><div class="small">'+p(counts.poster)+'%</div></div>'; h+='<div class="count-box" style="border:2px solid var(--primary)"><div class="num" style="color:var(--primary)">'+counts.total+'</div><div class="label">📦</div><div class="small">100%</div></div>'; c.innerHTML=h; }
+function renderCountByType(){ var c=document.getElementById('countByType'); if(!c) return; var counts={mag:0,booklet:0,poster:0,total:0}; for(var i=0;i<items.length;i++){ var tt=(items[i].type||''); var q=totalIt(items[i]); counts.total+=q; if(tt==='Журнал') counts.mag+=q; else if(tt==='Брошюра') counts.booklet+=q; else if(tt==='Постер') counts.poster+=q; } var p=function(n){ return counts.total>0?Math.round(n/counts.total*100):0; }; var h=''; h+='<div class="count-box"><div class="num" style="color:#f59e0b">'+counts.mag+'</div><div class="label">📰 Журналы</div><div class="small">'+p(counts.mag)+'%</div></div>'; h+='<div class="count-box"><div class="num" style="color:#22c55e">'+counts.booklet+'</div><div class="label">📖 Брошюры</div><div class="small">'+p(counts.booklet)+'%</div></div>'; h+='<div class="count-box"><div class="num" style="color:#ec4899">'+counts.poster+'</div><div class="label">🖼️ Постеры</div><div class="small">'+p(counts.poster)+'%</div></div>'; h+='<div class="count-box" style="border:2px solid var(--primary)"><div class="num" style="color:var(--primary)">'+counts.total+'</div><div class="label">📦</div><div class="small">100%</div></div>'; c.innerHTML=h; }
 
 function renderItemLangStats(){
   var cont = document.getElementById('itemLangStats'); if(!cont) return;
@@ -1655,9 +1661,10 @@ function renderItemLangStats(){
     if(!name) return;
     if(!groups[name]) groups[name] = { name: name, langs: {}, totalQty: 0 };
     var code = it.lang || 'ru';
+    var tq = totalIt(it);
     if(!groups[name].langs[code]) groups[name].langs[code] = 0;
-    groups[name].langs[code] += parseInt(it.qty)||0;
-    groups[name].totalQty += parseInt(it.qty)||0;
+    groups[name].langs[code] += tq;
+    groups[name].totalQty += tq;
   });
   var list = Object.keys(groups).map(function(k){ return groups[k]; });
   if(q){ list = list.filter(function(g){ return g.name.toLowerCase().indexOf(q) >= 0; }); }
@@ -1703,7 +1710,7 @@ function renderCountByLangType(){
     var it=items[i];
     var code = it.lang || 'ru';
     if(!byLang[code]) byLang[code] = {mag:0, booklet:0, poster:0, total:0};
-    var tt = it.type||'', q = it.qty||0;
+    var tt = it.type||'', q = totalIt(it);
     if(tt==='Журнал'){ byLang[code].mag+=q; totals.mag+=q; }
     else if(tt==='Брошюра'){ byLang[code].booklet+=q; totals.booklet+=q; }
     else if(tt==='Постер'){ byLang[code].poster+=q; totals.poster+=q; }
@@ -1725,7 +1732,7 @@ function renderCountByLangType(){
   tb.innerHTML = h;
 }
 
-function renderCharts(){ try{ var ctx=document.getElementById('chartMain'); if(!ctx) return; var tc={}; for(var i=0;i<items.length;i++){ var tp=getTypeDisplay(items[i].type); tc[tp]=(tc[tp]||0)+items[i].qty; } var labels=Object.keys(tc), data=Object.values(tc); var isDay=document.body.classList.contains('day')||(curBgColor && isLightColor(curBgColor)); if(chartMainInst) chartMainInst.destroy(); chartMainInst=new Chart(ctx,{type:'doughnut',data:{labels:labels,datasets:[{data:data,backgroundColor:['#f59e0b','#22c55e','#ec4899','#06b6d4']}]},options:{responsive:true,plugins:{legend:{labels:{color:isDay?'#111':'#fff'}}}}}); }catch(e){} }
+function renderCharts(){ try{ var ctx=document.getElementById('chartMain'); if(!ctx) return; var tc={}; for(var i=0;i<items.length;i++){ var tp=getTypeDisplay(items[i].type); tc[tp]=(tc[tp]||0)+totalIt(items[i]); } var labels=Object.keys(tc), data=Object.values(tc); var isDay=document.body.classList.contains('day')||(curBgColor && isLightColor(curBgColor)); if(chartMainInst) chartMainInst.destroy(); chartMainInst=new Chart(ctx,{type:'doughnut',data:{labels:labels,datasets:[{data:data,backgroundColor:['#f59e0b','#22c55e','#ec4899','#06b6d4']}]},options:{responsive:true,plugins:{legend:{labels:{color:isDay?'#111':'#fff'}}}}}); }catch(e){} }
 
 function render(){
   var sortSel=document.getElementById('sortSelect');
@@ -1780,7 +1787,7 @@ function render(){
     if(matchQ && matchT && matchL && matchS) filtered.push(it);
   }
   filtered.sort(function(a,b){
-    if(curSort==='low') return a.qty - b.qty;
+    if(curSort==='low') return totalIt(a) - totalIt(b);
     else if(curSort==='fav') return (b.favorite?1:0)-(a.favorite?1:0);
     else if(curSort==='name') return getDisplayName(a).localeCompare(getDisplayName(b));
     else if(curSort==='langs'){
@@ -1788,7 +1795,7 @@ function render(){
       if(cmp !== 0) return cmp;
       return (a.lang||'ru').localeCompare(b.lang||'ru');
     }
-    else if(curSort==='qty') return b.qty-a.qty;
+    else if(curSort==='qty') return totalIt(b)-totalIt(a);
     else if(curSort==='new') return (b.id||0)-(a.id||0);
     return 0;
   });
@@ -1796,15 +1803,15 @@ function render(){
 
   var total=0,cMag=0,cBooklet=0,cPoster=0,standsTotal=0;
   for(var i=0;i<items.length;i++){
-    total+=items[i].qty;
+    total+=totalIt(items[i]);
     var tp=items[i].type||'';
-    if(tp==='Журнал') cMag+=items[i].qty;
-    else if(tp==='Брошюра') cBooklet+=items[i].qty;
-    else if(tp==='Постер') cPoster+=items[i].qty;
+    if(tp==='Журнал') cMag+=totalIt(items[i]);
+    else if(tp==='Брошюра') cBooklet+=totalIt(items[i]);
+    else if(tp==='Постер') cPoster+=totalIt(items[i]);
     standsTotal += stSum(items[i]);
   }
   var stockTotal = Math.max(0, total - standsTotal);
-  var need=[]; for(var i=0;i<items.length;i++) if(items[i].qty<=0) need.push(items[i]);
+  var need=[]; for(var i=0;i<items.length;i++) if(totalIt(items[i])<=0) need.push(items[i]);
   var $=function(id){return document.getElementById(id);};
   if($('tot')) $('tot').textContent=total; if($('tit')) $('tit').textContent=items.length;
   if($('cnt-mag')) $('cnt-mag').textContent=cMag;
@@ -1818,7 +1825,8 @@ function render(){
   if(filtered.length===0){ h='<div style="text-align:center;padding:30px;color:var(--muted)">📦 —</div>'; }
   for(var i=0;i<filtered.length;i++){
     var it=filtered[i];
-    var col=it.qty<=0?'bad':'good';
+    var tot = totalIt(it);
+    var col=tot<=0?'bad':'good';
     var tcl=getTypeClass(it.type); var icon=getTypeIcon(it.type);
     var displayType=icon+' '+getTypeDisplay(it.type);
     var favCls=it.favorite?'item fav':'item';
@@ -1848,9 +1856,10 @@ function render(){
       }
     }
 
+    var stock = parseInt(it.qty)||0;
     var qtyField = canCount
-      ? '<input type="number" inputmode="numeric" min="0" class="qty-display" value="'+it.qty+'" onclick="this.select()" onchange="setQtyDirect('+it.id+', this.value)" onkeydown="if(event.key===\'Enter\'){event.preventDefault(); this.blur();}">'
-      : '<span class="qty-display" style="border:0;background:transparent">'+it.qty+'</span>';
+      ? '<input type="number" inputmode="numeric" min="0" class="qty-display" value="'+tot+'" onclick="this.select()" onchange="setQtyDirect('+it.id+', this.value)" onkeydown="if(event.key===\'Enter\'){event.preventDefault(); this.blur();}">'
+      : '<span class="qty-display" style="border:0;background:transparent">'+tot+'</span>';
 
     h+='<div class="'+favCls+'">'+
       '<div class="item-main">'+
@@ -1858,9 +1867,9 @@ function render(){
           '<span class="type-label '+tcl+'">'+esc(displayType)+'</span>'+langLabel+
           '<b class="item-name" style="display:block;margin-top:4px">'+esc(getDisplayName(it))+'</b>'+
           themeLine+extraLine+
-          '<div class="item-cat">'+esc(getDisplayCat(it))+'</div>'+
+          '<div class="item-cat">'+esc(getDisplayCat(it))+' · 📦 в запасе: '+stock+'</div>'+
           langsBlock+
-          '<span class="item-badge '+col+'">'+it.qty+'</span>'+
+          '<span class="item-badge '+col+'">Всего '+tot+'</span>'+
         '</div>'+
       '</div>'+
       '<div class="item-actions">'+
@@ -1880,10 +1889,10 @@ function render(){
   if(ob){
     if(need.length>0 && hasPerm('order')){
       ob.style.display='block';
-      var oh=''; for(var i=0;i<need.length;i++){ var eI=getItemExtraInfo(need[i]); var th=need[i].theme?(' — '+need[i].theme):''; oh+=esc(getDisplayName(need[i]))+th+(eI?' ('+esc(eI)+')':'')+' - '+need[i].qty+'<br>'; }
+      var oh=''; for(var i=0;i<need.length;i++){ var eI=getItemExtraInfo(need[i]); var th=need[i].theme?(' — '+need[i].theme):''; oh+=esc(getDisplayName(need[i]))+th+(eI?' ('+esc(eI)+')':'')+' - '+totalIt(need[i])+'<br>'; }
       if(document.getElementById('orderList')) document.getElementById('orderList').innerHTML=oh;
       var sh='<b style="color:var(--primary)">🤖 Совет:</b><br>';
-      for(var i=0;i<need.length;i++){ var nit=need[i]; sh+=esc(getDisplayName(nit))+': '+(nit.qty+5)+'<br>'; }
+      for(var i=0;i<need.length;i++){ var nit=need[i]; sh+=esc(getDisplayName(nit))+': '+(totalIt(nit)+5)+'<br>'; }
       if(document.getElementById('smartOrder')) document.getElementById('smartOrder').innerHTML=sh;
     } else ob.style.display='none';
   }
@@ -1898,25 +1907,25 @@ function toggleFav(id){ var it=items.find(function(x){return x.id==id;}); if(!it
 function setQtyDirect(id, val){
   if(!hasPerm('count')){ toast('Нет прав'); render(); return; }
   var it = items.find(function(x){ return x.id==id; }); if(!it) return;
-  var newQty = Math.max(0, parseInt(val)||0);
+  var newTotal = Math.max(0, parseInt(val)||0);
+  var stands = stSum(it);
+  if(newTotal < stands){ toast('❌ Меньше, чем на стендах ('+stands+')'); render(); return; }
+  var newStock = newTotal - stands;
   var old = it.qty;
-  if(newQty === old){ render(); return; }
-  var inSt = stSum(it);
-  if(newQty < inSt){ toast('❌ На стендах уже '+inSt+' шт. Сначала уберите'); render(); return; }
-  pushUndoSmart('qty-'+id, '→ '+newQty+' '+getDisplayName(it));
-  it.qty = newQty;
-  addItemHistory(id, newQty>old?'add':'remove', newQty-old, old, newQty);
+  if(newStock === old){ render(); return; }
+  pushUndoSmart('qty-'+id, 'Всего → '+newTotal+' '+getDisplayName(it));
+  it.qty = newStock;
+  addItemHistory(id, newStock>old?'add':'remove', newStock-old, old, newStock);
   vibrate(10); save(); render();
 }
 
 function changeQty(id,d){
   if(!hasPerm('count')) return;
   var it=null; for(var i=0;i<items.length;i++){ if(items[i].id==id){ it=items[i]; break; } } if(!it) return;
-  var old=it.qty, newQty=Math.max(0, old+d); if(newQty===old) return;
-  if(d < 0 && newQty < stSum(it)){ toast('❌ На стендах уже '+stSum(it)+' шт.'); return; }
-  pushUndoSmart('qty-'+id, (d>0?'+':'')+d+' '+getDisplayName(it));
-  it.qty=newQty;
-  addItemHistory(id, d>0?'add':'remove', d, old, newQty);
+  var old=parseInt(it.qty)||0, newStock=Math.max(0, old+d); if(newStock===old) return;
+  pushUndoSmart('qty-'+id, (d>0?'+':'')+d+' в запас '+getDisplayName(it));
+  it.qty=newStock;
+  addItemHistory(id, d>0?'add':'remove', d, old, newStock);
   vibrate(10); save(); render();
 }
 function deleteItem(id){
@@ -1977,7 +1986,7 @@ function addItem(){
   if(!hasPerm('add')){ alert('Нет прав'); return; }
   var titleVal=document.getElementById('title').value.trim(); if(!titleVal){ alert('Введите название!'); return; }
   pushUndo('Добавить: '+titleVal);
-  var qtyVal=parseInt(document.getElementById('qty').value)||0;
+  var totalInput=parseInt(document.getElementById('qty').value)||0;
   var yearVal=(document.getElementById('year').value||'').trim();
   var issueNumVal=(document.getElementById('issueNum').value||'').trim();
   var langVal = (document.getElementById('lang')||{}).value || 'ru';
@@ -1986,10 +1995,11 @@ function addItem(){
   var s3=Math.max(0, Math.min(STAND_MAX, parseInt((document.getElementById('s3')||{}).value)||0));
   var s4=Math.max(0, Math.min(STAND_MAX, parseInt((document.getElementById('s4')||{}).value)||0));
   var sSum = s1+s2+s3+s4;
-  if(sSum > qtyVal){ toast('❌ На стендах '+sSum+', а всего '+qtyVal); return; }
-  var newItem={id:Date.now()+Math.random(),names:{ru:titleVal},type:currentAddType,cat:document.getElementById('cat').value||'-',lang:langVal,magazineLang:langVal,year:yearVal,issueNum:issueNumVal,theme:'',qty:qtyVal,min:0,photo:'',barcode:'',standCounts:{1:s1,2:s2,3:s3,4:s4},history:[]};
+  if(sSum > totalInput){ toast('❌ На стендах '+sSum+', а всего '+totalInput); return; }
+  var stockQty = totalInput - sSum;
+  var newItem={id:Date.now()+Math.random(),names:{ru:titleVal},type:currentAddType,cat:document.getElementById('cat').value||'-',lang:langVal,magazineLang:langVal,year:yearVal,issueNum:issueNumVal,theme:'',qty:stockQty,min:0,photo:'',barcode:'',standCounts:{1:s1,2:s2,3:s3,4:s4},history:[]};
   items.push(newItem);
-  addItemHistory(newItem.id,'create',qtyVal,0,qtyVal);
+  addItemHistory(newItem.id,'create',stockQty,0,stockQty);
   addLog('Добавить',{names:newItem.names});
   addToSavedList('titles', titleVal);
   if(yearVal) addToSavedList('years', yearVal);
@@ -2002,7 +2012,7 @@ function addItem(){
   document.getElementById('s3').value='0';
   document.getElementById('s4').value='0';
   save(); render(); populateDatalists();
-  toast('✅ Добавлено: '+titleVal + (sSum>0?(' · стенды '+sSum):''));
+  toast('✅ Добавлено: '+titleVal+' (в запасе '+stockQty+(sSum>0?', на стендах '+sSum:'')+')');
 }
 
 function renderUsers(){ var list=document.getElementById('usersList'); if(!list) return; if(users.length===0){ list.innerHTML='<div class="small">—</div>'; return; } var h=''; users.forEach(function(u){ h+='<div class="user-row"><div style="flex:1"><div class="uname">👤 '+esc(u.name)+' <span class="urole role-'+u.role+'">'+esc(getRoleDisplay(u.role))+'</span></div></div>'+(users.length>1?'<button class="icon-btn" style="background:#ef4444;color:#fff;border:0;padding:8px 12px;border-radius:6px" onclick="deleteUser('+u.id+')">🗑️</button>':'')+'</div>'; }); list.innerHTML=h; }
@@ -2030,8 +2040,8 @@ function renderQuickCount(){
     var stSumV = stSum(it);
     var stMini = stSumV>0 ? ' <span style="color:#06b6d4;font-weight:bold">🏛️ '+stSumV+'</span>' : '';
     var qtyInput = canCount
-      ? '<input type="number" inputmode="numeric" min="0" class="qc-qty-input" value="'+it.qty+'" onclick="this.select()" onchange="qcSetQty('+it.id+', this.value)" onkeydown="if(event.key===\'Enter\'){event.preventDefault(); this.blur();}">'
-      : '<div class="qc-qty">'+it.qty+'</div>';
+      ? '<input type="number" inputmode="numeric" min="0" class="qc-qty-input" value="'+totalIt(it)+'" onclick="this.select()" onchange="qcSetQty('+it.id+', this.value)" onkeydown="if(event.key===\'Enter\'){event.preventDefault(); this.blur();}">'
+      : '<div class="qc-qty">'+totalIt(it)+'</div>';
     h+='<div class="qc-tile"><div class="qc-info"><div class="qc-name">'+getTypeIcon(it.type)+' '+esc(getDisplayName(it))+'</div><div class="qc-cat">'+extra+themeMini+stMini+'</div></div>'+(canCount?'<button class="qc-minus" onclick="qcChange('+it.id+',-1)">−</button>':'')+qtyInput+(canCount?'<button class="qc-plus" onclick="qcChange('+it.id+',1)">+</button>':'')+'</div>';
   }
   list.innerHTML=h||'<div class="small" style="text-align:center;padding:20px">—</div>';
@@ -2041,10 +2051,10 @@ function qcSetQty(id, val){ setQtyDirect(id, val); renderQuickCount(); }
 
 function copyOrder(){ var txt=document.getElementById('orderList').innerText; if(navigator.clipboard) navigator.clipboard.writeText(txt).then(function(){toast('📋 Скопировано');}); }
 function exportOrder(){ var b=new Blob([document.getElementById('orderList').innerText],{type:'text/plain'}); var a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='order.txt'; a.click(); }
-function exportPDF(){ var need=items.filter(function(x){return x.qty<=0;}); var h='<h1>STAND MANAGER</h1><p>'+new Date().toLocaleString('ru-RU')+'</p><ul>'; need.forEach(function(x){ var eI=getItemExtraInfo(x); var th=x.theme?(' — '+x.theme):''; h+='<li>'+esc(getDisplayName(x))+esc(th)+(eI?' ('+esc(eI)+')':'')+' - '+x.qty+'</li>'; }); h+='</ul>'; if(!need.length) h+='<p>-</p>'; printDoc('order',h); }
+function exportPDF(){ var need=items.filter(function(x){return totalIt(x)<=0;}); var h='<h1>STAND MANAGER</h1><p>'+new Date().toLocaleString('ru-RU')+'</p><ul>'; need.forEach(function(x){ var eI=getItemExtraInfo(x); var th=x.theme?(' — '+x.theme):''; h+='<li>'+esc(getDisplayName(x))+esc(th)+(eI?' ('+esc(eI)+')':'')+' - '+totalIt(x)+'</li>'; }); h+='</ul>'; if(!need.length) h+='<p>-</p>'; printDoc('order',h); }
 function shareWhatsApp(){ var txt=encodeURIComponent(document.getElementById('orderList').innerText); window.open('https://wa.me/?text='+txt,'_blank'); }
 
-function exportBackup(){ var backup={version:10,ts:Date.now(),app:'StandManagerPRO',items:items,users:users,historyLog:historyLog,adminPass:adminPass,savedTitles:savedTitles,savedYears:savedYears,savedIssueNums:savedIssueNums,removedSuggestions:removedSuggestions,standNames:standNames,settings:{fs:curFS,lfs:curLFS,ff:curFF,theme:curTheme,sort:curSort,bgColorDark:bgColorDark,bgColorDay:bgColorDay,btnColorDark:btnColorDark,btnColorDay:btnColorDay,cloudId:cloudId,cloudEnabled:cloudEnabled,standFilter:curStandFilter,cardStates:getCardStates()}}; var blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='stand-backup-'+new Date().toISOString().slice(0,10)+'.json'; a.click(); toast('💾 Копия загружена'); }
+function exportBackup(){ var backup={version:11,ts:Date.now(),app:'StandManagerPRO',items:items,users:users,historyLog:historyLog,adminPass:adminPass,savedTitles:savedTitles,savedYears:savedYears,savedIssueNums:savedIssueNums,removedSuggestions:removedSuggestions,standNames:standNames,settings:{fs:curFS,lfs:curLFS,ff:curFF,theme:curTheme,sort:curSort,bgColorDark:bgColorDark,bgColorDay:bgColorDay,btnColorDark:btnColorDark,btnColorDay:btnColorDay,cloudId:cloudId,cloudEnabled:cloudEnabled,standFilter:curStandFilter,cardStates:getCardStates()}}; var blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='stand-backup-'+new Date().toISOString().slice(0,10)+'.json'; a.click(); toast('💾 Копия загружена'); }
 function importBackup(e){
   var file=e.target.files[0]; if(!file) return;
   var reader=new FileReader();
@@ -2209,36 +2219,30 @@ async function processIncomingReport(reportId){
         return {report, applied: 0, note: 'литература не найдена'};
       }
       
-      const standSum = stSum(freshItem);
-      const available = standSum > 0 ? standSum : freshItem.qty;
-      const actual = Math.min(available, report.qty);
+      // Находим стенд для списания
+      let standNum = parseInt(report.standNumber);
+      if(!standNum || standNum < 1 || standNum > 4){
+        for(let i=1; i<=4; i++){
+          if((parseInt(freshItem.standCounts[i])||0) > 0){ standNum = i; break; }
+        }
+      }
+      if(!standNum){
+        tx.update(reportRef, {processed:true, processedAt:Date.now(), appliedQty:0, note:'стенд не определён'});
+        return {report, applied: 0, note: 'стенд не определён'};
+      }
+      
+      // Списываем ТОЛЬКО со стенда, qty (запас) НЕ трогаем
+      let onStand = parseInt(freshItem.standCounts[standNum]) || 0;
+      let actual = Math.min(onStand, report.qty);
       
       if(actual > 0){
-        freshItem.qty -= actual; // Уменьшаем общий склад
-        
-        if (report.standNumber) {
-            // Списание с конкретного стенда, который выбрал возвещатель
-            let s = parseInt(report.standNumber);
-            let onStand = parseInt(freshItem.standCounts[s]) || 0;
-            let take = Math.min(onStand, actual);
-            freshItem.standCounts[s] -= take;
-        } else {
-            // Запасной вариант (для старых отчетов)
-            let toRemove = actual;
-            for(let s=1; s<=4; s++){
-                if(toRemove <= 0) break;
-                let onStand = parseInt(freshItem.standCounts[s]) || 0;
-                let take = Math.min(onStand, toRemove);
-                freshItem.standCounts[s] -= take;
-                toRemove -= take;
-            }
-        }
-        tx.update(standRef, {items: freshItems});
+        freshItem.standCounts[standNum] -= actual;
+        tx.update(standRef, {items: freshItems, updated: Date.now()});
       }
       
       tx.update(reportRef, {
         processed: true, processedAt: Date.now(), appliedQty: actual,
-        note: actual < report.qty ? 'частично (на стендах только '+actual+')' : ''
+        note: actual < report.qty ? 'на стенде было только '+actual : ''
       });
       return {report, applied: actual, freshItems, itemId: report.itemId};
     });
@@ -2341,13 +2345,10 @@ function renderWitnessReportsUI(){
     var when = r.createdAt ? new Date(r.createdAt).toLocaleString('ru-RU') : '';
     var status = r.processed
       ? (r.appliedQty > 0
-          ? '<span style="color:#22c55e;font-weight:bold">✓ −'+r.appliedQty+' шт.</span>'
+          ? '<span style="color:#22c55e;font-weight:bold">✓ −'+r.appliedQty+' со стенда</span>'
           : '<span style="color:#f59e0b;font-weight:bold">⚠ не списано'+(r.note?' ('+esc(r.note)+')':'')+'</span>')
       : '<span style="color:#a855f7;font-weight:bold">⏳ в обработке</span>';
-      
-    // Добавляем отображение стенда, с которого был отчет
     var standStr = r.standName ? ('🏛️ ' + esc(r.standName) + ' · ') : '';
-    
     return '<div class="user-row">'+
       '<div style="flex:1;min-width:0">'+
         '<div class="uname">'+esc(r.witnessName||r.witnessEmail||'')+'</div>'+

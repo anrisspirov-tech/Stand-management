@@ -995,6 +995,7 @@ function cleanUsers(arr){
     return {
       id: parseFloat(u.id)||Date.now()+Math.random(),
       name: cleanStr(u.name||''),
+      surname: cleanStr(u.surname||''),
       email: cleanStr(u.email||'').toLowerCase(),
       role: cleanStr(u.role||'counter'),
       perms: u.perms || {},
@@ -1092,8 +1093,8 @@ try{ users=cleanUsers(JSON.parse(localStorage.getItem('stand_users_v1')||'[]'));
 try{ historyLog=JSON.parse(localStorage.getItem('stand_history')||'[]'); }catch(e){ historyLog=[]; }
 
 users=users.map(function(u){ if(!u.perms) u.perms={}; PERM_KEYS.forEach(function(k){ if(typeof u.perms[k]!=='boolean') u.perms[k]=(PERMS_PRESETS[u.role]||PERMS_PRESETS.counter)[k]||false; }); return u; });
-if(!users.find(function(u){ return u.role === 'admin'; })){ users.unshift({id:Date.now(),name:'Admin',email:'',role:'admin',perms:JSON.parse(JSON.stringify(PERMS_PRESETS.admin)),active:true}); }
-if(!currentUserId || !users.find(function(u){ return u.id == currentUserId; })){ var adm=users.find(function(u){ return u.role==='admin'; }); currentUserId=adm?adm.id:users[0].id; }
+if(!users.find(function(u){ return u.role === 'admin'; })){ users.unshift({id:Date.now(),name:'Admin',surname:'',email:'',role:'admin',perms:JSON.parse(JSON.stringify(PERMS_PRESETS.admin)),active:true,createdAt:Date.now()}); }
+if(!currentUserId || !users.find(function(u){ return u.id == currentUserId; })){ var adm=users.find(function(u){ return u.role==='admin' && u.active !== false; }); currentUserId=adm?adm.id:(users[0]?users[0].id:null); }
 localStorage.setItem('stand_current_user_id', currentUserId);
 localStorage.setItem('stand_users_v1', JSON.stringify(users));
 
@@ -1577,6 +1578,7 @@ function save(){
     localStorage.setItem('stand_saved_issue_nums', JSON.stringify(savedIssueNums));
     localStorage.setItem('stand_removed_suggestions', JSON.stringify(removedSuggestions));
     localStorage.setItem('stand_names', JSON.stringify(standNames));
+    localStorage.setItem('stand_local_ts', String(Date.now()));
   }catch(e){}
   if(cloudEnabled && !isSyncingFromCloud && cloudDb){ clearTimeout(cloudPushTimeout); cloudPushTimeout=setTimeout(function(){ try{ pushToCloud(); }catch(e){} },800); }
 }
@@ -2109,15 +2111,27 @@ function addItem(){
 function renderUsers(){ 
   var list=document.getElementById('usersList'); 
   if(!list) return; 
-  if(users.length===0){ list.innerHTML='<div class="small">—</div>'; return; } 
+  if(users.length===0){ list.innerHTML='<div class="small">—</div>'; return; }
+  var activeUsers = users.filter(function(u){ return u.active !== false; });
+  var inactiveUsers = users.filter(function(u){ return u.active === false; });
   var h=''; 
-  users.forEach(function(u){ 
+  activeUsers.forEach(function(u){ 
     h+='<div class="user-row"><div style="flex:1;min-width:0"><div class="uname">👤 '+esc(u.name)+' <span class="urole role-'+u.role+'">'+esc(getRoleDisplay(u.role))+'</span></div>'+
        (u.email ? '<div class="small" style="color:var(--muted)">📧 '+esc(u.email)+'</div>' : '<div class="small" style="color:var(--muted);opacity:0.6">📧 email не указан</div>')+
        '</div>'+
        '<button class="icon-btn" style="background:#3b82f6;color:#fff;border:0;padding:8px 12px;border-radius:6px;margin-right:4px" onclick="openEditUser(\''+u.id+'\')">✏️</button>'+
-       (users.length>1?'<button class="icon-btn" style="background:#ef4444;color:#fff;border:0;padding:8px 12px;border-radius:6px" onclick="deleteUser('+u.id+')">🗑️</button>':'')+'</div>'; 
+       (activeUsers.length>1?'<button class="icon-btn" style="background:#ef4444;color:#fff;border:0;padding:8px 12px;border-radius:6px" onclick="deleteUser('+u.id+')">🚫</button>':'')+'</div>'; 
   }); 
+  if(inactiveUsers.length > 0){
+    h += '<div class="small" style="margin-top:14px;color:var(--muted);font-weight:bold">🚫 Деактивированные ('+inactiveUsers.length+'):</div>';
+    inactiveUsers.forEach(function(u){
+      h += '<div class="user-row" style="opacity:0.6"><div style="flex:1;min-width:0">'+
+        '<div class="uname">👤 '+esc(u.name)+' <span class="urole role-'+u.role+'" style="opacity:0.7">'+esc(getRoleDisplay(u.role))+'</span></div>'+
+        (u.email ? '<div class="small" style="color:var(--muted)">📧 '+esc(u.email)+'</div>' : '')+
+        '</div>'+
+        '<button class="icon-btn" style="background:#22c55e;color:#000;border:0;padding:8px 12px;border-radius:6px" onclick="restoreUser('+u.id+')">↺ Восстановить</button></div>';
+    });
+  }
   list.innerHTML=h; 
 }
 
@@ -2177,6 +2191,7 @@ function addUser(){
   users.push({
     id: Date.now() + Math.random(),
     name: name,
+    surname: '',
     email: email,
     role: role,
     perms: perms,
@@ -2190,11 +2205,42 @@ function addUser(){
   addLog('Новый пользователь', {userName: name});
   toast('✅ Новый пользователь: ' + name + (email ? ' (' + email + ')' : ''));
 }
-function deleteUser(id){ customConfirm('Удалить пользователя?', function(){ pushUndo('Удалить пользователя'); users=users.filter(function(u){ return u.id!=id; }); if(currentUserId==id){ var adm=users.find(function(u){ return u.role==='admin'; }); currentUserId=adm?adm.id:(users[0]?users[0].id:null); } save(); renderUsers(); renderUserSelectList(); updateUserChip(); render(); }); }
+function deleteUser(id){
+  customConfirm('Деактивировать пользователя? Он не сможет войти, но его данные сохранятся (можно восстановить).', function(){
+    pushUndo('Деактивировать пользователя');
+    var u = users.find(function(x){ return x.id == id; });
+    if(u) u.active = false;
+    if(currentUserId == id){
+      var activeUsers = users.filter(function(x){ return x.active !== false; });
+      var adm = activeUsers.find(function(x){ return x.role === 'admin'; });
+      currentUserId = adm ? adm.id : (activeUsers[0] ? activeUsers[0].id : null);
+    }
+    save(); renderUsers(); renderUserSelectList(); updateUserChip(); render();
+    toast('✅ Пользователь деактивирован');
+  });
+}
+function restoreUser(id){
+  var u = users.find(function(x){ return x.id == id; });
+  if(!u) return;
+  pushUndo('Восстановить пользователя');
+  u.active = true;
+  save(); renderUsers(); renderUserSelectList();
+  toast('✅ Пользователь восстановлен');
+}
 function updatePermsFromRole(){ var role=document.getElementById('newUserRole').value; var p=PERMS_PRESETS[role]||PERMS_PRESETS.counter; PERM_KEYS.forEach(function(k){ var el=document.getElementById('p_'+k); if(el) el.checked=!!p[k]; }); }
 function openUserSelector(){ renderUserSelectList(); document.getElementById('userOverlay').classList.add('show'); }
 function closeUserSelector(){ document.getElementById('userOverlay').classList.remove('show'); }
-function renderUserSelectList(){ var list=document.getElementById('userSelectList'); if(!list) return; if(users.length===0){ list.innerHTML='<div class="small" style="text-align:center;padding:20px">—</div>'; return; } var h=''; users.forEach(function(u){ var isCur=u.id==currentUserId; h+='<div onclick="pickUser('+u.id+')" style="background:var(--card2);padding:14px;border-radius:10px;margin:6px 0;cursor:pointer;border:2px solid '+(isCur?'#22c55e':'transparent')+'"><b style="font-size:1.1em">👤 '+esc(u.name)+'</b> <span class="urole role-'+u.role+'">'+esc(getRoleDisplay(u.role))+'</span>'+(u.email?'<div class="small" style="color:var(--muted);margin-top:2px">📧 '+esc(u.email)+'</div>':'')+'</div>'; }); list.innerHTML=h; }
+function renderUserSelectList(){
+  var list=document.getElementById('userSelectList'); if(!list) return;
+  var activeUsers = users.filter(function(u){ return u.active !== false; });
+  if(activeUsers.length===0){ list.innerHTML='<div class="small" style="text-align:center;padding:20px">—</div>'; return; }
+  var h='';
+  activeUsers.forEach(function(u){
+    var isCur=u.id==currentUserId;
+    h+='<div onclick="pickUser('+u.id+')" style="background:var(--card2);padding:14px;border-radius:10px;margin:6px 0;cursor:pointer;border:2px solid '+(isCur?'#22c55e':'transparent')+'"><b style="font-size:1.1em">👤 '+esc(u.name)+'</b> <span class="urole role-'+u.role+'">'+esc(getRoleDisplay(u.role))+'</span>'+(u.email?'<div class="small" style="color:var(--muted);margin-top:2px">📧 '+esc(u.email)+'</div>':'')+'</div>';
+  });
+  list.innerHTML=h;
+}
 function pickUser(id){ currentUserId=id; localStorage.setItem('stand_current_user_id',id); var u=getCurrentUser(); addLog('Соединение',{userName:u?u.name:''}); updateUserChip(); closeUserSelector(); render(); }
 function updateUserChip(){ var u=getCurrentUser(); var chip=document.getElementById('userChip'),txt=document.getElementById('userChipText'); if(!chip||!txt) return; if(u){ chip.className='user-chip'; txt.textContent=u.name; } else { chip.className='user-chip no-user'; txt.textContent='👤'; } }
 
@@ -2295,9 +2341,20 @@ async function initFirebase(){
       if(!snap.exists()){ setSyncState('synced'); return; }
       var data=snap.data(); if(!data || isSyncingFromCloud) return;
       if(data.updated && pendingPushTs[data.updated]){ setSyncState('synced'); return; }
+
+      var remoteTs = parseInt(data.updated) || 0;
+      var localTs = parseInt(localStorage.getItem('stand_local_ts') || '0');
+      if(remoteTs > 0 && remoteTs < localTs){ setSyncState('synced'); return; }
+
       isSyncingFromCloud=true;
-      if(data.items) items=cleanItems(data.items);
-      if(data.users && Array.isArray(data.users)){ users=cleanUsers(data.users); }
+
+      var remoteHasItems = Array.isArray(data.items) && data.items.length > 0;
+      if(remoteHasItems) items=cleanItems(data.items);
+      else if(items.length === 0) items = [];
+
+      var remoteHasUsers = Array.isArray(data.users) && data.users.length > 0;
+      if(remoteHasUsers) users=cleanUsers(data.users);
+
       if(data.adminPass && data.adminPass!==adminPass){ adminPass=data.adminPass; localStorage.setItem('stand_pass',adminPass); }
       if(data.history && Array.isArray(data.history)){ historyLog=data.history; }
       if(data.savedTitles && Array.isArray(data.savedTitles)) savedTitles = data.savedTitles;
@@ -2307,7 +2364,17 @@ async function initFirebase(){
         saveStandNamesToStorage();
         refreshStandNamesUI();
       }
-      save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); populateDatalists();
+      // Persist without echo push
+      try{
+        localStorage.setItem('stand_items_v4', JSON.stringify(items));
+        localStorage.setItem('stand_users_v1', JSON.stringify(users));
+        localStorage.setItem('stand_history', JSON.stringify(historyLog));
+        localStorage.setItem('stand_names', JSON.stringify(standNames));
+        localStorage.setItem('stand_saved_titles', JSON.stringify(savedTitles));
+        localStorage.setItem('stand_removed_suggestions', JSON.stringify(removedSuggestions));
+      }catch(e){}
+
+      render(); renderUsers(); renderUserSelectList(); updateUserChip(); populateDatalists();
       setSyncState('synced'); isSyncingFromCloud=false;
     });
     setSyncState('synced');
@@ -2323,6 +2390,7 @@ async function pushToCloud(){
     pendingPushTs[ts] = true;
     setTimeout(function(){ delete pendingPushTs[ts]; }, 15000);
     await window._fb.setDoc(dRef,{items:items,users:users,adminPass:adminPass,history:historyLog,savedTitles:savedTitles,removedSuggestions:removedSuggestions,standNames:standNames,updated:ts},{merge:true});
+    localStorage.setItem('stand_local_ts', String(ts));
     setSyncState('synced');
   }catch(e){ setSyncState('error'); }
 }

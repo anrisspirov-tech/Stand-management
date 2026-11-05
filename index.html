@@ -120,6 +120,8 @@ option{background:var(--card2);color:var(--text)}
 @keyframes pulse2{0%,100%{opacity:1}50%{opacity:0.4}}
 .user-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;background:#a855f7;color:#fff;font-size:0.85em;font-weight:bold;cursor:pointer}
 .user-chip.no-user{background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border)}
+.code-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:99px;font-size:0.8em;font-weight:bold;background:var(--btn-bg);color:var(--text);cursor:pointer;border:1px solid var(--btn-border);font-family:monospace}
+.code-chip.ok{background:#06b6d4;color:#000;border-color:#06b6d4}
 .toolbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px}
 .toolbar select{padding:6px 8px;font-size:0.85em;flex:1;min-width:120px}
 #standOverlay,#rnOverlay,#ccOverlay,#regOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
@@ -155,6 +157,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <h1>STAND HELPER</h1>
 <div style="margin-top:6px;display:flex;gap:5px;justify-content:center;align-items:center;flex-wrap:wrap">
 <span class="sync-chip offline" id="syncChip" onclick="showSyncInfo()"><span class="sync-dot"></span><span id="syncChipText">Офлайн</span></span>
+<span class="code-chip" id="codeChip" onclick="promptChangeCode()">🔗 <span id="codeChipText">—</span></span>
 <span class="user-chip no-user" id="userChip" onclick="confirmLogout()">👤 <span id="userChipText">—</span></span>
 </div>
 <div style="margin-top:6px;display:flex;gap:3px;justify-content:center;flex-wrap:wrap">
@@ -337,6 +340,9 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <div class="small" style="text-align:center;color:var(--muted);margin-bottom:18px;line-height:1.5">
 Зарегистрируйтесь один раз —<br>дальше вход будет автоматическим.
 </div>
+<label>🔗 Код стенда (у координатора) *</label>
+<input id="regStandCode" placeholder="напр. stand-2026" style="margin-bottom:12px" autocomplete="off">
+<div class="small" id="regCodeHint" style="margin-top:-8px;margin-bottom:8px;color:#f59e0b;line-height:1.4"></div>
 <label>Имя *</label>
 <input id="regName" placeholder="Иван" style="margin-bottom:8px" autocomplete="given-name">
 <label>Фамилия</label>
@@ -385,11 +391,11 @@ var chartMainInst = null;
 
 var cloudEnabled = localStorage.getItem('stand_cloud_enabled') !== 'false';
 var cloudId = localStorage.getItem('stand_cloud_id') || '';
-var cloudApp = null, cloudDb = null;
+var cloudApp = null, cloudDb = null, cloudUnsub = null;
 var isSyncingFromCloud = false;
 var cloudPushTimeout = null;
 var pendingPushTs = {};
-var suppressPushCount = 0; // prevent echo pushes during snapshot processing
+var suppressPushCount = 0;
 
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 function toast(msg, ms){
@@ -519,7 +525,6 @@ function loadFromLocal(){
   }catch(e){}
 }
 
-/* === PERSISTENCE: save with timestamp === */
 function saveToLocal(){
   localStorage.setItem('stand_items_v4', JSON.stringify(items));
   localStorage.setItem('stand_users_v1', JSON.stringify(users));
@@ -532,6 +537,39 @@ function saveToLocal(){
 }
 
 function getLocalTs(){ return parseInt(localStorage.getItem('stand_local_ts') || '0'); }
+
+function updateCodeChip(){
+  var el = document.getElementById('codeChipText');
+  var chip = document.getElementById('codeChip');
+  if(el) el.textContent = cloudId || 'не задан';
+  if(chip){
+    if(cloudId) chip.classList.add('ok');
+    else chip.classList.remove('ok');
+  }
+}
+
+function promptChangeCode(){
+  if(!currentUser){ toast('Сначала зарегистрируйтесь'); return; }
+  var newCode = prompt('Код стенда (у координатора):', cloudId || '');
+  if(newCode === null) return;
+  newCode = String(newCode).trim();
+  if(!newCode){ toast('⚠️ Код не может быть пустым'); return; }
+  if(newCode.length < 3){ toast('⚠️ Слишком короткий код'); return; }
+  if(newCode === cloudId){ toast('Код не изменился'); return; }
+  cloudId = newCode;
+  cloudEnabled = true;
+  localStorage.setItem('stand_cloud_id', cloudId);
+  localStorage.setItem('stand_cloud_enabled', 'true');
+  // Clear items — snapshot will refill from new stand
+  items = [];
+  saveToLocal();
+  updateCodeChip();
+  if(cloudUnsub){ try{ cloudUnsub(); }catch(e){} cloudUnsub = null; }
+  isSyncingFromCloud = false;
+  initFirebase();
+  render();
+  toast('🔗 Подключение к стенду "' + cloudId + '"');
+}
 
 /* === THEME === */
 function toggleTheme(){
@@ -562,10 +600,15 @@ function setSyncState(state){
 }
 function showSyncInfo(){
   var t = document.getElementById('syncChipText');
-  toast('Статус: ' + (t ? t.textContent : '—'));
+  toast('Статус: ' + (t ? t.textContent : '—') + ' · Код: ' + (cloudId || '—'));
 }
 
 async function initFirebase(){
+  if(!cloudId){
+    setSyncState('offline');
+    console.warn('No cloudId — skipping Firebase init');
+    return;
+  }
   try{
     const {initializeApp} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
     const {getFirestore,doc,setDoc,onSnapshot,getDoc} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
@@ -582,48 +625,44 @@ async function initFirebase(){
       window._fb = {doc, setDoc, onSnapshot, getDoc};
     }
     setSyncState('connecting');
+    if(cloudUnsub){ try{ cloudUnsub(); }catch(e){} cloudUnsub = null; }
     var dRef = window._fb.doc(cloudDb,'stands',cloudId);
-    window._fb.onSnapshot(dRef, function(snap){
+    cloudUnsub = window._fb.onSnapshot(dRef, function(snap){
       if(!snap.exists()){
         setSyncState('synced');
-        // Fresh collection - push our local data if any
         if((items && items.length > 0) || (users && users.length > 0)){
           clearTimeout(cloudPushTimeout);
           cloudPushTimeout = setTimeout(function(){ try{ pushToCloud(); }catch(e){} }, 300);
+        } else if(currentUser){
+          toast('⚠️ Стенд "' + cloudId + '" пуст. Проверьте код у координатора.', 5000);
         }
         return;
       }
       var data = snap.data();
       if(!data) return;
       if(data.updated && pendingPushTs[data.updated]){ setSyncState('synced'); return; }
-      
+
       var remoteTs = parseInt(data.updated) || 0;
       var localTs = getLocalTs();
-      
-      // === PROTECTION: if our local data is newer, skip ===
       if(remoteTs > 0 && remoteTs < localTs){
         setSyncState('synced');
-        // Push our newer data
         clearTimeout(cloudPushTimeout);
         cloudPushTimeout = setTimeout(function(){ try{ pushToCloud(); }catch(e){} }, 300);
         return;
       }
-      
+
       isSyncingFromCloud = true;
       suppressPushCount++;
-      
+
       var remoteHasItems = Array.isArray(data.items) && data.items.length > 0;
       var localHasItems = Array.isArray(items) && items.length > 0;
       var remoteHasUsers = Array.isArray(data.users) && data.users.length > 0;
-      
-      // === PROTECTION: never wipe local with empty remote ===
+
       if(remoteHasItems) items = cleanItems(data.items);
       else if(!localHasItems) items = [];
-      // else keep local items
-      
+
       if(remoteHasUsers){
         var remoteUsers = cleanUsers(data.users);
-        // Restore current user if missing from remote but active locally
         if(currentUserEmail){
           var foundInRemote = remoteUsers.find(function(u){
             return u.email && u.email.toLowerCase() === currentUserEmail.toLowerCase();
@@ -639,18 +678,15 @@ async function initFirebase(){
         }
         users = remoteUsers;
       }
-      // else keep local users
-      
+
       if(data.standNames && typeof data.standNames==='object'){
         for(var k=1;k<=4;k++) if(data.standNames[k]) standNames[k] = String(data.standNames[k]);
       }
-      
-      // Persist to localStorage WITHOUT triggering push
+
       localStorage.setItem('stand_items_v4', JSON.stringify(items));
       localStorage.setItem('stand_users_v1', JSON.stringify(users));
       localStorage.setItem('stand_names', JSON.stringify(standNames));
-      
-      // Update current user state
+
       if(currentUserEmail){
         var found = users.find(function(u){
           return u.email && u.email.toLowerCase() === currentUserEmail.toLowerCase();
@@ -659,7 +695,6 @@ async function initFirebase(){
           currentUser = found;
           updateUI();
         } else if(found && found.active === false){
-          // Explicitly deactivated by admin
           currentUser = null;
           currentUserEmail = '';
           localStorage.removeItem('stand_user_email');
@@ -668,10 +703,8 @@ async function initFirebase(){
           showRegister();
           toast('⚠️ Ваш аккаунт деактивирован администратором');
         }
-        // If not found at all: keep current state (was likely restored locally)
       }
-      
-      // If we restored the current user locally, push it back
+
       if(currentUserEmail && remoteHasUsers){
         var wasRestored = !data.users.some(function(u){
           return u.email && String(u.email).toLowerCase() === currentUserEmail.toLowerCase();
@@ -685,7 +718,7 @@ async function initFirebase(){
           return;
         }
       }
-      
+
       suppressPushCount--;
       isSyncingFromCloud = false;
       setSyncState('synced');
@@ -701,7 +734,7 @@ async function initFirebase(){
 }
 
 async function pushToCloud(){
-  if(!cloudEnabled || !cloudDb) return;
+  if(!cloudEnabled || !cloudDb || !cloudId) return;
   try{
     setSyncState('pushing');
     var dRef = window._fb.doc(cloudDb,'stands',cloudId);
@@ -729,7 +762,6 @@ function tryRestoreCurrentUser(){
     return u.email && u.email.toLowerCase() === currentUserEmail.toLowerCase();
   });
   if(found) return found;
-  // Try restore from saved profile
   var savedName = localStorage.getItem('stand_user_name');
   var savedSurname = localStorage.getItem('stand_user_surname') || '';
   if(savedName){
@@ -749,13 +781,27 @@ function tryRestoreCurrentUser(){
   return null;
 }
 
-function showRegister(){
+function showRegister(prefill){
   var main = document.getElementById('mainContent');
   if(main) main.style.display = 'none';
   var ov = document.getElementById('regOverlay');
   if(ov) ov.classList.add('show');
+  var hint = document.getElementById('regCodeHint');
+  var nameEl = document.getElementById('regName');
+  var surEl = document.getElementById('regSurname');
+  var emEl = document.getElementById('regEmail');
+  var codeEl = document.getElementById('regStandCode');
+  if(prefill){
+    if(nameEl) nameEl.value = localStorage.getItem('stand_user_name') || '';
+    if(surEl) surEl.value = localStorage.getItem('stand_user_surname') || '';
+    if(emEl) emEl.value = currentUserEmail || '';
+    if(codeEl) codeEl.value = cloudId || '';
+    if(hint) hint.textContent = '⚠️ Введите код стенда, чтобы подключиться к данным координатора.';
+  } else {
+    if(hint) hint.textContent = '';
+  }
   setTimeout(function(){
-    var el = document.getElementById('regName');
+    var el = codeEl;
     if(el) el.focus();
   }, 200);
 }
@@ -766,19 +812,22 @@ function hideRegister(){
 }
 
 function handleRegister(){
+  var standCode = (document.getElementById('regStandCode').value || '').trim();
   var name = (document.getElementById('regName').value || '').trim();
   var surname = (document.getElementById('regSurname').value || '').trim();
   var email = (document.getElementById('regEmail').value || '').trim().toLowerCase();
   var errEl = document.getElementById('regError');
   errEl.textContent = '';
 
+  if(!standCode){ errEl.textContent = '⚠️ Введите код стенда'; return; }
+  if(standCode.length < 3){ errEl.textContent = '⚠️ Слишком короткий код стенда'; return; }
   if(!email){ errEl.textContent = '⚠️ Введите email'; return; }
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ errEl.textContent = '⚠️ Некорректный email'; return; }
 
   var existing = users.find(function(u){ return u.email && u.email.toLowerCase() === email; });
 
   if(existing){
-    if(existing.active === false){
+    if(!existing.active){
       errEl.textContent = '❌ Ваш аккаунт деактивирован. Обратитесь к администратору.';
       return;
     }
@@ -801,24 +850,29 @@ function handleRegister(){
     currentUser = newUser;
   }
 
-  // Save profile in multiple places for maximum resilience
   currentUserEmail = email;
   localStorage.setItem('stand_user_email', email);
   localStorage.setItem('stand_user_name', currentUser.name || '');
   localStorage.setItem('stand_user_surname', currentUser.surname || '');
-  
-  // Save to localStorage (sync write) - this sets stand_local_ts
+
+  // === IMPORTANT: Save stand code and enable cloud ===
+  cloudId = standCode;
+  cloudEnabled = true;
+  localStorage.setItem('stand_cloud_id', cloudId);
+  localStorage.setItem('stand_cloud_enabled', 'true');
+
   saveToLocal();
 
   hideRegister();
   document.getElementById('mainContent').style.display = 'block';
   updateUI();
   setupCollapsibleCards();
+  updateCodeChip();
   toast('✅ Добро пожаловать, ' + (currentUser.name || currentUser.email) + '!');
-  
-  // Push immediately if cloud ready
-  if(cloudDb){
-    setTimeout(function(){ try{ pushToCloud(); }catch(e){} }, 100);
+
+  // Now connect to Firebase
+  if(cloudId){
+    setTimeout(function(){ try{ initFirebase(); }catch(e){ console.error(e); } }, 100);
   }
 }
 
@@ -829,6 +883,7 @@ function confirmLogout(){
   localStorage.removeItem('stand_user_email');
   localStorage.removeItem('stand_user_name');
   localStorage.removeItem('stand_user_surname');
+  if(cloudUnsub){ try{ cloudUnsub(); }catch(e){} cloudUnsub = null; }
   showRegister();
 }
 
@@ -842,6 +897,7 @@ function updateUI(){
   if(uc) uc.textContent = currentUser.name || currentUser.email || '—';
   var chip = document.getElementById('userChip');
   if(chip) chip.className = 'user-chip';
+  updateCodeChip();
 
   var canAdd = hasPerm('add');
   var addCard = document.getElementById('addCard');
@@ -959,7 +1015,13 @@ function render(){
 
   var h = '';
   if(filtered.length === 0){
-    h = '<div style="text-align:center;padding:30px;color:var(--muted)">📦 —</div>';
+    if(!cloudId){
+      h = '<div style="text-align:center;padding:30px;color:#ef4444">🔗 Код стенда не задан.<br><span style="font-size:0.85em">Нажмите на чип «🔗 ...» вверху, чтобы ввести код.</span></div>';
+    } else if(items.length === 0){
+      h = '<div style="text-align:center;padding:30px;color:var(--muted)">📦 Данных пока нет.<br><span style="font-size:0.85em">Проверьте код стенда или попросите координатора отправить данные.</span></div>';
+    } else {
+      h = '<div style="text-align:center;padding:30px;color:var(--muted)">📦 —</div>';
+    }
   }
   for(var i=0;i<filtered.length;i++){
     var it = filtered[i];
@@ -1463,11 +1525,11 @@ document.getElementById('ccOverlay').onclick = function(e){ if(e.target===this) 
 function init(){
   applyTheme();
   loadFromLocal();
+  updateCodeChip();
 
   if(currentUserEmail){
     currentUser = tryRestoreCurrentUser();
     if(!currentUser){
-      // Could not restore - ask to re-register
       currentUserEmail = '';
       localStorage.removeItem('stand_user_email');
     } else if(currentUser.active === false){
@@ -1479,12 +1541,23 @@ function init(){
     }
   }
 
+  // If logged in but no cloudId → need to enter code
+  if(!cloudId){
+    if(currentUser){
+      // Pre-fill and prompt for code
+      showRegister(true);
+    } else {
+      showRegister(false);
+    }
+    return;
+  }
+
   if(currentUser){
     document.getElementById('mainContent').style.display = 'block';
     updateUI();
     setupCollapsibleCards();
   } else {
-    showRegister();
+    showRegister(false);
   }
 
   if(cloudEnabled && cloudId){

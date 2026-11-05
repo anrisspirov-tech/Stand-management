@@ -120,8 +120,6 @@ option{background:var(--card2);color:var(--text)}
 @keyframes pulse2{0%,100%{opacity:1}50%{opacity:0.4}}
 .user-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;background:#a855f7;color:#fff;font-size:0.85em;font-weight:bold;cursor:pointer}
 .user-chip.no-user{background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border)}
-.code-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:99px;font-size:0.8em;font-weight:bold;background:var(--btn-bg);color:var(--text);cursor:pointer;border:1px solid var(--btn-border);font-family:monospace}
-.code-chip.ok{background:#06b6d4;color:#000;border-color:#06b6d4}
 .toolbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px}
 .toolbar select{padding:6px 8px;font-size:0.85em;flex:1;min-width:120px}
 #standOverlay,#rnOverlay,#ccOverlay,#regOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
@@ -157,7 +155,6 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <h1>STAND HELPER</h1>
 <div style="margin-top:6px;display:flex;gap:5px;justify-content:center;align-items:center;flex-wrap:wrap">
 <span class="sync-chip offline" id="syncChip" onclick="showSyncInfo()"><span class="sync-dot"></span><span id="syncChipText">Офлайн</span></span>
-<span class="code-chip" id="codeChip" onclick="promptChangeCode()">🔗 <span id="codeChipText">—</span></span>
 <span class="user-chip no-user" id="userChip" onclick="confirmLogout()">👤 <span id="userChipText">—</span></span>
 </div>
 <div style="margin-top:6px;display:flex;gap:3px;justify-content:center;flex-wrap:wrap">
@@ -538,39 +535,6 @@ function saveToLocal(){
 
 function getLocalTs(){ return parseInt(localStorage.getItem('stand_local_ts') || '0'); }
 
-function updateCodeChip(){
-  var el = document.getElementById('codeChipText');
-  var chip = document.getElementById('codeChip');
-  if(el) el.textContent = cloudId || 'не задан';
-  if(chip){
-    if(cloudId) chip.classList.add('ok');
-    else chip.classList.remove('ok');
-  }
-}
-
-function promptChangeCode(){
-  if(!currentUser){ toast('Сначала зарегистрируйтесь'); return; }
-  var newCode = prompt('Код стенда (у координатора):', cloudId || '');
-  if(newCode === null) return;
-  newCode = String(newCode).trim();
-  if(!newCode){ toast('⚠️ Код не может быть пустым'); return; }
-  if(newCode.length < 3){ toast('⚠️ Слишком короткий код'); return; }
-  if(newCode === cloudId){ toast('Код не изменился'); return; }
-  cloudId = newCode;
-  cloudEnabled = true;
-  localStorage.setItem('stand_cloud_id', cloudId);
-  localStorage.setItem('stand_cloud_enabled', 'true');
-  // Clear items — snapshot will refill from new stand
-  items = [];
-  saveToLocal();
-  updateCodeChip();
-  if(cloudUnsub){ try{ cloudUnsub(); }catch(e){} cloudUnsub = null; }
-  isSyncingFromCloud = false;
-  initFirebase();
-  render();
-  toast('🔗 Подключение к стенду "' + cloudId + '"');
-}
-
 /* === THEME === */
 function toggleTheme(){
   document.body.classList.toggle('day');
@@ -600,7 +564,7 @@ function setSyncState(state){
 }
 function showSyncInfo(){
   var t = document.getElementById('syncChipText');
-  toast('Статус: ' + (t ? t.textContent : '—') + ' · Код: ' + (cloudId || '—'));
+  toast('Статус: ' + (t ? t.textContent : '—'));
 }
 
 async function initFirebase(){
@@ -634,7 +598,7 @@ async function initFirebase(){
           clearTimeout(cloudPushTimeout);
           cloudPushTimeout = setTimeout(function(){ try{ pushToCloud(); }catch(e){} }, 300);
         } else if(currentUser){
-          toast('⚠️ Стенд "' + cloudId + '" пуст. Проверьте код у координатора.', 5000);
+          toast('⚠️ Данные стенда не найдены. Проверьте код у координатора.', 5000);
         }
         return;
       }
@@ -795,7 +759,7 @@ function showRegister(prefill){
     if(nameEl) nameEl.value = localStorage.getItem('stand_user_name') || '';
     if(surEl) surEl.value = localStorage.getItem('stand_user_surname') || '';
     if(emEl) emEl.value = currentUserEmail || '';
-    if(codeEl) codeEl.value = cloudId || '';
+    if(codeEl) codeEl.value = '';
     if(hint) hint.textContent = '⚠️ Введите код стенда, чтобы подключиться к данным координатора.';
   } else {
     if(hint) hint.textContent = '';
@@ -855,7 +819,6 @@ function handleRegister(){
   localStorage.setItem('stand_user_name', currentUser.name || '');
   localStorage.setItem('stand_user_surname', currentUser.surname || '');
 
-  // === IMPORTANT: Save stand code and enable cloud ===
   cloudId = standCode;
   cloudEnabled = true;
   localStorage.setItem('stand_cloud_id', cloudId);
@@ -867,10 +830,8 @@ function handleRegister(){
   document.getElementById('mainContent').style.display = 'block';
   updateUI();
   setupCollapsibleCards();
-  updateCodeChip();
   toast('✅ Добро пожаловать, ' + (currentUser.name || currentUser.email) + '!');
 
-  // Now connect to Firebase
   if(cloudId){
     setTimeout(function(){ try{ initFirebase(); }catch(e){ console.error(e); } }, 100);
   }
@@ -883,6 +844,11 @@ function confirmLogout(){
   localStorage.removeItem('stand_user_email');
   localStorage.removeItem('stand_user_name');
   localStorage.removeItem('stand_user_surname');
+  // Очищаем код, чтобы при следующем входе человек его снова ввёл
+  localStorage.removeItem('stand_cloud_id');
+  localStorage.removeItem('stand_cloud_enabled');
+  cloudId = '';
+  cloudEnabled = false;
   if(cloudUnsub){ try{ cloudUnsub(); }catch(e){} cloudUnsub = null; }
   showRegister();
 }
@@ -897,7 +863,6 @@ function updateUI(){
   if(uc) uc.textContent = currentUser.name || currentUser.email || '—';
   var chip = document.getElementById('userChip');
   if(chip) chip.className = 'user-chip';
-  updateCodeChip();
 
   var canAdd = hasPerm('add');
   var addCard = document.getElementById('addCard');
@@ -1016,9 +981,9 @@ function render(){
   var h = '';
   if(filtered.length === 0){
     if(!cloudId){
-      h = '<div style="text-align:center;padding:30px;color:#ef4444">🔗 Код стенда не задан.<br><span style="font-size:0.85em">Нажмите на чип «🔗 ...» вверху, чтобы ввести код.</span></div>';
+      h = '<div style="text-align:center;padding:30px;color:#ef4444">🔗 Код стенда не задан.<br><span style="font-size:0.85em">Выйдите и зарегистрируйтесь заново, чтобы ввести код.</span></div>';
     } else if(items.length === 0){
-      h = '<div style="text-align:center;padding:30px;color:var(--muted)">📦 Данных пока нет.<br><span style="font-size:0.85em">Проверьте код стенда или попросите координатора отправить данные.</span></div>';
+      h = '<div style="text-align:center;padding:30px;color:var(--muted)">📦 Данных пока нет.<br><span style="font-size:0.85em">Попросите координатора добавить литературу.</span></div>';
     } else {
       h = '<div style="text-align:center;padding:30px;color:var(--muted)">📦 —</div>';
     }
@@ -1525,7 +1490,6 @@ document.getElementById('ccOverlay').onclick = function(e){ if(e.target===this) 
 function init(){
   applyTheme();
   loadFromLocal();
-  updateCodeChip();
 
   if(currentUserEmail){
     currentUser = tryRestoreCurrentUser();
@@ -1541,10 +1505,8 @@ function init(){
     }
   }
 
-  // If logged in but no cloudId → need to enter code
   if(!cloudId){
     if(currentUser){
-      // Pre-fill and prompt for code
       showRegister(true);
     } else {
       showRegister(false);

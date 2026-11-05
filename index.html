@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f59e0b">
-<title>Stand Manager PRO</title>
-<link id="manifestLink" rel="manifest" href='data:application/json;base64,eyJuYW1lIjoiU3RhbmQgTWFuYWdlciBQUk8iLCJzaG9ydF9uYW1lIjoiU3RhbmRQUk8iLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzBmMGYwZiIsInRoZW1lX2NvbG9yIjoiI2Y1OWUwYiIsImljb25zIjpbXX0='>
+<title>Stand Helper</title>
+<link id="manifestLink" rel="manifest" href='data:application/json;base64,eyJuYW1lIjoiU3RhbmQgSGVscGVyIiwic2hvcnRfbmFtZSI6IkhlbHBlciIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMGYwZjBmIiwidGhlbWVfY29sb3IiOiIjZjU5ZTBiIiwiaWNvbnMiOltdfQ=='>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root{--bg:#0f0f0f;--card:#1e1e1e;--card2:#252525;--text:#fff;--muted:#999;--border:#333;--header:#1a1a1a;--btn-bg:#2f2f2f;--btn-border:#4a4a4a;--primary:#f59e0b;--primary-text:#000}
@@ -21,8 +21,6 @@ button.sec{background:var(--btn-bg);color:var(--text);border:1px solid var(--btn
 button:disabled{opacity:0.5;cursor:not-allowed}
 button.typebtn{flex:1;padding:8px;font-size:0.8em;background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border)}
 button.typebtn.active{background:var(--primary);color:var(--primary-text)}
-.quick-add-btn{flex:1;min-width:100px;padding:12px 8px;background:linear-gradient(135deg,#06b6d4,#a855f7);color:#fff;border:0;border-radius:8px;font-weight:bold;cursor:pointer;font-size:0.85em;margin:0}
-.quick-add-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px;margin:8px 0}
 .wrap{padding:8px;max-width:800px;margin:0 auto}
 .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;margin:8px 0}
 label{color:var(--primary);font-size:0.85em;font-weight:bold;display:block;margin:8px 0 3px}
@@ -36,6 +34,9 @@ option{background:var(--card2);color:var(--text)}
 .item-actions{display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:flex-end;padding-top:8px;border-top:1px dashed var(--border)}
 .item .item-name{font-size:var(--list-font-size,13px);font-weight:bold;line-height:1.3;word-break:break-word}
 .item .item-cat{font-size:calc(var(--list-font-size,13px)*0.8);color:var(--muted);line-height:1.2}
+.item .item-extra{font-size:calc(var(--list-font-size,13px)*0.8);color:#06b6d4;font-weight:bold;line-height:1.2;margin-top:2px}
+.item .item-theme{font-size:calc(var(--list-font-size,13px)*0.85);color:#a855f7;font-style:italic;line-height:1.2;margin-top:2px}
+.item .item-langs{font-size:calc(var(--list-font-size,13px)*0.8);color:#06b6d4;font-weight:bold;line-height:1.4;margin-top:4px;background:rgba(6,182,212,0.12);padding:4px 8px;border-radius:6px;border-left:3px solid #06b6d4}
 .item .item-badge{font-size:calc(var(--list-font-size,13px)*0.75);padding:3px 8px;border-radius:99px;font-weight:bold;display:inline-block;margin-top:3px}
 .item .type-label{font-size:calc(var(--list-font-size,13px)*0.7);padding:2px 6px;border-radius:99px;font-weight:bold}
 .item .lang-label{font-size:calc(var(--list-font-size,13px)*0.7);padding:2px 7px;border-radius:99px;font-weight:bold;background:var(--btn-bg);border:1px solid var(--btn-border);color:var(--text)}
@@ -110,44 +111,55 @@ option{background:var(--card2);color:var(--text)}
 .stand-field{background:var(--card);border-radius:8px;padding:10px;margin:6px 0;display:flex;justify-content:space-between;align-items:center;gap:10px}
 .stand-field .sf-label{font-weight:bold;color:#06b6d4;font-size:1em;flex:1;min-width:0;word-break:break-word}
 .stand-field select{width:110px;padding:8px;font-weight:bold;font-size:1.05em;text-align:center;flex-shrink:0}
-.btn-mini{padding:4px 8px;font-size:0.75em;background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border);border-radius:6px;margin:0}
-#standOverlay, #userOverlay, #regOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
-#standOverlay.show, #userOverlay.show, #regOverlay.show{display:flex}
-#standBox, #userBox, #regBox{background:var(--card);border:2px solid #06b6d4;border-radius:14px;padding:20px;max-width:420px;width:100%;max-height:90vh;overflow:auto}
-#standBox h3, #userBox h3, #regBox h3{color:#06b6d4;text-align:center;margin:0 0 12px;font-size:1.1em;line-height:1.3}
 .stand-info{background:var(--card2);border-radius:8px;padding:10px;text-align:center;font-size:0.85em;color:var(--muted);line-height:1.6;margin-bottom:12px}
 .sync-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:99px;font-size:0.8em;font-weight:bold;background:var(--btn-bg);color:var(--text);cursor:pointer;border:1px solid var(--btn-border)}
 .sync-chip.synced{background:#22c55e;color:#000;border-color:#22c55e}
+.sync-chip.syncing{background:#f59e0b;color:#000;border-color:#f59e0b}
 .sync-chip.offline{background:#ef4444;color:#fff;border-color:#ef4444}
+.sync-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:currentColor;animation:pulse2 1.5s infinite}
+@keyframes pulse2{0%,100%{opacity:1}50%{opacity:0.4}}
 .user-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;background:#a855f7;color:#fff;font-size:0.85em;font-weight:bold;cursor:pointer}
 .user-chip.no-user{background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border)}
 .toolbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px}
 .toolbar select{padding:6px 8px;font-size:0.85em;flex:1;min-width:120px}
-.user-row{display:flex;justify-content:space-between;align-items:center;background:var(--card2);padding:10px;border-radius:8px;margin:6px 0;gap:8px}
-.user-row .uname{font-weight:bold}
-.role-admin{background:#ef4444;color:#fff}.role-manager{background:#f59e0b;color:#000}.role-counter{background:#22c55e;color:#000}.role-viewer{background:#6b7280;color:#fff}
-.urole{font-size:0.7em;padding:2px 8px;border-radius:10px;font-weight:bold}
+#standOverlay,#rnOverlay,#ccOverlay,#regOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
+#standOverlay.show,#rnOverlay.show,#ccOverlay.show,#regOverlay.show{display:flex}
+#standBox,#rnBox,#ccBox,#regBox{background:var(--card);border:2px solid #06b6d4;border-radius:14px;padding:20px;max-width:440px;width:100%;max-height:90vh;overflow:auto}
+#regBox{border-color:#f59e0b;text-align:left}
+#standBox h3,#rnBox h3,#regBox h3{color:#06b6d4;text-align:center;margin:0 0 12px;font-size:1.1em;line-height:1.3}
+#ccTitle{color:var(--primary);font-size:1.15em;font-weight:bold;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);text-align:center}
+#ccMsg{color:var(--text);font-size:1.05em;line-height:1.5;margin-bottom:20px}
+#ccButtons{display:flex;gap:10px}
+#ccButtons button{flex:1;padding:14px 10px;font-size:1em;font-weight:bold;border-radius:10px;border:0;cursor:pointer;margin:0}
+#ccOk{background:#22c55e;color:#000}
+#ccCancel{background:#777;color:#fff}
+body.day #ccCancel{background:#d0d0d0;color:#111}
 #toastBox{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:99998;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none;max-width:92vw}
 .toast{background:rgba(0,0,0,0.92);color:#fff;padding:10px 20px;border-radius:22px;font-size:0.9em;font-weight:bold;border:2px solid var(--primary);box-shadow:0 6px 20px rgba(0,0,0,0.55);animation:toastIn 0.25s ease;text-align:center}
 @keyframes toastIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .toast.out{animation:toastOut 0.25s ease forwards}
 @keyframes toastOut{to{opacity:0;transform:translateY(-15px)}}
+.notice-box{border-radius:8px;padding:10px;margin:8px 0;font-size:0.85em}
+body:not(.day) .notice-box{background:#3a2a00;color:#fbbf24;border:1px solid #f59e0b}
+body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
+.role-counter{background:#22c55e;color:#000}.role-manager{background:#f59e0b;color:#000}.role-viewer{background:#6b7280;color:#fff}.role-admin{background:#ef4444;color:#fff}
+.urole{font-size:0.7em;padding:2px 8px;border-radius:10px;font-weight:bold}
 </style>
 </head>
 <body>
 
 <div class="header">
-<h1>STAND MANAGER</h1>
+<h1>STAND HELPER</h1>
 <div style="margin-top:6px;display:flex;gap:5px;justify-content:center;align-items:center;flex-wrap:wrap">
-<span class="sync-chip offline" id="syncChip"><span class="sync-dot"></span><span id="syncChipText">Офлайн</span></span>
-<span class="user-chip no-user" id="userChip" onclick="openUserSelector()">👤 <span id="userChipText">Выбрать</span></span>
+<span class="sync-chip offline" id="syncChip" onclick="showSyncInfo()"><span class="sync-dot"></span><span id="syncChipText">Офлайн</span></span>
+<span class="user-chip no-user" id="userChip" onclick="confirmLogout()">👤 <span id="userChipText">—</span></span>
 </div>
 <div style="margin-top:6px;display:flex;gap:3px;justify-content:center;flex-wrap:wrap">
 <button onclick="toggleTheme()" id="bTheme" style="padding:6px 10px;font-size:0.85em;background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border)">🌙</button>
 </div>
 </div>
 
-<div class="wrap">
+<div class="wrap" id="mainContent" style="display:none">
 
 <div class="stats">
 <div class="stat"><div id="tot" style="font-weight:bold;font-size:1.2em">0</div><div class="small">Всего</div></div>
@@ -155,6 +167,7 @@ option{background:var(--card2);color:var(--text)}
 <div class="stat"><div id="cnt-mag" style="color:#f59e0b;font-weight:bold">0</div><div class="small">📰</div></div>
 <div class="stat"><div id="cnt-booklet" style="color:#22c55e;font-weight:bold">0</div><div class="small">📖</div></div>
 <div class="stat"><div id="cnt-poster" style="color:#ec4899;font-weight:bold">0</div><div class="small">🖼️</div></div>
+<div class="stat"><div id="need" style="color:#ef4444;font-weight:bold">0</div><div class="small">Заказ</div></div>
 </div>
 
 <div class="stats" style="margin-top:6px">
@@ -162,8 +175,14 @@ option{background:var(--card2);color:var(--text)}
 <div class="stat" style="border:2px solid #06b6d4"><div id="tot-stands" style="font-weight:bold;font-size:1.3em;color:#06b6d4">0</div><div class="small">🏛️ На стендах</div></div>
 </div>
 
+<div class="card" data-collapsible="types" style="border:2px solid #22c55e">
+<b style="color:#22c55e">📚 Подсчёт по типам</b>
+<div id="countByType" class="count-grid" style="margin-top:10px"></div>
+</div>
+
 <div class="card" data-collapsible="stands" style="border:2px solid #06b6d4">
 <b style="color:#06b6d4">🏛️ Стенды</b>
+<div class="small" style="margin:6px 0 0;color:var(--muted)">Сколько из общего количества стоит на каждом стенде.</div>
 <div class="stand-tabs">
 <button type="button" id="st-1" class="stand-tab active" onclick="showStand(1)">🏛️ <span id="stn-1">Стенд 1</span><span class="cnt" id="stc-1">—</span></button>
 <button type="button" id="st-2" class="stand-tab" onclick="showStand(2)">🏛️ <span id="stn-2">Стенд 2</span><span class="cnt" id="stc-2">—</span></button>
@@ -173,36 +192,74 @@ option{background:var(--card2);color:var(--text)}
 <div id="standContent" style="margin-top:10px"></div>
 </div>
 
+<div class="card" data-collapsible="langstats" style="border:2px solid #a855f7">
+<b style="color:#a855f7">📚 Литература по языкам</b>
+<div class="small" style="margin:6px 0 8px;color:var(--muted)">На скольких языках есть каждое название и сколько всего штук.</div>
+<div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
+<input id="langStatSearch" placeholder="🔍 Поиск по названию..." oninput="renderItemLangStats()" style="flex:1;padding:8px">
+</div>
+<div id="itemLangStats"></div>
+</div>
+
+<div class="card" data-collapsible="langtable" style="border:2px solid #f59e0b">
+<b style="color:#f59e0b">🌍 По языкам</b>
+<div style="overflow:auto">
+<table class="count-table">
+<thead><tr><th>Язык</th><th>📰</th><th>📖</th><th>🖼️</th><th>Всего</th></tr></thead>
+<tbody id="countLangTypeBody"></tbody>
+</table>
+</div>
+</div>
+
+<div class="card" data-collapsible="charts">
+<b>📊 Графики</b>
+<canvas id="chartMain" style="max-height:220px;margin-top:8px"></canvas>
+<div style="display:flex;gap:4px;margin-top:8px">
+<button onclick="renderCharts()" class="sec" style="flex:1">🔄</button>
+</div>
+</div>
+
 <div class="card" data-collapsible="items">
 <div style="display:flex;justify-content:space-between;align-items:center">
 <b>📦 Все издания</b>
 </div>
 <div class="toolbar">
 <input id="search" placeholder="🔍 Поиск..." oninput="debouncedRender()" style="flex:2;padding:8px">
+<select id="sortSelect" onchange="setSort(this.value)" style="flex:1"></select>
+</div>
+<div class="toolbar">
+<select id="typeFilter" onchange="setTypeFilter(this.value)" style="flex:1"></select>
+<select id="langFilter" onchange="setLangFilter(this.value)" style="flex:1"></select>
+</div>
+<div class="toolbar">
+<select id="standFilter" onchange="setStandFilter(this.value)" style="flex:1"></select>
 </div>
 <div id="list" style="margin-top:8px"></div>
 </div>
 
-<div class="card" data-collapsible="add" id="addCard" style="border:2px solid #f59e0b;display:none;">
+<div class="card" data-collapsible="add" id="addCard" style="border:2px solid #f59e0b;display:none">
 <b style="color:#f59e0b">➕ Добавить новое издание</b>
-<div id="addPermNotice" class="small" style="display:none;color:red;margin:8px 0;">⚠️ Нет прав.</div>
-<label>📋 Тип</label>
-<div style="display:flex;gap:4px;margin:8px 0">
+
+<label style="margin-top:10px">📋 Тип издания</label>
+<div style="display:flex;gap:4px;margin:8px 0;flex-wrap:wrap">
 <button type="button" onclick="setAddType('Журнал')" id="a-mag" class="typebtn active">📰 Журнал</button>
 <button type="button" onclick="setAddType('Брошюра')" id="a-booklet" class="typebtn">📖 Брошюра</button>
 <button type="button" onclick="setAddType('Постер')" id="a-poster" class="typebtn">🖼️ Постер</button>
 </div>
-<div class="row">
-<div><label>📝 Название *</label><input id="title" placeholder="напр. Сторожевая башня"></div>
-</div>
-<div class="row">
-<div><label>🏷️ Категория</label><input id="cat" placeholder="напр. Сторожевая"></div>
-<div><label>📦 Всего штук</label><input id="qty" type="number" value="10"></div>
-</div>
+
+<label>📝 Название *</label>
+<input id="title" placeholder="напр. Сторожевая башня" autocomplete="off">
+
 <div class="row">
 <div><label>📅 Год</label><input id="year" placeholder="2026"></div>
 <div><label>🔢 Номер</label><input id="issueNum" placeholder="1"></div>
 </div>
+
+<div class="row">
+<div><label>🏷️ Категория</label><input id="cat" placeholder="Сторожевая"></div>
+<div><label>📦 Всего штук</label><input id="qty" type="number" inputmode="numeric" value="10"></div>
+</div>
+
 <label>🌍 Язык</label>
 <select id="lang">
 <option value="ru">🇷🇺 Русский</option>
@@ -210,9 +267,43 @@ option{background:var(--card2);color:var(--text)}
 <option value="de">🇩🇪 Немецкий</option>
 <option value="es">🇪🇸 Испанский</option>
 <option value="fr">🇫🇷 Французский</option>
+<option value="it">🇮🇹 Итальянский</option>
+<option value="pt">🇵🇹 Португальский</option>
+<option value="pl">🇵🇱 Польский</option>
+<option value="uk">🇺🇦 Украинский</option>
+<option value="tr">🇹🇷 Турецкий</option>
+<option value="el">🇬🇷 Греческий</option>
+<option value="ko">🇰🇷 Корейский</option>
+<option value="ja">🇯🇵 Японский</option>
+<option value="zh">🇨🇳 Китайский</option>
+<option value="ro">🇷🇴 Румынский</option>
+<option value="hu">🇭🇺 Венгерский</option>
+<option value="cs">🇨🇿 Чешский</option>
+<option value="bg">🇧🇬 Болгарский</option>
+<option value="sr">🇷🇸 Сербский</option>
+<option value="hr">🇭🇷 Хорватский</option>
+<option value="sw">🇰🇪 Суахили</option>
+<option value="hi">🇮🇳 Хинди</option>
+<option value="ar">🇸🇦 Арабский</option>
+<option value="hy">🇦🇲 Армянский</option>
+<option value="ka">🇬🇪 Грузинский</option>
+<option value="he">🇮🇱 Иврит</option>
+<option value="other">🌐 Другой</option>
 </select>
-<button onclick="addItem()" id="btnAddItem" style="width:100%;margin-top:16px">➕ Добавить</button>
+
+<label>🏛️ Разложить по стендам</label>
+<div class="row">
+<div><label style="font-size:0.8em" id="addLblS1">🏛️ Стенд 1</label><select id="s1"></select></div>
+<div><label style="font-size:0.8em" id="addLblS2">🏛️ Стенд 2</label><select id="s2"></select></div>
 </div>
+<div class="row">
+<div><label style="font-size:0.8em" id="addLblS3">🏛️ Стенд 3</label><select id="s3"></select></div>
+<div><label style="font-size:0.8em" id="addLblS4">🏛️ Стенд 4</label><select id="s4"></select></div>
+</div>
+
+<button onclick="addItem()" style="width:100%;margin-top:16px">➕ Добавить</button>
+</div>
+
 </div>
 
 <div id="standOverlay" onclick="if(event.target===this)closeStandEditor()">
@@ -222,29 +313,44 @@ option{background:var(--card2);color:var(--text)}
 </div>
 </div>
 
-<!-- ОКНО ВЫБОРА ПОЛЬЗОВАТЕЛЯ (БЕЗ КНОПКИ ЗАКРЫТЬ) -->
-<div id="userOverlay">
-<div id="userBox">
-<h3>👤 Кто вы?</h3>
-<div id="userSelectList" style="margin-top:12px"></div>
-<button class="sec" onclick="openRegHelper()" style="width:100%;margin-top:12px;background:#22c55e;color:#000">➕ Зарегистрироваться</button>
+<div id="rnOverlay" onclick="if(event.target===this)closeRename()">
+<div id="rnBox" onclick="event.stopPropagation()">
+<h3>✏️ Редактировать</h3>
+<div id="rnFields"></div>
+<div style="display:flex;gap:8px;margin-top:16px">
+<button class="sec" onclick="closeRename()" style="flex:1;padding:12px">Отмена</button>
+<button onclick="saveRename()" style="flex:1;padding:12px;background:#22c55e;color:#000">💾</button>
+</div>
 </div>
 </div>
 
-<!-- ОКНО РЕГИСТРАЦИИ -->
+<div id="ccOverlay" onclick="if(event.target===this)_ccClose()">
+<div id="ccBox" onclick="event.stopPropagation()">
+<div id="ccTitle">Подтверждение</div>
+<div id="ccMsg"></div>
+<div id="ccButtons">
+<button id="ccCancel" type="button">Отмена</button>
+<button id="ccOk" type="button">OK</button>
+</div>
+</div>
+</div>
+
 <div id="regOverlay">
 <div id="regBox">
-<h3 style="color:#06b6d4">👤 Регистрация помощника</h3>
-<div class="small" style="text-align:center;color:var(--muted);margin-bottom:12px">Введите свои данные. Админ выдаст вам права.</div>
-<label>Имя</label>
-<input id="regHelperName" placeholder="Иван" style="margin-bottom:8px">
+<h2 style="color:#f59e0b;margin:0 0 8px;font-size:1.5em;text-align:center">👋 Добро пожаловать!</h2>
+<div class="small" style="text-align:center;color:var(--muted);margin-bottom:18px;line-height:1.5">
+Зарегистрируйтесь один раз —<br>дальше вход будет автоматическим.
+</div>
+<label>Имя *</label>
+<input id="regName" placeholder="Иван" style="margin-bottom:8px" autocomplete="given-name">
 <label>Фамилия</label>
-<input id="regHelperSurname" placeholder="Иванов" style="margin-bottom:8px">
-<label>Email</label>
-<input id="regHelperEmail" type="email" placeholder="you@example.com" style="margin-bottom:8px">
-<div style="display:flex;gap:8px;margin-top:16px">
-<button class="sec" id="regCancelBtn" onclick="closeRegHelper()" style="flex:1;padding:12px;display:none;">Отмена</button>
-<button onclick="saveRegHelper()" style="flex:1;padding:12px;background:#22c55e;color:#000">✓ Зарегистрироваться</button>
+<input id="regSurname" placeholder="Иванов" style="margin-bottom:8px" autocomplete="family-name">
+<label>Email *</label>
+<input id="regEmail" type="email" placeholder="you@example.com" style="margin-bottom:12px" autocomplete="email">
+<button onclick="handleRegister()" style="width:100%;padding:14px;background:#22c55e;color:#000;font-size:1.05em;border-radius:10px">✓ Войти / Зарегистрироваться</button>
+<div class="small" id="regError" style="color:#ef4444;text-align:center;margin-top:10px;min-height:1.2em"></div>
+<div class="small" style="text-align:center;color:var(--muted);margin-top:8px;line-height:1.4">
+Если вы уже были зарегистрированы — введите тот же email.
 </div>
 </div>
 </div>
@@ -252,22 +358,11 @@ option{background:var(--card2);color:var(--text)}
 <div id="toastBox"></div>
 
 <script>
-var currentAddType = 'Журнал';
-var curStand = 1;
+'use strict';
+
+// ===== CONSTANTS =====
 var STAND_MAX = 10;
 var MIN_STAND_ALERT = 3;
-
-var standNames = { 1:'Стенд 1', 2:'Стенд 2', 3:'Стенд 3', 4:'Стенд 4' };
-try{
-  var _sn = JSON.parse(localStorage.getItem('stand_names')||'null');
-  if(_sn && typeof _sn==='object'){
-    for(var _k=1;_k<=4;_k++){ if(_sn[_k]) standNames[_k] = String(_sn[_k]); }
-  }
-}catch(e){}
-
-var LANGS = {ru:'Русский',en:'Английский',de:'Немецкий',es:'Испанский',fr:'Французский'};
-var LANG_FLAGS = {ru:'🇷🇺',en:'🇬🇧',de:'🇩🇪',es:'🇪🇸',fr:'🇫🇷'};
-
 var PERM_KEYS = ['count','add','del','rename'];
 var PERMS_PRESETS = {
   admin:{count:true,add:true,del:true,rename:true},
@@ -275,333 +370,1000 @@ var PERMS_PRESETS = {
   counter:{count:true,add:false,del:false,rename:true},
   viewer:{count:false,add:false,del:false,rename:false}
 };
+var LANGS = {ru:'Русский',en:'Английский',de:'Немецкий',es:'Испанский',fr:'Французский',it:'Итальянский',pt:'Португальский',pl:'Польский',uk:'Украинский',tr:'Турецкий',el:'Греческий',ko:'Корейский',ja:'Японский',zh:'Китайский',ro:'Румынский',hu:'Венгерский',cs:'Чешский',bg:'Болгарский',sr:'Сербский',hr:'Хорватский',sw:'Суахили',hi:'Хинди',ar:'Арабский',hy:'Армянский',ka:'Грузинский',he:'Иврит',other:'Другой'};
+var LANG_FLAGS = {ru:'🇷🇺',en:'🇬🇧',de:'🇩🇪',es:'🇪🇸',fr:'🇫🇷',it:'🇮🇹',pt:'🇵🇹',pl:'🇵🇱',uk:'🇺🇦',tr:'🇹🇷',el:'🇬🇷',ko:'🇰🇷',ja:'🇯🇵',zh:'🇨🇳',ro:'🇷🇴',hu:'🇭🇺',cs:'🇨🇿',bg:'🇧🇬',sr:'🇷🇸',hr:'🇭🇷',sw:'🇰🇪',hi:'🇮🇳',ar:'🇸🇦',hy:'🇦🇲',ka:'🇬🇪',he:'🇮🇱',other:'🌐'};
+var BG_COLORS = [];
 
-var items=[], users=[];
-var currentUserEmail = localStorage.getItem('stand_user_email') || '';
+// ===== STATE =====
+var items = [];
+var users = [];
+var standNames = {1:'Стенд 1',2:'Стенд 2',3:'Стенд 3',4:'Стенд 4'};
 var currentUser = null;
+var currentUserEmail = localStorage.getItem('stand_user_email') || '';
+var curStand = 1;
+var currentAddType = 'Журнал';
+var curSort = localStorage.getItem('stand_sort') || 'low';
+var curTypeFilter = 'all';
+var curLangFilter = 'all';
+var curStandFilter = localStorage.getItem('stand_filter') || 'all';
+var renderTimer = null;
+var chartMainInst = null;
 
-var cloudEnabled=localStorage.getItem('stand_cloud_enabled')!=='false';
-var cloudId=localStorage.getItem('stand_cloud_id')||'';
-var cloudApp=null, cloudDb=null, isSyncingFromCloud=false;
+// Cloud
+var cloudEnabled = localStorage.getItem('stand_cloud_enabled') !== 'false';
+var cloudId = localStorage.getItem('stand_cloud_id') || '';
+var cloudApp = null, cloudDb = null;
+var isSyncingFromCloud = false;
+var cloudPushTimeout = null;
 
-try{ items=JSON.parse(localStorage.getItem('stand_items_v4')||'[]'); }catch(e){ items=[]; }
-try{ users=JSON.parse(localStorage.getItem('stand_users_v1')||'[]'); }catch(e){ users=[]; }
+// ===== HELPERS =====
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function toast(msg, ms){
+  ms = ms || 2200;
+  var box = document.getElementById('toastBox'); if(!box) return;
+  var el = document.createElement('div'); el.className = 'toast'; el.textContent = msg;
+  box.appendChild(el);
+  setTimeout(function(){ el.classList.add('out'); setTimeout(function(){ el.remove(); },300); }, ms);
+}
+function getLangDisplay(code){ if(!code) return ''; return (LANG_FLAGS[code]||'🌐') + ' ' + (LANGS[code]||code); }
+function getLangShort(code){ if(!code) return ''; return (LANG_FLAGS[code]||'🌐') + ' ' + String(code).toUpperCase(); }
+function getTypeIcon(tp){ if(tp==='Журнал') return '📰'; if(tp==='Брошюра') return '📖'; if(tp==='Постер') return '🖼️'; return '📄'; }
+function getTypeClass(tp){ if((tp||'').indexOf('Журнал')>=0) return 't-mag'; if(tp==='Брошюра') return 't-booklet'; if(tp==='Постер') return 't-poster'; return 't-mag'; }
+function getTypeDisplay(tp){ return tp || 'Журнал'; }
+function getRoleDisplay(role){ var m = {admin:'👑 Админ',manager:'📦 Менеджер',counter:'🔢 Счётчик',viewer:'👀 Наблюдатель'}; return m[role] || role; }
 
-function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function stGet(it, n){ return (it.standCounts && (parseInt(it.standCounts[n])||0)) || 0; }
+function stGet(it,n){ return (it.standCounts && (parseInt(it.standCounts[n])||0)) || 0; }
 function stSum(it){ return stGet(it,1)+stGet(it,2)+stGet(it,3)+stGet(it,4); }
 function totalIt(it){ return (parseInt(it.qty)||0) + stSum(it); }
-function getDisplayName(it){ return (it.names && it.names.ru) || '—'; }
-function getTypeIcon(tp){ if(tp==='Журнал') return '📰'; if(tp==='Брошюра') return '📖'; if(tp==='Постер') return '🖼️'; return '📄'; }
-function getLangDisplay(code){ return (LANG_FLAGS[code]||'🌐')+' '+(LANGS[code]||code); }
-function hasPerm(perm){ if(!currentUser) return false; if(currentUser.role==='admin') return true; return !!(currentUser.perms && currentUser.perms[perm]); }
 
-function toast(msg) {
-    var box = document.getElementById('toastBox');
-    var el = document.createElement('div'); el.className = 'toast'; el.textContent = msg;
-    box.appendChild(el);
-    setTimeout(()=>{ el.classList.add('out'); setTimeout(()=>el.remove(), 300); }, 2200);
+function getDisplayName(it){
+  if(!it) return '';
+  if(it.names && it.names.ru) return it.names.ru;
+  if(it.names && typeof it.names==='object'){ for(var k in it.names) if(it.names[k]) return it.names[k]; }
+  return it.name || '—';
+}
+function getDisplayCat(it){
+  if(!it) return '';
+  if(it.cat && typeof it.cat==='object'){ if(it.cat.ru) return it.cat.ru; for(var k in it.cat) if(it.cat[k]) return it.cat[k]; return ''; }
+  return it.cat || '';
+}
+function getItemExtraInfo(it){
+  var parts = [];
+  if(it.issueNum) parts.push('№ ' + it.issueNum);
+  if(it.year) parts.push(String(it.year));
+  return parts.join(' • ');
 }
 
-function toggleTheme() {
-  document.body.classList.toggle('day');
-  localStorage.setItem('stand_theme', document.body.classList.contains('day')?'day':'dark');
+function hasPerm(perm){
+  if(!currentUser) return false;
+  if(currentUser.role === 'admin') return true;
+  return !!(currentUser.perms && currentUser.perms[perm]);
 }
 
-function updateUI() {
-    if(!currentUser) return;
-    document.getElementById('userChipText').textContent = currentUser.name;
-    document.getElementById('userChip').className = 'user-chip';
-    
-    var canAdd = hasPerm('add');
-    document.getElementById('addCard').style.display = canAdd ? 'block' : 'none';
-    document.getElementById('btnAddItem').disabled = !canAdd;
-    
-    render();
+// ===== DATA =====
+function cleanItems(arr){
+  if(!Array.isArray(arr)) return [];
+  return arr.filter(function(it){ return it && typeof it==='object'; }).map(function(it){
+    var o = {};
+    for(var k in it) o[k] = it[k];
+    var id = parseFloat(o.id); o.id = isNaN(id) ? Date.now()+Math.random() : id;
+    if(o.names && typeof o.names==='object'){ var n={}; for(var l in o.names) n[l]=String(o.names[l]||''); o.names=n; }
+    if(o.cat && typeof o.cat==='object'){ var c={}; for(var l2 in o.cat) c[l2]=String(o.cat[l2]||''); o.cat=c; }
+    o.type = o.type || 'Журнал';
+    o.lang = o.lang || 'ru';
+    o.year = String(o.year||'');
+    o.issueNum = String(o.issueNum||'');
+    o.theme = String(o.theme||'');
+    o.qty = Math.max(0, parseInt(o.qty)||0);
+    var sc = {};
+    var src = o.standCounts || {};
+    for(var nn=1; nn<=4; nn++) sc[nn] = Math.min(STAND_MAX, Math.max(0, parseInt(src[nn])||0));
+    o.standCounts = sc;
+    o.favorite = !!o.favorite;
+    return o;
+  });
 }
 
-function saveRegHelper() {
-    var name = document.getElementById('regHelperName').value.trim();
-    var surname = document.getElementById('regHelperSurname').value.trim();
-    var email = document.getElementById('regHelperEmail').value.trim().toLowerCase();
-    if(!name || !surname || !email) { toast('⚠️ Заполните все поля'); return; }
-    
-    currentUserEmail = email;
-    localStorage.setItem('stand_user_email', email);
-    
-    currentUser = users.find(u => u.email === email);
-    if(!currentUser) {
-        currentUser = { id: Date.now()+Math.random(), name: name, surname: surname, email: email, role: 'counter', perms: PERMS_PRESETS.counter };
-        users.push(currentUser);
-        saveToLocal();
-        if(cloudEnabled && cloudDb) pushToCloud();
-    } else {
-        currentUser.name = name;
-        currentUser.surname = surname;
-        saveToLocal();
-        if(cloudEnabled && cloudDb) pushToCloud();
-    }
-    
-    document.getElementById('regOverlay').classList.remove('show');
-    document.getElementById('userOverlay').classList.remove('show');
-    updateUI();
-}
-
-function openUserSelector() { 
-    renderUserSelectList(); 
-    document.getElementById('userOverlay').classList.add('show'); 
-}
-function closeUserSelector() { document.getElementById('userOverlay').classList.remove('show'); }
-
-function openRegHelper() { 
-    closeUserSelector();
-    document.getElementById('regOverlay').classList.add('show'); 
-    var cancelBtn = document.getElementById('regCancelBtn');
-    if(cancelBtn) cancelBtn.style.display = users.length > 0 ? 'block' : 'none';
-}
-function closeRegHelper() { 
-    if(users.length === 0) return;
-    document.getElementById('regOverlay').classList.remove('show'); 
-}
-
-function renderUserSelectList() {
-    var list = document.getElementById('userSelectList');
-    if(!list) return;
-    if(users.length===0){ list.innerHTML = '<div class="small" style="text-align:center;padding:20px">— нет пользователей —</div>'; return; }
-    var h = '';
-    users.forEach(u => {
-        var isCur = u.email == currentUserEmail;
-        h += '<div onclick="pickUser(\''+u.email+'\')" style="background:var(--card2);padding:14px;border-radius:10px;margin:6px 0;cursor:pointer;border:2px solid '+(isCur?'#22c55e':'transparent')+'"><b style="font-size:1.1em">👤 '+esc(u.name)+'</b> <span class="urole role-'+u.role+'">'+esc(u.role)+'</span></div>';
+function cleanUsers(arr){
+  if(!Array.isArray(arr)) return [];
+  return arr.filter(function(u){ return u && typeof u==='object'; }).map(function(u){
+    var o = {
+      id: parseFloat(u.id) || Date.now()+Math.random(),
+      name: String(u.name||''),
+      surname: String(u.surname||''),
+      email: String(u.email||'').toLowerCase(),
+      role: String(u.role||'counter'),
+      active: u.active !== false,
+      perms: {},
+      createdAt: u.createdAt || Date.now()
+    };
+    var preset = PERMS_PRESETS[o.role] || PERMS_PRESETS.counter;
+    PERM_KEYS.forEach(function(k){
+      o.perms[k] = (u.perms && typeof u.perms[k]==='boolean') ? u.perms[k] : (preset[k] || false);
     });
-    list.innerHTML = h;
+    return o;
+  });
 }
 
-function pickUser(email) {
-    currentUserEmail = email;
-    localStorage.setItem('stand_user_email', email);
-    currentUser = users.find(u => u.email === email);
-    updateUI();
-    closeUserSelector();
-    toast('✅ Вход выполнен');
+function loadFromLocal(){
+  try{ items = cleanItems(JSON.parse(localStorage.getItem('stand_items_v4')||'[]')); }catch(e){ items=[]; }
+  try{ users = cleanUsers(JSON.parse(localStorage.getItem('stand_users_v1')||'[]')); }catch(e){ users=[]; }
+  try{
+    var sn = JSON.parse(localStorage.getItem('stand_names')||'null');
+    if(sn && typeof sn==='object'){ for(var k=1;k<=4;k++) if(sn[k]) standNames[k] = String(sn[k]); }
+  }catch(e){}
 }
 
-function saveToLocal() {
-    localStorage.setItem('stand_items_v4', JSON.stringify(items));
-    localStorage.setItem('stand_users_v1', JSON.stringify(users));
-    localStorage.setItem('stand_names', JSON.stringify(standNames));
+function saveToLocal(){
+  localStorage.setItem('stand_items_v4', JSON.stringify(items));
+  localStorage.setItem('stand_users_v1', JSON.stringify(users));
+  localStorage.setItem('stand_names', JSON.stringify(standNames));
+  if(cloudEnabled && !isSyncingFromCloud && cloudDb){
+    clearTimeout(cloudPushTimeout);
+    cloudPushTimeout = setTimeout(function(){ try{ pushToCloud(); }catch(e){} }, 800);
+  }
+}
+
+// ===== THEME =====
+function toggleTheme(){
+  document.body.classList.toggle('day');
+  var isDay = document.body.classList.contains('day');
+  localStorage.setItem('stand_theme', isDay ? 'day' : 'dark');
+  var b = document.getElementById('bTheme');
+  if(b) b.textContent = isDay ? '☀️' : '🌙';
+  try{ renderCharts(); }catch(e){}
+}
+function applyTheme(){
+  var saved = localStorage.getItem('stand_theme') || 'dark';
+  if(saved === 'day') document.body.classList.add('day');
+  else document.body.classList.remove('day');
+  var b = document.getElementById('bTheme');
+  if(b) b.textContent = saved === 'day' ? '☀️' : '🌙';
+}
+
+// ===== SYNC =====
+function setSyncState(state){
+  var chip = document.getElementById('syncChip'), txt = document.getElementById('syncChipText');
+  if(!chip || !txt) return;
+  chip.className = 'sync-chip';
+  var map = {offline:'Офлайн',connecting:'Подключение...',synced:'Синхр.',pushing:'Отправка...',error:'Ошибка'};
+  var cls = {offline:'offline',connecting:'syncing',synced:'synced',pushing:'syncing',error:'offline'};
+  chip.classList.add(cls[state] || 'offline');
+  txt.textContent = map[state] || 'Офлайн';
+}
+function showSyncInfo(){
+  var t = document.getElementById('syncChipText');
+  toast('Статус: ' + (t ? t.textContent : '—'));
 }
 
 async function initFirebase(){
   try{
-    const {initializeApp}=await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
+    const {initializeApp} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
     const {getFirestore,doc,setDoc,onSnapshot} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
-    if(!cloudApp){ 
-      cloudApp=initializeApp({"apiKey":"AIzaSyCKoGOE84zPuc4t6UQrDYMbooCR43p0FyQ","authDomain":"stand-management-a46a7.firebaseapp.com","projectId":"stand-management-a46a7","storageBucket":"stand-management-a46a7.firebasestorage.app","messagingSenderId":"304875768432","appId":"1:304875768432:web:470adb4707b8a3680482b5"}); 
-      cloudDb=getFirestore(cloudApp); 
-      window._fb={doc,setDoc,onSnapshot}; 
+    if(!cloudApp){
+      cloudApp = initializeApp({
+        apiKey: "AIzaSyCKoGOE84zPuc4t6UQrDYMbooCR43p0FyQ",
+        authDomain: "stand-management-a46a7.firebaseapp.com",
+        projectId: "stand-management-a46a7",
+        storageBucket: "stand-management-a46a7.firebasestorage.app",
+        messagingSenderId: "304875768432",
+        appId: "1:304875768432:web:470adb4707b8a3680482b5"
+      });
+      cloudDb = getFirestore(cloudApp);
+      window._fb = {doc, setDoc, onSnapshot};
     }
-    var dRef=window._fb.doc(cloudDb,'stands',cloudId);
+    setSyncState('connecting');
+    var dRef = window._fb.doc(cloudDb,'stands',cloudId);
     window._fb.onSnapshot(dRef, function(snap){
-      if(!snap.exists()) return;
-      var data=snap.data(); if(!data || isSyncingFromCloud) return;
-      isSyncingFromCloud=true;
-      if(data.items) items=data.items;
-      if(data.users) users=data.users;
-      if(data.standNames) standNames=data.standNames;
-      saveToLocal(); 
-      
-      if(currentUserEmail) {
-        currentUser = users.find(u=>u.email===currentUserEmail);
-        if(!currentUser) {
+      if(!snap.exists()){ setSyncState('synced'); return; }
+      var data = snap.data();
+      if(!data) return;
+      isSyncingFromCloud = true;
+
+      if(data.items) items = cleanItems(data.items);
+      if(data.users) users = cleanUsers(data.users);
+      if(data.standNames && typeof data.standNames==='object'){
+        for(var k=1;k<=4;k++) if(data.standNames[k]) standNames[k] = String(data.standNames[k]);
+      }
+
+      // Save to localStorage without pushing back
+      localStorage.setItem('stand_items_v4', JSON.stringify(items));
+      localStorage.setItem('stand_users_v1', JSON.stringify(users));
+      localStorage.setItem('stand_names', JSON.stringify(standNames));
+
+      // Re-validate current user against new users array
+      if(currentUserEmail){
+        var found = users.find(function(u){ return u.email && u.email.toLowerCase() === currentUserEmail.toLowerCase(); });
+        if(found && found.active){
+          currentUser = found;
+          updateUI();
+        } else if(!found){
+          // User was deleted
+          currentUser = null;
           currentUserEmail = '';
           localStorage.removeItem('stand_user_email');
-          document.getElementById('userOverlay').classList.add('show');
-          document.getElementById('regOverlay').classList.remove('show');
+          showRegister();
+        } else if(!found.active){
+          // User was deactivated
+          currentUser = null;
+          currentUserEmail = '';
+          localStorage.removeItem('stand_user_email');
+          showRegister();
+          toast('⚠️ Ваш аккаунт деактивирован');
         }
       }
-      updateUI();
-      document.getElementById('syncChipText').textContent = 'Синхронизировано';
-      document.getElementById('syncChip').className = 'sync-chip synced';
-      isSyncingFromCloud=false;
+
+      isSyncingFromCloud = false;
+      setSyncState('synced');
+    }, function(err){
+      console.error('Snapshot error:', err);
+      setSyncState('error');
     });
-  }catch(e){ console.error(e); }
+    setSyncState('synced');
+  }catch(e){
+    console.error('Firebase init error:', e);
+    setSyncState('error');
+  }
 }
 
 async function pushToCloud(){
   if(!cloudEnabled || !cloudDb) return;
   try{
-    var dRef=window._fb.doc(cloudDb,'stands',cloudId);
-    await window._fb.setDoc(dRef,{items:items,users:users,standNames:standNames},{merge:true});
-  }catch(e){}
+    setSyncState('pushing');
+    var dRef = window._fb.doc(cloudDb,'stands',cloudId);
+    await window._fb.setDoc(dRef, {
+      items: items,
+      users: users,
+      standNames: standNames
+    }, {merge: true});
+    setSyncState('synced');
+  }catch(e){
+    console.error('Push error:', e);
+    setSyncState('error');
+  }
 }
 
+// ===== USER MANAGEMENT =====
+function showRegister(){
+  var main = document.getElementById('mainContent');
+  if(main) main.style.display = 'none';
+  var ov = document.getElementById('regOverlay');
+  if(ov) ov.classList.add('show');
+  setTimeout(function(){
+    var el = document.getElementById('regName');
+    if(el) el.focus();
+  }, 200);
+}
+
+function hideRegister(){
+  var ov = document.getElementById('regOverlay');
+  if(ov) ov.classList.remove('show');
+}
+
+function handleRegister(){
+  var name = (document.getElementById('regName').value || '').trim();
+  var surname = (document.getElementById('regSurname').value || '').trim();
+  var email = (document.getElementById('regEmail').value || '').trim().toLowerCase();
+  var errEl = document.getElementById('regError');
+  errEl.textContent = '';
+
+  if(!email){ errEl.textContent = '⚠️ Введите email'; return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ errEl.textContent = '⚠️ Некорректный email'; return; }
+
+  var existing = users.find(function(u){ return u.email && u.email.toLowerCase() === email; });
+
+  if(existing){
+    if(!existing.active){
+      errEl.textContent = '❌ Ваш аккаунт деактивирован. Обратитесь к администратору.';
+      return;
+    }
+    // Update name if provided and differs
+    if(name) existing.name = name;
+    if(surname) existing.surname = surname;
+    currentUser = existing;
+  } else {
+    if(!name){ errEl.textContent = '⚠️ Введите имя'; return; }
+    var newUser = {
+      id: Date.now() + Math.random(),
+      name: name,
+      surname: surname,
+      email: email,
+      role: 'counter',
+      perms: JSON.parse(JSON.stringify(PERMS_PRESETS.counter)),
+      active: true,
+      createdAt: Date.now()
+    };
+    users.push(newUser);
+    currentUser = newUser;
+  }
+
+  currentUserEmail = email;
+  localStorage.setItem('stand_user_email', email);
+  saveToLocal();
+
+  hideRegister();
+  document.getElementById('mainContent').style.display = 'block';
+  updateUI();
+  toast('✅ Добро пожаловать, ' + (currentUser.name || currentUser.email) + '!');
+}
+
+function confirmLogout(){
+  if(!confirm('Выйти из аккаунта? В следующий раз нужно будет снова войти.')) return;
+  currentUser = null;
+  currentUserEmail = '';
+  localStorage.removeItem('stand_user_email');
+  showRegister();
+}
+
+function updateUI(){
+  if(!currentUser){
+    document.getElementById('mainContent').style.display = 'none';
+    return;
+  }
+  document.getElementById('mainContent').style.display = 'block';
+  var uc = document.getElementById('userChipText');
+  if(uc) uc.textContent = currentUser.name || currentUser.email || '—';
+  var chip = document.getElementById('userChip');
+  if(chip) chip.className = 'user-chip';
+
+  // Show/hide add form based on permissions
+  var canAdd = hasPerm('add');
+  var addCard = document.getElementById('addCard');
+  if(addCard) addCard.style.display = canAdd ? 'block' : 'none';
+
+  // Show permission banner
+  render();
+
+  // Init stand selects in add form
+  initAddStandSelects();
+}
+
+function initAddStandSelects(){
+  for(var n=1;n<=4;n++){
+    var el = document.getElementById('s'+n);
+    if(!el) continue;
+    var cur = el.value || '0';
+    var opts = '';
+    for(var i=0;i<=STAND_MAX;i++) opts += '<option value="'+i+'"'+(String(i)===String(cur)?' selected':'')+'>'+i+'</option>';
+    el.innerHTML = opts;
+  }
+}
+
+// ===== RENDER =====
+function render(){
+  if(!currentUser) return;
+
+  // Selects
+  var sortSel = document.getElementById('sortSelect');
+  if(sortSel){
+    sortSel.innerHTML =
+      '<option value="low">📊 Мало</option>'+
+      '<option value="fav">⭐ Избранные</option>'+
+      '<option value="name">🔤 Алфавит</option>'+
+      '<option value="langs">🌍 Языки</option>'+
+      '<option value="qty">📈 Много</option>'+
+      '<option value="new">🆕 Новые</option>';
+    sortSel.value = curSort;
+  }
+  var tf = document.getElementById('typeFilter');
+  if(tf){
+    tf.innerHTML = '<option value="all">Все типы</option><option value="Журнал">📰 Журналы</option><option value="Брошюра">📖 Брошюры</option><option value="Постер">🖼️ Постеры</option>';
+    tf.value = curTypeFilter;
+  }
+  var lf = document.getElementById('langFilter');
+  if(lf){
+    var opts = '<option value="all">Все языки</option>';
+    var langsInItems = {};
+    items.forEach(function(it){ if(it.lang) langsInItems[it.lang] = true; });
+    Object.keys(langsInItems).sort().forEach(function(code){
+      opts += '<option value="'+esc(code)+'">'+esc(getLangDisplay(code))+'</option>';
+    });
+    lf.innerHTML = opts;
+    lf.value = curLangFilter;
+  }
+  var sf = document.getElementById('standFilter');
+  if(sf){
+    sf.innerHTML = '<option value="all">🏛️ Все стенды</option>'+
+      '<option value="0">— Без стенда —</option>'+
+      '<option value="1">🏛️ '+esc(standNames[1])+'</option>'+
+      '<option value="2">🏛️ '+esc(standNames[2])+'</option>'+
+      '<option value="3">🏛️ '+esc(standNames[3])+'</option>'+
+      '<option value="4">🏛️ '+esc(standNames[4])+'</option>';
+    sf.value = curStandFilter;
+  }
+
+  // Filter
+  var q = ((document.getElementById('search')||{}).value || '').toLowerCase();
+  var filtered = [];
+  for(var i=0;i<items.length;i++){
+    var it = items[i];
+    var name = getDisplayName(it).toLowerCase();
+    var cat = getDisplayCat(it).toLowerCase();
+    var themeStr = (it.theme||'').toLowerCase();
+    var matchQ = name.indexOf(q) >= 0 || cat.indexOf(q) >= 0 || themeStr.indexOf(q) >= 0 || (it.year && String(it.year).toLowerCase().indexOf(q) >= 0) || (it.issueNum && String(it.issueNum).toLowerCase().indexOf(q) >= 0);
+    var matchT = curTypeFilter === 'all' || it.type === curTypeFilter;
+    var matchL = curLangFilter === 'all' || (it.lang||'ru') === curLangFilter;
+    var matchS = true;
+    if(curStandFilter === '0') matchS = stSum(it) === 0;
+    else if(curStandFilter !== 'all') matchS = stGet(it, parseInt(curStandFilter)) > 0;
+    if(matchQ && matchT && matchL && matchS) filtered.push(it);
+  }
+
+  filtered.sort(function(a,b){
+    if(curSort === 'low') return totalIt(a) - totalIt(b);
+    if(curSort === 'fav') return (b.favorite?1:0) - (a.favorite?1:0);
+    if(curSort === 'name') return getDisplayName(a).localeCompare(getDisplayName(b));
+    if(curSort === 'langs'){ var c = getDisplayName(a).localeCompare(getDisplayName(b)); return c!==0 ? c : (a.lang||'ru').localeCompare(b.lang||'ru'); }
+    if(curSort === 'qty') return totalIt(b) - totalIt(a);
+    if(curSort === 'new') return (b.id||0) - (a.id||0);
+    return 0;
+  });
+  if(curSort !== 'fav') filtered.sort(function(a,b){ return (b.favorite?1:0) - (a.favorite?1:0); });
+
+  // Totals
+  var total=0, cMag=0, cBooklet=0, cPoster=0, standsTotal=0;
+  for(var i=0;i<items.length;i++){
+    var tq = totalIt(items[i]);
+    total += tq;
+    if(items[i].type === 'Журнал') cMag += tq;
+    else if(items[i].type === 'Брошюра') cBooklet += tq;
+    else if(items[i].type === 'Постер') cPoster += tq;
+    standsTotal += stSum(items[i]);
+  }
+  var stockTotal = Math.max(0, total - standsTotal);
+  var needCount = items.filter(function(x){ return totalIt(x) <= 0; }).length;
+
+  var $ = function(id){ return document.getElementById(id); };
+  if($('tot')) $('tot').textContent = total;
+  if($('tit')) $('tit').textContent = items.length;
+  if($('cnt-mag')) $('cnt-mag').textContent = cMag;
+  if($('cnt-booklet')) $('cnt-booklet').textContent = cBooklet;
+  if($('cnt-poster')) $('cnt-poster').textContent = cPoster;
+  if($('need')) $('need').textContent = needCount;
+  if($('tot-stock')) $('tot-stock').textContent = stockTotal;
+  if($('tot-stands')) $('tot-stands').textContent = standsTotal;
+
+  // Items list
+  var canCount = hasPerm('count');
+  var canRename = hasPerm('rename');
+  var canDel = hasPerm('del');
+
+  var h = '';
+  if(filtered.length === 0){
+    h = '<div style="text-align:center;padding:30px;color:var(--muted)">📦 —</div>';
+  }
+  for(var i=0;i<filtered.length;i++){
+    var it = filtered[i];
+    var tot = totalIt(it);
+    var col = tot <= 0 ? 'bad' : 'good';
+    var tcl = getTypeClass(it.type), icon = getTypeIcon(it.type);
+    var displayType = icon + ' ' + getTypeDisplay(it.type);
+    var favCls = it.favorite ? 'item fav' : 'item';
+    if(curSort === 'langs') favCls += ' grouped';
+    var favStar = it.favorite ? '⭐' : '☆';
+    var favCls2 = it.favorite ? 'fav-btn' : 'fav-btn inactive';
+    var extraInfo = getItemExtraInfo(it);
+    var extraLine = extraInfo ? '<div class="item-extra">📅 '+esc(extraInfo)+'</div>' : '';
+    var themeLine = (it.theme && it.theme.trim()) ? '<div class="item-theme">💡 '+esc(it.theme)+'</div>' : '';
+    var langLabel = (it.lang && it.lang!=='ru') ? ' <span class="lang-label">'+esc(getLangDisplay(it.lang))+'</span>' : '';
+
+    var stSumV = stSum(it);
+    var stParts = [];
+    for(var tn=1;tn<=4;tn++){ var tv=stGet(it,tn); if(tv>0) stParts.push(tn+':'+tv); }
+    var stText = stParts.length > 0 ? ('🏛️ '+stParts.join(' · ')) : '🏛️ Стенды';
+    var isLowAny = false;
+    for(var tn=1;tn<=4;tn++){ var tv=stGet(it,tn); if(tv>0 && tv<MIN_STAND_ALERT && parseInt(it.qty)>0) isLowAny = true; }
+    var stCls = 'stand-btn' + (stSumV>0?' has':'') + (isLowAny?' low':'');
+
+    var langsBlock = '';
+    if(curSort === 'langs'){
+      var others = getOtherLangs(it);
+      if(others.length > 0){
+        var parts = others.map(function(o){
+          return '<span style="display:inline-block;background:var(--card);padding:2px 8px;border-radius:99px;margin:2px 3px 0 0;border:1px solid #06b6d4">'+esc(getLangShort(o.code))+' · '+o.qty+' шт.</span>';
+        }).join('');
+        langsBlock = '<div class="item-langs">🌍 Также на: '+parts+'</div>';
+      } else {
+        langsBlock = '<div class="item-langs" style="opacity:0.55">🌍 Только на этом языке</div>';
+      }
+    }
+
+    var stock = parseInt(it.qty)||0;
+    var qtyField = canCount
+      ? '<input type="number" inputmode="numeric" min="0" class="qty-display" value="'+tot+'" onclick="this.select()" onchange="setQtyDirect('+it.id+', this.value)" onkeydown="if(event.key===\'Enter\'){event.preventDefault(); this.blur();}">'
+      : '<span class="qty-display" style="border:0;background:transparent">'+tot+'</span>';
+
+    h += '<div class="'+favCls+'">'+
+      '<div class="item-main"><div class="item-info">'+
+        '<span class="type-label '+tcl+'">'+esc(displayType)+'</span>'+langLabel+
+        '<b class="item-name" style="display:block;margin-top:4px">'+esc(getDisplayName(it))+'</b>'+
+        themeLine+extraLine+
+        '<div class="item-cat">'+esc(getDisplayCat(it))+' · 📦 в запасе: '+stock+'</div>'+
+        langsBlock+
+        '<span class="item-badge '+col+'">Всего '+tot+'</span>'+
+      '</div></div>'+
+      '<div class="item-actions">'+
+        (canCount?'<button class="fav-btn'+(it.favorite?'':' inactive')+'" onclick="toggleFav('+it.id+')">'+favStar+'</button>':'')+
+        (canCount?'<button class="qty-btn minus" onclick="changeQty('+it.id+',-1)">−</button>':'')+
+        qtyField+
+        (canCount?'<button class="qty-btn" onclick="changeQty('+it.id+',1)">+</button>':'')+
+        (canCount?'<button class="'+stCls+'" onclick="openStandEditor('+it.id+')">'+esc(stText)+'</button>':'')+
+        (canRename?'<button class="icon-btn" onclick="openRename('+it.id+')">✏️</button>':'')+
+        (canDel?'<button class="icon-btn" style="color:#ef4444" onclick="deleteItem('+it.id+')">🗑️</button>':'')+
+      '</div>'+
+    '</div>';
+  }
+  if($('list')) $('list').innerHTML = h;
+
+  // Other sections
+  try{ renderCountByType(); }catch(e){ console.error(e); }
+  try{ renderItemLangStats(); }catch(e){ console.error(e); }
+  try{ renderCountByLangType(); }catch(e){ console.error(e); }
+  try{ renderCharts(); }catch(e){ console.error(e); }
+  try{ updateStandBadges(); }catch(e){ console.error(e); }
+  try{ renderStand(); }catch(e){ console.error(e); }
+}
+
+function getOtherLangs(currentItem){
+  var name = getDisplayName(currentItem);
+  if(!name) return [];
+  var map = {};
+  items.forEach(function(it){
+    if(it.id === currentItem.id) return;
+    if(getDisplayName(it) !== name) return;
+    var code = it.lang || 'ru';
+    if(code === (currentItem.lang || 'ru')) return;
+    if(!map[code]) map[code] = 0;
+    map[code] += totalIt(it);
+  });
+  return Object.keys(map).map(function(code){ return {code: code, qty: map[code]}; });
+}
+
+function toggleFav(id){
+  if(!hasPerm('count')) return;
+  var it = items.find(function(x){ return x.id == id; });
+  if(!it) return;
+  it.favorite = !it.favorite;
+  saveToLocal(); render();
+}
+
+// ===== STANDS =====
 function showStand(n){
   curStand = n;
-  document.querySelectorAll('.stand-tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('st-'+n).classList.add('active');
+  document.querySelectorAll('.stand-tab').forEach(function(t){ t.classList.remove('active'); });
+  var e = document.getElementById('st-'+n);
+  if(e) e.classList.add('active');
   renderStand();
 }
 
 function renderStand(){
-  var cont = document.getElementById('standContent');
-  var list = items.filter(it => stGet(it, curStand) > 0);
-  if(list.length === 0) {
-    cont.innerHTML = '<div class="stand-empty">Стенд пуст</div>';
+  var cont = document.getElementById('standContent'); if(!cont) return;
+  var list = items.filter(function(it){ return stGet(it,curStand) > 0; });
+  if(list.length === 0){
+    cont.innerHTML = '<div class="stand-box"><div class="stand-title"><span class="st-name">🏛️ '+esc(standNames[curStand])+'</span></div><div class="stand-empty">Стенд пуст</div></div>';
     return;
   }
-  var h = '<div class="stand-box"><div class="stand-title"><span class="st-name">🏛️ '+esc(standNames[curStand])+'</span></div>';
-  list.forEach(it => {
-    var isLow = stGet(it, curStand) < MIN_STAND_ALERT && parseInt(it.qty) > 0;
-    h += '<div class="stand-item '+(isLow?'low-stock':'')+'"><div class="ti-info"><div class="ti-name">'+getTypeIcon(it.type)+' '+esc(getDisplayName(it))+'</div></div>';
-    h += '<div class="ti-qty">'+stGet(it,curStand)+' / '+totalIt(it)+' шт.</div></div>';
+  var totalInStand=0, totalGlobal=0;
+  var byType={}, byLang={};
+  list.forEach(function(it){
+    var inSt = stGet(it,curStand), glob = totalIt(it);
+    totalInStand += inSt; totalGlobal += glob;
+    var tp = it.type || 'Журнал';
+    if(!byType[tp]) byType[tp] = {inSt:0, glob:0};
+    byType[tp].inSt += inSt; byType[tp].glob += glob;
+    var code = it.lang || 'ru';
+    if(!byLang[code]) byLang[code] = {inSt:0, glob:0};
+    byLang[code].inSt += inSt; byLang[code].glob += glob;
+  });
+
+  var h = '<div class="stand-box">';
+  h += '<div class="stand-title"><span class="st-name">🏛️ '+esc(standNames[curStand])+'</span></div>';
+  h += '<div class="stand-summary">На стенде: <b>'+totalInStand+'</b> шт. из <b>'+totalGlobal+'</b> · позиций: <b>'+list.length+'</b></div>';
+
+  h += '<div class="stand-section-title">📋 По типам</div>';
+  ['Журнал','Брошюра','Постер'].forEach(function(tp){
+    if(!byType[tp]) return;
+    h += '<div class="stand-row"><span class="t-left">'+getTypeIcon(tp)+' '+esc(tp)+'</span><span class="t-right">'+byType[tp].inSt+' / '+byType[tp].glob+' шт.</span></div>';
+  });
+
+  var langs = Object.keys(byLang).sort(function(a,b){ return byLang[b].inSt - byLang[a].inSt; });
+  h += '<div class="stand-section-title">🌍 По языкам</div>';
+  langs.forEach(function(code){
+    h += '<div class="stand-row"><span class="t-left">'+esc(getLangDisplay(code))+'</span><span class="t-right">'+byLang[code].inSt+' / '+byLang[code].glob+' шт.</span></div>';
+  });
+
+  h += '<div class="stand-section-title">📚 Содержимое ('+list.length+')</div>';
+  list.sort(function(a,b){ return getDisplayName(a).localeCompare(getDisplayName(b)); });
+  list.forEach(function(it){
+    var inSt = stGet(it,curStand), glob = totalIt(it);
+    var extra = getItemExtraInfo(it);
+    var langTag = (it.lang && it.lang!=='ru') ? ' · '+esc(getLangShort(it.lang)) : '';
+    var isLow = inSt < MIN_STAND_ALERT && parseInt(it.qty) > 0;
+    h += '<div class="stand-item '+(isLow?'low-stock':'')+'">'+
+      '<div class="ti-info"><div class="ti-name">'+getTypeIcon(it.type)+' '+esc(getDisplayName(it))+'</div>'+
+      '<div class="ti-meta">'+esc(getDisplayCat(it))+(extra?' · '+esc(extra):'')+langTag+'</div></div>'+
+      '<div class="ti-qty">'+inSt+' / '+glob+' шт.<span class="in-total">'+(isLow?'🚨 МАЛО':'на стенде / всего')+'</span></div>'+
+    '</div>';
   });
   h += '</div>';
   cont.innerHTML = h;
 }
 
-function render(){
-  if(!currentUser) return;
-  var listEl = document.getElementById('list');
-  if(!listEl) return;
-  var h = '';
-  var canCount = hasPerm('count');
-  var canDel = hasPerm('del');
-  
-  items.forEach(it => {
-    var tot = totalIt(it);
-    var stock = it.qty || 0;
-    h += '<div class="item">';
-    h += '<div class="item-main"><div class="item-info">';
-    h += '<b class="item-name">'+getTypeIcon(it.type)+' '+esc(getDisplayName(it))+'</b>';
-    h += '<div class="item-cat">📦 в запасе: '+stock+'</div>';
-    h += '<span class="item-badge good">Всего '+tot+'</span>';
-    h += '</div></div>';
-    
-    h += '<div class="item-actions">';
-    if(canCount) h += '<button class="qty-btn minus" onclick="changeQty('+it.id+',-1)">−</button>';
-    h += '<input type="number" class="qty-display" value="'+tot+'" readonly>';
-    if(canCount) h += '<button class="qty-btn" onclick="changeQty('+it.id+',1)">+</button>';
-    if(canCount) h += '<button class="stand-btn" onclick="openStandEditor('+it.id+')">🏛️ На стенды</button>';
-    if(canDel) h += '<button class="icon-btn" onclick="deleteItem('+it.id+')">🗑️</button>';
-    h += '</div></div>';
-  });
-  listEl.innerHTML = h;
-  
+function updateStandBadges(){
   for(var n=1;n<=4;n++){
-    var cnt = 0;
-    items.forEach(it => cnt += stGet(it,n));
-    document.getElementById('stc-'+n).textContent = cnt > 0 ? cnt+' шт.' : '—';
-    document.getElementById('stn-'+n).textContent = standNames[n];
+    var cnt=0, alert=false;
+    items.forEach(function(it){
+      var sc = stGet(it,n); cnt += sc;
+      if(sc > 0 && sc < MIN_STAND_ALERT && parseInt(it.qty) > 0) alert = true;
+    });
+    var el = document.getElementById('stc-'+n);
+    if(el) el.innerHTML = cnt > 0 ? (cnt+' шт.' + (alert?' <span style="color:#ef4444">🚨</span>':'')) : '—';
+    var nm = document.getElementById('stn-'+n);
+    if(nm) nm.textContent = standNames[n];
+    var lbl = document.getElementById('addLblS'+n);
+    if(lbl) lbl.textContent = '🏛️ '+standNames[n];
   }
-  document.getElementById('tot').textContent = items.reduce((sum, it) => sum + totalIt(it), 0);
-  renderStand();
 }
 
-function changeQty(id, d) {
+// ===== COUNT BY TYPE =====
+function renderCountByType(){
+  var c = document.getElementById('countByType'); if(!c) return;
+  var counts = {mag:0, booklet:0, poster:0, total:0};
+  items.forEach(function(it){
+    var q = totalIt(it);
+    counts.total += q;
+    if(it.type === 'Журнал') counts.mag += q;
+    else if(it.type === 'Брошюра') counts.booklet += q;
+    else if(it.type === 'Постер') counts.poster += q;
+  });
+  var p = function(n){ return counts.total > 0 ? Math.round(n/counts.total*100) : 0; };
+  c.innerHTML =
+    '<div class="count-box"><div class="num" style="color:#f59e0b">'+counts.mag+'</div><div class="label">📰 Журналы</div><div class="small">'+p(counts.mag)+'%</div></div>'+
+    '<div class="count-box"><div class="num" style="color:#22c55e">'+counts.booklet+'</div><div class="label">📖 Брошюры</div><div class="small">'+p(counts.booklet)+'%</div></div>'+
+    '<div class="count-box"><div class="num" style="color:#ec4899">'+counts.poster+'</div><div class="label">🖼️ Постеры</div><div class="small">'+p(counts.poster)+'%</div></div>'+
+    '<div class="count-box" style="border:2px solid var(--primary)"><div class="num" style="color:var(--primary)">'+counts.total+'</div><div class="label">📦 Итого</div><div class="small">100%</div></div>';
+}
+
+// ===== LANG STATS =====
+function renderItemLangStats(){
+  var cont = document.getElementById('itemLangStats'); if(!cont) return;
+  var q = ((document.getElementById('langStatSearch')||{}).value||'').toLowerCase().trim();
+  var groups = {};
+  items.forEach(function(it){
+    var name = getDisplayName(it); if(!name) return;
+    if(!groups[name]) groups[name] = {name:name, langs:{}, totalQty:0};
+    var code = it.lang || 'ru';
+    var tq = totalIt(it);
+    if(!groups[name].langs[code]) groups[name].langs[code] = 0;
+    groups[name].langs[code] += tq;
+    groups[name].totalQty += tq;
+  });
+  var list = Object.keys(groups).map(function(k){ return groups[k]; });
+  if(q) list = list.filter(function(g){ return g.name.toLowerCase().indexOf(q) >= 0; });
+  list.sort(function(a,b){
+    var aL = Object.keys(a.langs).length, bL = Object.keys(b.langs).length;
+    if(bL !== aL) return bL - aL;
+    return b.totalQty - a.totalQty;
+  });
+  if(list.length === 0){ cont.innerHTML = '<div class="small" style="text-align:center;padding:20px">—</div>'; return; }
+  var h = '';
+  list.forEach(function(g){
+    var langsArr = Object.keys(g.langs).map(function(code){ return {code:code, qty: g.langs[code]}; });
+    langsArr.sort(function(a,b){ return b.qty - a.qty; });
+    var cnt = langsArr.length;
+    var word = cnt===1 ? 'язык' : (cnt<5 ? 'языка' : 'языков');
+    var details = langsArr.map(function(o){
+      return '<div class="stat-lang-row"><span class="stat-lang-name">'+esc(getLangDisplay(o.code))+'</span><span class="stat-lang-qty'+(o.qty<=0?' zero':'')+'">'+o.qty+' шт.</span></div>';
+    }).join('');
+    h += '<div class="item-lang-stat">'+
+      '<div class="stat-head" onclick="this.parentNode.classList.toggle(\'open\')">'+
+        '<div class="stat-head-left"><div class="stat-name">'+esc(g.name)+'</div>'+
+        '<div class="stat-summary">🌍 <b>'+cnt+'</b> '+word+' · 📦 <b>'+g.totalQty+'</b> шт.</div></div>'+
+        '<div class="stat-arrow">▶</div>'+
+      '</div>'+
+      '<div class="stat-body">'+details+'</div>'+
+    '</div>';
+  });
+  cont.innerHTML = h;
+}
+
+function renderCountByLangType(){
+  var tb = document.getElementById('countLangTypeBody'); if(!tb) return;
+  var byLang = {}, totals = {mag:0, booklet:0, poster:0, total:0};
+  items.forEach(function(it){
+    var code = it.lang || 'ru';
+    if(!byLang[code]) byLang[code] = {mag:0, booklet:0, poster:0, total:0};
+    var q = totalIt(it);
+    if(it.type === 'Журнал'){ byLang[code].mag += q; totals.mag += q; }
+    else if(it.type === 'Брошюра'){ byLang[code].booklet += q; totals.booklet += q; }
+    else if(it.type === 'Постер'){ byLang[code].poster += q; totals.poster += q; }
+    byLang[code].total += q;
+    totals.total += q;
+  });
+  var langs = Object.keys(byLang).sort(function(a,b){
+    if(a==='ru') return -1;
+    if(b==='ru') return 1;
+    return byLang[b].total - byLang[a].total;
+  });
+  if(langs.length === 0){ tb.innerHTML = '<tr><td colspan="5" style="text-align:center">—</td></tr>'; return; }
+  var h = '';
+  langs.forEach(function(code){
+    var c = byLang[code];
+    h += '<tr><td><b>'+esc(getLangDisplay(code))+'</b></td><td>'+c.mag+'</td><td>'+c.booklet+'</td><td>'+c.poster+'</td><td><b>'+c.total+'</b></td></tr>';
+  });
+  h += '<tr class="total-row"><td>ВСЕГО</td><td>'+totals.mag+'</td><td>'+totals.booklet+'</td><td>'+totals.poster+'</td><td>'+totals.total+'</td></tr>';
+  tb.innerHTML = h;
+}
+
+// ===== CHARTS =====
+function renderCharts(){
+  try{
+    var ctx = document.getElementById('chartMain'); if(!ctx) return;
+    var tc = {};
+    items.forEach(function(it){
+      var tp = getTypeDisplay(it.type);
+      tc[tp] = (tc[tp]||0) + totalIt(it);
+    });
+    var labels = Object.keys(tc);
+    var data = labels.map(function(k){ return tc[k]; });
+    var isDay = document.body.classList.contains('day');
+    if(chartMainInst) chartMainInst.destroy();
+    chartMainInst = new Chart(ctx, {
+      type: 'doughnut',
+      data: {labels: labels, datasets: [{data: data, backgroundColor:['#f59e0b','#22c55e','#ec4899','#06b6d4']}]},
+      options: {responsive: true, plugins: {legend: {labels: {color: isDay ? '#111' : '#fff'}}}}
+    });
+  }catch(e){ console.error(e); }
+}
+
+// ===== QTY =====
+function changeQty(id, d){
   if(!hasPerm('count')) return;
-  var it = items.find(x=>x.id==id);
-  if(it) { it.qty = Math.max(0, (parseInt(it.qty)||0) + d); saveToLocal(); render(); pushToCloud(); }
+  var it = items.find(function(x){ return x.id == id; }); if(!it) return;
+  var old = parseInt(it.qty)||0;
+  var nv = Math.max(0, old + d);
+  if(nv === old) return;
+  it.qty = nv;
+  saveToLocal(); render();
 }
 
-function deleteItem(id) {
+function setQtyDirect(id, val){
+  if(!hasPerm('count')){ render(); return; }
+  var it = items.find(function(x){ return x.id == id; }); if(!it) return;
+  var newTotal = Math.max(0, parseInt(val)||0);
+  var stands = stSum(it);
+  if(newTotal < stands){ toast('❌ Меньше, чем на стендах ('+stands+')'); render(); return; }
+  var newStock = newTotal - stands;
+  if(newStock === it.qty){ render(); return; }
+  it.qty = newStock;
+  saveToLocal(); render();
+}
+
+// ===== DELETE =====
+function deleteItem(id){
   if(!hasPerm('del')) return;
-  if(confirm('Удалить?')) {
-    items = items.filter(x=>x.id!=id);
-    saveToLocal(); render(); pushToCloud();
-  }
+  customConfirm('Удалить это издание?', function(){
+    var it = items.find(function(x){ return x.id == id; }); if(!it) return;
+    items = items.filter(function(x){ return x.id != id; });
+    saveToLocal(); render();
+    toast('🗑️ Удалено: ' + getDisplayName(it));
+  });
 }
 
+// ===== STAND EDITOR =====
 var _standItemId = null;
-function openStandEditor(id) {
+function openStandEditor(id){
+  if(!hasPerm('count')) return;
+  var it = items.find(function(x){ return x.id == id; }); if(!it) return;
   _standItemId = id;
-  var it = items.find(x=>x.id==id);
-  if(!it) return;
-  var h = '<div class="stand-info">Всего: <b>'+totalIt(it)+'</b> · В запасе: <b>'+(it.qty||0)+'</b></div>';
-  for(var n=1;n<=4;n++) {
-    h += '<div class="stand-field"><span class="sf-label">🏛️ '+esc(standNames[n])+'</span>';
-    h += '<select id="sted-'+n+'">';
-    for(var i=0;i<=10;i++) h += '<option value="'+i+'" '+(stGet(it,n)===i?'selected':'')+'>'+i+'</option>';
-    h += '</select></div>';
-  }
-  h += '<div style="display:flex;gap:8px;margin-top:14px">';
-  h += '<button class="sec" onclick="closeStandEditor()">Отмена</button>';
-  h += '<button onclick="saveStandEditor()" style="background:#22c55e;color:#000">💾 Сохранить</button>';
-  h += '</div>';
-  document.getElementById('standEditorContent').innerHTML = h;
+  renderStandEditor();
   document.getElementById('standOverlay').classList.add('show');
 }
-function closeStandEditor() { document.getElementById('standOverlay').classList.remove('show'); }
-
-function saveStandEditor() {
+function closeStandEditor(){
+  document.getElementById('standOverlay').classList.remove('show');
+  _standItemId = null;
+}
+function renderStandEditor(){
   if(!_standItemId) return;
-  var it = items.find(x=>x.id==_standItemId);
-  if(!it) return;
-  
-  var oldSum = stSum(it);
-  var newSum = 0;
-  for(var n=1;n<=4;n++) {
-    var val = parseInt(document.getElementById('sted-'+n).value)||0;
-    if(!it.standCounts) it.standCounts = {};
-    it.standCounts[n] = val;
-    newSum += val;
+  var it = items.find(function(x){ return x.id == _standItemId; }); if(!it) return;
+  var stock = parseInt(it.qty)||0;
+  var sum = stSum(it);
+  var total = stock + sum;
+  document.getElementById('standTitle').textContent = '🏛️ ' + getDisplayName(it);
+
+  var h = '<div class="stand-info" id="standInfoBox">Всего: <b>'+total+'</b> шт. · На стендах: <b>'+sum+'</b> · В запасе: <b>'+stock+'</b></div>';
+  for(var n=1;n<=4;n++){
+    h += '<div class="stand-field"><span class="sf-label">🏛️ '+esc(standNames[n])+'</span><select id="sted-'+n+'" onchange="standLiveUpdate()">';
+    for(var i=0;i<=STAND_MAX;i++) h += '<option value="'+i+'"'+(stGet(it,n)===i?' selected':'')+'>'+i+'</option>';
+    h += '</select></div>';
   }
-  
-  var diff = newSum - oldSum;
-  if(diff > 0) it.qty = Math.max(0, (parseInt(it.qty)||0) - diff);
-  else if(diff < 0) it.qty = (parseInt(it.qty)||0) + Math.abs(diff);
-  
-  saveToLocal(); render(); pushToCloud(); closeStandEditor();
-  toast('Сохранено');
+  h += '<div style="display:flex;gap:8px;margin-top:14px">'+
+    '<button class="sec" onclick="closeStandEditor()" style="flex:1;padding:12px">Отмена</button>'+
+    '<button onclick="saveStandEditor()" style="flex:1;padding:12px;background:#22c55e;color:#000">💾 Сохранить</button>'+
+  '</div>';
+  document.getElementById('standEditorContent').innerHTML = h;
+}
+function standLiveUpdate(){
+  if(!_standItemId) return;
+  var it = items.find(function(x){ return x.id == _standItemId; }); if(!it) return;
+  var stock = parseInt(it.qty)||0;
+  var oldStands = stSum(it);
+  var newStands = 0;
+  for(var n=1;n<=4;n++) newStands += Math.max(0, parseInt(document.getElementById('sted-'+n).value)||0);
+  var delta = newStands - oldStands;
+  var projStock = stock - delta;
+  var projTotal = projStock + newStands;
+  var info = document.getElementById('standInfoBox');
+  if(info){
+    var color = projStock < 0 ? '#ef4444' : (projStock === 0 ? '#f59e0b' : '#22c55e');
+    info.innerHTML = 'Всего: <b>'+projTotal+'</b> шт. · На стендах: <b>'+newStands+'</b> · В запасе: <b style="color:'+color+'">'+projStock+'</b>';
+  }
+}
+function saveStandEditor(){
+  if(!_standItemId){ closeStandEditor(); return; }
+  var it = items.find(function(x){ return x.id == _standItemId; }); if(!it){ closeStandEditor(); return; }
+  var oldStands = stSum(it);
+  var vals = {}, newStands = 0;
+  for(var n=1;n<=4;n++){
+    var v = Math.max(0, Math.min(STAND_MAX, parseInt(document.getElementById('sted-'+n).value)||0));
+    vals[n] = v; newStands += v;
+  }
+  var delta = newStands - oldStands;
+  if(delta > 0){
+    if((parseInt(it.qty)||0) < delta){ toast('❌ В запасе только '+(it.qty||0)+' шт.'); return; }
+    it.qty = (parseInt(it.qty)||0) - delta;
+  } else if(delta < 0){
+    it.qty = (parseInt(it.qty)||0) + Math.abs(delta);
+  }
+  it.standCounts = vals;
+  saveToLocal(); render(); closeStandEditor();
+  toast('✅ Сохранено');
 }
 
-function addItem() {
-  if(!hasPerm('add')) return;
-  var title = document.getElementById('title').value.trim();
-  if(!title) { toast('Введите название'); return; }
+// ===== RENAME =====
+var _renamingId = null;
+function openRename(id){
+  if(!hasPerm('rename')) return;
+  var it = items.find(function(x){ return x.id == id; }); if(!it) return;
+  _renamingId = id;
+  var langOpts = '';
+  Object.keys(LANGS).forEach(function(code){
+    langOpts += '<option value="'+code+'"'+((it.lang||'ru')===code?' selected':'')+'>'+esc(getLangDisplay(code))+'</option>';
+  });
+  var html = '';
+  html += '<div style="margin-bottom:8px"><label style="font-size:0.8em;margin:0 0 3px">📝 Название</label><input id="rn-ru" value="'+esc(getDisplayName(it))+'"></div>';
+  html += '<div style="margin-bottom:8px"><label style="font-size:0.8em;margin:0 0 3px">💡 Тема</label><input id="rn-theme" value="'+esc(it.theme||'')+'" placeholder="тема выпуска"></div>';
+  html += '<div style="margin-bottom:8px"><label style="font-size:0.8em;margin:0 0 3px">🌍 Язык</label><select id="rn-lang">'+langOpts+'</select></div>';
+  html += '<div class="row"><div><label style="font-size:0.8em;margin:0 0 3px">📅 Год</label><input id="rn-year" value="'+esc(it.year||'')+'"></div>';
+  html += '<div><label style="font-size:0.8em;margin:0 0 3px">🔢 Номер</label><input id="rn-issueNum" value="'+esc(it.issueNum||'')+'"></div></div>';
+  document.getElementById('rnFields').innerHTML = html;
+  document.getElementById('rnOverlay').classList.add('show');
+}
+function closeRename(){ document.getElementById('rnOverlay').classList.remove('show'); _renamingId = null; }
+function saveRename(){
+  if(!_renamingId){ closeRename(); return; }
+  var it = items.find(function(x){ return x.id == _renamingId; }); if(!it){ closeRename(); return; }
+  var nameEl = document.getElementById('rn-ru');
+  if(nameEl && nameEl.value.trim()){ if(!it.names) it.names = {}; it.names.ru = nameEl.value.trim(); }
+  var tEl = document.getElementById('rn-theme');
+  if(tEl) it.theme = tEl.value.trim();
+  var lEl = document.getElementById('rn-lang');
+  if(lEl) it.lang = lEl.value;
+  var yEl = document.getElementById('rn-year');
+  if(yEl) it.year = yEl.value.trim();
+  var iEl = document.getElementById('rn-issueNum');
+  if(iEl) it.issueNum = iEl.value.trim();
+  closeRename(); saveToLocal(); render();
+  toast('✅ Сохранено');
+}
+
+// ===== ADD =====
+function setAddType(t){
+  currentAddType = t;
+  var map = {'Журнал':'a-mag','Брошюра':'a-booklet','Постер':'a-poster'};
+  document.querySelectorAll('.typebtn').forEach(function(b){ b.classList.remove('active'); });
+  if(map[t]){ var e = document.getElementById(map[t]); if(e) e.classList.add('active'); }
+}
+
+function addItem(){
+  if(!hasPerm('add')){ toast('⚠️ Нет прав'); return; }
+  var titleVal = (document.getElementById('title').value||'').trim();
+  if(!titleVal){ toast('⚠️ Введите название!'); return; }
+
+  var totalInput = parseInt(document.getElementById('qty').value)||0;
+  var yearVal = (document.getElementById('year').value||'').trim();
+  var issueNumVal = (document.getElementById('issueNum').value||'').trim();
+  var langVal = (document.getElementById('lang')||{}).value || 'ru';
+  var s1 = Math.max(0, Math.min(STAND_MAX, parseInt((document.getElementById('s1')||{}).value)||0));
+  var s2 = Math.max(0, Math.min(STAND_MAX, parseInt((document.getElementById('s2')||{}).value)||0));
+  var s3 = Math.max(0, Math.min(STAND_MAX, parseInt((document.getElementById('s3')||{}).value)||0));
+  var s4 = Math.max(0, Math.min(STAND_MAX, parseInt((document.getElementById('s4')||{}).value)||0));
+  var sSum = s1+s2+s3+s4;
+
+  if(sSum > totalInput){ toast('❌ На стендах '+sSum+', а всего '+totalInput); return; }
+
+  var stockQty = totalInput - sSum;
   var newItem = {
-    id: Date.now()+Math.random(),
-    names: {ru: title},
+    id: Date.now() + Math.random(),
+    names: {ru: titleVal},
     type: currentAddType,
-    cat: document.getElementById('cat').value,
-    qty: parseInt(document.getElementById('qty').value)||0,
-    year: document.getElementById('year').value,
-    issueNum: document.getElementById('issueNum').value,
-    lang: document.getElementById('lang').value,
-    standCounts: {1:0,2:0,3:0,4:0}
+    cat: (document.getElementById('cat').value||'-'),
+    lang: langVal,
+    year: yearVal,
+    issueNum: issueNumVal,
+    theme: '',
+    qty: stockQty,
+    standCounts: {1:s1,2:s2,3:s3,4:s4},
+    favorite: false
   };
   items.push(newItem);
-  saveToLocal(); render(); pushToCloud();
   document.getElementById('title').value = '';
-  toast('✅ Добавлено');
+  document.getElementById('year').value = '';
+  document.getElementById('issueNum').value = '';
+  document.getElementById('s1').value = '0';
+  document.getElementById('s2').value = '0';
+  document.getElementById('s3').value = '0';
+  document.getElementById('s4').value = '0';
+  saveToLocal(); render();
+  toast('✅ Добавлено: ' + titleVal + (sSum>0?', на стендах '+sSum:''));
 }
 
-function setAddType(t) {
-  currentAddType = t;
-  document.querySelectorAll('.typebtn').forEach(b=>b.classList.remove('active'));
-  var map = {'Журнал':'a-mag','Брошюра':'a-booklet','Постер':'a-poster'};
-  if(map[t]) document.getElementById(map[t]).classList.add('active');
+// ===== FILTERS =====
+function setSort(v){ curSort = v; localStorage.setItem('stand_sort', v); render(); }
+function setTypeFilter(v){ curTypeFilter = v; render(); }
+function setLangFilter(v){ curLangFilter = v; render(); }
+function setStandFilter(v){ curStandFilter = v; localStorage.setItem('stand_filter', v); render(); }
+function debouncedRender(){ clearTimeout(renderTimer); renderTimer = setTimeout(render, 250); }
+
+// ===== CUSTOM CONFIRM =====
+var _ccCallback = null;
+function customConfirm(msg, cb){
+  document.getElementById('ccTitle').textContent = 'Подтверждение';
+  document.getElementById('ccMsg').textContent = msg;
+  document.getElementById('ccOverlay').classList.add('show');
+  _ccCallback = cb;
 }
+function _ccClose(){
+  document.getElementById('ccOverlay').classList.remove('show');
+  _ccCallback = null;
+}
+document.getElementById('ccOk').onclick = function(){ var cb = _ccCallback; _ccClose(); if(cb) cb(); };
+document.getElementById('ccCancel').onclick = _ccClose;
+document.getElementById('ccOverlay').onclick = function(e){ if(e.target===this) _ccClose(); };
 
-function debouncedRender(){ render(); }
+// ===== INIT =====
+function init(){
+  applyTheme();
+  loadFromLocal();
 
-function init() {
-  if(currentUserEmail) {
-    currentUser = users.find(u => u.email === currentUserEmail);
-    if(!currentUser) {
-      // Пользователя удалили в админке — сбрасываем сессию
+  if(currentUserEmail){
+    currentUser = users.find(function(u){ return u.email && u.email.toLowerCase() === currentUserEmail.toLowerCase(); }) || null;
+    if(currentUser && !currentUser.active){
+      currentUser = null;
       currentUserEmail = '';
       localStorage.removeItem('stand_user_email');
     }
   }
-  
-  if(!currentUserEmail) {
-    document.getElementById('userOverlay').classList.add('show');
-  } else {
+
+  if(currentUser){
+    document.getElementById('mainContent').style.display = 'block';
     updateUI();
+  } else {
+    showRegister();
   }
-  if(cloudEnabled && cloudId) initFirebase();
+
+  if(cloudEnabled && cloudId){
+    initFirebase();
+  } else {
+    setSyncState('offline');
+  }
 }
-init();
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
 </script>
 </body>
 </html>

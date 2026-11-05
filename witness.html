@@ -69,14 +69,11 @@ button:disabled{opacity:0.5;cursor:not-allowed}
     <div class="card">
       <label>🏛️ Выберите стенд</label>
       <div class="stand-tabs" id="standTabs"></div>
-
       <label>🔍 Поиск литературы</label>
       <input id="searchItems" placeholder="начните вводить название..." oninput="filterItems()">
-      
       <label style="margin-top:12px">📚 Что ушло</label>
       <select id="itemSelect" size="6" style="height:auto;min-height:140px"></select>
       <div id="selectedInfo" style="color:var(--muted);font-size:0.85em;margin-top:8px;min-height:1.2em"></div>
-      
       <label style="margin-top:12px">🔢 Сколько ушло</label>
       <input id="qtyInput" type="number" min="1" inputmode="numeric" value="1" style="font-size:1.5em;text-align:center;font-weight:bold">
       <button onclick="submitReport()" id="submitBtn" style="margin-top:14px;background:var(--ok);color:#000;font-size:1.1em;padding:16px">✓ Отправить отчёт</button>
@@ -246,7 +243,6 @@ function selectWitnessStand(s){
 function renderItemSelect(){
   const sel = document.getElementById('itemSelect');
   const search = (document.getElementById('searchItems').value || '').toLowerCase();
-  
   const itemsOnStand = items.filter(it => {
     const count = (it.standCounts && parseInt(it.standCounts[currentWitnessStand])) || 0;
     if(count <= 0) return false;
@@ -258,13 +254,11 @@ function renderItemSelect(){
     }
     return true;
   });
-
   if(!itemsOnStand.length){
     sel.innerHTML = '<option value="">— на этом стенде ничего нет —</option>';
     document.getElementById('selectedInfo').textContent='';
     return;
   }
-
   const oldVal = sel.value;
   sel.innerHTML = itemsOnStand.map(it => {
     const count = parseInt(it.standCounts[currentWitnessStand]) || 0;
@@ -274,7 +268,6 @@ function renderItemSelect(){
     const label = `${icon} ${getItemName(it)}${extra?' — '+extra:''} • ${lang} (${count} шт.)`;
     return `<option value="${esc(String(it.id))}">${esc(label)}</option>`;
   }).join('');
-  
   if(oldVal && itemsOnStand.find(it => String(it.id) === oldVal)){ 
     sel.value = oldVal; 
   } else if (itemsOnStand.length > 0) {
@@ -309,7 +302,6 @@ async function submitReport(){
   if(qty <= 0){ toast('Введите количество','err'); return; }
   const it = items.find(x => String(x.id) === sel.value);
   if(!it){ toast('Литература не найдена','err'); return; }
-  
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
   btn.textContent = '⏳ Отправка...';
@@ -345,9 +337,14 @@ async function submitReport(){
 }
 
 async function init(){
-  const saved = await checkSavedLogin();
-  if(saved){ startApp(); }
-  else { document.getElementById('regScreen').style.display='block'; }
+  try {
+    const saved = await checkSavedLogin();
+    if(saved){ startApp(); }
+    else { document.getElementById('regScreen').style.display='block'; }
+  } catch(e) {
+    console.error('Init error:', e);
+    document.getElementById('regScreen').style.display='block';
+  }
 }
 
 if(document.readyState === 'loading'){

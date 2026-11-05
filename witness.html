@@ -95,6 +95,10 @@ let itemsUnsub=null;
 
 const LS_STAND='witness_stand_id';
 const LS_EMAIL='witness_email';
+const LS_NAME='witness_name';
+const LS_SURNAME='witness_surname';
+const LS_NAMES_JSON='witness_stand_names';
+const LS_CUR_STAND='witness_current_stand';
 
 function toast(msg, type, ms){
   ms = ms || 2500;
@@ -150,13 +154,21 @@ async function doRegister(){
       createdAt: snap.exists() ? (snap.data().createdAt || Date.now()) : Date.now(),
       lastSeen: Date.now()
     }, {merge: true});
+    
+    // Save EVERYTHING to localStorage
     localStorage.setItem(LS_STAND, standId);
     localStorage.setItem(LS_EMAIL, email);
+    localStorage.setItem(LS_NAME, name);
+    localStorage.setItem(LS_SURNAME, surname);
+    
     currentUser = {email, name, surname};
     currentStandId = standId;
     infoEl.style.color='#22c55e';
     infoEl.textContent='✅ Готово!';
-    setTimeout(startApp, 400);
+    setTimeout(() => {
+      startApp();
+      subscribeToItems();
+    }, 300);
   }catch(e){
     console.error(e);
     errEl.textContent='❌ Ошибка: ' + (e.message || 'проверьте код');
@@ -164,42 +176,48 @@ async function doRegister(){
   }
 }
 
-async function checkSavedLogin(){
-  const standId = localStorage.getItem(LS_STAND);
-  const email = localStorage.getItem(LS_EMAIL);
-  if(!standId || !email) return false;
-  try{
-    const fns = await initFirebase();
-    const witnessRef = fns.doc(cloudDb, 'stands', standId, 'witnesses', email);
-    const snap = await fns.getDoc(witnessRef);
-    if(!snap.exists()) return false;
-    const data = snap.data();
-    if(data.active === false) return false;
-    currentUser = {email: data.email, name: data.name, surname: data.surname};
-    currentStandId = standId;
-    await fns.setDoc(witnessRef, {lastSeen: Date.now()}, {merge: true});
-    return true;
-  }catch(e){ console.error(e); return false; }
-}
-
 function startApp(){
   document.getElementById('regScreen').style.display='none';
   document.getElementById('mainScreen').style.display='block';
-  document.getElementById('userInfo').textContent = '👤 ' + currentUser.name + ' ' + currentUser.surname;
-  subscribeToItems();
+  document.getElementById('userInfo').textContent = '👤 ' + (currentUser && currentUser.name || '') + ' ' + (currentUser && currentUser.surname || '');
+  renderStandTabs();
+  renderItemSelect();
 }
 
 function logout(){
   localStorage.removeItem(LS_STAND);
   localStorage.removeItem(LS_EMAIL);
-  if(itemsUnsub) itemsUnsub();
+  localStorage.removeItem(LS_NAME);
+  localStorage.removeItem(LS_SURNAME);
+  localStorage.removeItem(LS_NAMES_JSON);
+  localStorage.removeItem(LS_CUR_STAND);
+  if(itemsUnsub){ try{ itemsUnsub(); }catch(e){} itemsUnsub=null; }
   items=[]; currentUser=null; currentStandId='';
   document.getElementById('mainScreen').style.display='none';
   document.getElementById('regScreen').style.display='block';
+  document.getElementById('regErr').textContent='';
+  document.getElementById('regInfo').textContent='';
+  document.getElementById('regStandId').value='';
+  document.getElementById('regName').value='';
+  document.getElementById('regSurname').value='';
+  document.getElementById('regEmail').value='';
+}
+
+function showDeactivated(){
+  document.getElementById('mainScreen').style.display='none';
+  document.getElementById('regScreen').style.display='block';
+  document.getElementById('regErr').textContent='❌ Ваш доступ отозван координатором. Обратитесь к нему.';
+  document.getElementById('regInfo').textContent='';
+  // Pre-fill from localStorage for convenience
+  document.getElementById('regStandId').value = localStorage.getItem(LS_STAND) || '';
+  document.getElementById('regName').value = localStorage.getItem(LS_NAME) || '';
+  document.getElementById('regSurname').value = localStorage.getItem(LS_SURNAME) || '';
+  document.getElementById('regEmail').value = localStorage.getItem(LS_EMAIL) || '';
 }
 
 function subscribeToItems(){
-  if(itemsUnsub) itemsUnsub();
+  if(itemsUnsub){ try{ itemsUnsub(); }catch(e){} itemsUnsub=null; }
+  if(!cloudFns || !cloudDb || !currentStandId) return;
   const fns = cloudFns;
   const standRef = fns.doc(cloudDb, 'stands', currentStandId);
   itemsUnsub = fns.onSnapshot(standRef, snap => {
@@ -210,6 +228,8 @@ function subscribeToItems(){
       for(let n=1; n<=4; n++){
         if(data.standNames[n]) standNames[n] = String(data.standNames[n]);
       }
+      // Cache stand names locally for offline load
+      try{ localStorage.setItem(LS_NAMES_JSON, JSON.stringify(standNames)); }catch(e){}
     }
     renderStandTabs();
     renderItemSelect();
@@ -236,12 +256,14 @@ function renderStandTabs(){
 
 function selectWitnessStand(s){
   currentWitnessStand = s;
+  try{ localStorage.setItem(LS_CUR_STAND, String(s)); }catch(e){}
   renderStandTabs();
   renderItemSelect();
 }
 
 function renderItemSelect(){
   const sel = document.getElementById('itemSelect');
+  if(!sel) return;
   const search = (document.getElementById('searchItems').value || '').toLowerCase();
   const itemsOnStand = items.filter(it => {
     const count = (it.standCounts && parseInt(it.standCounts[currentWitnessStand])) || 0;
@@ -256,7 +278,8 @@ function renderItemSelect(){
   });
   if(!itemsOnStand.length){
     sel.innerHTML = '<option value="">— на этом стенде ничего нет —</option>';
-    document.getElementById('selectedInfo').textContent='';
+    const info = document.getElementById('selectedInfo');
+    if(info) info.textContent='';
     return;
   }
   const oldVal = sel.value;
@@ -281,9 +304,9 @@ function filterItems(){ renderItemSelect(); }
 function updateSelectedInfo(){
   const sel = document.getElementById('itemSelect');
   const info = document.getElementById('selectedInfo');
-  if(!sel.value){ info.textContent=''; return; }
+  if(!sel || !sel.value){ if(info) info.textContent=''; return; }
   const it = items.find(x => String(x.id) === sel.value);
-  if(!it){ info.textContent=''; return; }
+  if(!it){ if(info) info.textContent=''; return; }
   const avail = (it.standCounts && parseInt(it.standCounts[currentWitnessStand])) || 0;
   const qtyInput = document.getElementById('qtyInput');
   if(qtyInput) qtyInput.max = avail;
@@ -306,7 +329,7 @@ async function submitReport(){
   btn.disabled = true;
   btn.textContent = '⏳ Отправка...';
   try{
-    const fns = cloudFns;
+    const fns = cloudFns || await initFirebase();
     const reportsRef = fns.collection(cloudDb, 'stands', currentStandId, 'reports');
     await fns.addDoc(reportsRef, {
       witnessEmail: currentUser.email,
@@ -327,6 +350,11 @@ async function submitReport(){
     });
     toast('✓ Отчёт отправлен: ' + qty + ' шт.', 'ok');
     qtyEl.value = '1';
+    // Update lastSeen
+    try {
+      const witnessRef = fns.doc(cloudDb, 'stands', currentStandId, 'witnesses', currentUser.email);
+      await fns.setDoc(witnessRef, {lastSeen: Date.now()}, {merge: true});
+    } catch(e){}
   }catch(e){
     console.error(e);
     toast('❌ Ошибка: ' + (e.message || 'попробуйте ещё раз'), 'err');
@@ -337,13 +365,89 @@ async function submitReport(){
 }
 
 async function init(){
-  try {
-    const saved = await checkSavedLogin();
-    if(saved){ startApp(); }
-    else { document.getElementById('regScreen').style.display='block'; }
-  } catch(e) {
-    console.error('Init error:', e);
+  const standId = localStorage.getItem(LS_STAND);
+  const email = localStorage.getItem(LS_EMAIL);
+  const savedName = localStorage.getItem(LS_NAME) || '';
+  const savedSurname = localStorage.getItem(LS_SURNAME) || '';
+
+  if(!standId || !email){
     document.getElementById('regScreen').style.display='block';
+    return;
+  }
+
+  // Optimistic login: set current user from localStorage
+  currentUser = {email, name: savedName, surname: savedSurname};
+  currentStandId = standId;
+
+  // Restore active stand tab
+  const savedStand = parseInt(localStorage.getItem(LS_CUR_STAND));
+  if(savedStand >= 1 && savedStand <= 4) currentWitnessStand = savedStand;
+
+  // Restore cached stand names
+  try{
+    const cached = JSON.parse(localStorage.getItem(LS_NAMES_JSON) || 'null');
+    if(cached && typeof cached === 'object'){
+      for(let n=1; n<=4; n++){
+        if(cached[n]) standNames[n] = String(cached[n]);
+      }
+    }
+  }catch(e){}
+
+  // Show main screen IMMEDIATELY - no waiting for Firebase
+  startApp();
+
+  // Verify with Firebase in background - don't block UI
+  try{
+    const fns = await initFirebase();
+    const witnessRef = fns.doc(cloudDb, 'stands', standId, 'witnesses', email);
+    const snap = await fns.getDoc(witnessRef);
+
+    if(snap.exists()){
+      const data = snap.data();
+      if(data.active === false){
+        // Explicitly deactivated by admin
+        showDeactivated();
+        return;
+      }
+      // Sync name/surname if changed by admin
+      let changed = false;
+      if(data.name && data.name !== currentUser.name){
+        currentUser.name = data.name;
+        localStorage.setItem(LS_NAME, data.name);
+        changed = true;
+      }
+      if(data.surname && data.surname !== currentUser.surname){
+        currentUser.surname = data.surname;
+        localStorage.setItem(LS_SURNAME, data.surname);
+        changed = true;
+      }
+      if(changed){
+        document.getElementById('userInfo').textContent = '👤 ' + currentUser.name + ' ' + currentUser.surname;
+      }
+      // Update lastSeen
+      try{ await fns.setDoc(witnessRef, {lastSeen: Date.now()}, {merge: true}); }catch(e){}
+    } else {
+      // Document missing in Firebase but we have local credentials.
+      // Re-create silently from local data - don't force re-registration.
+      if(savedName){
+        try{
+          await fns.setDoc(witnessRef, {
+            email, name: savedName, surname: savedSurname, active: true,
+            createdAt: Date.now(), lastSeen: Date.now()
+          }, {merge: true});
+        }catch(e){ console.warn('Could not recreate witness doc:', e); }
+      }
+    }
+
+    // Now subscribe to items
+    subscribeToItems();
+  }catch(e){
+    // Firebase not available (offline, CDN issue, etc)
+    // User stays logged in with local data
+    console.warn('Firebase verification failed, keeping local session:', e);
+    toast('⚠️ Нет связи с сервером, работаем офлайн', 'err', 4000);
+    // Still try to subscribe (will fail silently but might retry)
+    try{ subscribeToItems(); }catch(err){}
   }
 }
 

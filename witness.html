@@ -18,13 +18,6 @@ label{color:var(--primary);font-size:0.85em;font-weight:bold;display:block;margi
 button{padding:12px;border-radius:8px;border:0;background:var(--primary);color:var(--primary-text);font-weight:bold;cursor:pointer;width:100%;font-size:1em}
 button:active{transform:scale(0.98)}
 button:disabled{opacity:0.5;cursor:not-allowed}
-
-/* Стили для вкладок стендов (как в Stand Pro) */
-.stand-tabs{display:flex;gap:5px;margin-top:10px;margin-bottom:12px}
-.stand-tab{flex:1;padding:10px 6px;font-size:0.85em;font-weight:bold;background:var(--card2);color:var(--text);border:2px solid var(--border);border-radius:8px;cursor:pointer;margin:0;transition:all 0.15s;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.stand-tab.active{background:#06b6d4;color:#000;border-color:#06b6d4;box-shadow:0 0 10px rgba(6,182,212,0.5)}
-.stand-tab .cnt{display:block;font-size:0.7em;opacity:0.85;font-weight:normal;margin-top:2px}
-
 .reg-box{background:var(--card);border:2px solid var(--primary);border-radius:14px;padding:20px;max-width:400px;margin:40px auto;text-align:center}
 .reg-box h2{color:var(--primary);margin:0 0 8px}
 .reg-box .desc{color:var(--muted);font-size:0.9em;margin-bottom:16px;line-height:1.5}
@@ -36,11 +29,10 @@ button:disabled{opacity:0.5;cursor:not-allowed}
 @keyframes toastIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .toast.ok{border-color:var(--ok);background:rgba(34,197,94,0.95);color:#000}
 .toast.err{border-color:var(--err);background:rgba(239,68,68,0.95)}
-.report-row{background:var(--card2);border-radius:8px;padding:10px;margin:6px 0;font-size:0.9em;line-height:1.4;border-left:3px solid var(--ok)}
-.report-row.pending{border-left-color:var(--primary)}
-.report-row .when{color:var(--muted);font-size:0.8em}
-.report-row .qty{font-weight:bold;color:var(--ok);font-size:1.1em}
-.report-row .item{font-weight:bold}
+.stand-tabs{display:flex;gap:5px;margin-top:10px;margin-bottom:12px}
+.stand-tab{flex:1;padding:10px 6px;font-size:0.85em;font-weight:bold;background:var(--card2);color:var(--text);border:2px solid var(--border);border-radius:8px;cursor:pointer;margin:0;transition:all 0.15s;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stand-tab.active{background:#06b6d4;color:#000;border-color:#06b6d4;box-shadow:0 0 10px rgba(6,182,212,0.5)}
+.stand-tab .cnt{display:block;font-size:0.7em;opacity:0.85;font-weight:normal;margin-top:2px}
 #itemSelect option{padding:6px}
 </style>
 </head>
@@ -50,7 +42,7 @@ button:disabled{opacity:0.5;cursor:not-allowed}
   <div class="reg-box">
     <div class="icon">📤</div>
     <h2>Отчёт о распространении</h2>
-    <div class="desc">Выберите стенд, укажите литературу и количество.</div>
+    <div class="desc">Выберите стенд, укажите что и сколько ушло. Отчёт уйдёт координатору.</div>
     <label>Код стенда (у координатора)</label>
     <input id="regStandId" placeholder="напр. stand-2026" autocomplete="off">
     <label>Имя</label>
@@ -59,7 +51,7 @@ button:disabled{opacity:0.5;cursor:not-allowed}
     <input id="regSurname" placeholder="Иванов" autocomplete="family-name">
     <label>Email</label>
     <input id="regEmail" type="email" placeholder="you@example.com" autocomplete="email">
-    <button onclick="doRegister()" style="margin-top:16px">✓ Зарегистрироваться</button>
+    <button onclick="doRegister()" style="margin-top:16px">✓ Войти</button>
     <div class="err" id="regErr"></div>
     <div class="info" id="regInfo"></div>
   </div>
@@ -76,9 +68,7 @@ button:disabled{opacity:0.5;cursor:not-allowed}
   <div class="wrap">
     <div class="card">
       <label>🏛️ Выберите стенд</label>
-      <div class="stand-tabs" id="standTabs">
-        <!-- Вкладки генерируются через JS -->
-      </div>
+      <div class="stand-tabs" id="standTabs"></div>
 
       <label>🔍 Поиск литературы</label>
       <input id="searchItems" placeholder="начните вводить название..." oninput="filterItems()">
@@ -91,12 +81,6 @@ button:disabled{opacity:0.5;cursor:not-allowed}
       <input id="qtyInput" type="number" min="1" inputmode="numeric" value="1" style="font-size:1.5em;text-align:center;font-weight:bold">
       <button onclick="submitReport()" id="submitBtn" style="margin-top:14px;background:var(--ok);color:#000;font-size:1.1em;padding:16px">✓ Отправить отчёт</button>
     </div>
-    <div class="card">
-      <label>📋 Мои недавние отчёты</label>
-      <div id="myReports" style="margin-top:8px">
-        <div style="text-align:center;padding:20px;color:var(--muted)">—</div>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -107,10 +91,10 @@ const FIREBASE_CONFIG = {"apiKey":"AIzaSyCKoGOE84zPuc4t6UQrDYMbooCR43p0FyQ","aut
 
 let cloudApp=null, cloudDb=null, cloudFns=null;
 let currentUser=null, currentStandId='';
-let items=[], myReports=[];
+let items=[];
 let standNames = { 1:'Стенд 1', 2:'Стенд 2', 3:'Стенд 3', 4:'Стенд 4' };
-let currentWitnessStand = 1; // По умолчанию открыт Стенд 1
-let itemsUnsub=null, reportsUnsub=null;
+let currentWitnessStand = 1;
+let itemsUnsub=null;
 
 const LS_STAND='witness_stand_id';
 const LS_EMAIL='witness_email';
@@ -136,8 +120,8 @@ function getItemExtra(it){ const p=[]; if(it.issueNum) p.push('№'+it.issueNum)
 
 async function initFirebase(){
   const {initializeApp} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
-  const {getFirestore, doc, getDoc, setDoc, collection, query, where, onSnapshot, addDoc} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
-  if(!cloudApp){ cloudApp = initializeApp(FIREBASE_CONFIG); cloudDb = getFirestore(cloudApp); cloudFns = {doc, getDoc, setDoc, collection, query, where, onSnapshot, addDoc}; }
+  const {getFirestore, doc, getDoc, setDoc, collection, onSnapshot, addDoc} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
+  if(!cloudApp){ cloudApp = initializeApp(FIREBASE_CONFIG); cloudDb = getFirestore(cloudApp); cloudFns = {doc, getDoc, setDoc, collection, onSnapshot, addDoc}; }
   return cloudFns;
 }
 
@@ -206,15 +190,13 @@ function startApp(){
   document.getElementById('mainScreen').style.display='block';
   document.getElementById('userInfo').textContent = '👤 ' + currentUser.name + ' ' + currentUser.surname;
   subscribeToItems();
-  subscribeToMyReports();
 }
 
 function logout(){
   localStorage.removeItem(LS_STAND);
   localStorage.removeItem(LS_EMAIL);
   if(itemsUnsub) itemsUnsub();
-  if(reportsUnsub) reportsUnsub();
-  items=[]; myReports=[]; currentUser=null; currentStandId='';
+  items=[]; currentUser=null; currentStandId='';
   document.getElementById('mainScreen').style.display='none';
   document.getElementById('regScreen').style.display='block';
 }
@@ -227,14 +209,11 @@ function subscribeToItems(){
     if(!snap.exists()){ items=[]; renderStandTabs(); renderItemSelect(); return; }
     const data = snap.data();
     items = Array.isArray(data.items) ? data.items : [];
-    
-    // Синхронизируем названия стендов (если админ их переименовал)
     if(data.standNames && typeof data.standNames === 'object'){
       for(let n=1; n<=4; n++){
         if(data.standNames[n]) standNames[n] = String(data.standNames[n]);
       }
     }
-    
     renderStandTabs();
     renderItemSelect();
   }, err => { console.error(err); toast('Ошибка синхронизации','err'); });
@@ -243,17 +222,13 @@ function subscribeToItems(){
 function renderStandTabs(){
   const tabsDiv = document.getElementById('standTabs');
   if(!tabsDiv) return;
-  
   let html = '';
   for(let s = 1; s <= 4; s++){
     const activeClass = (s === currentWitnessStand) ? 'active' : '';
-    
-    // Считаем общее количество литературы именно на этом стенде
     let totalOnStand = 0;
     items.forEach(it => {
       totalOnStand += (it.standCounts && parseInt(it.standCounts[s])) || 0;
     });
-
     html += `<button type="button" class="stand-tab ${activeClass}" onclick="selectWitnessStand(${s})">
       🏛️ ${esc(standNames[s])}
       <span class="cnt">${totalOnStand > 0 ? totalOnStand + ' шт.' : '—'}</span>
@@ -272,11 +247,9 @@ function renderItemSelect(){
   const sel = document.getElementById('itemSelect');
   const search = (document.getElementById('searchItems').value || '').toLowerCase();
   
-  // Фильтруем: оставляем только то, что лежит на ВЫБРАННОМ стенде
   const itemsOnStand = items.filter(it => {
     const count = (it.standCounts && parseInt(it.standCounts[currentWitnessStand])) || 0;
     if(count <= 0) return false;
-    
     if(search){
       const name = getItemName(it).toLowerCase();
       const extra = getItemExtra(it).toLowerCase();
@@ -307,7 +280,6 @@ function renderItemSelect(){
   } else if (itemsOnStand.length > 0) {
     sel.value = itemsOnStand[0].id;
   }
-  
   updateSelectedInfo();
 }
 
@@ -317,10 +289,8 @@ function updateSelectedInfo(){
   const sel = document.getElementById('itemSelect');
   const info = document.getElementById('selectedInfo');
   if(!sel.value){ info.textContent=''; return; }
-  
   const it = items.find(x => String(x.id) === sel.value);
   if(!it){ info.textContent=''; return; }
-  
   const avail = (it.standCounts && parseInt(it.standCounts[currentWitnessStand])) || 0;
   const qtyInput = document.getElementById('qtyInput');
   if(qtyInput) qtyInput.max = avail;
@@ -335,17 +305,14 @@ async function submitReport(){
   const sel = document.getElementById('itemSelect');
   const qtyEl = document.getElementById('qtyInput');
   if(!sel.value){ toast('Выберите литературу','err'); return; }
-  
   const qty = parseInt(qtyEl.value) || 0;
   if(qty <= 0){ toast('Введите количество','err'); return; }
-  
   const it = items.find(x => String(x.id) === sel.value);
   if(!it){ toast('Литература не найдена','err'); return; }
   
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
   btn.textContent = '⏳ Отправка...';
-  
   try{
     const fns = cloudFns;
     const reportsRef = fns.collection(cloudDb, 'stands', currentStandId, 'reports');
@@ -357,7 +324,7 @@ async function submitReport(){
       itemExtra: getItemExtra(it),
       itemLang: it.lang || 'ru',
       itemType: getItemType(it),
-      standNumber: currentWitnessStand, // <--- Передаем номер стенда
+      standNumber: currentWitnessStand,
       standName: standNames[currentWitnessStand],
       qty: qty,
       processed: false,
@@ -375,40 +342,6 @@ async function submitReport(){
     btn.disabled = false;
     btn.textContent = '✓ Отправить отчёт';
   }
-}
-
-function subscribeToMyReports(){
-  if(reportsUnsub) reportsUnsub();
-  const fns = cloudFns;
-  const reportsRef = fns.collection(cloudDb, 'stands', currentStandId, 'reports');
-  const q = fns.query(reportsRef, fns.where('witnessEmail', '==', currentUser.email));
-  reportsUnsub = fns.onSnapshot(q, snap => {
-    myReports = [];
-    snap.forEach(doc => { myReports.push({id: doc.id, ...doc.data()}); });
-    myReports.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
-    renderMyReports();
-  }, err => { console.error('my reports:', err); });
-}
-
-function renderMyReports(){
-  const el = document.getElementById('myReports');
-  if(!myReports.length){
-    el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted)">Пока нет отчётов</div>';
-    return;
-  }
-  el.innerHTML = myReports.slice(0, 20).map(r => {
-    const when = r.createdAt ? new Date(r.createdAt).toLocaleString('ru-RU') : '';
-    const status = r.processed
-      ? '<span style="color:var(--ok)">✓ Принят</span>'
-      : '<span style="color:var(--primary)">⏳ Ожидает</span>';
-    const standLabel = r.standName ? `🏛️ ${esc(r.standName)} · ` : '';
-    
-    return `<div class="report-row ${r.processed?'':'pending'}">
-      <div class="item">${esc(r.itemName)}${r.itemExtra?' — '+esc(r.itemExtra):''}</div>
-      <div class="when">${standLabel}${esc(langDisplay(r.itemLang))} · ${esc(when)}</div>
-      <div style="margin-top:4px"><span class="qty">−${r.qty} шт.</span> · ${status}</div>
-    </div>`;
-  }).join('');
 }
 
 async function init(){

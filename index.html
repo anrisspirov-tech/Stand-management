@@ -36,9 +36,6 @@ option{background:var(--card2);color:var(--text)}
 .item-actions{display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:flex-end;padding-top:8px;border-top:1px dashed var(--border)}
 .item .item-name{font-size:var(--list-font-size,13px);font-weight:bold;line-height:1.3;word-break:break-word}
 .item .item-cat{font-size:calc(var(--list-font-size,13px)*0.8);color:var(--muted);line-height:1.2}
-.item .item-extra{font-size:calc(var(--list-font-size,13px)*0.8);color:#06b6d4;font-weight:bold;line-height:1.2;margin-top:2px}
-.item .item-theme{font-size:calc(var(--list-font-size,13px)*0.85);color:#a855f7;font-style:italic;line-height:1.2;margin-top:2px}
-.item .item-langs{font-size:calc(var(--list-font-size,13px)*0.8);color:#06b6d4;font-weight:bold;line-height:1.4;margin-top:4px;background:rgba(6,182,212,0.12);padding:4px 8px;border-radius:6px;border-left:3px solid #06b6d4}
 .item .item-badge{font-size:calc(var(--list-font-size,13px)*0.75);padding:3px 8px;border-radius:99px;font-weight:bold;display:inline-block;margin-top:3px}
 .item .type-label{font-size:calc(var(--list-font-size,13px)*0.7);padding:2px 6px;border-radius:99px;font-weight:bold}
 .item .lang-label{font-size:calc(var(--list-font-size,13px)*0.7);padding:2px 7px;border-radius:99px;font-weight:bold;background:var(--btn-bg);border:1px solid var(--btn-border);color:var(--text)}
@@ -114,10 +111,10 @@ option{background:var(--card2);color:var(--text)}
 .stand-field .sf-label{font-weight:bold;color:#06b6d4;font-size:1em;flex:1;min-width:0;word-break:break-word}
 .stand-field select{width:110px;padding:8px;font-weight:bold;font-size:1.05em;text-align:center;flex-shrink:0}
 .btn-mini{padding:4px 8px;font-size:0.75em;background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border);border-radius:6px;margin:0}
-#standOverlay, #userOverlay, #regOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
-#standOverlay.show, #userOverlay.show, #regOverlay.show{display:flex}
-#standBox, #userBox, #regBox{background:var(--card);border:2px solid #06b6d4;border-radius:14px;padding:20px;max-width:420px;width:100%;max-height:90vh;overflow:auto}
-#standBox h3, #userBox h3, #regBox h3{color:#06b6d4;text-align:center;margin:0 0 12px;font-size:1.1em;line-height:1.3}
+#standOverlay, #userOverlay, #regOverlay, #setupOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
+#standOverlay.show, #userOverlay.show, #regOverlay.show, #setupOverlay.show{display:flex}
+#standBox, #userBox, #regBox, #setupBox{background:var(--card);border:2px solid #06b6d4;border-radius:14px;padding:20px;max-width:420px;width:100%;max-height:90vh;overflow:auto}
+#standBox h3, #userBox h3, #regBox h3, #setupBox h3{color:#06b6d4;text-align:center;margin:0 0 12px;font-size:1.1em;line-height:1.3}
 .stand-info{background:var(--card2);border-radius:8px;padding:10px;text-align:center;font-size:0.85em;color:var(--muted);line-height:1.6;margin-bottom:12px}
 .sync-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:99px;font-size:0.8em;font-weight:bold;background:var(--btn-bg);color:var(--text);cursor:pointer;border:1px solid var(--btn-border)}
 .sync-chip.synced{background:#22c55e;color:#000;border-color:#22c55e}
@@ -128,9 +125,8 @@ option{background:var(--card2);color:var(--text)}
 .toolbar select{padding:6px 8px;font-size:0.85em;flex:1;min-width:120px}
 .user-row{display:flex;justify-content:space-between;align-items:center;background:var(--card2);padding:10px;border-radius:8px;margin:6px 0;gap:8px}
 .user-row .uname{font-weight:bold}
-.perm-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}
-.perm-grid label{display:flex;align-items:center;gap:6px;font-size:0.85em;color:var(--text);font-weight:normal;background:var(--card2);padding:8px;border-radius:8px;cursor:pointer}
-.perm-grid input{width:auto;margin:0}
+.role-admin{background:#ef4444;color:#fff}.role-manager{background:#f59e0b;color:#000}.role-counter{background:#22c55e;color:#000}.role-viewer{background:#6b7280;color:#fff}
+.urole{font-size:0.7em;padding:2px 8px;border-radius:10px;font-weight:bold}
 #toastBox{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:99998;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none;max-width:92vw}
 .toast{background:rgba(0,0,0,0.92);color:#fff;padding:10px 20px;border-radius:22px;font-size:0.9em;font-weight:bold;border:2px solid var(--primary);box-shadow:0 6px 20px rgba(0,0,0,0.55);animation:toastIn 0.25s ease;text-align:center}
 @keyframes toastIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -139,6 +135,16 @@ option{background:var(--card2);color:var(--text)}
 </style>
 </head>
 <body>
+
+<div id="setupOverlay" class="show">
+  <div id="setupBox">
+    <h3 style="color:#06b6d4">🔗 Подключение</h3>
+    <div class="small" style="text-align:center;color:var(--muted);margin-bottom:12px">Введите код стенда, который выдал координатор</div>
+    <input id="setupStandId" type="text" placeholder="напр. stand-2026" style="margin-bottom:12px; text-align:center;">
+    <button onclick="saveSetup()" style="width:100%;background:#22c55e;color:#000">✓ Подключиться</button>
+    <div id="setupError" style="color:#ef4444;font-size:0.85em;margin-top:10px;min-height:1.2em;text-align:center"></div>
+  </div>
+</div>
 
 <div class="header">
 <h1>STAND MANAGER</h1>
@@ -187,7 +193,7 @@ option{background:var(--card2);color:var(--text)}
 <div id="list" style="margin-top:8px"></div>
 </div>
 
-<div class="card" data-collapsible="add" id="addCard" style="border:2px solid #f59e0b">
+<div class="card" data-collapsible="add" id="addCard" style="border:2px solid #f59e0b;display:none;">
 <b style="color:#f59e0b">➕ Добавить новое издание</b>
 <div id="addPermNotice" class="small" style="display:none;color:red;margin:8px 0;">⚠️ Нет прав.</div>
 <label>📋 Тип</label>
@@ -323,6 +329,18 @@ function updateUI() {
     render();
 }
 
+function saveSetup() {
+  var code = document.getElementById('setupStandId').value.trim();
+  var err = document.getElementById('setupError');
+  if(!code || code.length < 3) { err.textContent = '⚠️ Введите код стенда'; return; }
+  localStorage.setItem('stand_cloud_id', code);
+  localStorage.setItem('stand_cloud_enabled', 'true');
+  cloudId = code;
+  cloudEnabled = true;
+  document.getElementById('setupOverlay').classList.remove('show');
+  init();
+}
+
 function saveRegHelper() {
     var name = document.getElementById('regHelperName').value.trim();
     var surname = document.getElementById('regHelperSurname').value.trim();
@@ -389,6 +407,7 @@ function saveToLocal() {
 }
 
 async function initFirebase(){
+  if(!cloudId) return;
   try{
     const {initializeApp}=await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
     const {getFirestore,doc,setDoc,onSnapshot} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
@@ -573,6 +592,11 @@ function setAddType(t) {
 function debouncedRender(){ render(); }
 
 function init() {
+  if(!cloudId) {
+    document.getElementById('setupOverlay').classList.add('show');
+    return;
+  }
+  
   if(!currentUserEmail) {
     document.getElementById('userOverlay').classList.add('show');
   } else {

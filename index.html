@@ -139,6 +139,9 @@ body.day #ccCancel{background:#d0d0d0;color:#111}
 @keyframes toastIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .toast.out{animation:toastOut 0.25s ease forwards}
 @keyframes toastOut{to{opacity:0;transform:translateY(-15px)}}
+#scrollTopBtn{position:fixed;right:20px;bottom:90px;z-index:400;width:56px;height:56px;border-radius:50%;background:var(--primary);color:var(--primary-text);border:3px solid var(--card);box-shadow:0 6px 20px rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;font-size:1.6em;font-weight:bold;cursor:pointer;opacity:0;pointer-events:none;transform:translateY(20px);transition:opacity 0.3s,transform 0.3s;padding:0;margin:0;line-height:1}
+#scrollTopBtn.show{opacity:1;pointer-events:auto;transform:translateY(0)}
+#scrollTopBtn:active{transform:scale(0.95)}
 .notice-box{border-radius:8px;padding:10px;margin:8px 0;font-size:0.85em}
 body:not(.day) .notice-box{background:#3a2a00;color:#fbbf24;border:1px solid #f59e0b}
 body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
@@ -239,27 +242,22 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 
 <div class="card" data-collapsible="add" id="addCard" style="border:2px solid #f59e0b;display:none">
 <b style="color:#f59e0b">➕ Добавить новое издание</b>
-
 <label style="margin-top:10px">📋 Тип издания</label>
 <div style="display:flex;gap:4px;margin:8px 0;flex-wrap:wrap">
 <button type="button" onclick="setAddType('Журнал')" id="a-mag" class="typebtn active">📰 Журнал</button>
 <button type="button" onclick="setAddType('Брошюра')" id="a-booklet" class="typebtn">📖 Брошюра</button>
 <button type="button" onclick="setAddType('Постер')" id="a-poster" class="typebtn">🖼️ Постер</button>
 </div>
-
 <label>📝 Название *</label>
 <input id="title" placeholder="напр. Сторожевая башня" autocomplete="off">
-
 <div class="row">
 <div><label>📅 Год</label><input id="year" placeholder="2026"></div>
 <div><label>🔢 Номер</label><input id="issueNum" placeholder="1"></div>
 </div>
-
 <div class="row">
 <div><label>🏷️ Категория</label><input id="cat" placeholder="Сторожевая"></div>
 <div><label>📦 Всего штук</label><input id="qty" type="number" inputmode="numeric" value="10"></div>
 </div>
-
 <label>🌍 Язык</label>
 <select id="lang">
 <option value="ru">🇷🇺 Русский</option>
@@ -290,7 +288,6 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <option value="he">🇮🇱 Иврит</option>
 <option value="other">🌐 Другой</option>
 </select>
-
 <label>🏛️ Разложить по стендам</label>
 <div class="row">
 <div><label style="font-size:0.8em" id="addLblS1">🏛️ Стенд 1</label><select id="s1"></select></div>
@@ -300,7 +297,6 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <div><label style="font-size:0.8em" id="addLblS3">🏛️ Стенд 3</label><select id="s3"></select></div>
 <div><label style="font-size:0.8em" id="addLblS4">🏛️ Стенд 4</label><select id="s4"></select></div>
 </div>
-
 <button onclick="addItem()" style="width:100%;margin-top:16px">➕ Добавить</button>
 </div>
 
@@ -355,12 +351,12 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 </div>
 
+<button id="scrollTopBtn" onclick="scrollToTop()" title="Наверх">⬆️</button>
 <div id="toastBox"></div>
 
 <script>
 'use strict';
 
-// ===== CONSTANTS =====
 var STAND_MAX = 10;
 var MIN_STAND_ALERT = 3;
 var PERM_KEYS = ['count','add','del','rename'];
@@ -372,9 +368,7 @@ var PERMS_PRESETS = {
 };
 var LANGS = {ru:'Русский',en:'Английский',de:'Немецкий',es:'Испанский',fr:'Французский',it:'Итальянский',pt:'Португальский',pl:'Польский',uk:'Украинский',tr:'Турецкий',el:'Греческий',ko:'Корейский',ja:'Японский',zh:'Китайский',ro:'Румынский',hu:'Венгерский',cs:'Чешский',bg:'Болгарский',sr:'Сербский',hr:'Хорватский',sw:'Суахили',hi:'Хинди',ar:'Арабский',hy:'Армянский',ka:'Грузинский',he:'Иврит',other:'Другой'};
 var LANG_FLAGS = {ru:'🇷🇺',en:'🇬🇧',de:'🇩🇪',es:'🇪🇸',fr:'🇫🇷',it:'🇮🇹',pt:'🇵🇹',pl:'🇵🇱',uk:'🇺🇦',tr:'🇹🇷',el:'🇬🇷',ko:'🇰🇷',ja:'🇯🇵',zh:'🇨🇳',ro:'🇷🇴',hu:'🇭🇺',cs:'🇨🇿',bg:'🇧🇬',sr:'🇷🇸',hr:'🇭🇷',sw:'🇰🇪',hi:'🇮🇳',ar:'🇸🇦',hy:'🇦🇲',ka:'🇬🇪',he:'🇮🇱',other:'🌐'};
-var BG_COLORS = [];
 
-// ===== STATE =====
 var items = [];
 var users = [];
 var standNames = {1:'Стенд 1',2:'Стенд 2',3:'Стенд 3',4:'Стенд 4'};
@@ -389,14 +383,14 @@ var curStandFilter = localStorage.getItem('stand_filter') || 'all';
 var renderTimer = null;
 var chartMainInst = null;
 
-// Cloud
 var cloudEnabled = localStorage.getItem('stand_cloud_enabled') !== 'false';
 var cloudId = localStorage.getItem('stand_cloud_id') || '';
 var cloudApp = null, cloudDb = null;
 var isSyncingFromCloud = false;
 var cloudPushTimeout = null;
+var pendingPushTs = {};
+var suppressPushCount = 0; // prevent echo pushes during snapshot processing
 
-// ===== HELPERS =====
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 function toast(msg, ms){
   ms = ms || 2200;
@@ -433,14 +427,45 @@ function getItemExtraInfo(it){
   if(it.year) parts.push(String(it.year));
   return parts.join(' • ');
 }
-
 function hasPerm(perm){
   if(!currentUser) return false;
   if(currentUser.role === 'admin') return true;
   return !!(currentUser.perms && currentUser.perms[perm]);
 }
 
-// ===== DATA =====
+/* === COLLAPSIBLE CARDS === */
+function getCardStates(){ try{ return JSON.parse(localStorage.getItem('stand_cards_collapsed')||'{}'); }catch(e){ return {}; } }
+function saveCardStates(states){ localStorage.setItem('stand_cards_collapsed', JSON.stringify(states||{})); }
+function setupCollapsibleCards(){
+  var states = getCardStates();
+  document.querySelectorAll('.card[data-collapsible]').forEach(function(card){
+    var id = card.getAttribute('data-collapsible');
+    if(states[id]) card.classList.add('collapsed');
+    var head = card.firstElementChild;
+    if(head && !head.__cbBound){
+      head.__cbBound = true;
+      head.addEventListener('click', function(e){
+        var t = (e.target.tagName||'').toUpperCase();
+        if(t==='BUTTON'||t==='INPUT'||t==='SELECT'||t==='TEXTAREA'||t==='LABEL'||t==='A') return;
+        card.classList.toggle('collapsed');
+        var s = getCardStates();
+        s[id] = card.classList.contains('collapsed');
+        saveCardStates(s);
+      });
+    }
+  });
+}
+
+/* === SCROLL TOP === */
+window.addEventListener('scroll', function(){
+  var btn = document.getElementById('scrollTopBtn');
+  if(!btn) return;
+  if(window.scrollY > 300) btn.classList.add('show');
+  else btn.classList.remove('show');
+}, {passive:true});
+function scrollToTop(){ window.scrollTo({top:0, behavior:'smooth'}); }
+
+/* === DATA === */
 function cleanItems(arr){
   if(!Array.isArray(arr)) return [];
   return arr.filter(function(it){ return it && typeof it==='object'; }).map(function(it){
@@ -494,17 +519,21 @@ function loadFromLocal(){
   }catch(e){}
 }
 
+/* === PERSISTENCE: save with timestamp === */
 function saveToLocal(){
   localStorage.setItem('stand_items_v4', JSON.stringify(items));
   localStorage.setItem('stand_users_v1', JSON.stringify(users));
   localStorage.setItem('stand_names', JSON.stringify(standNames));
-  if(cloudEnabled && !isSyncingFromCloud && cloudDb){
+  localStorage.setItem('stand_local_ts', String(Date.now()));
+  if(cloudEnabled && !isSyncingFromCloud && cloudDb && suppressPushCount === 0){
     clearTimeout(cloudPushTimeout);
     cloudPushTimeout = setTimeout(function(){ try{ pushToCloud(); }catch(e){} }, 800);
   }
 }
 
-// ===== THEME =====
+function getLocalTs(){ return parseInt(localStorage.getItem('stand_local_ts') || '0'); }
+
+/* === THEME === */
 function toggleTheme(){
   document.body.classList.toggle('day');
   var isDay = document.body.classList.contains('day');
@@ -521,7 +550,7 @@ function applyTheme(){
   if(b) b.textContent = saved === 'day' ? '☀️' : '🌙';
 }
 
-// ===== SYNC =====
+/* === SYNC === */
 function setSyncState(state){
   var chip = document.getElementById('syncChip'), txt = document.getElementById('syncChipText');
   if(!chip || !txt) return;
@@ -539,7 +568,7 @@ function showSyncInfo(){
 async function initFirebase(){
   try{
     const {initializeApp} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
-    const {getFirestore,doc,setDoc,onSnapshot} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
+    const {getFirestore,doc,setDoc,onSnapshot,getDoc} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
     if(!cloudApp){
       cloudApp = initializeApp({
         apiKey: "AIzaSyCKoGOE84zPuc4t6UQrDYMbooCR43p0FyQ",
@@ -550,49 +579,114 @@ async function initFirebase(){
         appId: "1:304875768432:web:470adb4707b8a3680482b5"
       });
       cloudDb = getFirestore(cloudApp);
-      window._fb = {doc, setDoc, onSnapshot};
+      window._fb = {doc, setDoc, onSnapshot, getDoc};
     }
     setSyncState('connecting');
     var dRef = window._fb.doc(cloudDb,'stands',cloudId);
     window._fb.onSnapshot(dRef, function(snap){
-      if(!snap.exists()){ setSyncState('synced'); return; }
+      if(!snap.exists()){
+        setSyncState('synced');
+        // Fresh collection - push our local data if any
+        if((items && items.length > 0) || (users && users.length > 0)){
+          clearTimeout(cloudPushTimeout);
+          cloudPushTimeout = setTimeout(function(){ try{ pushToCloud(); }catch(e){} }, 300);
+        }
+        return;
+      }
       var data = snap.data();
       if(!data) return;
+      if(data.updated && pendingPushTs[data.updated]){ setSyncState('synced'); return; }
+      
+      var remoteTs = parseInt(data.updated) || 0;
+      var localTs = getLocalTs();
+      
+      // === PROTECTION: if our local data is newer, skip ===
+      if(remoteTs > 0 && remoteTs < localTs){
+        setSyncState('synced');
+        // Push our newer data
+        clearTimeout(cloudPushTimeout);
+        cloudPushTimeout = setTimeout(function(){ try{ pushToCloud(); }catch(e){} }, 300);
+        return;
+      }
+      
       isSyncingFromCloud = true;
-
-      if(data.items) items = cleanItems(data.items);
-      if(data.users) users = cleanUsers(data.users);
+      suppressPushCount++;
+      
+      var remoteHasItems = Array.isArray(data.items) && data.items.length > 0;
+      var localHasItems = Array.isArray(items) && items.length > 0;
+      var remoteHasUsers = Array.isArray(data.users) && data.users.length > 0;
+      
+      // === PROTECTION: never wipe local with empty remote ===
+      if(remoteHasItems) items = cleanItems(data.items);
+      else if(!localHasItems) items = [];
+      // else keep local items
+      
+      if(remoteHasUsers){
+        var remoteUsers = cleanUsers(data.users);
+        // Restore current user if missing from remote but active locally
+        if(currentUserEmail){
+          var foundInRemote = remoteUsers.find(function(u){
+            return u.email && u.email.toLowerCase() === currentUserEmail.toLowerCase();
+          });
+          if(!foundInRemote){
+            var localUser = users.find(function(u){
+              return u.email && u.email.toLowerCase() === currentUserEmail.toLowerCase();
+            });
+            if(localUser && localUser.active !== false){
+              remoteUsers.push(localUser);
+            }
+          }
+        }
+        users = remoteUsers;
+      }
+      // else keep local users
+      
       if(data.standNames && typeof data.standNames==='object'){
         for(var k=1;k<=4;k++) if(data.standNames[k]) standNames[k] = String(data.standNames[k]);
       }
-
-      // Save to localStorage without pushing back
+      
+      // Persist to localStorage WITHOUT triggering push
       localStorage.setItem('stand_items_v4', JSON.stringify(items));
       localStorage.setItem('stand_users_v1', JSON.stringify(users));
       localStorage.setItem('stand_names', JSON.stringify(standNames));
-
-      // Re-validate current user against new users array
+      
+      // Update current user state
       if(currentUserEmail){
-        var found = users.find(function(u){ return u.email && u.email.toLowerCase() === currentUserEmail.toLowerCase(); });
-        if(found && found.active){
+        var found = users.find(function(u){
+          return u.email && u.email.toLowerCase() === currentUserEmail.toLowerCase();
+        });
+        if(found && found.active !== false){
           currentUser = found;
           updateUI();
-        } else if(!found){
-          // User was deleted
+        } else if(found && found.active === false){
+          // Explicitly deactivated by admin
           currentUser = null;
           currentUserEmail = '';
           localStorage.removeItem('stand_user_email');
+          localStorage.removeItem('stand_user_name');
+          localStorage.removeItem('stand_user_surname');
           showRegister();
-        } else if(!found.active){
-          // User was deactivated
-          currentUser = null;
-          currentUserEmail = '';
-          localStorage.removeItem('stand_user_email');
-          showRegister();
-          toast('⚠️ Ваш аккаунт деактивирован');
+          toast('⚠️ Ваш аккаунт деактивирован администратором');
+        }
+        // If not found at all: keep current state (was likely restored locally)
+      }
+      
+      // If we restored the current user locally, push it back
+      if(currentUserEmail && remoteHasUsers){
+        var wasRestored = !data.users.some(function(u){
+          return u.email && String(u.email).toLowerCase() === currentUserEmail.toLowerCase();
+        });
+        if(wasRestored){
+          suppressPushCount--;
+          isSyncingFromCloud = false;
+          clearTimeout(cloudPushTimeout);
+          cloudPushTimeout = setTimeout(function(){ try{ pushToCloud(); }catch(e){} }, 500);
+          setSyncState('synced');
+          return;
         }
       }
-
+      
+      suppressPushCount--;
       isSyncingFromCloud = false;
       setSyncState('synced');
     }, function(err){
@@ -611,11 +705,16 @@ async function pushToCloud(){
   try{
     setSyncState('pushing');
     var dRef = window._fb.doc(cloudDb,'stands',cloudId);
+    var ts = Date.now();
+    pendingPushTs[ts] = true;
+    setTimeout(function(){ delete pendingPushTs[ts]; }, 15000);
     await window._fb.setDoc(dRef, {
       items: items,
       users: users,
-      standNames: standNames
+      standNames: standNames,
+      updated: ts
     }, {merge: true});
+    localStorage.setItem('stand_local_ts', String(ts));
     setSyncState('synced');
   }catch(e){
     console.error('Push error:', e);
@@ -623,7 +722,33 @@ async function pushToCloud(){
   }
 }
 
-// ===== USER MANAGEMENT =====
+/* === USER MANAGEMENT === */
+function tryRestoreCurrentUser(){
+  if(!currentUserEmail) return null;
+  var found = users.find(function(u){
+    return u.email && u.email.toLowerCase() === currentUserEmail.toLowerCase();
+  });
+  if(found) return found;
+  // Try restore from saved profile
+  var savedName = localStorage.getItem('stand_user_name');
+  var savedSurname = localStorage.getItem('stand_user_surname') || '';
+  if(savedName){
+    var restored = {
+      id: Date.now() + Math.random(),
+      name: savedName,
+      surname: savedSurname,
+      email: currentUserEmail,
+      role: 'counter',
+      perms: JSON.parse(JSON.stringify(PERMS_PRESETS.counter)),
+      active: true,
+      createdAt: Date.now()
+    };
+    users.push(restored);
+    return restored;
+  }
+  return null;
+}
+
 function showRegister(){
   var main = document.getElementById('mainContent');
   if(main) main.style.display = 'none';
@@ -653,11 +778,10 @@ function handleRegister(){
   var existing = users.find(function(u){ return u.email && u.email.toLowerCase() === email; });
 
   if(existing){
-    if(!existing.active){
+    if(existing.active === false){
       errEl.textContent = '❌ Ваш аккаунт деактивирован. Обратитесь к администратору.';
       return;
     }
-    // Update name if provided and differs
     if(name) existing.name = name;
     if(surname) existing.surname = surname;
     currentUser = existing;
@@ -677,14 +801,25 @@ function handleRegister(){
     currentUser = newUser;
   }
 
+  // Save profile in multiple places for maximum resilience
   currentUserEmail = email;
   localStorage.setItem('stand_user_email', email);
+  localStorage.setItem('stand_user_name', currentUser.name || '');
+  localStorage.setItem('stand_user_surname', currentUser.surname || '');
+  
+  // Save to localStorage (sync write) - this sets stand_local_ts
   saveToLocal();
 
   hideRegister();
   document.getElementById('mainContent').style.display = 'block';
   updateUI();
+  setupCollapsibleCards();
   toast('✅ Добро пожаловать, ' + (currentUser.name || currentUser.email) + '!');
+  
+  // Push immediately if cloud ready
+  if(cloudDb){
+    setTimeout(function(){ try{ pushToCloud(); }catch(e){} }, 100);
+  }
 }
 
 function confirmLogout(){
@@ -692,6 +827,8 @@ function confirmLogout(){
   currentUser = null;
   currentUserEmail = '';
   localStorage.removeItem('stand_user_email');
+  localStorage.removeItem('stand_user_name');
+  localStorage.removeItem('stand_user_surname');
   showRegister();
 }
 
@@ -706,15 +843,11 @@ function updateUI(){
   var chip = document.getElementById('userChip');
   if(chip) chip.className = 'user-chip';
 
-  // Show/hide add form based on permissions
   var canAdd = hasPerm('add');
   var addCard = document.getElementById('addCard');
   if(addCard) addCard.style.display = canAdd ? 'block' : 'none';
 
-  // Show permission banner
   render();
-
-  // Init stand selects in add form
   initAddStandSelects();
 }
 
@@ -729,11 +862,10 @@ function initAddStandSelects(){
   }
 }
 
-// ===== RENDER =====
+/* === RENDER === */
 function render(){
   if(!currentUser) return;
 
-  // Selects
   var sortSel = document.getElementById('sortSelect');
   if(sortSel){
     sortSel.innerHTML =
@@ -772,7 +904,6 @@ function render(){
     sf.value = curStandFilter;
   }
 
-  // Filter
   var q = ((document.getElementById('search')||{}).value || '').toLowerCase();
   var filtered = [];
   for(var i=0;i<items.length;i++){
@@ -800,7 +931,6 @@ function render(){
   });
   if(curSort !== 'fav') filtered.sort(function(a,b){ return (b.favorite?1:0) - (a.favorite?1:0); });
 
-  // Totals
   var total=0, cMag=0, cBooklet=0, cPoster=0, standsTotal=0;
   for(var i=0;i<items.length;i++){
     var tq = totalIt(items[i]);
@@ -823,7 +953,6 @@ function render(){
   if($('tot-stock')) $('tot-stock').textContent = stockTotal;
   if($('tot-stands')) $('tot-stands').textContent = standsTotal;
 
-  // Items list
   var canCount = hasPerm('count');
   var canRename = hasPerm('rename');
   var canDel = hasPerm('del');
@@ -895,7 +1024,6 @@ function render(){
   }
   if($('list')) $('list').innerHTML = h;
 
-  // Other sections
   try{ renderCountByType(); }catch(e){ console.error(e); }
   try{ renderItemLangStats(); }catch(e){ console.error(e); }
   try{ renderCountByLangType(); }catch(e){ console.error(e); }
@@ -927,7 +1055,7 @@ function toggleFav(id){
   saveToLocal(); render();
 }
 
-// ===== STANDS =====
+/* === STANDS === */
 function showStand(n){
   curStand = n;
   document.querySelectorAll('.stand-tab').forEach(function(t){ t.classList.remove('active'); });
@@ -1005,7 +1133,7 @@ function updateStandBadges(){
   }
 }
 
-// ===== COUNT BY TYPE =====
+/* === COUNT BY TYPE === */
 function renderCountByType(){
   var c = document.getElementById('countByType'); if(!c) return;
   var counts = {mag:0, booklet:0, poster:0, total:0};
@@ -1024,7 +1152,7 @@ function renderCountByType(){
     '<div class="count-box" style="border:2px solid var(--primary)"><div class="num" style="color:var(--primary)">'+counts.total+'</div><div class="label">📦 Итого</div><div class="small">100%</div></div>';
 }
 
-// ===== LANG STATS =====
+/* === LANG STATS === */
 function renderItemLangStats(){
   var cont = document.getElementById('itemLangStats'); if(!cont) return;
   var q = ((document.getElementById('langStatSearch')||{}).value||'').toLowerCase().trim();
@@ -1095,7 +1223,7 @@ function renderCountByLangType(){
   tb.innerHTML = h;
 }
 
-// ===== CHARTS =====
+/* === CHARTS === */
 function renderCharts(){
   try{
     var ctx = document.getElementById('chartMain'); if(!ctx) return;
@@ -1116,7 +1244,7 @@ function renderCharts(){
   }catch(e){ console.error(e); }
 }
 
-// ===== QTY =====
+/* === QTY === */
 function changeQty(id, d){
   if(!hasPerm('count')) return;
   var it = items.find(function(x){ return x.id == id; }); if(!it) return;
@@ -1139,7 +1267,7 @@ function setQtyDirect(id, val){
   saveToLocal(); render();
 }
 
-// ===== DELETE =====
+/* === DELETE === */
 function deleteItem(id){
   if(!hasPerm('del')) return;
   customConfirm('Удалить это издание?', function(){
@@ -1150,7 +1278,7 @@ function deleteItem(id){
   });
 }
 
-// ===== STAND EDITOR =====
+/* === STAND EDITOR === */
 var _standItemId = null;
 function openStandEditor(id){
   if(!hasPerm('count')) return;
@@ -1220,7 +1348,7 @@ function saveStandEditor(){
   toast('✅ Сохранено');
 }
 
-// ===== RENAME =====
+/* === RENAME === */
 var _renamingId = null;
 function openRename(id){
   if(!hasPerm('rename')) return;
@@ -1257,7 +1385,7 @@ function saveRename(){
   toast('✅ Сохранено');
 }
 
-// ===== ADD =====
+/* === ADD === */
 function setAddType(t){
   currentAddType = t;
   var map = {'Журнал':'a-mag','Брошюра':'a-booklet','Постер':'a-poster'};
@@ -1308,14 +1436,14 @@ function addItem(){
   toast('✅ Добавлено: ' + titleVal + (sSum>0?', на стендах '+sSum:''));
 }
 
-// ===== FILTERS =====
+/* === FILTERS === */
 function setSort(v){ curSort = v; localStorage.setItem('stand_sort', v); render(); }
 function setTypeFilter(v){ curTypeFilter = v; render(); }
 function setLangFilter(v){ curLangFilter = v; render(); }
 function setStandFilter(v){ curStandFilter = v; localStorage.setItem('stand_filter', v); render(); }
 function debouncedRender(){ clearTimeout(renderTimer); renderTimer = setTimeout(render, 250); }
 
-// ===== CUSTOM CONFIRM =====
+/* === CUSTOM CONFIRM === */
 var _ccCallback = null;
 function customConfirm(msg, cb){
   document.getElementById('ccTitle').textContent = 'Подтверждение';
@@ -1331,23 +1459,30 @@ document.getElementById('ccOk').onclick = function(){ var cb = _ccCallback; _ccC
 document.getElementById('ccCancel').onclick = _ccClose;
 document.getElementById('ccOverlay').onclick = function(e){ if(e.target===this) _ccClose(); };
 
-// ===== INIT =====
+/* === INIT === */
 function init(){
   applyTheme();
   loadFromLocal();
 
   if(currentUserEmail){
-    currentUser = users.find(function(u){ return u.email && u.email.toLowerCase() === currentUserEmail.toLowerCase(); }) || null;
-    if(currentUser && !currentUser.active){
+    currentUser = tryRestoreCurrentUser();
+    if(!currentUser){
+      // Could not restore - ask to re-register
+      currentUserEmail = '';
+      localStorage.removeItem('stand_user_email');
+    } else if(currentUser.active === false){
       currentUser = null;
       currentUserEmail = '';
       localStorage.removeItem('stand_user_email');
+      localStorage.removeItem('stand_user_name');
+      localStorage.removeItem('stand_user_surname');
     }
   }
 
   if(currentUser){
     document.getElementById('mainContent').style.display = 'block';
     updateUI();
+    setupCollapsibleCards();
   } else {
     showRegister();
   }

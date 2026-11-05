@@ -213,6 +213,8 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 #scrollTopBtn.show{opacity:1;pointer-events:auto;transform:translateY(0)}
 #scrollTopBtn:active{transform:scale(0.95)}
 #adminBadge{display:none;position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;border-radius:99px;padding:1px 6px;font-size:0.65em;line-height:1.2;font-weight:bold;min-width:16px;text-align:center}
+
+/* Стили для больших вкладок */
 .main-tab{flex:1;padding:12px;border-radius:8px;font-weight:bold;font-size:1em;border:none;cursor:pointer;transition:all 0.2s}
 .main-tab.active{background:var(--primary);color:var(--primary-text);box-shadow:0 4px 10px rgba(245,158,11,0.4)}
 .main-tab:not(.active){background:var(--card2);color:var(--muted);border:1px solid var(--border)}
@@ -446,6 +448,10 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
   <button onclick="copyCloudId()" class="sec">📋</button>
   </div>
   <button onclick="saveCloudId()" style="width:100%;margin-top:8px;background:#22c55e;color:#000">🔄 Применить</button>
+  <label style="margin-top:10px">Firebase Config</label>
+  <textarea id="fbConfig" style="height:60px;font-size:10px"></textarea>
+  <button onclick="saveFbConfig()" class="sec" style="width:100%;margin-top:4px">💾 Сохранить</button>
+  <button class="sec" onclick="resetOnboarding()" style="width:100%;margin-top:10px;font-size:0.85em">🔄 Сброс</button>
   </div>
 
   <div class="card" style="border:2px solid #a855f7">
@@ -556,6 +562,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
   <div class="card" style="background:var(--card2);border:2px solid #f59e0b">
   <b style="color:#f59e0b">🔐 Пароль админа</b>
   <label>Новый пароль</label><input id="newPass" type="text">
+  <label>Email для восстановления</label><input id="recoveryEmail" type="email">
   <button onclick="saveNewPass()" style="width:100%;margin-top:8px;background:#22c55e;color:#000">💾 Сохранить</button>
   <div class="small" id="passMsg" style="margin-top:6px;color:#22c55e"></div>
   </div>
@@ -563,6 +570,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 
 </div>
 
+<!-- ВСПЛЫВАЮЩИЕ ОКНА -->
 <div id="onboardOverlay">
 <div id="onboardBox">
 <div class="onb-icon">🔗</div>
@@ -722,6 +730,9 @@ function switchView(view) {
     renderWitnessesUI();
     renderWitnessReportsUI();
     updateAdminBadge();
+    loadStandNamesUI();
+    document.getElementById('cloudId').value = cloudId;
+    document.getElementById('fbConfig').value = fbConfigStr;
   }
 }
 
@@ -2525,9 +2536,11 @@ async function restoreWitness(witnessId){
 
 function saveNewPass(){
   var np=document.getElementById('newPass').value.trim();
+  var em=document.getElementById('recoveryEmail').value.trim();
   var msg=document.getElementById('passMsg');
   msg.style.color='#22c55e';
   if(np){ if(np.length<3){ msg.style.color='#ef4444'; msg.textContent='❌ Минимум 3 символа'; return; } adminPass=np; localStorage.setItem('stand_pass',adminPass); }
+  if(em){ localStorage.setItem('stand_recovery_email',em); }
   msg.textContent='✅ Сохранено';
   document.getElementById('newPass').value='';
   save();

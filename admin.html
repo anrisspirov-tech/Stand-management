@@ -60,7 +60,6 @@ option{background:var(--card2);color:var(--text)}
 .row{display:flex;gap:6px}.row>div{flex:1}
 .stats{display:flex;gap:5px;flex-wrap:wrap}
 .stat{flex:1;min-width:60px;text-align:center;background:var(--card2);border-radius:8px;padding:8px 4px}
-#adminScreen{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);z-index:9999;overflow:auto;display:none;padding:10px}
 .log-entry{font-size:0.8em;padding:6px 0;border-bottom:1px solid var(--border);line-height:1.4}
 .log-entry .log-who{color:#a855f7;font-weight:bold}
 .log-entry .log-time{color:var(--muted);font-weight:bold}
@@ -214,6 +213,9 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 #scrollTopBtn.show{opacity:1;pointer-events:auto;transform:translateY(0)}
 #scrollTopBtn:active{transform:scale(0.95)}
 #adminBadge{display:none;position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;border-radius:99px;padding:1px 6px;font-size:0.65em;line-height:1.2;font-weight:bold;min-width:16px;text-align:center}
+.main-tab{flex:1;padding:12px;border-radius:8px;font-weight:bold;font-size:1em;border:none;cursor:pointer;transition:all 0.2s}
+.main-tab.active{background:var(--primary);color:var(--primary-text);box-shadow:0 4px 10px rgba(245,158,11,0.4)}
+.main-tab:not(.active){background:var(--card2);color:var(--muted);border:1px solid var(--border)}
 </style>
 </head>
 <body>
@@ -227,349 +229,338 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <div style="margin-top:6px;display:flex;gap:3px;justify-content:center;flex-wrap:wrap">
 <button onclick="toggleTheme()" id="bTheme" style="padding:6px 10px;font-size:0.85em;background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border)">🌙</button>
 <button onclick="openQuickCount()" style="padding:6px 10px;font-size:0.85em;background:#a855f7;color:#fff">🎯</button>
-<button onclick="openAdmin()" style="padding:6px 10px;font-size:0.85em;background:var(--btn-bg);color:var(--primary);border:1px solid var(--primary);position:relative">🔐<span id="adminBadge"></span></button>
 <button onclick="installPWA()" id="bInstall" style="padding:6px 10px;font-size:0.85em;background:#06b6d4;color:#000;display:none">📲</button>
 </div>
 </div>
 
 <div class="wrap">
 
-<div class="stats">
-<div class="stat"><div id="tot" style="font-weight:bold;font-size:1.2em">0</div><div class="small">Всего</div></div>
-<div class="stat"><div id="tit" style="font-weight:bold">0</div><div class="small">Названий</div></div>
-<div class="stat"><div id="cnt-mag" style="color:#f59e0b;font-weight:bold">0</div><div class="small">📰</div></div>
-<div class="stat"><div id="cnt-booklet" style="color:#22c55e;font-weight:bold">0</div><div class="small">📖</div></div>
-<div class="stat"><div id="cnt-poster" style="color:#ec4899;font-weight:bold">0</div><div class="small">🖼️</div></div>
-<div class="stat"><div id="need" style="color:#ef4444;font-weight:bold">0</div><div class="small">Заказ</div></div>
+<!-- ВКЛАДКИ -->
+<div style="display:flex;gap:10px;margin:10px 0;">
+  <button class="main-tab active" id="tab-lit" onclick="switchView('lit')">📚 Литература</button>
+  <button class="main-tab" id="tab-admin" onclick="switchView('admin')">⚙️ Управление</button>
 </div>
 
-<div class="stats" style="margin-top:6px">
-<div class="stat" style="border:2px solid #22c55e"><div id="tot-stock" style="font-weight:bold;font-size:1.3em;color:#22c55e">0</div><div class="small">📦 В запасе</div></div>
-<div class="stat" style="border:2px solid #06b6d4"><div id="tot-stands" style="font-weight:bold;font-size:1.3em;color:#06b6d4">0</div><div class="small">🏛️ На стендах</div></div>
+<!-- РАЗДЕЛ 1: ЛИТЕРАТУРА -->
+<div id="view-lit">
+  <div class="stats">
+  <div class="stat"><div id="tot" style="font-weight:bold;font-size:1.2em">0</div><div class="small">Всего</div></div>
+  <div class="stat"><div id="tit" style="font-weight:bold">0</div><div class="small">Названий</div></div>
+  <div class="stat"><div id="cnt-mag" style="color:#f59e0b;font-weight:bold">0</div><div class="small">📰</div></div>
+  <div class="stat"><div id="cnt-booklet" style="color:#22c55e;font-weight:bold">0</div><div class="small">📖</div></div>
+  <div class="stat"><div id="cnt-poster" style="color:#ec4899;font-weight:bold">0</div><div class="small">🖼️</div></div>
+  <div class="stat"><div id="need" style="color:#ef4444;font-weight:bold">0</div><div class="small">Заказ</div></div>
+  </div>
+
+  <div class="stats" style="margin-top:6px">
+  <div class="stat" style="border:2px solid #22c55e"><div id="tot-stock" style="font-weight:bold;font-size:1.3em;color:#22c55e">0</div><div class="small">📦 В запасе</div></div>
+  <div class="stat" style="border:2px solid #06b6d4"><div id="tot-stands" style="font-weight:bold;font-size:1.3em;color:#06b6d4">0</div><div class="small">🏛️ На стендах</div></div>
+  </div>
+
+  <div class="card-controls">
+  <button onclick="collapseAllCards()">⬆️ Свернуть всё</button>
+  <button onclick="expandAllCards()">⬇️ Развернуть всё</button>
+  </div>
+
+  <div class="card" data-collapsible="types" style="border:2px solid #22c55e">
+  <b style="color:#22c55e">📚 Подсчёт по типам</b>
+  <div id="countByType" class="count-grid" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card" data-collapsible="stands" style="border:2px solid #06b6d4">
+  <b style="color:#06b6d4">🏛️ Стенды</b>
+  <div class="small" style="margin:6px 0 0;color:var(--muted)">Сколько из общего количества стоит на каждом стенде. Красным выделены позиции, которых осталось мало.</div>
+  <div class="stand-tabs">
+  <button type="button" id="st-1" class="stand-tab active" onclick="showStand(1)">🏛️ <span id="stn-1">Стенд 1</span><span class="cnt" id="stc-1">—</span></button>
+  <button type="button" id="st-2" class="stand-tab" onclick="showStand(2)">🏛️ <span id="stn-2">Стенд 2</span><span class="cnt" id="stc-2">—</span></button>
+  <button type="button" id="st-3" class="stand-tab" onclick="showStand(3)">🏛️ <span id="stn-3">Стенд 3</span><span class="cnt" id="stc-3">—</span></button>
+  <button type="button" id="st-4" class="stand-tab" onclick="showStand(4)">🏛️ <span id="stn-4">Стенд 4</span><span class="cnt" id="stc-4">—</span></button>
+  </div>
+  <div id="standContent" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card" data-collapsible="langstats" style="border:2px solid #a855f7">
+  <b style="color:#a855f7">📚 Литература по языкам</b>
+  <div class="small" style="margin:6px 0 8px;color:var(--muted)">На скольких языках есть каждое название и сколько всего штук.</div>
+  <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
+  <input id="langStatSearch" placeholder="🔍 Поиск по названию..." oninput="renderItemLangStats()" style="flex:1;padding:8px">
+  </div>
+  <div id="itemLangStats"></div>
+  </div>
+
+  <div class="card" data-collapsible="langtable" style="border:2px solid #f59e0b">
+  <b style="color:#f59e0b">🌍 По языкам</b>
+  <div style="overflow:auto">
+  <table class="count-table">
+  <thead><tr><th>Язык</th><th>📰</th><th>📖</th><th>🖼️</th><th>Всего</th></tr></thead>
+  <tbody id="countLangTypeBody"></tbody>
+  </table>
+  </div>
+  </div>
+
+  <div class="card" data-collapsible="charts">
+  <b>📊 Графики</b>
+  <canvas id="chartMain" style="max-height:220px;margin-top:8px"></canvas>
+  <div style="display:flex;gap:4px;margin-top:8px">
+  <button onclick="renderCharts()" class="sec" style="flex:1">🔄</button>
+  </div>
+  </div>
+
+  <div class="card" data-collapsible="items">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+  <b>📦 Все издания</b>
+  </div>
+  <div class="toolbar">
+  <input id="search" placeholder="🔍 Поиск..." oninput="debouncedRender()" style="flex:2;padding:8px">
+  <select id="sortSelect" onchange="setSort(this.value)" style="flex:1"></select>
+  </div>
+  <div class="toolbar">
+  <select id="typeFilter" onchange="setTypeFilter(this.value)" style="flex:1"></select>
+  <select id="langFilter" onchange="setLangFilter(this.value)" style="flex:1"></select>
+  </div>
+  <div class="toolbar">
+  <select id="standFilter" onchange="setStandFilter(this.value)" style="flex:1"></select>
+  </div>
+  <div id="list" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card" id="orderBox" style="display:none;border:2px solid #ef4444">
+  <b style="color:#ef4444">⚠️ СПИСОК ЗАКАЗА</b>
+  <div id="orderList" style="margin-top:8px"></div>
+  <div id="smartOrder" style="margin-top:10px;background:var(--card2);padding:8px;border-radius:8px;border:1px solid #f59e0b"></div>
+  <div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap">
+  <button onclick="copyOrder()">Копировать</button>
+  <button onclick="exportOrder()" class="sec">TXT</button>
+  <button onclick="exportPDF()" style="background:#22c55e;color:#000">📄 PDF</button>
+  <button onclick="shareWhatsApp()" style="background:#25D366;color:#000">WhatsApp</button>
+  </div>
+  </div>
+
+  <div class="card" data-collapsible="danger" id="dangerCard" style="border:2px solid #ef4444">
+  <b style="color:#ef4444">⚠️ Опасная зона</b>
+  <button onclick="deleteAllItems()" style="width:100%;margin-top:6px;background:#ef4444;color:#fff">🗑️ Удалить ВСЁ</button>
+  </div>
+
+  <div class="card" data-collapsible="add" id="addCard" style="border:2px solid #f59e0b">
+  <b style="color:#f59e0b">➕ Добавить новое издание</b>
+  <div id="addPermNotice" class="notice-box" style="display:none">⚠️ Нет прав.</div>
+
+  <label>⚡ Быстрое добавление</label>
+  <div class="small" style="color:var(--muted);margin-bottom:4px">Один клик — тип, категория и название заполняются автоматически.</div>
+  <div class="quick-add-bar">
+  <button type="button" class="quick-add-btn" onclick="quickAdd('watchtower')">📰 Сторожевая</button>
+  <button type="button" class="quick-add-btn" onclick="quickAdd('awake')">📰 Пробудитесь</button>
+  <button type="button" class="quick-add-btn" onclick="quickAdd('booklet')">📖 Брошюра</button>
+  <button type="button" class="quick-add-btn" onclick="quickAdd('poster')">🖼️ Постер</button>
+  </div>
+
+  <label>📋 Тип издания</label>
+  <div style="display:flex;gap:4px;margin:8px 0;flex-wrap:wrap">
+  <button type="button" onclick="setAddType('Журнал')" id="a-mag" class="typebtn active">📰 Журнал</button>
+  <button type="button" onclick="setAddType('Брошюра')" id="a-booklet" class="typebtn">📖 Брошюра</button>
+  <button type="button" onclick="setAddType('Постер')" id="a-poster" class="typebtn">🖼️ Постер</button>
+  </div>
+
+  <div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0 3px">
+  <label style="margin:0">📝 Название *</label>
+  <button type="button" onclick="openSuggManager()" style="padding:4px 10px;font-size:0.72em;background:var(--btn-bg);color:var(--primary);border:1px solid var(--primary);margin:0;font-weight:bold">📝 Подсказки</button>
+  </div>
+  <input id="title" list="jwTitlesList" placeholder="напр. Сторожевая башня" autocomplete="off">
+  <datalist id="jwTitlesList"></datalist>
+
+  <div class="row">
+  <div>
+  <label>📅 Год</label>
+  <input id="year" list="yearList" placeholder="напр. 2026" autocomplete="off">
+  <datalist id="yearList"></datalist>
+  </div>
+  <div>
+  <label>🔢 Номер выпуска</label>
+  <input id="issueNum" list="issueNumList" placeholder="напр. 1" autocomplete="off">
+  <datalist id="issueNumList"></datalist>
+  </div>
+  </div>
+
+  <div class="row">
+  <div><label>🏷️ Категория</label><input id="cat" placeholder="напр. Сторожевая башня"></div>
+  <div><label>📦 Всего штук</label><input id="qty" type="number" inputmode="numeric" value="10"></div>
+  </div>
+
+  <label>🌍 Язык</label>
+  <select id="lang">
+  <option value="ru">🇷🇺 Русский</option>
+  <option value="en">🇬🇧 Английский</option>
+  <option value="de">🇩🇪 Немецкий</option>
+  <option value="es">🇪🇸 Испанский</option>
+  <option value="fr">🇫🇷 Французский</option>
+  <option value="it">🇮🇹 Итальянский</option>
+  <option value="pt">🇵🇹 Португальский</option>
+  <option value="pl">🇵🇱 Польский</option>
+  <option value="uk">🇺🇦 Украинский</option>
+  <option value="tr">🇹🇷 Турецкий</option>
+  <option value="el">🇬🇷 Греческий</option>
+  <option value="ko">🇰🇷 Корейский</option>
+  <option value="ja">🇯🇵 Японский</option>
+  <option value="zh">🇨🇳 Китайский</option>
+  <option value="ro">🇷🇴 Румынский</option>
+  <option value="hu">🇭🇺 Венгерский</option>
+  <option value="cs">🇨🇿 Чешский</option>
+  <option value="bg">🇧🇬 Болгарский</option>
+  <option value="sr">🇷🇸 Сербский</option>
+  <option value="hr">🇭🇷 Хорватский</option>
+  <option value="sw">🇰🇪 Суахили</option>
+  <option value="hi">🇮🇳 Хинди</option>
+  <option value="ar">🇸🇦 Арабский</option>
+  <option value="hy">🇦🇲 Армянский</option>
+  <option value="ka">🇬🇪 Грузинский</option>
+  <option value="he">🇮🇱 Иврит</option>
+  <option value="other">🌐 Другой</option>
+  </select>
+
+  <label>🏛️ Разложить по стендам (необязательно)</label>
+  <div class="small" style="color:var(--muted);margin-bottom:6px">Выбери из списка, сколько поставить на каждый стенд (0–10).</div>
+  <div class="row">
+  <div><label style="font-size:0.8em" id="addLblS1">🏛️ Стенд 1</label><select id="s1"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
+  <div><label style="font-size:0.8em" id="addLblS2">🏛️ Стенд 2</label><select id="s2"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
+  </div>
+  <div class="row">
+  <div><label style="font-size:0.8em" id="addLblS3">🏛️ Стенд 3</label><select id="s3"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
+  <div><label style="font-size:0.8em" id="addLblS4">🏛️ Стенд 4</label><select id="s4"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
+  </div>
+
+  <button onclick="addItem()" id="btnAddItem" style="width:100%;margin-top:16px">➕ Добавить</button>
+  </div>
 </div>
 
-<div class="card-controls">
-<button onclick="collapseAllCards()">⬆️ Свернуть всё</button>
-<button onclick="expandAllCards()">⬇️ Развернуть всё</button>
+<!-- РАЗДЕЛ 2: УПРАВЛЕНИЕ -->
+<div id="view-admin" style="display:none">
+  <div class="card" style="border:2px solid #06b6d4">
+  <b style="color:#06b6d4">☁️ Синхронизация</b>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
+  <button onclick="pushToCloud()" style="flex:1;background:#06b6d4;color:#000">☁️ Отправить</button>
+  <button onclick="pullFromCloud()" style="flex:1" class="sec">⬇️ Получить</button>
+  </div>
+  <label style="margin-top:10px">Stand ID</label>
+  <div style="display:flex;gap:4px">
+  <input id="cloudId" style="flex:1;font-family:monospace">
+  <button onclick="copyCloudId()" class="sec">📋</button>
+  </div>
+  <button onclick="saveCloudId()" style="width:100%;margin-top:8px;background:#22c55e;color:#000">🔄 Применить</button>
+  </div>
+
+  <div class="card" style="border:2px solid #a855f7">
+  <b style="color:#a855f7">👥 Пользователи (Помощники)</b>
+  <div class="small" style="margin:8px 0;color:var(--muted);line-height:1.4">Здесь вы можете редактировать роли и права помощников.</div>
+  <div id="usersList" style="margin-top:12px"></div>
+  <div style="background:var(--card2);border:1px dashed #22c55e;border-radius:8px;padding:10px;margin-top:12px">
+  <b style="color:#22c55e">➕ Новый пользователь</b>
+  <label>Имя</label><input id="newUserName" placeholder="напр. Сергей">
+  <label>Роль</label>
+  <select id="newUserRole" onchange="updatePermsFromRole()">
+  <option value="counter">🔢 Счётчик</option>
+  <option value="manager">📦 Менеджер</option>
+  <option value="viewer">👀 Наблюдатель</option>
+  <option value="admin">👑 Админ</option>
+  </select>
+  <div class="perm-grid">
+  <label><input type="checkbox" id="p_count" checked> ➕➖ Кол-во</label>
+  <label><input type="checkbox" id="p_add"> ➕ Добавить</label>
+  <label><input type="checkbox" id="p_del"> 🗑️ Удалить</label>
+  <label><input type="checkbox" id="p_rename" checked> 📝 Переименовать</label>
+  </div>
+  <button onclick="addUser()" style="width:100%;margin-top:8px;background:#22c55e;color:#000">➕ Добавить</button>
+  </div>
+  </div>
+
+  <div class="card" style="border:2px solid #22c55e">
+  <b style="color:#22c55e">👥 Возвещатели (приложение)</b>
+  <div class="small" style="margin:8px 0;color:var(--muted);line-height:1.4">Люди, зарегистрированные в приложении для отчётов. Вы можете редактировать или удалять их.</div>
+  <div id="witnessList" style="max-height:340px;overflow:auto;margin-top:8px">
+  <div class="small" style="text-align:center;padding:20px">— загрузка —</div>
+  </div>
+  </div>
+
+  <div class="card" style="border:2px solid #a855f7">
+  <b style="color:#a855f7">📨 Входящие отчёты</b>
+  <div class="small" style="margin:8px 0;color:var(--muted);line-height:1.4">Отчёты о распространении. Списание происходит автоматически при появлении.</div>
+  <div id="witnessReportsList" style="max-height:340px;overflow:auto;margin-top:8px">
+  <div class="small" style="text-align:center;padding:20px">— загрузка —</div>
+  </div>
+  </div>
+
+  <div class="card" style="border:2px solid #06b6d4">
+  <b style="color:#06b6d4">🏛️ Названия стендов</b>
+  <div class="small" style="margin:8px 0;color:var(--muted);line-height:1.4">Введите свои названия — они появятся везде: в табах, в списке, в печати.</div>
+  <label>Стенд 1</label><input id="sname1" placeholder="напр. Стенд у метро">
+  <label>Стенд 2</label><input id="sname2" placeholder="напр. Стенд в парке">
+  <label>Стенд 3</label><input id="sname3" placeholder="напр. Стенд на площади">
+  <label>Стенд 4</label><input id="sname4" placeholder="напр. Запасной">
+  <button onclick="saveStandNames()" style="width:100%;margin-top:10px;background:#22c55e;color:#000">💾 Сохранить названия</button>
+  <button class="sec" onclick="resetStandNames()" style="width:100%;margin-top:6px">↺ Сбросить к «Стенд 1…4»</button>
+  </div>
+
+  <div class="card" style="border:2px solid #22c55e">
+  <b style="color:#22c55e">💾 Резервная копия</b>
+  <button onclick="exportBackup()" style="width:100%;margin-top:10px;background:#22c55e;color:#000">💾 Скачать копию</button>
+  <label for="importInput" class="file-btn" style="margin-top:8px">📥 Восстановить</label>
+  <input type="file" id="importInput" accept=".json" onchange="importBackup(event)" style="display:none">
+  </div>
+
+  <div class="card" style="border:2px solid #06b6d4">
+  <b style="color:#06b6d4">📝 Подсказки</b>
+  <div class="small" style="margin:8px 0;color:var(--muted);line-height:1.4">Список того, что появляется при вводе в поле «Название».</div>
+  <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
+  <input id="suggSearch" placeholder="🔍 Поиск..." oninput="renderSuggestions()" style="flex:1;padding:8px">
+  <span class="small" id="suggCount" style="white-space:nowrap">—</span>
+  </div>
+  <div id="suggList" style="max-height:340px;overflow:auto;background:var(--card2);border-radius:8px;padding:4px 8px"></div>
+  <button onclick="clearAllSuggestions()" style="width:100%;margin-top:8px;background:#ef4444;color:#fff">🗑️ Очистить ВСЕ подсказки</button>
+  <button onclick="clearOnlyThemes()" class="sec" style="width:100%;margin-top:4px">💡 Удалить только темы</button>
+  </div>
+
+  <div class="card" style="border:2px solid #ec4899">
+  <b style="color:#ec4899">🎨 Цвет фона</b>
+  <div class="theme-hint" id="bgThemeHint">—</div>
+  <div id="bgSwatches"></div>
+  <input type="color" id="bgColorInput" oninput="setBgColor(this.value)" style="margin-top:8px">
+  <button class="sec" onclick="resetBgColor()" style="width:100%;margin-top:8px">↺ Сброс</button>
+  </div>
+
+  <div class="card" style="border:2px solid #8b5cf6">
+  <b style="color:#8b5cf6">🔘 Цвет кнопок</b>
+  <div class="theme-hint" id="btnThemeHint">—</div>
+  <div id="btnSwatches"></div>
+  <input type="color" id="btnColorInput" oninput="setBtnColor(this.value)" style="margin-top:8px">
+  <button class="sec" onclick="resetBtnColor()" style="width:100%;margin-top:8px">↺ Сброс</button>
+  </div>
+
+  <div class="card" style="border:2px solid #a855f7">
+  <b style="color:#a855f7">👥 Журнал</b>
+  <div id="logList" style="margin-top:10px;max-height:300px;overflow:auto;background:var(--card2);border-radius:8px;padding:10px"></div>
+  <button onclick="clearLog()" class="sec" style="width:100%;margin-top:10px">Очистить</button>
+  </div>
+
+  <div class="card" style="border:2px solid #06b6d4">
+  <b style="color:#06b6d4">🎨 Внешний вид</b>
+  <label>Размер UI: <span id="fsVal">15</span>px</label>
+  <input type="range" id="fsRange" min="11" max="22" value="15" oninput="setFontSize(this.value)">
+  <label>Размер списка: <span id="lfsVal">13</span>px</label>
+  <input type="range" id="lfsRange" min="9" max="20" value="13" oninput="setListFontSize(this.value)">
+  <label>Шрифт</label>
+  <select id="ffSelect" onchange="setFontFamily(this.value)">
+  <option value="Arial, sans-serif">Arial</option><option value="Verdana">Verdana</option><option value="Georgia">Georgia</option><option value="'Segoe UI', sans-serif">Segoe UI</option><option value="Tahoma">Tahoma</option>
+  </select>
+  <button class="sec" onclick="resetFonts()" style="width:100%;margin-top:10px">↺ Сброс</button>
+  </div>
+
+  <div class="card" style="background:var(--card2);border:2px solid #f59e0b">
+  <b style="color:#f59e0b">🔐 Пароль админа</b>
+  <label>Новый пароль</label><input id="newPass" type="text">
+  <button onclick="saveNewPass()" style="width:100%;margin-top:8px;background:#22c55e;color:#000">💾 Сохранить</button>
+  <div class="small" id="passMsg" style="margin-top:6px;color:#22c55e"></div>
+  </div>
 </div>
 
-<div class="card" data-collapsible="types" style="border:2px solid #22c55e">
-<b style="color:#22c55e">📚 Подсчёт по типам</b>
-<div id="countByType" class="count-grid" style="margin-top:10px"></div>
-</div>
-
-<div class="card" data-collapsible="stands" style="border:2px solid #06b6d4">
-<b style="color:#06b6d4">🏛️ Стенды</b>
-<div class="small" style="margin:6px 0 0;color:var(--muted)">Сколько из общего количества стоит на каждом стенде. Красным выделены позиции, которых осталось мало.</div>
-<div class="stand-tabs">
-<button type="button" id="st-1" class="stand-tab active" onclick="showStand(1)">🏛️ <span id="stn-1">Стенд 1</span><span class="cnt" id="stc-1">—</span></button>
-<button type="button" id="st-2" class="stand-tab" onclick="showStand(2)">🏛️ <span id="stn-2">Стенд 2</span><span class="cnt" id="stc-2">—</span></button>
-<button type="button" id="st-3" class="stand-tab" onclick="showStand(3)">🏛️ <span id="stn-3">Стенд 3</span><span class="cnt" id="stc-3">—</span></button>
-<button type="button" id="st-4" class="stand-tab" onclick="showStand(4)">🏛️ <span id="stn-4">Стенд 4</span><span class="cnt" id="stc-4">—</span></button>
-</div>
-<div id="standContent" style="margin-top:10px"></div>
-</div>
-
-<div class="card" data-collapsible="langstats" style="border:2px solid #a855f7">
-<b style="color:#a855f7">📚 Литература по языкам</b>
-<div class="small" style="margin:6px 0 8px;color:var(--muted)">На скольких языках есть каждое название и сколько всего штук.</div>
-<div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
-<input id="langStatSearch" placeholder="🔍 Поиск по названию..." oninput="renderItemLangStats()" style="flex:1;padding:8px">
-</div>
-<div id="itemLangStats"></div>
-</div>
-
-<div class="card" data-collapsible="langtable" style="border:2px solid #f59e0b">
-<b style="color:#f59e0b">🌍 По языкам</b>
-<div style="overflow:auto">
-<table class="count-table">
-<thead><tr><th>Язык</th><th>📰</th><th>📖</th><th>🖼️</th><th>Всего</th></tr></thead>
-<tbody id="countLangTypeBody"></tbody>
-</table>
-</div>
-</div>
-
-<div class="card" data-collapsible="charts">
-<b>📊 Графики</b>
-<canvas id="chartMain" style="max-height:220px;margin-top:8px"></canvas>
-<div style="display:flex;gap:4px;margin-top:8px">
-<button onclick="renderCharts()" class="sec" style="flex:1">🔄</button>
-</div>
-</div>
-
-<div class="card" data-collapsible="items">
-<div style="display:flex;justify-content:space-between;align-items:center">
-<b>📦 Все издания</b>
-</div>
-<div class="toolbar">
-<input id="search" placeholder="🔍 Поиск..." oninput="debouncedRender()" style="flex:2;padding:8px">
-<select id="sortSelect" onchange="setSort(this.value)" style="flex:1"></select>
-</div>
-<div class="toolbar">
-<select id="typeFilter" onchange="setTypeFilter(this.value)" style="flex:1"></select>
-<select id="langFilter" onchange="setLangFilter(this.value)" style="flex:1"></select>
-</div>
-<div class="toolbar">
-<select id="standFilter" onchange="setStandFilter(this.value)" style="flex:1"></select>
-</div>
-<div id="list" style="margin-top:8px"></div>
-</div>
-
-<div class="card" id="orderBox" style="display:none;border:2px solid #ef4444">
-<b style="color:#ef4444">⚠️ СПИСОК ЗАКАЗА</b>
-<div id="orderList" style="margin-top:8px"></div>
-<div id="smartOrder" style="margin-top:10px;background:var(--card2);padding:8px;border-radius:8px;border:1px solid #f59e0b"></div>
-<div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap">
-<button onclick="copyOrder()">Копировать</button>
-<button onclick="exportOrder()" class="sec">TXT</button>
-<button onclick="exportPDF()" style="background:#22c55e;color:#000">📄 PDF</button>
-<button onclick="shareWhatsApp()" style="background:#25D366;color:#000">WhatsApp</button>
-</div>
-</div>
-
-<div class="card" data-collapsible="danger" id="dangerCard" style="border:2px solid #ef4444">
-<b style="color:#ef4444">⚠️ Опасная зона</b>
-<button onclick="deleteAllItems()" style="width:100%;margin-top:6px;background:#ef4444;color:#fff">🗑️ Удалить ВСЁ</button>
-</div>
-
-<div class="card" data-collapsible="add" id="addCard" style="border:2px solid #f59e0b">
-<b style="color:#f59e0b">➕ Добавить новое издание</b>
-<div id="addPermNotice" class="notice-box" style="display:none">⚠️ Нет прав.</div>
-
-<label>⚡ Быстрое добавление</label>
-<div class="small" style="color:var(--muted);margin-bottom:4px">Один клик — тип, категория и название заполняются автоматически.</div>
-<div class="quick-add-bar">
-<button type="button" class="quick-add-btn" onclick="quickAdd('watchtower')">📰 Сторожевая</button>
-<button type="button" class="quick-add-btn" onclick="quickAdd('awake')">📰 Пробудитесь</button>
-<button type="button" class="quick-add-btn" onclick="quickAdd('booklet')">📖 Брошюра</button>
-<button type="button" class="quick-add-btn" onclick="quickAdd('poster')">🖼️ Постер</button>
-</div>
-
-<label>📋 Тип издания</label>
-<div style="display:flex;gap:4px;margin:8px 0;flex-wrap:wrap">
-<button type="button" onclick="setAddType('Журнал')" id="a-mag" class="typebtn active">📰 Журнал</button>
-<button type="button" onclick="setAddType('Брошюра')" id="a-booklet" class="typebtn">📖 Брошюра</button>
-<button type="button" onclick="setAddType('Постер')" id="a-poster" class="typebtn">🖼️ Постер</button>
-</div>
-
-<div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0 3px">
-<label style="margin:0">📝 Название *</label>
-<button type="button" onclick="openSuggManager()" style="padding:4px 10px;font-size:0.72em;background:var(--btn-bg);color:var(--primary);border:1px solid var(--primary);margin:0;font-weight:bold">📝 Подсказки</button>
-</div>
-<input id="title" list="jwTitlesList" placeholder="напр. Сторожевая башня" autocomplete="off">
-<datalist id="jwTitlesList"></datalist>
-
-<div class="row">
-<div>
-<label>📅 Год</label>
-<input id="year" list="yearList" placeholder="напр. 2026" autocomplete="off">
-<datalist id="yearList"></datalist>
-</div>
-<div>
-<label>🔢 Номер выпуска</label>
-<input id="issueNum" list="issueNumList" placeholder="напр. 1" autocomplete="off">
-<datalist id="issueNumList"></datalist>
-</div>
-</div>
-
-<div class="row">
-<div><label>🏷️ Категория</label><input id="cat" placeholder="напр. Сторожевая башня"></div>
-<div><label>📦 Всего штук</label><input id="qty" type="number" inputmode="numeric" value="10"></div>
-</div>
-
-<label>🌍 Язык</label>
-<select id="lang">
-<option value="ru">🇷🇺 Русский</option>
-<option value="en">🇬🇧 Английский</option>
-<option value="de">🇩🇪 Немецкий</option>
-<option value="es">🇪🇸 Испанский</option>
-<option value="fr">🇫🇷 Французский</option>
-<option value="it">🇮🇹 Итальянский</option>
-<option value="pt">🇵🇹 Португальский</option>
-<option value="pl">🇵🇱 Польский</option>
-<option value="uk">🇺🇦 Украинский</option>
-<option value="tr">🇹🇷 Турецкий</option>
-<option value="el">🇬🇷 Греческий</option>
-<option value="ko">🇰🇷 Корейский</option>
-<option value="ja">🇯🇵 Японский</option>
-<option value="zh">🇨🇳 Китайский</option>
-<option value="ro">🇷🇴 Румынский</option>
-<option value="hu">🇭🇺 Венгерский</option>
-<option value="cs">🇨🇿 Чешский</option>
-<option value="bg">🇧🇬 Болгарский</option>
-<option value="sr">🇷🇸 Сербский</option>
-<option value="hr">🇭🇷 Хорватский</option>
-<option value="sw">🇰🇪 Суахили</option>
-<option value="hi">🇮🇳 Хинди</option>
-<option value="ar">🇸🇦 Арабский</option>
-<option value="hy">🇦🇲 Армянский</option>
-<option value="ka">🇬🇪 Грузинский</option>
-<option value="he">🇮🇱 Иврит</option>
-<option value="other">🌐 Другой</option>
-</select>
-
-<label>🏛️ Разложить по стендам (необязательно)</label>
-<div class="small" style="color:var(--muted);margin-bottom:6px">Выбери из списка, сколько поставить на каждый стенд (0–10).</div>
-<div class="row">
-<div><label style="font-size:0.8em" id="addLblS1">🏛️ Стенд 1</label><select id="s1"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
-<div><label style="font-size:0.8em" id="addLblS2">🏛️ Стенд 2</label><select id="s2"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
-</div>
-<div class="row">
-<div><label style="font-size:0.8em" id="addLblS3">🏛️ Стенд 3</label><select id="s3"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
-<div><label style="font-size:0.8em" id="addLblS4">🏛️ Стенд 4</label><select id="s4"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
-</div>
-
-<button onclick="addItem()" id="btnAddItem" style="width:100%;margin-top:16px">➕ Добавить</button>
-</div>
-</div>
-
-<div id="adminScreen">
-<div class="card" style="max-width:750px;margin:0 auto;border:2px solid #f59e0b">
-<h2 style="color:#f59e0b;text-align:center">👑 АДМИН</h2>
-<div style="text-align:center"><button class="sec" onclick="closeAdmin()">✕ Закрыть</button></div>
-<div id="loginBox" style="margin-top:12px">
-<label>Пароль</label>
-<input id="pinCheck" type="password" placeholder="••••">
-<button onclick="checkAdmin()" style="width:100%;margin-top:8px">Войти</button>
-</div>
-<div id="adminContent" style="display:none;margin-top:12px">
-
-<div class="card" style="border:2px solid #06b6d4">
-<b style="color:#06b6d4">☁️ Синхронизация</b>
-<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
-<button onclick="pushToCloud()" style="flex:1;background:#06b6d4;color:#000">☁️ Отправить</button>
-<button onclick="pullFromCloud()" style="flex:1" class="sec">⬇️ Получить</button>
-</div>
-<label style="margin-top:10px">Stand ID</label>
-<div style="display:flex;gap:4px">
-<input id="cloudId" style="flex:1;font-family:monospace">
-<button onclick="copyCloudId()" class="sec">📋</button>
-</div>
-<button onclick="saveCloudId()" style="width:100%;margin-top:8px;background:#22c55e;color:#000">🔄 Применить</button>
-<label style="margin-top:10px">Firebase Config</label>
-<textarea id="fbConfig" style="height:60px;font-size:10px"></textarea>
-<button onclick="saveFbConfig()" class="sec" style="width:100%;margin-top:4px">💾 Сохранить</button>
-<button class="sec" onclick="resetOnboarding()" style="width:100%;margin-top:10px;font-size:0.85em">🔄 Сброс</button>
-</div>
-
-<div class="card" style="border:2px solid #06b6d4">
-<b style="color:#06b6d4">🏛️ Названия стендов</b>
-<div class="small" style="margin:8px 0;color:var(--muted);line-height:1.4">Введите свои названия — они появятся везде: в табах, в списке, в печати.</div>
-<label>Стенд 1</label><input id="sname1" placeholder="напр. Стенд у метро">
-<label>Стенд 2</label><input id="sname2" placeholder="напр. Стенд в парке">
-<label>Стенд 3</label><input id="sname3" placeholder="напр. Стенд на площади">
-<label>Стенд 4</label><input id="sname4" placeholder="напр. Запасной">
-<button onclick="saveStandNames()" style="width:100%;margin-top:10px;background:#22c55e;color:#000">💾 Сохранить названия</button>
-<button class="sec" onclick="resetStandNames()" style="width:100%;margin-top:6px">↺ Сбросить к «Стенд 1…4»</button>
-</div>
-
-<div class="card" style="border:2px solid #22c55e">
-<b style="color:#22c55e">💾 Резервная копия</b>
-<button onclick="exportBackup()" style="width:100%;margin-top:10px;background:#22c55e;color:#000">💾 Скачать копию</button>
-<label for="importInput" class="file-btn" style="margin-top:8px">📥 Восстановить</label>
-<input type="file" id="importInput" accept=".json" onchange="importBackup(event)" style="display:none">
-</div>
-
-<div class="card" style="border:2px solid #06b6d4">
-<b style="color:#06b6d4">📝 Подсказки</b>
-<div class="small" style="margin:8px 0;color:var(--muted);line-height:1.4">Список того, что появляется при вводе в поле «Название».</div>
-<div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
-<input id="suggSearch" placeholder="🔍 Поиск..." oninput="renderSuggestions()" style="flex:1;padding:8px">
-<span class="small" id="suggCount" style="white-space:nowrap">—</span>
-</div>
-<div id="suggList" style="max-height:340px;overflow:auto;background:var(--card2);border-radius:8px;padding:4px 8px"></div>
-<button onclick="clearAllSuggestions()" style="width:100%;margin-top:8px;background:#ef4444;color:#fff">🗑️ Очистить ВСЕ подсказки</button>
-<button onclick="clearOnlyThemes()" class="sec" style="width:100%;margin-top:4px">💡 Удалить только темы</button>
-</div>
-
-<div class="card" style="border:2px solid #ec4899">
-<b style="color:#ec4899">🎨 Цвет фона</b>
-<div class="theme-hint" id="bgThemeHint">—</div>
-<div id="bgSwatches"></div>
-<input type="color" id="bgColorInput" oninput="setBgColor(this.value)" style="margin-top:8px">
-<button class="sec" onclick="resetBgColor()" style="width:100%;margin-top:8px">↺ Сброс</button>
-</div>
-
-<div class="card" style="border:2px solid #8b5cf6">
-<b style="color:#8b5cf6">🔘 Цвет кнопок</b>
-<div class="theme-hint" id="btnThemeHint">—</div>
-<div id="btnSwatches"></div>
-<input type="color" id="btnColorInput" oninput="setBtnColor(this.value)" style="margin-top:8px">
-<button class="sec" onclick="resetBtnColor()" style="width:100%;margin-top:8px">↺ Сброс</button>
-</div>
-
-<div class="card" style="border:2px solid #a855f7">
-<b style="color:#a855f7">👥 Журнал</b>
-<div id="logList" style="margin-top:10px;max-height:300px;overflow:auto;background:var(--card2);border-radius:8px;padding:10px"></div>
-<button onclick="clearLog()" class="sec" style="width:100%;margin-top:10px">Очистить</button>
-</div>
-
-<div class="card" style="border:2px solid #a855f7">
-<b style="color:#a855f7">👥 Пользователи</b>
-<div id="usersList" style="margin-top:12px"></div>
-<div style="background:var(--card2);border:1px dashed #22c55e;border-radius:8px;padding:10px;margin-top:12px">
-<b style="color:#22c55e">➕ Новый пользователь</b>
-<label>Имя</label><input id="newUserName" placeholder="напр. Сергей">
-<label>Роль</label>
-<select id="newUserRole" onchange="updatePermsFromRole()">
-<option value="counter">🔢 Счётчик</option>
-<option value="manager">📦 Менеджер</option>
-<option value="viewer">👀 Наблюдатель</option>
-<option value="admin">👑 Админ</option>
-</select>
-<div class="perm-grid">
-<label><input type="checkbox" id="p_count" checked> ➕➖ Кол-во</label>
-<label><input type="checkbox" id="p_add"> ➕ Добавить</label>
-<label><input type="checkbox" id="p_del"> 🗑️ Удалить</label>
-<label><input type="checkbox" id="p_rename" checked> 📝 Переименовать</label>
-<label><input type="checkbox" id="p_sync" checked> ☁️ Синхр.</label>
-<label><input type="checkbox" id="p_order"> 📋 Заказы</label>
-<label><input type="checkbox" id="p_scan" checked> 📷 Скан</label>
-<label><input type="checkbox" id="p_voice" checked> 🎙️ Голос</label>
-</div>
-<button onclick="addUser()" style="width:100%;margin-top:8px;background:#22c55e;color:#000">➕ Добавить</button>
-</div>
-</div>
-
-<div class="card" style="border:2px solid #22c55e">
-<b style="color:#22c55e">👥 Возвещатели (приложение)</b>
-<div class="small" style="margin:8px 0;color:var(--muted);line-height:1.4">Люди, зарегистрированные в приложении для отчётов. Вы можете редактировать или удалять их.</div>
-<div id="witnessList" style="max-height:340px;overflow:auto;margin-top:8px">
-<div class="small" style="text-align:center;padding:20px">— загрузка —</div>
-</div>
-</div>
-
-<div class="card" style="border:2px solid #a855f7">
-<b style="color:#a855f7">📨 Входящие отчёты</b>
-<div class="small" style="margin:8px 0;color:var(--muted);line-height:1.4">Отчёты о распространении. Списание происходит автоматически при появлении.</div>
-<div id="witnessReportsList" style="max-height:340px;overflow:auto;margin-top:8px">
-<div class="small" style="text-align:center;padding:20px">— загрузка —</div>
-</div>
-</div>
-
-<div class="card" style="border:2px solid #06b6d4">
-<b style="color:#06b6d4">🎨 Внешний вид</b>
-<label>Размер UI: <span id="fsVal">15</span>px</label>
-<input type="range" id="fsRange" min="11" max="22" value="15" oninput="setFontSize(this.value)">
-<label>Размер списка: <span id="lfsVal">13</span>px</label>
-<input type="range" id="lfsRange" min="9" max="20" value="13" oninput="setListFontSize(this.value)">
-<label>Шрифт</label>
-<select id="ffSelect" onchange="setFontFamily(this.value)">
-<option value="Arial, sans-serif">Arial</option><option value="Verdana">Verdana</option><option value="Georgia">Georgia</option><option value="'Segoe UI', sans-serif">Segoe UI</option><option value="Tahoma">Tahoma</option>
-</select>
-<button class="sec" onclick="resetFonts()" style="width:100%;margin-top:10px">↺ Сброс</button>
-</div>
-
-<div class="card" style="background:var(--card2);border:2px solid #f59e0b">
-<b style="color:#f59e0b">🔐 Пароль админа</b>
-<label>Новый пароль</label><input id="newPass" type="text">
-<label>Email для восстановления</label><input id="recoveryEmail" type="email">
-<button onclick="saveNewPass()" style="width:100%;margin-top:8px;background:#22c55e;color:#000">💾 Сохранить</button>
-<div class="small" id="passMsg" style="margin-top:6px;color:#22c55e"></div>
-</div>
-
-</div>
-</div>
 </div>
 
 <div id="onboardOverlay">
@@ -583,8 +574,6 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 <button class="onb-btn" onclick="submitOnboarding()">✓ Подключиться</button>
 <div class="onb-error" id="onbError"></div>
-<div class="onb-info" id="onbInfo"></div>
-<button class="sec" onclick="skipOnboarding()" style="width:100%;margin-top:14px;font-size:0.85em;background:transparent;color:var(--muted);border:1px solid var(--border)">Пропустить</button>
 </div>
 </div>
 
@@ -609,10 +598,8 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <div id="editWitnessOverlay" onclick="if(event.target===this)closeEditWitness()">
 <div id="editWitnessBox" onclick="event.stopPropagation()">
 <h3 style="color:#06b6d4">✏️ Редактировать возвещателя</h3>
-<label>Имя</label>
-<input id="editWitnessName" style="margin-bottom:8px">
-<label>Фамилия</label>
-<input id="editWitnessSurname" style="margin-bottom:8px">
+<label>Имя</label><input id="editWitnessName" style="margin-bottom:8px">
+<label>Фамилия</label><input id="editWitnessSurname" style="margin-bottom:8px">
 <div style="display:flex;gap:8px;margin-top:16px">
 <button class="sec" onclick="closeEditWitness()" style="flex:1;padding:12px">Отмена</button>
 <button onclick="saveEditWitness()" style="flex:1;padding:12px;background:#22c55e;color:#000">💾 Сохранить</button>
@@ -623,8 +610,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <div id="editUserOverlay" onclick="if(event.target===this)closeEditUser()">
 <div id="editUserBox" onclick="event.stopPropagation()">
 <h3 style="color:#06b6d4">✏️ Редактировать помощника</h3>
-<label>Имя</label>
-<input id="editUserName" style="margin-bottom:8px">
+<label>Имя</label><input id="editUserName" style="margin-bottom:8px">
 <label>Роль</label>
 <select id="editUserRole" onchange="updateEditUserPermsFromRole()" style="margin-bottom:8px">
 <option value="counter">🔢 Счётчик</option>
@@ -706,7 +692,7 @@ var pendingPushTs = {};
 var curStand = 1;
 var _standItemId = null;
 var STAND_MAX = 10;
-var MIN_STAND_ALERT = 3; // Если меньше этого числа на стенде - подсвечиваем красным
+var MIN_STAND_ALERT = 3;
 
 var standNames = { 1:'Стенд 1', 2:'Стенд 2', 3:'Стенд 3', 4:'Стенд 4' };
 try{
@@ -715,6 +701,30 @@ try{
     for(var _k=1;_k<=4;_k++){ if(_sn[_k]) standNames[_k] = String(_sn[_k]); }
   }
 }catch(e){}
+
+function switchView(view) {
+  var tabLit = document.getElementById('tab-lit');
+  var tabAdmin = document.getElementById('tab-admin');
+  var viewLit = document.getElementById('view-lit');
+  var viewAdmin = document.getElementById('view-admin');
+  
+  if(view === 'lit') {
+    tabLit.classList.add('active');
+    tabAdmin.classList.remove('active');
+    viewLit.style.display = 'block';
+    viewAdmin.style.display = 'none';
+  } else {
+    tabAdmin.classList.add('active');
+    tabLit.classList.remove('active');
+    viewAdmin.style.display = 'block';
+    viewLit.style.display = 'none';
+    renderUsers();
+    renderWitnessesUI();
+    renderWitnessReportsUI();
+    updateAdminBadge();
+  }
+}
+
 function getStandName(n){ return standNames[n] || ('Стенд '+n); }
 function saveStandNamesToStorage(){ localStorage.setItem('stand_names', JSON.stringify(standNames)); }
 function loadStandNamesUI(){
@@ -1376,9 +1386,9 @@ function standLiveUpdate(){
   
   var projStock = stock;
   if(delta > 0){
-    projStock = stock - delta; // Берем из запаса на стенд
+    projStock = stock - delta;
   } else if(delta < 0 && !isDiscard){
-    projStock = stock + Math.abs(delta); // Возврат со стенда в запас
+    projStock = stock + Math.abs(delta);
   }
   var projTotal = projStock + newStands;
   
@@ -1406,15 +1416,12 @@ function saveStandEditor(){
   var isDiscard = document.getElementById('standThemeChange') && document.getElementById('standThemeChange').checked;
   
   if(delta > 0){
-    // Добавляем на стенд — берем из запаса
     if((parseInt(it.qty)||0) < delta){ toast('❌ В запасе только '+it.qty+' шт.'); return; }
     it.qty = (parseInt(it.qty)||0) - delta;
   } else if(delta < 0){
     if(!isDiscard){
-      // Возвращаем в запас
       it.qty = (parseInt(it.qty)||0) + Math.abs(delta);
     }
-    // С утилизацией — не возвращаем
   }
   
   var changed = false;
@@ -1686,7 +1693,6 @@ function undo(){
   saveStandNamesToStorage();
   save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); populateDatalists(); renderSuggestions(); renderSuggManager();
   refreshStandNamesUI();
-  if(document.getElementById('adminContent').style.display==='block') loadStandNamesUI();
   toast('↶ '+s.label); updateUndoButtons();
   if(undoStack.length>0||redoStack.length>0) showUndoBar(); else hideUndoBar();
 }
@@ -1700,7 +1706,6 @@ function redo(){
   saveStandNamesToStorage();
   save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); populateDatalists(); renderSuggestions(); renderSuggManager();
   refreshStandNamesUI();
-  if(document.getElementById('adminContent').style.display==='block') loadStandNamesUI();
   toast('↷ Redo'); updateUndoButtons();
   if(undoStack.length>0||redoStack.length>0) showUndoBar(); else hideUndoBar();
 }
@@ -2210,7 +2215,6 @@ function importBackup(e){
         renderBgSwatches(); renderBtnSwatches(); updateThemeHints(); populateDatalists();
         setupCollapsibleCards();
         refreshStandNamesUI();
-        if(document.getElementById('adminContent').style.display==='block') loadStandNamesUI();
         toast('✅ Восстановление завершено!');
       });
     }catch(err){ toast('❌ Неверный файл'); }
@@ -2227,8 +2231,8 @@ async function initFirebase(){
   setSyncState('connecting'); var cfg=getFirebaseConfig(); if(!cfg){ setSyncState('error'); return; }
   try{
     const {initializeApp}=await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
-    const {getFirestore,doc,setDoc,onSnapshot,getDoc}=await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
-    if(!cloudApp){ cloudApp=initializeApp(cfg); cloudDb=getFirestore(cloudApp); window._fb={doc,setDoc,onSnapshot,getDoc}; }
+    const {getFirestore,doc,setDoc,onSnapshot,getDoc,collection,query,where,updateDoc,runTransaction} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
+    if(!cloudApp){ cloudApp=initializeApp(cfg); cloudDb=getFirestore(cloudApp); window._fb={doc,setDoc,onSnapshot,getDoc,collection,query,where,updateDoc,runTransaction}; }
     if(cloudUnsub){ try{ cloudUnsub(); }catch(e){} cloudUnsub=null; }
     var dRef=window._fb.doc(cloudDb,'stands',cloudId);
     cloudUnsub=window._fb.onSnapshot(dRef, function(snap){
@@ -2246,7 +2250,6 @@ async function initFirebase(){
         for(var n=1;n<=4;n++){ if(data.standNames[n]) standNames[n] = String(data.standNames[n]); }
         saveStandNamesToStorage();
         refreshStandNamesUI();
-        if(document.getElementById('adminContent').style.display==='block') loadStandNamesUI();
       }
       save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); populateDatalists();
       setSyncState('synced'); isSyncingFromCloud=false;
@@ -2287,7 +2290,6 @@ async function pullFromCloud(){
         for(var n=1;n<=4;n++){ if(data.standNames[n]) standNames[n] = String(data.standNames[n]); }
         saveStandNamesToStorage();
         refreshStandNamesUI();
-        if(document.getElementById('adminContent').style.display==='block') loadStandNamesUI();
       }
       save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); populateDatalists();
       setSyncState('synced'); isSyncingFromCloud=false;
@@ -2452,7 +2454,6 @@ function renderWitnessesUI(){
   }).join('');
 }
 
-/* Edit Witness Modal */
 var _editingWitnessEmail = null;
 function openEditWitness(email, name, surname) {
   _editingWitnessEmail = email;
@@ -2476,7 +2477,6 @@ async function saveEditWitness() {
     closeEditWitness();
   }catch(e){ toast('❌ Ошибка: '+e.message); }
 }
-/* End Edit Witness */
 
 function renderWitnessReportsUI(){
   var el = document.getElementById('witnessReportsList'); if(!el) return;
@@ -2523,80 +2523,27 @@ async function restoreWitness(witnessId){
 }
 /* ============ END WITNESS APP INTEGRATION ============ */
 
-function openAdmin(){
-  document.getElementById('adminScreen').style.display='block';
-  document.getElementById('cloudId').value=cloudId;
-  document.getElementById('fbConfig').value=fbConfigStr;
-  document.getElementById('adminContent').style.display='none';
-  document.getElementById('loginBox').style.display='block';
-  document.getElementById('pinCheck').value='';
-  document.getElementById('passMsg').textContent='';
-  applyFont(); renderLog(); renderBgSwatches(); renderBtnSwatches();
-  updateThemeHints();
-}
-function closeAdmin(){ document.getElementById('adminScreen').style.display='none'; document.getElementById('adminContent').style.display='none'; document.getElementById('loginBox').style.display='block'; document.getElementById('pinCheck').value=''; }
-function checkAdmin(){
-  if(document.getElementById('pinCheck').value===adminPass){
-    document.getElementById('adminContent').style.display='block';
-    document.getElementById('loginBox').style.display='none';
-    renderUsers(); applyFont(); renderBgSwatches(); renderBtnSwatches();
-    updateThemeHints(); updatePermsFromRole(); renderLog();
-    loadStandNamesUI();
-    try{ renderSuggestions(); }catch(e){}
-    renderWitnessesUI();
-    renderWitnessReportsUI();
-    updateAdminBadge();
-  } else toast('❌ Неверный пароль');
-}
-
 function saveNewPass(){
   var np=document.getElementById('newPass').value.trim();
-  var em=document.getElementById('recoveryEmail').value.trim();
   var msg=document.getElementById('passMsg');
   msg.style.color='#22c55e';
   if(np){ if(np.length<3){ msg.style.color='#ef4444'; msg.textContent='❌ Минимум 3 символа'; return; } adminPass=np; localStorage.setItem('stand_pass',adminPass); }
-  if(em){ localStorage.setItem('stand_recovery_email',em); }
   msg.textContent='✅ Сохранено';
   document.getElementById('newPass').value='';
   save();
 }
 
-function showOnboarding(){ document.getElementById('onboardOverlay').classList.add('show'); document.getElementById('onbError').textContent=''; document.getElementById('onbInfo').textContent=''; document.getElementById('onbInput').value=''; setTimeout(function(){ document.getElementById('onbInput').focus(); },300); }
+function showOnboarding(){ document.getElementById('onboardOverlay').classList.add('show'); document.getElementById('onbError').textContent=''; document.getElementById('onbInput').value=''; setTimeout(function(){ document.getElementById('onbInput').focus(); },300); }
 function hideOnboarding(){ document.getElementById('onboardOverlay').classList.remove('show'); }
 function toggleOnbShow(){ var inp=document.getElementById('onbInput'),btn=document.getElementById('onbToggle'); if(inp.type==='password'){ inp.type='text'; btn.textContent='🙈'; } else { inp.type='password'; btn.textContent='👁️'; } }
 function skipOnboarding(){ localStorage.setItem('stand_onboarded','true'); cloudEnabled=false; localStorage.setItem('stand_cloud_enabled','false'); hideOnboarding(); setSyncState('offline'); }
 function submitOnboarding(){
-  var code=document.getElementById('onbInput').value.trim(); var errEl=document.getElementById('onbError'),infoEl=document.getElementById('onbInfo');
-  errEl.textContent=''; infoEl.textContent='';
+  var code=document.getElementById('onbInput').value.trim(); var errEl=document.getElementById('onbError');
+  errEl.textContent='';
   if(!code){ errEl.textContent='⚠️ Введите код'; return; }
   if(code.length<4){ errEl.textContent='❌ Неверный код'; return; }
-  infoEl.textContent='⏳ Подключение...'; cloudId=code; localStorage.setItem('stand_cloud_id',code); cloudEnabled=true; localStorage.setItem('stand_cloud_enabled','true');
-  var tryCount=0,maxTry=6;
-  var checkResult=function(){
-    tryCount++;
-    if(cloudApp && cloudDb){
-      var dRef=window._fb.doc(cloudDb,'stands',cloudId);
-      window._fb.getDoc(dRef).then(function(snap){
-        if(snap.exists() && snap.data().items){
-          isSyncingFromCloud=true; var data=snap.data(); items=cleanItems(data.items);
-          if(data.users) users=cleanUsers(data.users); if(data.adminPass) adminPass=data.adminPass;
-          if(data.history && Array.isArray(data.history)) historyLog=data.history;
-          if(data.savedTitles) savedTitles=data.savedTitles;
-          if(data.removedSuggestions) removedSuggestions=data.removedSuggestions;
-          if(data.standNames && typeof data.standNames==='object'){
-            for(var n=1;n<=4;n++){ if(data.standNames[n]) standNames[n] = String(data.standNames[n]); }
-            saveStandNamesToStorage();
-          }
-          save(); isSyncingFromCloud=false; localStorage.setItem('stand_onboarded','true');
-          infoEl.style.color='#22c55e'; infoEl.textContent='✅ Подключено!';
-          var adm=users.find(function(u){ return u.role==='admin'; }); if(adm){ currentUserId=adm.id; localStorage.setItem('stand_current_user_id',currentUserId); }
-          setTimeout(function(){ hideOnboarding(); updateUserChip(); render(); renderUsers(); renderUserSelectList(); populateDatalists(); refreshStandNamesUI(); setTimeout(openUserSelector,400); },800);
-        } else { infoEl.textContent=''; errEl.textContent='❌ Неверный код'; }
-      }).catch(function(){ errEl.textContent='❌ Ошибка подключения'; });
-    } else if(tryCount<maxTry){ setTimeout(checkResult,1000); }
-    else { errEl.textContent='❌ Неверный код'; }
-  };
-  initFirebase(); setTimeout(checkResult,1200);
+  cloudId=code; localStorage.setItem('stand_cloud_id',code); cloudEnabled=true; localStorage.setItem('stand_cloud_enabled','true');
+  initFirebase(); setTimeout(function(){ hideOnboarding(); }, 500);
 }
 function resetOnboarding(){ localStorage.removeItem('stand_onboarded'); localStorage.removeItem('stand_cloud_id'); cloudId=''; toast('✅ Сброс'); setTimeout(showOnboarding,300); }
 
@@ -2650,7 +2597,6 @@ function init(){
     cloudId = savedCloudId;
     if(!isOnboarded) localStorage.setItem('stand_onboarded','true');
     setTimeout(initFirebase, 500);
-    if(!currentUserId || !users.find(function(u){return u.id==currentUserId;})){ setTimeout(openUserSelector, 800); }
   } else if(!isOnboarded){
     setTimeout(showOnboarding, 400);
   }

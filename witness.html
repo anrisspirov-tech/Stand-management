@@ -29,11 +29,53 @@ button:disabled{opacity:0.5;cursor:not-allowed}
 @keyframes toastIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .toast.ok{border-color:var(--ok);background:rgba(34,197,94,0.95);color:#000}
 .toast.err{border-color:var(--err);background:rgba(239,68,68,0.95)}
-.stand-tabs{display:flex;gap:5px;margin-top:10px;margin-bottom:12px}
+.stand-tabs{display:flex;gap:5px;margin-bottom:12px}
 .stand-tab{flex:1;padding:10px 6px;font-size:0.85em;font-weight:bold;background:var(--card2);color:var(--text);border:2px solid var(--border);border-radius:8px;cursor:pointer;margin:0;transition:all 0.15s;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .stand-tab.active{background:#06b6d4;color:#000;border-color:#06b6d4;box-shadow:0 0 10px rgba(6,182,212,0.5)}
 .stand-tab .cnt{display:block;font-size:0.7em;opacity:0.85;font-weight:normal;margin-top:2px}
-#itemSelect option{padding:6px}
+
+/* WIZARD */
+.wizard-crumbs{background:var(--card2);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:0.85em;color:var(--muted);word-break:break-word;line-height:1.5;display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:32px}
+.crumb{color:var(--primary);font-weight:bold;background:rgba(168,85,247,0.1);padding:3px 8px;border-radius:99px}
+.crumb-arrow{color:var(--muted);font-weight:bold}
+.wizard-q{font-size:1.15em;font-weight:bold;color:var(--primary);text-align:center;margin:8px 0 16px;line-height:1.3}
+.wizard-step-num{font-size:0.75em;color:var(--muted);text-align:center;margin-bottom:4px;font-weight:normal}
+
+.choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.choice-btn{background:var(--card2);border:2px solid var(--border);border-radius:12px;padding:22px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all 0.15s;width:100%;margin:0;color:var(--text)}
+.choice-btn:hover{border-color:var(--primary);transform:translateY(-2px)}
+.choice-btn:active{transform:scale(0.97)}
+.choice-icon{font-size:2.6em;line-height:1}
+.choice-label{font-weight:bold;font-size:1.1em;color:var(--text)}
+.choice-meta{font-size:0.78em;color:var(--muted)}
+
+.wizard-search{margin-bottom:10px}
+
+.report-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.report-card{background:var(--card2);border:2px solid var(--border);border-radius:10px;padding:12px;transition:all 0.15s}
+.report-card.active{border-color:var(--primary);background:rgba(168,85,247,0.1)}
+.report-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
+.report-card-title{flex:1;min-width:0;font-weight:bold;line-height:1.35;word-break:break-word;font-size:0.98em}
+.report-card-theme{font-size:0.92em;color:#c084fc;font-style:italic;font-weight:bold;line-height:1.3;margin-top:4px;word-break:break-word}
+.report-card-theme::before{content:'💡 '}
+.report-card-meta{font-size:0.78em;color:var(--muted);margin-top:4px;line-height:1.4}
+.report-card-avail{font-size:0.8em;color:var(--ok);font-weight:bold;white-space:nowrap;background:rgba(34,197,94,0.15);padding:3px 9px;border-radius:99px;flex-shrink:0}
+.report-qty-controls{display:flex;gap:8px;align-items:center}
+.rqty-btn{width:46px;height:46px;border-radius:50%;font-size:1.4em;font-weight:bold;border:0;cursor:pointer;background:var(--card);color:var(--text);padding:0;margin:0;border:2px solid var(--border);flex-shrink:0}
+.rqty-btn.plus{background:var(--primary);color:var(--primary-text);border-color:var(--primary)}
+.rqty-btn:active{transform:scale(0.93)}
+.rqty-input{font-size:1.3em;font-weight:bold;text-align:center;padding:8px 4px;border-radius:8px;border:2px solid var(--border);background:var(--card);color:var(--text);-moz-appearance:textfield;max-width:80px}
+.rqty-input::-webkit-outer-spin-button,.rqty-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.rqty-input:focus{outline:2px solid var(--primary);border-color:var(--primary)}
+.rqty-input.filled{border-color:var(--ok);background:rgba(34,197,94,0.1);color:var(--ok)}
+
+.wizard-empty{text-align:center;padding:30px 15px;color:var(--muted);line-height:1.5;font-size:0.95em}
+
+.wizard-nav{display:flex;gap:8px;margin-top:14px}
+.wizard-nav button{flex:1;background:var(--card2);color:var(--text);border:1px solid var(--border)}
+
+.wizard-submit{width:100%;padding:18px;font-size:1.15em;background:var(--ok);color:#000;border:0;border-radius:10px;font-weight:bold;cursor:pointer;margin-top:8px}
+.wizard-submit:disabled{background:var(--card2);color:var(--muted);cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -69,14 +111,14 @@ button:disabled{opacity:0.5;cursor:not-allowed}
     <div class="card">
       <label>🏛️ Выберите стенд</label>
       <div class="stand-tabs" id="standTabs"></div>
-      <label>🔍 Поиск литературы</label>
-      <input id="searchItems" placeholder="начните вводить название..." oninput="filterItems()">
-      <label style="margin-top:12px">📚 Что ушло</label>
-      <select id="itemSelect" size="6" style="height:auto;min-height:140px"></select>
-      <div id="selectedInfo" style="color:var(--muted);font-size:0.85em;margin-top:8px;min-height:1.2em"></div>
-      <label style="margin-top:12px">🔢 Сколько ушло</label>
-      <input id="qtyInput" type="number" min="1" inputmode="numeric" value="1" style="font-size:1.5em;text-align:center;font-weight:bold">
-      <button onclick="submitReport()" id="submitBtn" style="margin-top:14px;background:var(--ok);color:#000;font-size:1.1em;padding:16px">✓ Отправить отчёт</button>
+    </div>
+
+    <div class="card">
+      <div class="wizard-crumbs" id="wizardBreadcrumbs"></div>
+      <div id="wizardBody"></div>
+      <div class="wizard-nav" id="wizardNav" style="display:none">
+        <button onclick="wizardBack()">← Назад</button>
+      </div>
     </div>
   </div>
 </div>
@@ -86,12 +128,17 @@ button:disabled{opacity:0.5;cursor:not-allowed}
 <script>
 const FIREBASE_CONFIG = {"apiKey":"AIzaSyCKoGOE84zPuc4t6UQrDYMbooCR43p0FyQ","authDomain":"stand-management-a46a7.firebaseapp.com","projectId":"stand-management-a46a7","storageBucket":"stand-management-a46a7.firebasestorage.app","messagingSenderId":"304875768432","appId":"1:304875768432:web:470adb4707b8a3680482b5"};
 
+const REPORTABLE_TYPES = ['Журнал', 'Брошюра'];
+
 let cloudApp=null, cloudDb=null, cloudFns=null;
 let currentUser=null, currentStandId='';
 let items=[];
+let itemsOnStand=[];
 let standNames = { 1:'Стенд 1', 2:'Стенд 2', 3:'Стенд 3', 4:'Стенд 4' };
 let currentWitnessStand = 1;
 let itemsUnsub=null;
+
+let wizard = { step: 1, type: null, qty: {}, search: '' };
 
 const LS_STAND='witness_stand_id';
 const LS_EMAIL='witness_email';
@@ -116,8 +163,9 @@ const LANG_FLAGS = {ru:'🇷🇺',en:'🇬🇧',de:'🇩🇪',es:'🇪🇸',fr:'
 function langDisplay(code){ if(!code) return ''; return (LANG_FLAGS[code]||'🌐')+' '+(LANGS[code]||code); }
 function getItemName(it){ return (it.names && it.names.ru) || it.name || '—'; }
 function getItemType(it){ return it.type || 'Журнал'; }
-function getTypeIcon(tp){ if(tp==='Журнал') return '📰'; if(tp==='Брошюра') return '📖'; if(tp==='Постер') return '🖼️'; return '📄'; }
-function getItemExtra(it){ const p=[]; if(it.issueNum) p.push('№'+it.issueNum); if(it.year) p.push(it.year); return p.join(' • '); }
+function getTypeIcon(tp){ if(tp==='Журнал') return '📰'; if(tp==='Брошюра') return '📖'; return '📄'; }
+function getItemExtra(it){ const p=[]; if(it.issueNum) p.push('№'+it.issueNum); if(it.year) p.push(String(it.year)); return p.join(' · '); }
+function getItemTheme(it){ return String(it.theme || '').trim(); }
 
 async function initFirebase(){
   const {initializeApp} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
@@ -154,13 +202,12 @@ async function doRegister(){
       createdAt: snap.exists() ? (snap.data().createdAt || Date.now()) : Date.now(),
       lastSeen: Date.now()
     }, {merge: true});
-    
-    // Save EVERYTHING to localStorage
+
     localStorage.setItem(LS_STAND, standId);
     localStorage.setItem(LS_EMAIL, email);
     localStorage.setItem(LS_NAME, name);
     localStorage.setItem(LS_SURNAME, surname);
-    
+
     currentUser = {email, name, surname};
     currentStandId = standId;
     infoEl.style.color='#22c55e';
@@ -181,7 +228,7 @@ function startApp(){
   document.getElementById('mainScreen').style.display='block';
   document.getElementById('userInfo').textContent = '👤 ' + (currentUser && currentUser.name || '') + ' ' + (currentUser && currentUser.surname || '');
   renderStandTabs();
-  renderItemSelect();
+  wizardReset();
 }
 
 function logout(){
@@ -192,7 +239,7 @@ function logout(){
   localStorage.removeItem(LS_NAMES_JSON);
   localStorage.removeItem(LS_CUR_STAND);
   if(itemsUnsub){ try{ itemsUnsub(); }catch(e){} itemsUnsub=null; }
-  items=[]; currentUser=null; currentStandId='';
+  items=[]; itemsOnStand=[]; currentUser=null; currentStandId='';
   document.getElementById('mainScreen').style.display='none';
   document.getElementById('regScreen').style.display='block';
   document.getElementById('regErr').textContent='';
@@ -208,7 +255,6 @@ function showDeactivated(){
   document.getElementById('regScreen').style.display='block';
   document.getElementById('regErr').textContent='❌ Ваш доступ отозван координатором. Обратитесь к нему.';
   document.getElementById('regInfo').textContent='';
-  // Pre-fill from localStorage for convenience
   document.getElementById('regStandId').value = localStorage.getItem(LS_STAND) || '';
   document.getElementById('regName').value = localStorage.getItem(LS_NAME) || '';
   document.getElementById('regSurname').value = localStorage.getItem(LS_SURNAME) || '';
@@ -221,19 +267,48 @@ function subscribeToItems(){
   const fns = cloudFns;
   const standRef = fns.doc(cloudDb, 'stands', currentStandId);
   itemsUnsub = fns.onSnapshot(standRef, snap => {
-    if(!snap.exists()){ items=[]; renderStandTabs(); renderItemSelect(); return; }
+    if(!snap.exists()){ items=[]; onItemsUpdated(); return; }
     const data = snap.data();
     items = Array.isArray(data.items) ? data.items : [];
     if(data.standNames && typeof data.standNames === 'object'){
       for(let n=1; n<=4; n++){
         if(data.standNames[n]) standNames[n] = String(data.standNames[n]);
       }
-      // Cache stand names locally for offline load
       try{ localStorage.setItem(LS_NAMES_JSON, JSON.stringify(standNames)); }catch(e){}
     }
-    renderStandTabs();
-    renderItemSelect();
+    onItemsUpdated();
   }, err => { console.error(err); toast('Ошибка синхронизации','err'); });
+}
+
+function onItemsUpdated(){
+  recomputeItemsOnStand();
+  renderStandTabs();
+
+  if(wizard.type && getAvailableTypes().indexOf(wizard.type) === -1){
+    wizardReset();
+    return;
+  }
+
+  let changed = false;
+  const newQty = {};
+  Object.keys(wizard.qty).forEach(id => {
+    const it = itemsOnStand.find(x => String(x.id) === String(id));
+    if(!it || REPORTABLE_TYPES.indexOf(getItemType(it)) === -1) { changed = true; return; }
+    const avail = parseInt(it.standCounts[currentWitnessStand]) || 0;
+    let v = parseInt(wizard.qty[id]) || 0;
+    if(v > avail){ v = avail; changed = true; }
+    if(v > 0){ newQty[id] = v; } else if(wizard.qty[id] > 0){ changed = true; }
+  });
+  if(changed) wizard.qty = newQty;
+
+  renderWizard();
+}
+
+function recomputeItemsOnStand(){
+  itemsOnStand = items.filter(it => {
+    const count = (it.standCounts && parseInt(it.standCounts[currentWitnessStand])) || 0;
+    return count > 0;
+  });
 }
 
 function renderStandTabs(){
@@ -257,112 +332,343 @@ function renderStandTabs(){
 function selectWitnessStand(s){
   currentWitnessStand = s;
   try{ localStorage.setItem(LS_CUR_STAND, String(s)); }catch(e){}
+  recomputeItemsOnStand();
   renderStandTabs();
-  renderItemSelect();
+  wizardReset();
 }
 
-function renderItemSelect(){
-  const sel = document.getElementById('itemSelect');
-  if(!sel) return;
-  const search = (document.getElementById('searchItems').value || '').toLowerCase();
-  const itemsOnStand = items.filter(it => {
-    const count = (it.standCounts && parseInt(it.standCounts[currentWitnessStand])) || 0;
-    if(count <= 0) return false;
-    if(search){
-      const name = getItemName(it).toLowerCase();
-      const extra = getItemExtra(it).toLowerCase();
-      const lang = langDisplay(it.lang).toLowerCase();
-      return name.includes(search) || extra.includes(search) || lang.includes(search);
-    }
-    return true;
+/* ============ WIZARD ============ */
+
+function getAvailableTypes(){
+  var seen = {}, present = [];
+  itemsOnStand.forEach(it => {
+    var tp = getItemType(it);
+    if(REPORTABLE_TYPES.indexOf(tp) === -1) return;
+    if(!seen[tp]){ seen[tp] = true; present.push(tp); }
   });
-  if(!itemsOnStand.length){
-    sel.innerHTML = '<option value="">— на этом стенде ничего нет —</option>';
-    const info = document.getElementById('selectedInfo');
-    if(info) info.textContent='';
+  var ordered = [];
+  REPORTABLE_TYPES.forEach(t => { if(present.indexOf(t) !== -1) ordered.push(t); });
+  return ordered;
+}
+
+function getReportableItemsForType(type){
+  return itemsOnStand
+    .filter(it => getItemType(it) === type && REPORTABLE_TYPES.indexOf(getItemType(it)) !== -1)
+    .sort((a, b) => {
+      const cmpName = getItemName(a).localeCompare(getItemName(b));
+      if(cmpName !== 0) return cmpName;
+      const cmpLang = (a.lang||'ru').localeCompare(b.lang||'ru');
+      if(cmpLang !== 0) return cmpLang;
+      const aY = parseInt(a.year)||0, bY = parseInt(b.year)||0;
+      if(aY !== bY) return bY - aY;
+      const aN = parseInt(a.issueNum)||0, bN = parseInt(b.issueNum)||0;
+      return bN - aN;
+    });
+}
+
+function wizardReset(){
+  wizard = { step: 1, type: null, qty: {}, search: '' };
+  recomputeItemsOnStand();
+  const types = getAvailableTypes();
+  if(types.length === 1){
+    wizard.type = types[0];
+    wizard.step = 2;
+  }
+  renderWizard();
+}
+
+function wizardPickType(tp){
+  if(REPORTABLE_TYPES.indexOf(tp) === -1) return;
+  wizard.type = tp;
+  wizard.step = 2;
+  wizard.qty = {};
+  wizard.search = '';
+  renderWizard();
+}
+
+function wizardBack(){
+  if(wizard.step === 2){
+    const types = getAvailableTypes();
+    if(types.length === 1){
+      wizard.qty = {};
+      wizard.search = '';
+      renderWizard();
+      return;
+    }
+    wizard.step = 1;
+    wizard.type = null;
+    wizard.qty = {};
+    wizard.search = '';
+    renderWizard();
+  } else {
+    wizardReset();
+  }
+}
+
+function wizardSetQty(itemId, val){
+  const it = items.find(x => String(x.id) === String(itemId));
+  if(!it) return;
+  const avail = parseInt(it.standCounts[currentWitnessStand]) || 0;
+  let v = parseInt(val) || 0;
+  if(v < 0) v = 0;
+  if(v > avail) v = avail;
+  if(v === 0) delete wizard.qty[itemId];
+  else wizard.qty[itemId] = v;
+  updateQtyUI(itemId);
+  updateSubmitButton();
+  updateBreadcrumbs();
+}
+
+function wizardQtyDelta(itemId, d){
+  const cur = parseInt(wizard.qty[itemId]) || 0;
+  wizardSetQty(itemId, cur + d);
+  const input = document.getElementById('rqty-' + itemId);
+  if(input){
+    const v = parseInt(wizard.qty[itemId]) || 0;
+    input.value = v;
+    input.classList.toggle('filled', v > 0);
+  }
+}
+
+function updateQtyUI(itemId){
+  const input = document.getElementById('rqty-' + itemId);
+  if(input){
+    const v = parseInt(wizard.qty[itemId]) || 0;
+    input.value = v;
+    input.classList.toggle('filled', v > 0);
+  }
+  const card = document.getElementById('rcard-' + itemId);
+  if(card){
+    card.classList.toggle('active', (parseInt(wizard.qty[itemId]) || 0) > 0);
+  }
+}
+
+function updateSubmitButton(){
+  const btn = document.getElementById('submitAllBtn');
+  if(!btn) return;
+  const totalPositions = Object.keys(wizard.qty).length;
+  const totalQty = Object.values(wizard.qty).reduce((s,v) => s + (parseInt(v)||0), 0);
+  btn.disabled = totalPositions === 0;
+  if(totalPositions === 0){
+    btn.textContent = '✓ Отправить отчёт';
+  } else {
+    btn.textContent = '✓ Отправить (' + totalQty + ' шт.' + (totalPositions > 1 ? ' · ' + totalPositions + ' поз.' : '') + ')';
+  }
+}
+
+function updateBreadcrumbs(){
+  const crumbs = document.getElementById('wizardBreadcrumbs');
+  if(!crumbs) return;
+  if(wizard.step === 1){
+    crumbs.innerHTML = '<span style="color:var(--muted);font-size:0.85em">Выберите, что ушло</span>';
     return;
   }
-  const oldVal = sel.value;
-  sel.innerHTML = itemsOnStand.map(it => {
-    const count = parseInt(it.standCounts[currentWitnessStand]) || 0;
-    const icon = getTypeIcon(getItemType(it));
-    const extra = getItemExtra(it);
-    const lang = langDisplay(it.lang);
-    const label = `${icon} ${getItemName(it)}${extra?' — '+extra:''} • ${lang} (${count} шт.)`;
-    return `<option value="${esc(String(it.id))}">${esc(label)}</option>`;
-  }).join('');
-  if(oldVal && itemsOnStand.find(it => String(it.id) === oldVal)){ 
-    sel.value = oldVal; 
-  } else if (itemsOnStand.length > 0) {
-    sel.value = itemsOnStand[0].id;
+  let parts = [getTypeIcon(wizard.type) + ' ' + esc(wizard.type)];
+  const totalPositions = Object.keys(wizard.qty).length;
+  const totalQty = Object.values(wizard.qty).reduce((s,v) => s + (parseInt(v)||0), 0);
+  if(totalPositions > 0){
+    parts.push(totalQty + ' шт. · ' + totalPositions + ' ' + (totalPositions === 1 ? 'позиция' : 'позиции'));
   }
-  updateSelectedInfo();
+  crumbs.innerHTML = parts.map(p => '<span class="crumb">' + p + '</span>').join(' <span class="crumb-arrow">→</span> ');
 }
 
-function filterItems(){ renderItemSelect(); }
+function renderWizard(){
+  const body = document.getElementById('wizardBody');
+  const nav = document.getElementById('wizardNav');
+  if(!body) return;
 
-function updateSelectedInfo(){
-  const sel = document.getElementById('itemSelect');
-  const info = document.getElementById('selectedInfo');
-  if(!sel || !sel.value){ if(info) info.textContent=''; return; }
-  const it = items.find(x => String(x.id) === sel.value);
-  if(!it){ if(info) info.textContent=''; return; }
-  const avail = (it.standCounts && parseInt(it.standCounts[currentWitnessStand])) || 0;
-  const qtyInput = document.getElementById('qtyInput');
-  if(qtyInput) qtyInput.max = avail;
-  info.innerHTML = `На стенде <b>"${esc(standNames[currentWitnessStand])}"</b> доступно: <b style="color:var(--ok)">${avail}</b> шт.`;
+  updateBreadcrumbs();
+  nav.style.display = (wizard.step === 2) ? 'flex' : 'none';
+
+  if(wizard.step === 1) renderStepType(body);
+  else if(wizard.step === 2) renderStepReport(body);
 }
 
-document.addEventListener('change', e => { if(e.target && e.target.id === 'itemSelect') updateSelectedInfo(); });
-document.addEventListener('input', e => { if(e.target && e.target.id === 'itemSelect') updateSelectedInfo(); });
+function renderStepType(body){
+  const types = getAvailableTypes();
+  if(types.length === 0){
+    body.innerHTML = '<div class="wizard-empty">' +
+      '📦 На стенде <b>"' + esc(standNames[currentWitnessStand]) + '"</b><br>нет журналов или брошюр для отчёта.<br>' +
+      '<span style="font-size:0.85em">Попробуйте другой стенд или дождитесь синхронизации.</span>' +
+      '</div>';
+    return;
+  }
+  let h = '<div class="wizard-step-num">Шаг 1</div>';
+  h += '<div class="wizard-q">Что ушло?</div>';
+  h += '<div class="choice-grid">';
+  types.forEach(tp => {
+    const count = itemsOnStand.filter(it => getItemType(it) === tp).length;
+    h += '<button class="choice-btn" onclick="wizardPickType(\'' + esc(tp).replace(/'/g, "\\'") + '\')">' +
+      '<div class="choice-icon">' + getTypeIcon(tp) + '</div>' +
+      '<div class="choice-label">' + esc(tp) + '</div>' +
+      '<div class="choice-meta">' + count + ' ' + (count === 1 ? 'выпуск' : 'выпусков') + '</div>' +
+      '</button>';
+  });
+  h += '</div>';
+  body.innerHTML = h;
+}
 
-async function submitReport(){
-  if(!currentUser){ toast('Не авторизован','err'); return; }
-  const sel = document.getElementById('itemSelect');
-  const qtyEl = document.getElementById('qtyInput');
-  if(!sel.value){ toast('Выберите литературу','err'); return; }
-  const qty = parseInt(qtyEl.value) || 0;
-  if(qty <= 0){ toast('Введите количество','err'); return; }
-  const it = items.find(x => String(x.id) === sel.value);
-  if(!it){ toast('Литература не найдена','err'); return; }
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Отправка...';
+function renderStepReport(body){
+  const allItems = getReportableItemsForType(wizard.type);
+
+  let searchHtml = '';
+  if(allItems.length > 5){
+    searchHtml = '<div class="wizard-search">' +
+      '<input id="wizardSearchInput" placeholder="🔍 Поиск по названию или теме..." value="' + esc(wizard.search) + '" oninput="wizardSearchChange(this.value)" autocomplete="off">' +
+      '</div>';
+  }
+
+  let filtered = allItems;
+  if(wizard.search){
+    const q = wizard.search.toLowerCase();
+    filtered = allItems.filter(it => {
+      const name = getItemName(it).toLowerCase();
+      const theme = getItemTheme(it).toLowerCase();
+      const extra = getItemExtra(it).toLowerCase();
+      const lang = langDisplay(it.lang || 'ru').toLowerCase();
+      return name.includes(q) || theme.includes(q) || extra.includes(q) || lang.includes(q);
+    });
+  }
+
+  let h = '<div class="wizard-step-num">Шаг 2</div>';
+  h += '<div class="wizard-q">' + getTypeIcon(wizard.type) + ' ' + esc(wizard.type) + ' — отметьте, сколько ушло</div>';
+  h += searchHtml;
+
+  if(filtered.length === 0){
+    h += '<div class="wizard-empty">Ничего не найдено</div>';
+    body.innerHTML = h;
+    return;
+  }
+
+  h += '<div class="report-list">';
+  filtered.forEach(it => {
+    const avail = parseInt(it.standCounts[currentWitnessStand]) || 0;
+    const name = getItemName(it);
+    const theme = getItemTheme(it);
+    const extra = getItemExtra(it);
+    const lang = langDisplay(it.lang || 'ru');
+    const idKey = String(it.id);
+    const curQty = parseInt(wizard.qty[idKey]) || 0;
+    const active = curQty > 0;
+
+    h += '<div class="report-card ' + (active ? 'active' : '') + '" id="rcard-' + idKey + '">' +
+      '<div class="report-card-head">' +
+        '<div style="flex:1;min-width:0">' +
+          '<div class="report-card-title">' + esc(name) + '</div>' +
+          (theme ? '<div class="report-card-theme">' + esc(theme) + '</div>' : '') +
+          '<div class="report-card-meta">' +
+            '🌍 ' + esc(lang) +
+            (extra ? ' · 📅 ' + esc(extra) : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="report-card-avail">' + avail + ' шт.</div>' +
+      '</div>' +
+      '<div class="report-qty-controls">' +
+        '<button class="rqty-btn" onclick="wizardQtyDelta(\'' + esc(idKey) + '\', -1)">−</button>' +
+        '<input id="rqty-' + idKey + '" class="rqty-input ' + (active ? 'filled' : '') + '" type="number" min="0" max="' + avail + '" value="' + curQty + '" oninput="wizardSetQty(\'' + esc(idKey) + '\', this.value)" inputmode="numeric">' +
+        '<button class="rqty-btn plus" onclick="wizardQtyDelta(\'' + esc(idKey) + '\', 1)">+</button>' +
+      '</div>' +
+    '</div>';
+  });
+  h += '</div>';
+
+  h += '<button id="submitAllBtn" class="wizard-submit" onclick="submitAllReports()" disabled>✓ Отправить отчёт</button>';
+
+  body.innerHTML = h;
+  updateSubmitButton();
+
+  if(wizard.search){
+    const si = document.getElementById('wizardSearchInput');
+    if(si) si.focus();
+  }
+}
+
+function wizardSearchChange(val){
+  wizard.search = String(val || '');
+  const body = document.getElementById('wizardBody');
+  const searchInput = document.getElementById('wizardSearchInput');
+  const cursorPos = searchInput ? searchInput.selectionStart : null;
+  renderStepReport(body);
+  if(cursorPos !== null){
+    const si = document.getElementById('wizardSearchInput');
+    if(si){
+      si.focus();
+      try{ si.setSelectionRange(cursorPos, cursorPos); }catch(e){}
+    }
+  }
+}
+
+/* ============ SUBMIT ============ */
+
+async function submitAllReports(){
+  const ids = Object.keys(wizard.qty).filter(id => (parseInt(wizard.qty[id]) || 0) > 0);
+  if(ids.length === 0){ toast('Введите количество','err'); return; }
+
+  const btn = document.getElementById('submitAllBtn');
+  if(btn){ btn.disabled = true; btn.textContent = '⏳ Отправка...'; }
+
+  let success = 0, failed = 0, totalQtySent = 0;
+
   try{
     const fns = cloudFns || await initFirebase();
     const reportsRef = fns.collection(cloudDb, 'stands', currentStandId, 'reports');
-    await fns.addDoc(reportsRef, {
-      witnessEmail: currentUser.email,
-      witnessName: currentUser.name + ' ' + currentUser.surname,
-      itemId: it.id,
-      itemName: getItemName(it),
-      itemExtra: getItemExtra(it),
-      itemLang: it.lang || 'ru',
-      itemType: getItemType(it),
-      standNumber: currentWitnessStand,
-      standName: standNames[currentWitnessStand],
-      qty: qty,
-      processed: false,
-      appliedQty: null,
-      createdAt: Date.now(),
-      processedAt: null,
-      note: ''
-    });
-    toast('✓ Отчёт отправлен: ' + qty + ' шт.', 'ok');
-    qtyEl.value = '1';
-    // Update lastSeen
+
+    for(const id of ids){
+      const it = items.find(x => String(x.id) === String(id));
+      if(!it){ failed++; continue; }
+      const qty = parseInt(wizard.qty[id]) || 0;
+      const avail = parseInt(it.standCounts[currentWitnessStand]) || 0;
+      if(qty <= 0 || qty > avail){ failed++; continue; }
+
+      try{
+        await fns.addDoc(reportsRef, {
+          witnessEmail: currentUser.email,
+          witnessName: currentUser.name + ' ' + currentUser.surname,
+          itemId: it.id,
+          itemName: getItemName(it),
+          itemTheme: getItemTheme(it),
+          itemExtra: getItemExtra(it),
+          itemLang: it.lang || 'ru',
+          itemType: it.type || 'Журнал',
+          standNumber: currentWitnessStand,
+          standName: standNames[currentWitnessStand],
+          qty: qty,
+          processed: false,
+          appliedQty: null,
+          createdAt: Date.now(),
+          processedAt: null,
+          note: ''
+        });
+        success++;
+        totalQtySent += qty;
+      }catch(e){ console.error('Report error:', e); failed++; }
+    }
+
     try {
       const witnessRef = fns.doc(cloudDb, 'stands', currentStandId, 'witnesses', currentUser.email);
       await fns.setDoc(witnessRef, {lastSeen: Date.now()}, {merge: true});
     } catch(e){}
+
+    if(success > 0 && failed === 0){
+      toast('✓ Отправлено: ' + totalQtySent + ' шт.' + (success > 1 ? ' · ' + success + ' позиции' : ''), 'ok', 3000);
+      wizard.qty = {};
+      renderStepReport(document.getElementById('wizardBody'));
+    } else if(success > 0 && failed > 0){
+      toast('⚠️ Отправлено ' + success + ', ошибок ' + failed, 'err', 3500);
+      wizard.qty = {};
+      renderStepReport(document.getElementById('wizardBody'));
+    } else {
+      toast('❌ Не удалось отправить', 'err');
+      if(btn){ btn.disabled = false; updateSubmitButton(); }
+    }
   }catch(e){
     console.error(e);
     toast('❌ Ошибка: ' + (e.message || 'попробуйте ещё раз'), 'err');
-  }finally{
-    btn.disabled = false;
-    btn.textContent = '✓ Отправить отчёт';
+    if(btn){ btn.disabled = false; updateSubmitButton(); }
   }
 }
+
+/* ============ INIT ============ */
 
 async function init(){
   const standId = localStorage.getItem(LS_STAND);
@@ -375,15 +681,12 @@ async function init(){
     return;
   }
 
-  // Optimistic login: set current user from localStorage
   currentUser = {email, name: savedName, surname: savedSurname};
   currentStandId = standId;
 
-  // Restore active stand tab
   const savedStand = parseInt(localStorage.getItem(LS_CUR_STAND));
   if(savedStand >= 1 && savedStand <= 4) currentWitnessStand = savedStand;
 
-  // Restore cached stand names
   try{
     const cached = JSON.parse(localStorage.getItem(LS_NAMES_JSON) || 'null');
     if(cached && typeof cached === 'object'){
@@ -393,10 +696,8 @@ async function init(){
     }
   }catch(e){}
 
-  // Show main screen IMMEDIATELY - no waiting for Firebase
   startApp();
 
-  // Verify with Firebase in background - don't block UI
   try{
     const fns = await initFirebase();
     const witnessRef = fns.doc(cloudDb, 'stands', standId, 'witnesses', email);
@@ -405,11 +706,9 @@ async function init(){
     if(snap.exists()){
       const data = snap.data();
       if(data.active === false){
-        // Explicitly deactivated by admin
         showDeactivated();
         return;
       }
-      // Sync name/surname if changed by admin
       let changed = false;
       if(data.name && data.name !== currentUser.name){
         currentUser.name = data.name;
@@ -424,11 +723,8 @@ async function init(){
       if(changed){
         document.getElementById('userInfo').textContent = '👤 ' + currentUser.name + ' ' + currentUser.surname;
       }
-      // Update lastSeen
       try{ await fns.setDoc(witnessRef, {lastSeen: Date.now()}, {merge: true}); }catch(e){}
     } else {
-      // Document missing in Firebase but we have local credentials.
-      // Re-create silently from local data - don't force re-registration.
       if(savedName){
         try{
           await fns.setDoc(witnessRef, {
@@ -439,14 +735,10 @@ async function init(){
       }
     }
 
-    // Now subscribe to items
     subscribeToItems();
   }catch(e){
-    // Firebase not available (offline, CDN issue, etc)
-    // User stays logged in with local data
     console.warn('Firebase verification failed, keeping local session:', e);
     toast('⚠️ Нет связи с сервером, работаем офлайн', 'err', 4000);
-    // Still try to subscribe (will fail silently but might retry)
     try{ subscribeToItems(); }catch(err){}
   }
 }

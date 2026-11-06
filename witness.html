@@ -25,6 +25,9 @@ button:disabled{opacity:0.5;cursor:not-allowed}
 .reg-box .icon{font-size:3em;margin-bottom:8px}
 .reg-box .err{color:var(--err);font-size:0.85em;margin-top:8px;min-height:1.2em}
 .reg-box .info{color:var(--primary);font-size:0.85em;margin-top:8px;min-height:1.2em}
+.reg-box label{text-align:left}
+.consent-note{color:var(--muted);font-size:0.75em;line-height:1.4;margin-top:12px;text-align:center}
+
 .toast-box{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none;max-width:92vw}
 .toast{background:rgba(0,0,0,0.92);color:#fff;padding:10px 20px;border-radius:22px;font-size:0.9em;font-weight:bold;border:2px solid var(--primary);box-shadow:0 6px 20px rgba(0,0,0,0.55);animation:toastIn 0.25s ease;text-align:center;white-space:pre-line;line-height:1.35}
 @keyframes toastIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -90,26 +93,15 @@ button:disabled{opacity:0.5;cursor:not-allowed}
   <div class="reg-box">
     <div class="icon">📤</div>
     <h2>Отчёт о распространении</h2>
-    <div class="desc">Выберите тележку, укажите что и сколько ушло. Отчёт уйдёт координатору.</div>
-    <label>Код стенда (у координатора)</label>
-    <input id="regStandId" placeholder="напр. stand-2026" autocomplete="off">
+    <div class="desc">Введите имя и код стенда от координатора. Один раз — потом приложение запомнит вас.</div>
     <label>Имя</label>
     <input id="regName" placeholder="Иван" autocomplete="given-name">
-    <label>Фамилия</label>
-    <input id="regSurname" placeholder="Иванов" autocomplete="family-name">
-    <label>Email</label>
-    <input id="regEmail" type="email" placeholder="you@example.com" autocomplete="email">
-    
-    <div style="margin: 15px 0; text-align: left;">
-      <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; color: var(--muted); font-size: 0.85em; font-weight: normal; line-height: 1.4; margin: 0;">
-        <input type="checkbox" id="privacyConsent" style="width: auto; margin-top: 3px; flex-shrink: 0;">
-        <span>Я даю согласие на обработку моих персональных данных (Имя, Фамилия, Email) для целей работы приложения.</span>
-      </label>
-    </div>
-
-    <button onclick="doRegister()" style="margin-top:0">✓ Войти</button>
+    <label>Код стенда (у координатора)</label>
+    <input id="regStandId" placeholder="напр. stand-2026" autocomplete="off">
+    <button onclick="doRegister()" style="margin-top:16px">✓ Войти</button>
     <div class="err" id="regErr"></div>
     <div class="info" id="regInfo"></div>
+    <div class="consent-note">Нажимая «Войти», вы даёте согласие на обработку вашего имени и данных о распространении литературы для работы приложения.</div>
   </div>
 </div>
 
@@ -574,9 +566,11 @@ let currentTypeTab = 'Журнал';
 let searchTerm = '';
 
 const LS_STAND='witness_stand_id';
-const LS_EMAIL='witness_email';
 const LS_NAME='witness_name';
-const LS_SURNAME='witness_surname';
+const LS_DEVICE_ID='witness_device_id';
+// Старые ключи — читаются только для миграции
+const LS_EMAIL_OLD='witness_email';
+const LS_SURNAME_OLD='witness_surname';
 const LS_NAMES_JSON='witness_stand_names';
 const LS_CUR_STAND='witness_current_stand';
 const LS_DRAFT2='report_draft_v2_';
@@ -594,6 +588,27 @@ function toast(msg, type, ms){
   setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity 0.3s'; setTimeout(()=>el.remove(), 300); }, ms);
 }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+// Постоянный идентификатор устройства (заменяет email в старой версии).
+// Для старых пользователей (у кого был email) — берём его, чтобы их документ в облаке нашёлся.
+function genDeviceId(){
+  try{
+    if(typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') return 'dev_' + crypto.randomUUID();
+  }catch(e){}
+  return 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 10);
+}
+function getOrCreateDeviceId(){
+  let id = localStorage.getItem(LS_DEVICE_ID);
+  if(id) return id;
+  const oldEmail = (localStorage.getItem(LS_EMAIL_OLD) || '').trim().toLowerCase();
+  if(oldEmail){
+    id = oldEmail; // миграция: старый пользователь — используем email как ключ, документ не потеряется
+  } else {
+    id = genDeviceId();
+  }
+  try{ localStorage.setItem(LS_DEVICE_ID, id); }catch(e){}
+  return id;
+}
 
 const LANGS = {ru:'Русский',en:'Английский',de:'Немецкий',es:'Испанский',fr:'Французский',it:'Итальянский',pt:'Португальский',pl:'Польский',uk:'Украинский',tr:'Турецкий',el:'Греческий',ko:'Корейский',ja:'Японский',zh:'Китайский',ro:'Румынский',hu:'Венгерский',cs:'Чешский',bg:'Болгарский',sr:'Сербский',hr:'Хорватский',sw:'Суахили',hi:'Хинди',ar:'Арабский',hy:'Армянский',ka:'Грузинский',he:'Иврит',other:'Другой'};
 const LANG_FLAGS = {ru:'🇷🇺',en:'🇬🇧',de:'🇩🇪',es:'🇪🇸',fr:'🇫🇷',it:'🇮🇹',pt:'🇵🇹',pl:'🇵🇱',uk:'🇺🇦',tr:'🇹🇷',el:'🇬🇷',ko:'🇰🇷',ja:'🇯🇵',zh:'🇨🇳',ro:'🇷🇴',hu:'🇭🇺',cs:'🇨🇿',bg:'🇧🇬',sr:'🇷🇸',hr:'🇭🇷',sw:'🇰🇪',hi:'🇮🇳',ar:'🇸🇦',hy:'🇦🇲',ka:'🇬🇪',he:'🇮🇱',other:'🌐'};
@@ -666,22 +681,24 @@ async function initFirebase(){
   }
 }
 
-async function loadWitness(fns, standId, email){
-  const eh = await SK.hashEmail(email);
+// userKey — либо deviceId (новые пользователи), либо email (старые). Хэш работает и для того, и для другого.
+async function loadWitness(fns, standId, userKey){
+  const eh = await SK.hashEmail(userKey);
   const ref = fns.doc(cloudDb, 'stands', standId, 'witnesses', eh);
   const snap = await fns.getDoc(ref);
   let data = snap.exists() ? snap.data() : null;
   try{
-    const lref = fns.doc(cloudDb, 'stands', standId, 'witnesses', email);
+    // Миграция старых документов, где ID был открытым email
+    const lref = fns.doc(cloudDb, 'stands', standId, 'witnesses', userKey);
     const ls = await fns.getDoc(lref);
     if(ls.exists()){
       const ld = ls.data();
       if(!data){
         data = {
-          email: await encryptData(email),
+          email: await encryptData(userKey),
           name: await encryptData(await decryptData(ld.name || '')),
           surname: await encryptData(await decryptData(ld.surname || '')),
-          active: ld.active !== false, consentGiven: !!ld.consentGiven,
+          active: ld.active !== false,
           createdAt: ld.createdAt || Date.now(), lastSeen: Date.now()
         };
         await fns.setDoc(ref, data);
@@ -694,42 +711,36 @@ async function loadWitness(fns, standId, email){
   return {ref, data};
 }
 
+// РЕГИСТРАЦИЯ: только имя + код стенда
 async function doRegister(){
   const standId = document.getElementById('regStandId').value.trim();
   const name = document.getElementById('regName').value.trim();
-  const surname = document.getElementById('regSurname').value.trim();
-  const email = document.getElementById('regEmail').value.trim().toLowerCase();
   const errEl = document.getElementById('regErr');
   const infoEl = document.getElementById('regInfo');
 
   errEl.textContent=''; infoEl.textContent='';
 
-  const consentEl = document.getElementById('privacyConsent');
-  if (!consentEl || !consentEl.checked) {
-    errEl.textContent = '⚠️ Необходимо согласие на обработку персональных данных';
-    return;
-  }
-
   if(!standId){ errEl.textContent='⚠️ Введите код стенда'; return; }
   if(standId.length<3){ errEl.textContent='⚠️ Слишком короткий код'; return; }
   if(!name){ errEl.textContent='⚠️ Введите имя'; return; }
-  if(!surname){ errEl.textContent='⚠️ Введите фамилию'; return; }
-  if(!email || !email.includes('@')){ errEl.textContent='⚠️ Неверный email'; return; }
   infoEl.textContent='⏳ Регистрация...';
 
   try{
     const fns = await initFirebase();
-    const {ref: witnessRef, data: existing} = await loadWitness(fns, standId, email);
+    const deviceId = getOrCreateDeviceId();
+    const {ref: witnessRef, data: existing} = await loadWitness(fns, standId, deviceId);
     if(existing && existing.active === false){
-      errEl.textContent='❌ Доступ отозван администратором';
+      errEl.textContent='❌ Доступ отозван координатором. Обратитесь к нему.';
       infoEl.textContent='';
       return;
     }
 
+    // Имя и deviceId в облаке хранятся только в зашифрованном виде.
+    // Поле называется email — для совместимости с координаторским приложением;
+    // внутри лежит deviceId, а не email.
     await fns.setDoc(witnessRef, {
-      email: await encryptData(email),
+      email: await encryptData(deviceId),
       name: await encryptData(name),
-      surname: await encryptData(surname),
       active: true,
       consentGiven: true,
       createdAt: existing ? (existing.createdAt || Date.now()) : Date.now(),
@@ -737,17 +748,16 @@ async function doRegister(){
     }, {merge: true});
 
     localStorage.setItem(LS_STAND, standId);
-    localStorage.setItem(LS_EMAIL, email);
     localStorage.setItem(LS_NAME, name);
-    localStorage.setItem(LS_SURNAME, surname);
+    localStorage.setItem(LS_DEVICE_ID, deviceId);
+    // убираем устаревшие ключи старой версии
+    try{ localStorage.removeItem(LS_EMAIL_OLD); localStorage.removeItem(LS_SURNAME_OLD); }catch(e){}
 
-    currentUser = {email, name, surname};
+    currentUser = {deviceId, name};
     currentStandId = standId;
     isDeactivated = false;
     infoEl.style.color='#22c55e';
     infoEl.textContent='✅ Готово!';
-
-    consentEl.checked = false;
 
     setTimeout(() => {
       startApp();
@@ -764,7 +774,7 @@ async function doRegister(){
 function startApp(){
   document.getElementById('regScreen').style.display='none';
   document.getElementById('mainScreen').style.display='block';
-  document.getElementById('userInfo').textContent = '👤 ' + (currentUser && currentUser.name || '') + ' ' + (currentUser && currentUser.surname || '');
+  document.getElementById('userInfo').textContent = '👤 ' + (currentUser && currentUser.name || '');
   loadDraft();
   renderStandTabs();
   renderCartBar();
@@ -773,9 +783,10 @@ function startApp(){
 
 function logout(){
   localStorage.removeItem(LS_STAND);
-  localStorage.removeItem(LS_EMAIL);
   localStorage.removeItem(LS_NAME);
-  localStorage.removeItem(LS_SURNAME);
+  localStorage.removeItem(LS_DEVICE_ID);
+  localStorage.removeItem(LS_EMAIL_OLD);
+  localStorage.removeItem(LS_SURNAME_OLD);
   localStorage.removeItem(LS_NAMES_JSON);
   localStorage.removeItem(LS_CUR_STAND);
   if(itemsUnsub){ try{ itemsUnsub(); }catch(e){} itemsUnsub=null; }
@@ -786,9 +797,6 @@ function logout(){
   document.getElementById('regInfo').textContent='';
   document.getElementById('regStandId').value='';
   document.getElementById('regName').value='';
-  document.getElementById('regSurname').value='';
-  document.getElementById('regEmail').value='';
-  document.getElementById('privacyConsent').checked = false;
 }
 
 function showDeactivated(){
@@ -798,8 +806,6 @@ function showDeactivated(){
   document.getElementById('regInfo').textContent='';
   document.getElementById('regStandId').value = localStorage.getItem(LS_STAND) || '';
   document.getElementById('regName').value = localStorage.getItem(LS_NAME) || '';
-  document.getElementById('regSurname').value = localStorage.getItem(LS_SURNAME) || '';
-  document.getElementById('regEmail').value = localStorage.getItem(LS_EMAIL) || '';
 }
 
 function cacheItems(){
@@ -843,8 +849,6 @@ function onItemsUpdated(){
   renderCartBar();
 }
 
-// ИЗМЕНЕНО: показываем весь используемый каталог (что есть хотя бы на одной тележке),
-// чтобы на любой тележке было видно, что журнал в системе существует — просто на этой тележке его сейчас 0.
 function recomputeItemsOnStand(){
   itemsOnStand = items.filter(it => {
     if(REPORTABLE_TYPES.indexOf(getItemType(it)) === -1) return false;
@@ -893,7 +897,6 @@ function getAvailableTypes(){
   return ordered;
 }
 
-// ИЗМЕНЕНО: сортировка — сначала те, что есть на текущей тележке (avail>0), потом остальные.
 function getReportableItemsForType(type){
   return itemsOnStand
     .filter(it => getItemType(it) === type)
@@ -1153,16 +1156,17 @@ async function flushOutbox(){
   let sent = 0, ok = true;
   try{
     const fns = await SK.withTimeout(initFirebase(), 20000);
-    const eh = await SK.hashEmail(currentUser.email);
-    const encEmail = await encryptData(currentUser.email);
+    const eh = await SK.hashEmail(currentUser.deviceId);
+    const encUserKey = await encryptData(currentUser.deviceId);
     for(const en of ob){
       const encName = await encryptData(en.name);
       for(const ln of en.lines){
         if(ln.done) continue;
         const docId = en.batchId + '_' + ln.s + '_' + String(ln.id).replace(/[^A-Za-z0-9]/g, '');
         const ref = fns.doc(cloudDb, 'stands', currentStandId, 'reports', docId);
+        // Поле witnessEmail оставлено для совместимости — внутри лежит зашифрованный deviceId
         await SK.withTimeout(SK.putOnce(cloudDb, fns, ref, {
-          witnessEmail: encEmail, witnessEh: eh, witnessName: encName,
+          witnessEmail: encUserKey, witnessEh: eh, witnessName: encName,
           itemId: ln.id, itemName: ln.n || '—', itemTheme: ln.t || '', itemExtra: ln.e || '',
           itemLang: ln.l || 'ru', itemType: ln.ty || 'Журнал',
           standNumber: ln.s, standName: standNames[ln.s] || ('Тележка ' + ln.s),
@@ -1175,7 +1179,7 @@ async function flushOutbox(){
       }
     }
     try{
-      const {ref: wref} = await loadWitness(fns, currentStandId, currentUser.email);
+      const {ref: wref} = await loadWitness(fns, currentStandId, currentUser.deviceId);
       await fns.setDoc(wref, {lastSeen: Date.now()}, {merge: true});
     }catch(e){}
   }catch(e){
@@ -1196,7 +1200,7 @@ async function sendCart() {
   const entry = {
     batchId: 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
     createdAt: Date.now(),
-    name: (currentUser.name + ' ' + currentUser.surname).trim(),
+    name: currentUser.name || '',
     lines: keys.map(k => ({s:draft[k].s, id:draft[k].id, q:draft[k].q, n:draft[k].n, t:draft[k].t, e:draft[k].e, l:draft[k].l, ty:draft[k].ty, at:draft[k].at, done:false}))
   };
   const ob = loadOutbox(); ob.push(entry); saveOutbox(ob);
@@ -1207,16 +1211,15 @@ async function sendCart() {
 
 async function init(){
   const standId = localStorage.getItem(LS_STAND);
-  const email = localStorage.getItem(LS_EMAIL);
+  const deviceId = getOrCreateDeviceId(); // генерируется один раз и хранится на телефоне
   const savedName = localStorage.getItem(LS_NAME) || '';
-  const savedSurname = localStorage.getItem(LS_SURNAME) || '';
 
-  if(!standId || !email){
+  if(!standId){
     document.getElementById('regScreen').style.display='block';
     return;
   }
 
-  currentUser = {email, name: savedName, surname: savedSurname};
+  currentUser = {deviceId, name: savedName};
   currentStandId = standId;
   const savedStand = parseInt(localStorage.getItem(LS_CUR_STAND));
   if(savedStand >= 1 && savedStand <= 4) currentWitnessStand = savedStand;
@@ -1232,22 +1235,20 @@ async function init(){
 
   try{
     const fns = await initFirebase();
-    const {ref: witnessRef, data} = await loadWitness(fns, standId, email);
+    const {ref: witnessRef, data} = await loadWitness(fns, standId, deviceId);
 
     if(data){
       if(data.active === false){ isDeactivated = true; showDeactivated(); return; }
       const decName = await decryptData(data.name);
-      const decSurname = await decryptData(data.surname);
       let changed = false;
       if(decName && decName !== currentUser.name){ currentUser.name = decName; localStorage.setItem(LS_NAME, decName); changed = true; }
-      if(decSurname && decSurname !== currentUser.surname){ currentUser.surname = decSurname; localStorage.setItem(LS_SURNAME, decSurname); changed = true; }
-      if(changed){ document.getElementById('userInfo').textContent = '👤 ' + currentUser.name + ' ' + currentUser.surname; }
+      if(changed){ document.getElementById('userInfo').textContent = '👤 ' + currentUser.name; }
       try{ await fns.setDoc(witnessRef, {lastSeen: Date.now()}, {merge: true}); }catch(e){}
     } else {
       if(savedName){
         try{
           await fns.setDoc(witnessRef, {
-            email: await encryptData(email), name: await encryptData(savedName), surname: await encryptData(savedSurname), active: true,
+            email: await encryptData(deviceId), name: await encryptData(savedName), active: true,
             createdAt: Date.now(), lastSeen: Date.now()
           }, {merge: true});
         }catch(e){}

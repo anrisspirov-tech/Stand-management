@@ -2521,7 +2521,9 @@ function renderUsers(){
        (u.email ? '<div class="small" style="color:var(--muted)">📧 '+esc(u.email)+'</div>' : '<div class="small" style="color:var(--muted);opacity:0.6">📧 email не указан</div>')+
        '</div>'+
        '<button class="icon-btn" style="background:#3b82f6;color:#fff;border:0;padding:8px 12px;border-radius:6px;margin-right:4px" onclick="openEditUser(\''+u.id+'\')">✏️</button>'+
-       (activeUsers.length>1?'<button class="icon-btn" style="background:#ef4444;color:#fff;border:0;padding:8px 12px;border-radius:6px" onclick="deleteUser('+u.id+')">🚫</button>':'')+'</div>'; 
+       (activeUsers.length>1?'<button class="icon-btn" style="background:#f59e0b;color:#000;border:0;padding:8px 12px;border-radius:6px;margin-right:4px" onclick="deleteUser('+u.id+')">🚫</button>':'')+
+       '<button class="icon-btn" style="background:#ef4444;color:#fff;border:0;padding:8px 12px;border-radius:6px" onclick="hardDeleteUser('+u.id+')">🗑️</button>'+
+       '</div>'; 
   }); 
   if(inactiveUsers.length > 0){
     h += '<div class="small" style="margin-top:14px;color:var(--muted);font-weight:bold">🚫 Деактивированные ('+inactiveUsers.length+'):</div>';
@@ -2530,7 +2532,9 @@ function renderUsers(){
         '<div class="uname">👤 '+esc(u.name)+' <span class="urole role-'+u.role+'" style="opacity:0.7">'+esc(getRoleDisplay(u.role))+'</span></div>'+
         (u.email ? '<div class="small" style="color:var(--muted)">📧 '+esc(u.email)+'</div>' : '')+
         '</div>'+
-        '<button class="icon-btn" style="background:#22c55e;color:#000;border:0;padding:8px 12px;border-radius:6px" onclick="restoreUser('+u.id+')">↺ Восстановить</button></div>';
+        '<button class="icon-btn" style="background:#22c55e;color:#000;border:0;padding:8px 12px;border-radius:6px;margin-right:4px" onclick="restoreUser('+u.id+')">↺</button>'+
+        '<button class="icon-btn" style="background:#ef4444;color:#fff;border:0;padding:8px 12px;border-radius:6px" onclick="hardDeleteUser('+u.id+')">🗑️</button>'+
+        '</div>';
     });
   }
   list.innerHTML=h; 
@@ -2627,6 +2631,19 @@ function restoreUser(id){
   u.active = true;
   save(); renderUsers(); renderUserSelectList();
   toast('✅ Пользователь восстановлен');
+}
+function hardDeleteUser(id){
+  customConfirm('Удалить пользователя НАВСЕГДА? Это действие нельзя отменить.', function(){
+    pushUndo('Удалить пользователя навсегда');
+    users = users.filter(function(x){ return x.id != id; });
+    if(currentUserId == id){
+      var activeUsers = users.filter(function(x){ return x.active !== false; });
+      var adm = activeUsers.find(function(x){ return x.role === 'admin'; });
+      currentUserId = adm ? adm.id : (activeUsers[0] ? activeUsers[0].id : null);
+    }
+    save(); renderUsers(); renderUserSelectList(); updateUserChip(); render();
+    toast('✅ Пользователь удалён навсегда');
+  });
 }
 function updatePermsFromRole(){ var role=document.getElementById('newUserRole').value; var p=PERMS_PRESETS[role]||PERMS_PRESETS.counter; PERM_KEYS.forEach(function(k){ var el=document.getElementById('p_'+k); if(el) el.checked=!!p[k]; }); }
 function openUserSelector(){ renderUserSelectList(); document.getElementById('userOverlay').classList.add('show'); }
@@ -2864,7 +2881,7 @@ function startWitnessSync(){
   witnessAllReportsUnsub = fb.onSnapshot(reportsRef, function(snap){
     var docs = []; snap.forEach(function(d){ docs.push({id:d.id, data:d.data()}); });
     Promise.all(docs.map(async function(d){
-      var r = Object.assign({id:d.id}, d.data);
+      var r = Object.assign({id:d.id}, d.data());
       var rawN = r.witnessName, rawE = r.witnessEmail;
       r.witnessName = await decryptData(rawN);
       r.witnessEmail = await decryptData(rawE);
@@ -2882,8 +2899,7 @@ function startWitnessSync(){
   witnessUsersUnsub = fb.onSnapshot(fb.collection(cloudDb, 'stands', cloudId, 'witnesses'), function(snap){
     var docs = []; snap.forEach(function(d){ docs.push({id:d.id, data:d.data()}); });
     Promise.all(docs.map(async function(d){
-      // ИСПРАВЛЕНО: здесь было d.data(), что вызывало ошибку
-      var w = Object.assign({id:d.id}, d.data);
+      var w = Object.assign({id:d.id}, d.data());
       w.email = await decryptData(w.email);
       if(!w.email && d.id.indexOf('@') >= 0) w.email = d.id;
       w.name = await decryptData(w.name);
@@ -2923,9 +2939,11 @@ function renderWitnessesUI(){
     var actions = '';
     if(active) {
       actions = '<button class="icon-btn" style="background:#3b82f6;color:#fff;border:0;padding:8px 12px;border-radius:6px;margin-right:4px" onclick="openEditWitness(\''+esc(w.id)+'\',\''+esc(w.name)+'\',\''+esc(w.surname)+'\')">✏️</button>'+
-                '<button class="icon-btn" style="background:#ef4444;color:#fff;border:0;padding:8px 12px;border-radius:6px" onclick="deleteWitness(\''+esc(w.id)+'\')">🚫</button>';
+                '<button class="icon-btn" style="background:#f59e0b;color:#000;border:0;padding:8px 12px;border-radius:6px;margin-right:4px" onclick="deleteWitness(\''+esc(w.id)+'\')">🚫</button>'+
+                '<button class="icon-btn" style="background:#ef4444;color:#fff;border:0;padding:8px 12px;border-radius:6px" onclick="hardDeleteWitness(\''+esc(w.id)+'\')">🗑️</button>';
     } else {
-      actions = '<button class="icon-btn" style="background:#22c55e;color:#000;border:0;padding:8px 12px;border-radius:6px" onclick="restoreWitness(\''+esc(w.id)+'\')">↺</button>';
+      actions = '<button class="icon-btn" style="background:#22c55e;color:#000;border:0;padding:8px 12px;border-radius:6px;margin-right:4px" onclick="restoreWitness(\''+esc(w.id)+'\')">↺</button>'+
+                '<button class="icon-btn" style="background:#ef4444;color:#fff;border:0;padding:8px 12px;border-radius:6px" onclick="hardDeleteWitness(\''+esc(w.id)+'\')">🗑️</button>';
     }
     
     return '<div class="user-row" style="'+(active?'':'opacity:0.55')+'">'+
@@ -2992,11 +3010,11 @@ function renderWitnessReportsUI(){
 }
 
 async function deleteWitness(witnessId){
-  customConfirm('Удалить возвещателя? Он больше не сможет отправлять отчёты.', async function(){
+  customConfirm('Деактивировать возвещателя? Он больше не сможет отправлять отчёты, но его можно будет восстановить.', async function(){
     try{
       const {updateDoc, doc: fbDoc} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
       await updateDoc(fbDoc(cloudDb, 'stands', cloudId, 'witnesses', witnessId), {active: false});
-      toast('✅ Возвещатель удалён');
+      toast('✅ Возвещатель деактивирован');
     }catch(e){ toast('❌ Ошибка: '+e.message); }
   });
 }
@@ -3006,6 +3024,15 @@ async function restoreWitness(witnessId){
     await updateDoc(fbDoc(cloudDb, 'stands', cloudId, 'witnesses', witnessId), {active: true});
     toast('✅ Доступ восстановлен');
   }catch(e){ toast('❌ Ошибка: '+e.message); }
+}
+async function hardDeleteWitness(witnessId){
+  customConfirm('Удалить возвещателя НАВСЕГДА? Это действие нельзя отменить.', async function(){
+    try{
+      const {deleteDoc, doc: fbDoc} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
+      await deleteDoc(fbDoc(cloudDb, 'stands', cloudId, 'witnesses', witnessId));
+      toast('✅ Возвещатель удалён навсегда');
+    }catch(e){ toast('❌ Ошибка: '+e.message); }
+  });
 }
 
 function saveNewPass(){

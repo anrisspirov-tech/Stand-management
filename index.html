@@ -147,6 +147,9 @@ body:not(.day) .notice-box{background:#3a2a00;color:#fbbf24;border:1px solid #f5
 body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 .role-counter{background:#22c55e;color:#000}.role-manager{background:#f59e0b;color:#000}.role-viewer{background:#6b7280;color:#fff}.role-admin{background:#ef4444;color:#fff}
 .urole{font-size:0.7em;padding:2px 8px;border-radius:10px;font-weight:bold}
+#repOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
+#repOverlay.show{display:flex}
+#repBox{background:var(--card);border:2px solid #06b6d4;border-radius:14px;padding:16px;max-width:480px;width:100%;max-height:90vh;overflow:auto}
 </style>
 </head>
 <body>
@@ -158,6 +161,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <span class="user-chip no-user" id="userChip" onclick="confirmLogout()">👤 <span id="userChipText">—</span></span>
 </div>
 <div style="margin-top:6px;display:flex;gap:3px;justify-content:center;flex-wrap:wrap">
+<button onclick="openReports()" id="bReports" style="padding:6px 10px;font-size:0.85em;background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border)">📤 Отчёты <span id="repBadge" style="display:none;background:#ef4444;color:#fff;border-radius:10px;padding:0 6px;font-size:0.85em"></span></button>
 <button onclick="toggleTheme()" id="bTheme" style="padding:6px 10px;font-size:0.85em;background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border)">🌙</button>
 </div>
 </div>
@@ -320,6 +324,14 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 </div>
 
+<div id="repOverlay" onclick="if(event.target===this)closeReports()">
+<div id="repBox" onclick="event.stopPropagation()">
+<h3 style="color:#06b6d4;text-align:center;margin:0 0 12px;font-size:1.1em">📤 Отчёты со стенда</h3>
+<div id="repList"></div>
+<button class="sec" onclick="closeReports()" style="width:100%;padding:12px;margin-top:12px">Закрыть</button>
+</div>
+</div>
+
 <div id="ccOverlay" onclick="if(event.target===this)_ccClose()">
 <div id="ccBox" onclick="event.stopPropagation()">
 <div id="ccTitle">Подтверждение</div>
@@ -359,6 +371,414 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 
 <script>
 'use strict';
+
+// ==========================================
+// ЯДРО СИНХРОНИЗАЦИИ И ШИФРОВАНИЯ (AES-GCM) — ОДИНАКОВО ВО ВСЕХ 3 ФАЙЛАХ
+// Ключ менять нельзя без пересоздания данных: он должен быть одинаковым во всех 3 файлах.
+// ==========================================
+const SECRET_KEY_STRING = "StandApp_SuperSecret_2026!777";
+
+if(typeof crypto === 'undefined' || !crypto.subtle){
+  setTimeout(function(){ if(typeof alert === 'function') alert('⚠️ Шифрование недоступно в этом режиме браузера. Откройте приложение через https:// или как установленное приложение — иначе синхронизация не будет работать (данные без шифрования в облако не отправляются).'); }, 1500);
+}
+var SK = (function(){
+  var PFX = 'enc1:';
+  var CLIENT_ID = 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+  // ---------- Шифрование (ключ создаётся ОДИН раз и кэшируется) ----------
+  var _keyP = null;
+  function getKey(){
+    if(!_keyP){
+      _keyP = (async function(){
+        var enc = new TextEncoder();
+        var km = await crypto.subtle.importKey('raw', enc.encode(SECRET_KEY_STRING), {name:'PBKDF2'}, false, ['deriveKey']);
+        return crypto.subtle.deriveKey(
+          {name:'PBKDF2', salt: enc.encode('stand-salt-123'), iterations:100000, hash:'SHA-256'},
+          km, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']);
+      })();
+      _keyP.catch(function(){ _keyP = null; });
+    }
+    return _keyP;
+  }
+  function toB64(u8){ var s = '', i; for(i = 0; i < u8.length; i += 8192) s += String.fromCharCode.apply(null, u8.subarray(i, i + 8192)); return btoa(s); }
+  function fromB64(b){ var s = atob(b), u = new Uint8Array(s.length), i; for(i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; }
+
+  // Если шифрование недоступно — выбрасываем ошибку (открытый текст в облако НЕ уходит).
+  async function encryptData(text){
+    if(text == null || text === '') return text;
+    text = String(text);
+    if(text.indexOf(PFX) === 0) return text;
+    var key = await getKey();
+    var iv = crypto.getRandomValues(new Uint8Array(12));
+    var ct = new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM', iv:iv}, key, new TextEncoder().encode(text)));
+    var all = new Uint8Array(12 + ct.length); all.set(iv, 0); all.set(ct, 12);
+    return PFX + toB64(all);
+  }
+  // Читает и новый формат (enc1:...), и старый (без префикса); обычный текст возвращает как есть.
+  async function decryptData(t){
+    if(t == null || t === '' || typeof t !== 'string') return t;
+    var marked = t.indexOf(PFX) === 0, raw = marked ? t.slice(PFX.length) : t;
+    if(!marked && (raw.length < 36 || /[^A-Za-z0-9+\/=]/.test(raw))) return t;
+    try{
+      var all = fromB64(raw); if(all.length < 29) return t;
+      var key = await getKey();
+      var pt = await crypto.subtle.decrypt({name:'AES-GCM', iv: all.slice(0, 12)}, key, all.slice(12));
+      return new TextDecoder().decode(pt);
+    }catch(e){ return t; }
+  }
+  // Необратимый идентификатор email (для ID документов и поиска — сам email в базе не виден)
+  var _hc = {};
+  async function hashEmail(email){
+    email = String(email || '').trim().toLowerCase(); if(!email) return '';
+    if(_hc[email]) return _hc[email];
+    var d = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(SECRET_KEY_STRING + '|' + email)));
+    var s = ''; for(var i = 0; i < d.length; i++) s += ('0' + d[i].toString(16)).slice(-2);
+    return (_hc[email] = s.slice(0, 40));
+  }
+  function withTimeout(p, ms){
+    return new Promise(function(res, rej){
+      var t = setTimeout(function(){ rej(new Error('timeout')); }, ms || 15000);
+      Promise.resolve(p).then(function(v){ clearTimeout(t); res(v); }, function(e){ clearTimeout(t); rej(e); });
+    });
+  }
+
+  // ---------- Утилиты слияния ----------
+  function clone(o){ return o === undefined ? undefined : JSON.parse(JSON.stringify(o)); }
+  function stable(o){
+    if(o === null || typeof o !== 'object') return JSON.stringify(o);
+    if(Array.isArray(o)) return '[' + o.map(stable).join(',') + ']';
+    return '{' + Object.keys(o).sort().map(function(k){ return JSON.stringify(k) + ':' + stable(o[k]); }).join(',') + '}';
+  }
+  function eq(a, b){ return stable(a) === stable(b); }
+  function idxBy(arr, fn){ var m = {}; (arr || []).forEach(function(x){ m[fn(x)] = x; }); return m; }
+
+  function mergeLog(b, l, r, keyFn, cap){
+    b = b || []; l = l || []; r = r || [];
+    if(eq(l, r)) return r; if(eq(l, b)) return r; if(eq(r, b)) return l;
+    var seen = {}, out = [];
+    r.concat(l).forEach(function(x){ var k = keyFn(x); if(seen[k]) return; seen[k] = 1; out.push(x); });
+    out.sort(function(a, c){ return (c.ts || 0) - (a.ts || 0); });
+    return out.slice(0, cap);
+  }
+  function mergeValue(b, l, r){
+    if(eq(l, r)) return r;
+    if(b !== undefined){ if(eq(l, b)) return r; if(eq(r, b)) return l; }
+    if(Array.isArray(l) && Array.isArray(r)){
+      var seen = {}, out = [];
+      r.concat(l).forEach(function(x){ var k = stable(x); if(seen[k]) return; seen[k] = 1; out.push(x); });
+      return out;
+    }
+    if(l && r && typeof l === 'object' && typeof r === 'object'){
+      var o = clone(r);
+      Object.keys(l).forEach(function(k){ o[k] = mergeValue((b && typeof b === 'object') ? b[k] : undefined, l[k], r[k]); });
+      return o;
+    }
+    return b !== undefined ? l : r;
+  }
+  function itemHKey(h){ return h.ts + '|' + h.action + '|' + h.delta + '|' + (h.note || ''); }
+  // Слияние одной позиции: числа (склад, стенды) складываются как ИЗМЕНЕНИЯ (дельты), а не перезаписываются
+  function mergeItem(b, l, r){
+    var out = clone(r);
+    Object.keys(l).forEach(function(k){
+      if(eq(l[k], b[k])) return;
+      if(k === 'qty'){
+        out.qty = Math.max(0, (parseInt(r.qty) || 0) + ((parseInt(l.qty) || 0) - (parseInt(b.qty) || 0)));
+      } else if(k === 'standCounts'){
+        var sc = {};
+        for(var n = 1; n <= 4; n++){
+          var bv = parseInt((b.standCounts || {})[n]) || 0, lv = parseInt((l.standCounts || {})[n]) || 0, rv = parseInt((r.standCounts || {})[n]) || 0;
+          sc[n] = (lv === bv) ? rv : Math.max(0, rv + (lv - bv));
+        }
+        out.standCounts = sc;
+      } else if(k === 'history'){
+        out.history = mergeLog(b.history, l.history, r.history, itemHKey, 50);
+      } else out[k] = clone(l[k]);
+    });
+    return out;
+  }
+  function mergeItems(b, l, r){
+    var bm = idxBy(b, function(x){ return String(x.id); }), lm = idxBy(l, function(x){ return String(x.id); });
+    var out = [], seen = {};
+    r.forEach(function(ri){
+      var id = String(ri.id); seen[id] = 1;
+      var li = lm[id], bi = bm[id];
+      if(!li){ if(bi && eq(bi, ri)) return; out.push(ri); return; }   // удалено у нас и не менялось в облаке → удаляем
+      if(eq(li, ri)){ out.push(ri); return; }
+      if(!bi){ out.push(ri); return; }                               // нет базы → облако главнее
+      out.push(mergeItem(bi, li, ri));
+    });
+    l.forEach(function(li){
+      var id = String(li.id); if(seen[id]) return;
+      var bi = bm[id]; if(bi && eq(bi, li)) return;                  // удалено в облаке другим устройством
+      out.push(li);
+    });
+    return out;
+  }
+  function ukey(u){ return String(u.email || '').toLowerCase() || ('id:' + u.id); }
+  function mergeObj(b, l, r){
+    var out = clone(r);
+    Object.keys(l).forEach(function(k){ if(!eq(l[k], b[k])) out[k] = clone(l[k]); });
+    return out;
+  }
+  function mergeUsers(b, l, r){
+    var bm = idxBy(b, ukey), lm = idxBy(l, ukey), out = [], seen = {};
+    r.forEach(function(ru){
+      var k = ukey(ru); seen[k] = 1;
+      var lu = lm[k], bu = bm[k];
+      if(!lu){ if(bu && eq(bu, ru)) return; out.push(ru); return; }
+      if(eq(lu, ru) || !bu){ out.push(ru); return; }
+      out.push(mergeObj(bu, lu, ru));
+    });
+    l.forEach(function(lu){
+      var k = ukey(lu); if(seen[k]) return;
+      var bu = bm[k]; if(bu && eq(bu, lu)) return;
+      out.push(lu);
+    });
+    return out;
+  }
+  function mergeState(base, local, remote, keys){
+    var out = {};
+    keys.forEach(function(k){
+      var b = base ? base[k] : undefined, l = local[k], r = remote[k];
+      if(l === undefined){ out[k] = r; return; }
+      if(r === undefined){ out[k] = l; return; }
+      if(k === 'items') out[k] = mergeItems(b || [], l, r);
+      else if(k === 'users') out[k] = mergeUsers(b || [], l, r);
+      else if(k === 'history') out[k] = mergeLog(b, l, r, function(x){ return x.ts + '|' + x.who + '|' + x.actionKey; }, 200);
+      else out[k] = mergeValue(b, l, r);
+    });
+    return out;
+  }
+
+  // ---------- Шифрование/расшифровка состояния для облака ----------
+  async function encItem(it){
+    var o = Object.assign({}, it);
+    if(Array.isArray(o.history) && o.history.length){ o.hx = await encryptData(JSON.stringify(o.history)); }
+    delete o.history;
+    return o;
+  }
+  async function decItem(it){
+    var o = Object.assign({}, it);
+    if(o.hx){ try{ o.history = JSON.parse(await decryptData(o.hx)); }catch(e){ o.history = []; } }
+    delete o.hx;
+    return o;
+  }
+  async function encUser(u){
+    var o = Object.assign({}, u);
+    o.eh = await hashEmail(u.email);
+    o.email = await encryptData(u.email);
+    o.name = await encryptData(u.name);
+    o.surname = await encryptData(u.surname);
+    return o;
+  }
+  async function decUser(u){
+    var o = Object.assign({}, u);
+    o.email = await decryptData(u.email); o.name = await decryptData(u.name); o.surname = await decryptData(u.surname);
+    delete o.eh;
+    return o;
+  }
+
+  // ---------- Движок синхронизации ----------
+  // o: {db(), fs, cloudId(), enabled(), keys[], getState(), applyState(s), clean:{items,users}, baseKey, onStatus(st)}
+  function createEngine(o){
+    var eng = {base: null, unsub: null, timer: null, retry: null, fails: 0, chain: Promise.resolve(), curId: null};
+
+    function enqueue(fn){
+      eng.chain = eng.chain.then(fn).catch(function(e){ console.error('sync:', e); o.onStatus('error'); });
+      return eng.chain;
+    }
+    function baseStoreKey(){ return o.baseKey + '_' + (o.cloudId() || ''); }
+    function loadBase(){ try{ var s = localStorage.getItem(baseStoreKey()); eng.base = s ? JSON.parse(s) : null; }catch(e){ eng.base = null; } }
+    function saveBase(){ try{ localStorage.setItem(baseStoreKey(), JSON.stringify(eng.base)); }catch(e){} }
+
+    async function decodeState(data){
+      var s = {};
+      if(o.keys.indexOf('items') >= 0 && Array.isArray(data.items)){
+        s.items = o.clean.items(await Promise.all(data.items.map(decItem)));
+      }
+      if(o.keys.indexOf('users') >= 0 && Array.isArray(data.users)){
+        s.users = o.clean.users(await Promise.all(data.users.map(decUser)));
+      }
+      if(o.keys.indexOf('history') >= 0){
+        if(data.historyX){ try{ s.history = JSON.parse(await decryptData(data.historyX)); }catch(e){ s.history = []; } }
+        else if(Array.isArray(data.history)) s.history = data.history;
+      }
+      if(o.keys.indexOf('adminPass') >= 0){
+        if(data.adminPassX) s.adminPass = await decryptData(data.adminPassX);
+        else if(typeof data.adminPass === 'string') s.adminPass = data.adminPass;
+      }
+      o.keys.forEach(function(k){
+        if(k === 'items' || k === 'users' || k === 'history' || k === 'adminPass') return;
+        if(data[k] !== undefined) s[k] = data[k];
+      });
+      return s;
+    }
+    async function encodeState(s){
+      var d = {}, del = {};
+      for(var i = 0; i < o.keys.length; i++){
+        var k = o.keys[i], v = s[k];
+        if(v === undefined) continue;
+        if(k === 'items') d.items = await Promise.all(v.map(encItem));
+        else if(k === 'users') d.users = await Promise.all(v.map(encUser));
+        else if(k === 'history'){ d.historyX = await encryptData(JSON.stringify(v)); del.history = 1; }
+        else if(k === 'adminPass'){ d.adminPassX = await encryptData(v); del.adminPass = 1; }
+        else d[k] = v;
+      }
+      return {data: d, del: del};
+    }
+    function hasContent(s){ return (s.items && s.items.length) || (s.users && s.users.length); }
+    function merge(local, remote){ return mergeState(eng.base, local, remote, o.keys); }
+
+    async function onRemote(snap){
+      var local = o.getState();
+      if(!snap.exists()){ if(hasContent(local)) schedule(200); o.onStatus('synced'); return; }
+      var remote = await decodeState(snap.data());
+      var merged = merge(local, remote);
+      eng.base = clone(remote); saveBase();
+      if(!eq(merged, local)) o.applyState(merged);
+      if(!eq(merged, remote)) schedule(300);
+      eng.fails = 0;
+      o.onStatus('synced');
+    }
+    async function doPush(force){
+      var db = o.db(), id = o.cloudId();
+      if(!o.enabled() || !db || !id) return;
+      o.onStatus('pushing');
+      var res = null, ref = o.fs.doc(db, 'stands', id);
+      try{
+        await o.fs.runTransaction(db, async function(tx){
+          res = null;
+          var snap = await tx.get(ref);
+          var local = o.getState(), remote = null, merged;
+          if(snap.exists()){
+            remote = await decodeState(snap.data());
+            merged = merge(local, remote);
+            if(!force && eq(merged, remote)){ res = {skip: true, local: local, cloud: remote}; return; }
+          } else merged = local;
+          var enc = await encodeState(merged);
+          var payload = Object.assign({updated: Date.now(), updatedBy: CLIENT_ID, v: 2}, enc.data);
+          Object.keys(enc.del).forEach(function(k){ payload[k] = o.fs.deleteField(); });
+          tx.set(ref, payload, {merge: true});
+          res = {local: local, cloud: merged};
+        });
+      }catch(e){
+        console.error('push failed:', e); o.onStatus('error');
+        eng.fails++; clearTimeout(eng.retry);
+        eng.retry = setTimeout(function(){ schedule(1); }, Math.min(60000, 3000 * eng.fails));
+        return;
+      }
+      if(!res) return;
+      eng.fails = 0;
+      eng.base = clone(res.cloud); saveBase();
+      // правки, сделанные пока шла отправка, накладываем поверх, ничего не теряя
+      var cur = o.getState();
+      var fin = mergeState(res.local, cur, res.cloud, o.keys);
+      if(!eq(fin, cur)) o.applyState(fin);
+      if(!eq(fin, res.cloud)) schedule(300);
+      o.onStatus('synced');
+    }
+    function schedule(ms){ clearTimeout(eng.timer); eng.timer = setTimeout(function(){ eng.pushNow(false); }, ms == null ? 800 : ms); }
+
+    eng.schedule = schedule;
+    eng.pushNow = function(force){ return enqueue(function(){ return doPush(!!force); }); };
+    // «Получить из облака»: облако главнее, локальные несинхронизированные правки отбрасываются
+    eng.pullNow = function(){
+      return enqueue(async function(){
+        var db = o.db(), id = o.cloudId(); if(!db || !id) return;
+        var snap = await o.fs.getDoc(o.fs.doc(db, 'stands', id));
+        if(!snap.exists()) return;
+        var remote = await decodeState(snap.data());
+        var local = o.getState();
+        var fin = mergeState(local, local, remote, o.keys);
+        eng.base = clone(remote); saveBase();
+        o.applyState(fin);
+        o.onStatus('synced');
+      });
+    };
+    eng.start = function(){
+      eng.stop();
+      var db = o.db(), id = o.cloudId();
+      if(!db || !id){ o.onStatus('offline'); return; }
+      eng.curId = id; loadBase(); o.onStatus('connecting');
+      eng.unsub = o.fs.onSnapshot(o.fs.doc(db, 'stands', id),
+        function(snap){ enqueue(function(){ return onRemote(snap); }); },
+        function(){ o.onStatus('error'); });
+    };
+    eng.stop = function(){
+      if(eng.unsub){ try{ eng.unsub(); }catch(e){} eng.unsub = null; }
+      clearTimeout(eng.timer); clearTimeout(eng.retry);
+    };
+    window.addEventListener('online', function(){ if(eng.unsub) schedule(200); });
+    document.addEventListener('visibilitychange', function(){ if(!document.hidden && eng.unsub) schedule(200); });
+    return eng;
+  }
+
+  // ---------- Отчёты со стенда: применяются ровно ОДИН раз тем приложением, которое открылось первым ----------
+  async function applyReport(db, fs, cloudId, reportId, applierName){
+    var reportRef = fs.doc(db, 'stands', cloudId, 'reports', reportId);
+    var standRef = fs.doc(db, 'stands', cloudId);
+    var out = null;
+    await fs.runTransaction(db, async function(tx){
+      out = null;
+      var rs = await tx.get(reportRef);
+      if(!rs.exists()) return;
+      var rep = rs.data();
+      if(rep.processed) return;
+      var ss = await tx.get(standRef);
+      var now = Date.now();
+      var by = applierName ? await encryptData(applierName) : '';
+      var who = rep.witnessName ? await decryptData(rep.witnessName) : '';
+      function finish(applied, note){
+        tx.update(reportRef, {processed: true, processedAt: now, appliedQty: applied, note: note || '', appliedBy: by});
+        out = {applied: applied, note: note || '', itemName: rep.itemName, who: who, qty: rep.qty};
+      }
+      if(!ss.exists()){ finish(0, 'stand not found'); return; }
+      var arr = Array.isArray(ss.data().items) ? ss.data().items.slice() : [];
+      var idx = -1;
+      for(var i = 0; i < arr.length; i++){ if(String(arr[i].id) === String(rep.itemId)){ idx = i; break; } }
+      if(idx < 0){ finish(0, 'литература не найдена'); return; }
+      var it = Object.assign({}, arr[idx]);
+      var sc = Object.assign({}, it.standCounts || {});
+      var sn = parseInt(rep.standNumber);
+      if(!sn || sn < 1 || sn > 4){ for(var j = 1; j <= 4; j++){ if((parseInt(sc[j]) || 0) > 0){ sn = j; break; } } }
+      if(!sn){ finish(0, 'стенд не определён'); return; }
+      var onStand = parseInt(sc[sn]) || 0, want = parseInt(rep.qty) || 0, actual = Math.min(onStand, want);
+      if(actual > 0){
+        sc[sn] = onStand - actual; it.standCounts = sc;
+        var hist = [];
+        if(it.hx){ try{ hist = JSON.parse(await decryptData(it.hx)) || []; }catch(e){ hist = []; } }
+        else if(Array.isArray(it.history)) hist = it.history;
+        hist.unshift({ts: now, who: applierName || '', action: 'remove', delta: -actual, oldQty: null, newQty: null, note: 'Отчёт: ' + who});
+        it.hx = await encryptData(JSON.stringify(hist.slice(0, 50)));
+        delete it.history;
+        arr[idx] = it;
+        tx.update(standRef, {items: arr, updated: now, updatedBy: CLIENT_ID});
+      }
+      finish(actual, actual < want ? ('на стенде было только ' + actual) : '');
+    });
+    return out;
+  }
+  // Запись документа только если его ещё нет (повторная отправка не может «воскресить» уже применённый отчёт)
+  async function putOnce(db, fs, ref, data){
+    var created = false;
+    await fs.runTransaction(db, async function(tx){
+      created = false;
+      var s = await tx.get(ref);
+      if(s.exists()) return;
+      tx.set(ref, data); created = true;
+    });
+    return created;
+  }
+
+  return {
+    CLIENT_ID: CLIENT_ID, encryptData: encryptData, decryptData: decryptData, hashEmail: hashEmail,
+    withTimeout: withTimeout, createEngine: createEngine, applyReport: applyReport, putOnce: putOnce,
+    mergeState: mergeState, clone: clone, eq: eq
+  };
+})();
+var encryptData = SK.encryptData, decryptData = SK.decryptData;
+// ==========================================
+
 
 var STAND_MAX = 10;
 var MIN_STAND_ALERT = 3;
@@ -436,7 +856,6 @@ function hasPerm(perm){
   return !!(currentUser.perms && currentUser.perms[perm]);
 }
 
-/* === COLLAPSIBLE CARDS === */
 function getCardStates(){ try{ return JSON.parse(localStorage.getItem('stand_cards_collapsed')||'{}'); }catch(e){ return {}; } }
 function saveCardStates(states){ localStorage.setItem('stand_cards_collapsed', JSON.stringify(states||{})); }
 function setupCollapsibleCards(){
@@ -459,7 +878,6 @@ function setupCollapsibleCards(){
   });
 }
 
-/* === SCROLL TOP === */
 window.addEventListener('scroll', function(){
   var btn = document.getElementById('scrollTopBtn');
   if(!btn) return;
@@ -468,7 +886,6 @@ window.addEventListener('scroll', function(){
 }, {passive:true});
 function scrollToTop(){ window.scrollTo({top:0, behavior:'smooth'}); }
 
-/* === DATA === */
 function cleanItems(arr){
   if(!Array.isArray(arr)) return [];
   return arr.filter(function(it){ return it && typeof it==='object'; }).map(function(it){
@@ -523,19 +940,17 @@ function loadFromLocal(){
 }
 
 function saveToLocal(){
-  localStorage.setItem('stand_items_v4', JSON.stringify(items));
-  localStorage.setItem('stand_users_v1', JSON.stringify(users));
-  localStorage.setItem('stand_names', JSON.stringify(standNames));
-  localStorage.setItem('stand_local_ts', String(Date.now()));
-  if(cloudEnabled && !isSyncingFromCloud && cloudDb && suppressPushCount === 0){
-    clearTimeout(cloudPushTimeout);
-    cloudPushTimeout = setTimeout(function(){ try{ pushToCloud(); }catch(e){} }, 800);
-  }
+  try{
+    localStorage.setItem('stand_items_v4', JSON.stringify(items));
+    localStorage.setItem('stand_users_v1', JSON.stringify(users));
+    localStorage.setItem('stand_names', JSON.stringify(standNames));
+    localStorage.setItem('stand_local_ts', String(Date.now()));
+  }catch(e){}
+  if(cloudEnabled && !isSyncingFromCloud && syncEngine){ syncEngine.schedule(800); }
 }
 
 function getLocalTs(){ return parseInt(localStorage.getItem('stand_local_ts') || '0'); }
 
-/* === THEME === */
 function toggleTheme(){
   document.body.classList.toggle('day');
   var isDay = document.body.classList.contains('day');
@@ -552,7 +967,6 @@ function applyTheme(){
   if(b) b.textContent = saved === 'day' ? '☀️' : '🌙';
 }
 
-/* === SYNC === */
 function setSyncState(state){
   var chip = document.getElementById('syncChip'), txt = document.getElementById('syncChipText');
   if(!chip || !txt) return;
@@ -567,15 +981,55 @@ function showSyncInfo(){
   toast('Статус: ' + (t ? t.textContent : '—'));
 }
 
+var syncEngine = null;
+var helperReports = [], unprocessedReportIds = {}, processedReportIds = {}, repUnsubA = null, repUnsubB = null;
+
+function helperGetState(){ return {items:items, users:users, standNames:standNames}; }
+function helperApplyState(s){
+  isSyncingFromCloud = true;
+  var restored = false;
+  try{
+    var prevUsers = users;
+    if(Array.isArray(s.items)) items = cleanItems(s.items);
+    if(s.standNames && typeof s.standNames === 'object'){ for(var k=1;k<=4;k++) if(s.standNames[k]) standNames[k] = String(s.standNames[k]); }
+    if(Array.isArray(s.users)){
+      var nu = cleanUsers(s.users);
+      if(currentUserEmail){
+        var em = currentUserEmail.toLowerCase();
+        var inNew = nu.find(function(u){ return u.email && u.email.toLowerCase() === em; });
+        if(!inNew){
+          var lu = prevUsers.find(function(u){ return u.email && u.email.toLowerCase() === em; });
+          if(lu && lu.active !== false){ nu.push(lu); restored = true; }
+        }
+      }
+      users = nu;
+    }
+    try{
+      localStorage.setItem('stand_items_v4', JSON.stringify(items));
+      localStorage.setItem('stand_users_v1', JSON.stringify(users));
+      localStorage.setItem('stand_names', JSON.stringify(standNames));
+    }catch(e){}
+    if(currentUserEmail){
+      var found = users.find(function(u){ return u.email && u.email.toLowerCase() === currentUserEmail.toLowerCase(); });
+      if(found && found.active !== false){
+        currentUser = found; updateUI();
+      } else if(found && found.active === false){
+        currentUser = null; currentUserEmail = '';
+        localStorage.removeItem('stand_user_email'); localStorage.removeItem('stand_user_name'); localStorage.removeItem('stand_user_surname');
+        showRegister();
+        toast('⚠️ Ваш аккаунт деактивирован администратором');
+      }
+    }
+  }catch(e){ console.error('apply state:', e); }
+  isSyncingFromCloud = false;
+  if(restored && syncEngine) syncEngine.schedule(500);
+}
+
 async function initFirebase(){
-  if(!cloudId){
-    setSyncState('offline');
-    console.warn('No cloudId — skipping Firebase init');
-    return;
-  }
+  if(!cloudId){ setSyncState('offline'); return; }
   try{
     const {initializeApp} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
-    const {getFirestore,doc,setDoc,onSnapshot,getDoc} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
+    const fsm = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
     if(!cloudApp){
       cloudApp = initializeApp({
         apiKey: "AIzaSyCKoGOE84zPuc4t6UQrDYMbooCR43p0FyQ",
@@ -585,159 +1039,106 @@ async function initFirebase(){
         messagingSenderId: "304875768432",
         appId: "1:304875768432:web:470adb4707b8a3680482b5"
       });
-      cloudDb = getFirestore(cloudApp);
-      window._fb = {doc, setDoc, onSnapshot, getDoc};
+      cloudDb = fsm.getFirestore(cloudApp);
+      window._fb = fsm;
     }
-    setSyncState('connecting');
-    if(cloudUnsub){ try{ cloudUnsub(); }catch(e){} cloudUnsub = null; }
-    var dRef = window._fb.doc(cloudDb,'stands',cloudId);
-    cloudUnsub = window._fb.onSnapshot(dRef, function(snap){
-      if(!snap.exists()){
-        setSyncState('synced');
-        if((items && items.length > 0) || (users && users.length > 0)){
-          clearTimeout(cloudPushTimeout);
-          cloudPushTimeout = setTimeout(function(){ try{ pushToCloud(); }catch(e){} }, 300);
-        } else if(currentUser){
-          toast('⚠️ Данные стенда не найдены. Проверьте код у координатора.', 5000);
-        }
-        return;
-      }
-      var data = snap.data();
-      if(!data) return;
-      if(data.updated && pendingPushTs[data.updated]){ setSyncState('synced'); return; }
+    if(!syncEngine){
+      syncEngine = SK.createEngine({
+        db:function(){ return cloudDb; }, fs:fsm, cloudId:function(){ return cloudId; }, enabled:function(){ return cloudEnabled; },
+        keys:['items','users','standNames'],
+        getState:helperGetState, applyState:helperApplyState,
+        clean:{items:cleanItems, users:cleanUsers}, baseKey:'stand_sync_base_helper', onStatus:setSyncState
+      });
+    }
+    syncEngine.start();
+    startReportSync();
+  }catch(e){ console.error(e); setSyncState('error'); }
+}
 
-      var remoteTs = parseInt(data.updated) || 0;
-      var localTs = getLocalTs();
-      if(remoteTs > 0 && remoteTs < localTs){
-        setSyncState('synced');
-        clearTimeout(cloudPushTimeout);
-        cloudPushTimeout = setTimeout(function(){ try{ pushToCloud(); }catch(e){} }, 300);
-        return;
-      }
-
-      isSyncingFromCloud = true;
-      suppressPushCount++;
-
-      var remoteHasItems = Array.isArray(data.items) && data.items.length > 0;
-      var localHasItems = Array.isArray(items) && items.length > 0;
-      var remoteHasUsers = Array.isArray(data.users) && data.users.length > 0;
-
-      if(remoteHasItems) items = cleanItems(data.items);
-      else if(!localHasItems) items = [];
-
-      if(remoteHasUsers){
-        var remoteUsers = cleanUsers(data.users);
-        if(currentUserEmail){
-          var foundInRemote = remoteUsers.find(function(u){
-            return u.email && u.email.toLowerCase() === currentUserEmail.toLowerCase();
-          });
-          if(!foundInRemote){
-            var localUser = users.find(function(u){
-              return u.email && u.email.toLowerCase() === currentUserEmail.toLowerCase();
-            });
-            if(localUser && localUser.active !== false){
-              remoteUsers.push(localUser);
-            }
-          }
-        }
-        users = remoteUsers;
-      }
-
-      if(data.standNames && typeof data.standNames==='object'){
-        for(var k=1;k<=4;k++) if(data.standNames[k]) standNames[k] = String(data.standNames[k]);
-      }
-
-      localStorage.setItem('stand_items_v4', JSON.stringify(items));
-      localStorage.setItem('stand_users_v1', JSON.stringify(users));
-      localStorage.setItem('stand_names', JSON.stringify(standNames));
-
-      if(currentUserEmail){
-        var found = users.find(function(u){
-          return u.email && u.email.toLowerCase() === currentUserEmail.toLowerCase();
-        });
-        if(found && found.active !== false){
-          currentUser = found;
-          updateUI();
-        } else if(found && found.active === false){
-          currentUser = null;
-          currentUserEmail = '';
-          localStorage.removeItem('stand_user_email');
-          localStorage.removeItem('stand_user_name');
-          localStorage.removeItem('stand_user_surname');
-          showRegister();
-          toast('⚠️ Ваш аккаунт деактивирован администратором');
-        }
-      }
-
-      if(currentUserEmail && remoteHasUsers){
-        var wasRestored = !data.users.some(function(u){
-          return u.email && String(u.email).toLowerCase() === currentUserEmail.toLowerCase();
-        });
-        if(wasRestored){
-          suppressPushCount--;
-          isSyncingFromCloud = false;
-          clearTimeout(cloudPushTimeout);
-          cloudPushTimeout = setTimeout(function(){ try{ pushToCloud(); }catch(e){} }, 500);
-          setSyncState('synced');
-          return;
-        }
-      }
-
-      suppressPushCount--;
-      isSyncingFromCloud = false;
-      setSyncState('synced');
-    }, function(err){
-      console.error('Snapshot error:', err);
-      setSyncState('error');
+// ---------- Отчёты со стенда (из приложения «Стенд Отчёт») ----------
+function startReportSync(){
+  if(!cloudDb || !cloudId) return;
+  var fb = window._fb;
+  var ref = fb.collection(cloudDb, 'stands', cloudId, 'reports');
+  if(repUnsubA){ try{ repUnsubA(); }catch(e){} }
+  if(repUnsubB){ try{ repUnsubB(); }catch(e){} }
+  repUnsubA = fb.onSnapshot(fb.query(ref, fb.where('processed', '==', false)), function(snap){
+    var ids = {};
+    snap.forEach(function(d){ if(!d.data().processed) ids[d.id] = true; });
+    unprocessedReportIds = ids;
+    drainReports();
+  }, function(err){ console.error('reports (new):', err); });
+  repUnsubB = fb.onSnapshot(ref, function(snap){
+    var docs = []; snap.forEach(function(d){ docs.push({id:d.id, data:d.data()}); });
+    Promise.all(docs.map(async function(d){
+      var r = Object.assign({id:d.id}, d.data);
+      r.witnessName = await decryptData(r.witnessName);
+      return r;
+    })).then(function(res){
+      res.sort(function(a,b){ return (b.createdAt||0) - (a.createdAt||0); });
+      helperReports = res;
+      renderRepBadge();
+      if(document.getElementById('repOverlay') && document.getElementById('repOverlay').classList.contains('show')) renderReports();
     });
-    setSyncState('synced');
-  }catch(e){
-    console.error('Firebase init error:', e);
-    setSyncState('error');
-  }
+  }, function(err){ console.error('reports (all):', err); });
 }
-
-async function pushToCloud(){
-  if(!cloudEnabled || !cloudDb || !cloudId) return;
+function drainReports(){
+  if(!currentUser || currentUser.active === false || !cloudDb || !window._fb) return;
+  if(!hasPerm('count')) return;
+  Object.keys(unprocessedReportIds).forEach(function(id){ processReport(id); });
+}
+async function processReport(id){
+  if(processedReportIds[id]) return;
+  processedReportIds[id] = true;
   try{
-    setSyncState('pushing');
-    var dRef = window._fb.doc(cloudDb,'stands',cloudId);
-    var ts = Date.now();
-    pendingPushTs[ts] = true;
-    setTimeout(function(){ delete pendingPushTs[ts]; }, 15000);
-    await window._fb.setDoc(dRef, {
-      items: items,
-      users: users,
-      standNames: standNames,
-      updated: ts
-    }, {merge: true});
-    localStorage.setItem('stand_local_ts', String(ts));
-    setSyncState('synced');
+    var r = await SK.applyReport(cloudDb, window._fb, cloudId, id, currentUser ? currentUser.name : 'Helper');
+    delete unprocessedReportIds[id];
+    if(!r) return; // уже применён Stand Pro — второй раз не вычитаем
+    if(r.applied > 0) toast('📤 ' + r.who + ': −' + r.applied + ' ' + r.itemName, 4000);
+    else toast('⚠️ ' + r.who + ': ' + (r.note || 'не списано'));
   }catch(e){
-    console.error('Push error:', e);
-    setSyncState('error');
+    console.error('report apply:', e);
+    delete processedReportIds[id];
+    setTimeout(drainReports, 10000);
   }
 }
+function renderRepBadge(){
+  var n = helperReports.filter(function(r){ return !r.processed; }).length;
+  var b = document.getElementById('repBadge'); if(!b) return;
+  if(n > 0){ b.style.display = 'inline-block'; b.textContent = n; } else b.style.display = 'none';
+}
+function openReports(){
+  renderReports();
+  document.getElementById('repOverlay').classList.add('show');
+}
+function closeReports(){ document.getElementById('repOverlay').classList.remove('show'); }
+function renderReports(){
+  var el = document.getElementById('repList'); if(!el) return;
+  if(!helperReports.length){ el.innerHTML = '<div class="small" style="text-align:center;padding:20px">— отчётов нет —</div>'; return; }
+  el.innerHTML = helperReports.slice(0, 40).map(function(r){
+    var when = r.createdAt ? new Date(r.createdAt).toLocaleString('ru-RU') : '';
+    var st = r.processed
+      ? (r.appliedQty > 0
+          ? '<span style="color:#22c55e;font-weight:bold">✓ −' + r.appliedQty + '</span>'
+          : '<span style="color:#f59e0b;font-weight:bold">⚠ не списано' + (r.note ? ' (' + esc(r.note) + ')' : '') + '</span>')
+      : '<span style="color:#a855f7;font-weight:bold">⏳ в обработке</span>';
+    return '<div style="display:flex;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">' +
+      '<div style="flex:1;min-width:0"><div style="font-weight:bold">' + esc(r.witnessName || '') + '</div>' +
+      '<div class="small">🏛️ ' + esc(r.standName || '') + ' · ' + esc(r.itemName || '') + (r.itemExtra ? ' — ' + esc(r.itemExtra) : '') + ' · ' + esc(when) + '</div></div>' +
+      '<div style="text-align:right;flex-shrink:0"><div style="font-weight:bold">−' + (r.qty || 0) + ' шт.</div><div class="small">' + st + '</div></div></div>';
+  }).join('');
+}
 
-/* === USER MANAGEMENT === */
 function tryRestoreCurrentUser(){
   if(!currentUserEmail) return null;
-  var found = users.find(function(u){
-    return u.email && u.email.toLowerCase() === currentUserEmail.toLowerCase();
-  });
+  var found = users.find(function(u){ return u.email && u.email.toLowerCase() === currentUserEmail.toLowerCase(); });
   if(found) return found;
   var savedName = localStorage.getItem('stand_user_name');
   var savedSurname = localStorage.getItem('stand_user_surname') || '';
   if(savedName){
     var restored = {
-      id: Date.now() + Math.random(),
-      name: savedName,
-      surname: savedSurname,
-      email: currentUserEmail,
-      role: 'counter',
-      perms: JSON.parse(JSON.stringify(PERMS_PRESETS.counter)),
-      active: true,
-      createdAt: Date.now()
+      id: Date.now() + Math.random(), name: savedName, surname: savedSurname, email: currentUserEmail,
+      role: 'counter', perms: JSON.parse(JSON.stringify(PERMS_PRESETS.counter)), active: true, createdAt: Date.now()
     };
     users.push(restored);
     return restored;
@@ -764,10 +1165,7 @@ function showRegister(prefill){
   } else {
     if(hint) hint.textContent = '';
   }
-  setTimeout(function(){
-    var el = codeEl;
-    if(el) el.focus();
-  }, 200);
+  setTimeout(function(){ var el = codeEl; if(el) el.focus(); }, 200);
 }
 
 function hideRegister(){
@@ -775,7 +1173,7 @@ function hideRegister(){
   if(ov) ov.classList.remove('show');
 }
 
-function handleRegister(){
+async function handleRegister(){
   var standCode = (document.getElementById('regStandCode').value || '').trim();
   var name = (document.getElementById('regName').value || '').trim();
   var surname = (document.getElementById('regSurname').value || '').trim();
@@ -801,14 +1199,8 @@ function handleRegister(){
   } else {
     if(!name){ errEl.textContent = '⚠️ Введите имя'; return; }
     var newUser = {
-      id: Date.now() + Math.random(),
-      name: name,
-      surname: surname,
-      email: email,
-      role: 'counter',
-      perms: JSON.parse(JSON.stringify(PERMS_PRESETS.counter)),
-      active: true,
-      createdAt: Date.now()
+      id: Date.now() + Math.random(), name: name, surname: surname, email: email,
+      role: 'counter', perms: JSON.parse(JSON.stringify(PERMS_PRESETS.counter)), active: true, createdAt: Date.now()
     };
     users.push(newUser);
     currentUser = newUser;
@@ -832,9 +1224,7 @@ function handleRegister(){
   setupCollapsibleCards();
   toast('✅ Добро пожаловать, ' + (currentUser.name || currentUser.email) + '!');
 
-  if(cloudId){
-    setTimeout(function(){ try{ initFirebase(); }catch(e){ console.error(e); } }, 100);
-  }
+  if(cloudId){ setTimeout(function(){ try{ initFirebase(); }catch(e){} }, 100); }
 }
 
 function confirmLogout(){
@@ -844,20 +1234,15 @@ function confirmLogout(){
   localStorage.removeItem('stand_user_email');
   localStorage.removeItem('stand_user_name');
   localStorage.removeItem('stand_user_surname');
-  // Очищаем код, чтобы при следующем входе человек его снова ввёл
   localStorage.removeItem('stand_cloud_id');
   localStorage.removeItem('stand_cloud_enabled');
-  cloudId = '';
-  cloudEnabled = false;
-  if(cloudUnsub){ try{ cloudUnsub(); }catch(e){} cloudUnsub = null; }
+  cloudId = ''; cloudEnabled = false;
+  if(syncEngine){ syncEngine.stop(); } if(repUnsubA){ try{ repUnsubA(); }catch(e){} repUnsubA=null; } if(repUnsubB){ try{ repUnsubB(); }catch(e){} repUnsubB=null; }
   showRegister();
 }
 
 function updateUI(){
-  if(!currentUser){
-    document.getElementById('mainContent').style.display = 'none';
-    return;
-  }
+  if(!currentUser){ document.getElementById('mainContent').style.display = 'none'; return; }
   document.getElementById('mainContent').style.display = 'block';
   var uc = document.getElementById('userChipText');
   if(uc) uc.textContent = currentUser.name || currentUser.email || '—';
@@ -870,12 +1255,12 @@ function updateUI(){
 
   render();
   initAddStandSelects();
+  try{ drainReports(); }catch(e){}
 }
 
 function initAddStandSelects(){
   for(var n=1;n<=4;n++){
-    var el = document.getElementById('s'+n);
-    if(!el) continue;
+    var el = document.getElementById('s'+n); if(!el) continue;
     var cur = el.value || '0';
     var opts = '';
     for(var i=0;i<=STAND_MAX;i++) opts += '<option value="'+i+'"'+(String(i)===String(cur)?' selected':'')+'>'+i+'</option>';
@@ -883,45 +1268,27 @@ function initAddStandSelects(){
   }
 }
 
-/* === RENDER === */
 function render(){
   if(!currentUser) return;
 
   var sortSel = document.getElementById('sortSelect');
   if(sortSel){
-    sortSel.innerHTML =
-      '<option value="low">📊 Мало</option>'+
-      '<option value="fav">⭐ Избранные</option>'+
-      '<option value="name">🔤 Алфавит</option>'+
-      '<option value="langs">🌍 Языки</option>'+
-      '<option value="qty">📈 Много</option>'+
-      '<option value="new">🆕 Новые</option>';
+    sortSel.innerHTML = '<option value="low">📊 Мало</option><option value="fav">⭐ Избранные</option><option value="name">🔤 Алфавит</option><option value="langs">🌍 Языки</option><option value="qty">📈 Много</option><option value="new">🆕 Новые</option>';
     sortSel.value = curSort;
   }
   var tf = document.getElementById('typeFilter');
-  if(tf){
-    tf.innerHTML = '<option value="all">Все типы</option><option value="Журнал">📰 Журналы</option><option value="Брошюра">📖 Брошюры</option><option value="Постер">🖼️ Постеры</option>';
-    tf.value = curTypeFilter;
-  }
+  if(tf){ tf.innerHTML = '<option value="all">Все типы</option><option value="Журнал">📰 Журналы</option><option value="Брошюра">📖 Брошюры</option><option value="Постер">🖼️ Постеры</option>'; tf.value = curTypeFilter; }
   var lf = document.getElementById('langFilter');
   if(lf){
     var opts = '<option value="all">Все языки</option>';
     var langsInItems = {};
     items.forEach(function(it){ if(it.lang) langsInItems[it.lang] = true; });
-    Object.keys(langsInItems).sort().forEach(function(code){
-      opts += '<option value="'+esc(code)+'">'+esc(getLangDisplay(code))+'</option>';
-    });
-    lf.innerHTML = opts;
-    lf.value = curLangFilter;
+    Object.keys(langsInItems).sort().forEach(function(code){ opts += '<option value="'+esc(code)+'">'+esc(getLangDisplay(code))+'</option>'; });
+    lf.innerHTML = opts; lf.value = curLangFilter;
   }
   var sf = document.getElementById('standFilter');
   if(sf){
-    sf.innerHTML = '<option value="all">🏛️ Все стенды</option>'+
-      '<option value="0">— Без стенда —</option>'+
-      '<option value="1">🏛️ '+esc(standNames[1])+'</option>'+
-      '<option value="2">🏛️ '+esc(standNames[2])+'</option>'+
-      '<option value="3">🏛️ '+esc(standNames[3])+'</option>'+
-      '<option value="4">🏛️ '+esc(standNames[4])+'</option>';
+    sf.innerHTML = '<option value="all">🏛️ Все стенды</option><option value="0">— Без стенда —</option><option value="1">🏛️ '+esc(standNames[1])+'</option><option value="2">🏛️ '+esc(standNames[2])+'</option><option value="3">🏛️ '+esc(standNames[3])+'</option><option value="4">🏛️ '+esc(standNames[4])+'</option>';
     sf.value = curStandFilter;
   }
 
@@ -929,9 +1296,7 @@ function render(){
   var filtered = [];
   for(var i=0;i<items.length;i++){
     var it = items[i];
-    var name = getDisplayName(it).toLowerCase();
-    var cat = getDisplayCat(it).toLowerCase();
-    var themeStr = (it.theme||'').toLowerCase();
+    var name = getDisplayName(it).toLowerCase(), cat = getDisplayCat(it).toLowerCase(), themeStr = (it.theme||'').toLowerCase();
     var matchQ = name.indexOf(q) >= 0 || cat.indexOf(q) >= 0 || themeStr.indexOf(q) >= 0 || (it.year && String(it.year).toLowerCase().indexOf(q) >= 0) || (it.issueNum && String(it.issueNum).toLowerCase().indexOf(q) >= 0);
     var matchT = curTypeFilter === 'all' || it.type === curTypeFilter;
     var matchL = curLangFilter === 'all' || (it.lang||'ru') === curLangFilter;
@@ -954,57 +1319,36 @@ function render(){
 
   var total=0, cMag=0, cBooklet=0, cPoster=0, standsTotal=0;
   for(var i=0;i<items.length;i++){
-    var tq = totalIt(items[i]);
-    total += tq;
-    if(items[i].type === 'Журнал') cMag += tq;
-    else if(items[i].type === 'Брошюра') cBooklet += tq;
-    else if(items[i].type === 'Постер') cPoster += tq;
+    var tq = totalIt(items[i]); total += tq;
+    if(items[i].type === 'Журнал') cMag += tq; else if(items[i].type === 'Брошюра') cBooklet += tq; else if(items[i].type === 'Постер') cPoster += tq;
     standsTotal += stSum(items[i]);
   }
   var stockTotal = Math.max(0, total - standsTotal);
   var needCount = items.filter(function(x){ return totalIt(x) <= 0; }).length;
 
   var $ = function(id){ return document.getElementById(id); };
-  if($('tot')) $('tot').textContent = total;
-  if($('tit')) $('tit').textContent = items.length;
-  if($('cnt-mag')) $('cnt-mag').textContent = cMag;
-  if($('cnt-booklet')) $('cnt-booklet').textContent = cBooklet;
-  if($('cnt-poster')) $('cnt-poster').textContent = cPoster;
-  if($('need')) $('need').textContent = needCount;
-  if($('tot-stock')) $('tot-stock').textContent = stockTotal;
-  if($('tot-stands')) $('tot-stands').textContent = standsTotal;
+  if($('tot')) $('tot').textContent = total; if($('tit')) $('tit').textContent = items.length;
+  if($('cnt-mag')) $('cnt-mag').textContent = cMag; if($('cnt-booklet')) $('cnt-booklet').textContent = cBooklet; if($('cnt-poster')) $('cnt-poster').textContent = cPoster;
+  if($('need')) $('need').textContent = needCount; if($('tot-stock')) $('tot-stock').textContent = stockTotal; if($('tot-stands')) $('tot-stands').textContent = standsTotal;
 
-  var canCount = hasPerm('count');
-  var canRename = hasPerm('rename');
-  var canDel = hasPerm('del');
-
+  var canCount = hasPerm('count'); var canRename = hasPerm('rename'); var canDel = hasPerm('del');
   var h = '';
   if(filtered.length === 0){
-    if(!cloudId){
-      h = '<div style="text-align:center;padding:30px;color:#ef4444">🔗 Код стенда не задан.<br><span style="font-size:0.85em">Выйдите и зарегистрируйтесь заново, чтобы ввести код.</span></div>';
-    } else if(items.length === 0){
-      h = '<div style="text-align:center;padding:30px;color:var(--muted)">📦 Данных пока нет.<br><span style="font-size:0.85em">Попросите координатора добавить литературу.</span></div>';
-    } else {
-      h = '<div style="text-align:center;padding:30px;color:var(--muted)">📦 —</div>';
-    }
+    if(!cloudId) h = '<div style="text-align:center;padding:30px;color:#ef4444">🔗 Код стенда не задан.<br><span style="font-size:0.85em">Выйдите и зарегистрируйтесь заново, чтобы ввести код.</span></div>';
+    else if(items.length === 0) h = '<div style="text-align:center;padding:30px;color:var(--muted)">📦 Данных пока нет.<br><span style="font-size:0.85em">Попросите координатора добавить литературу.</span></div>';
+    else h = '<div style="text-align:center;padding:30px;color:var(--muted)">📦 —</div>';
   }
   for(var i=0;i<filtered.length;i++){
     var it = filtered[i];
-    var tot = totalIt(it);
-    var col = tot <= 0 ? 'bad' : 'good';
-    var tcl = getTypeClass(it.type), icon = getTypeIcon(it.type);
-    var displayType = icon + ' ' + getTypeDisplay(it.type);
-    var favCls = it.favorite ? 'item fav' : 'item';
-    if(curSort === 'langs') favCls += ' grouped';
-    var favStar = it.favorite ? '⭐' : '☆';
-    var favCls2 = it.favorite ? 'fav-btn' : 'fav-btn inactive';
-    var extraInfo = getItemExtraInfo(it);
-    var extraLine = extraInfo ? '<div class="item-extra">📅 '+esc(extraInfo)+'</div>' : '';
+    var tot = totalIt(it); var col = tot <= 0 ? 'bad' : 'good';
+    var tcl = getTypeClass(it.type), icon = getTypeIcon(it.type); var displayType = icon + ' ' + getTypeDisplay(it.type);
+    var favCls = it.favorite ? 'item fav' : 'item'; if(curSort === 'langs') favCls += ' grouped';
+    var favStar = it.favorite ? '⭐' : '☆'; var favCls2 = it.favorite ? 'fav-btn' : 'fav-btn inactive';
+    var extraInfo = getItemExtraInfo(it); var extraLine = extraInfo ? '<div class="item-extra">📅 '+esc(extraInfo)+'</div>' : '';
     var themeLine = (it.theme && it.theme.trim()) ? '<div class="item-theme">💡 '+esc(it.theme)+'</div>' : '';
     var langLabel = (it.lang && it.lang!=='ru') ? ' <span class="lang-label">'+esc(getLangDisplay(it.lang))+'</span>' : '';
 
-    var stSumV = stSum(it);
-    var stParts = [];
+    var stSumV = stSum(it); var stParts = [];
     for(var tn=1;tn<=4;tn++){ var tv=stGet(it,tn); if(tv>0) stParts.push(tn+':'+tv); }
     var stText = stParts.length > 0 ? ('🏛️ '+stParts.join(' · ')) : '🏛️ Стенды';
     var isLowAny = false;
@@ -1015,13 +1359,9 @@ function render(){
     if(curSort === 'langs'){
       var others = getOtherLangs(it);
       if(others.length > 0){
-        var parts = others.map(function(o){
-          return '<span style="display:inline-block;background:var(--card);padding:2px 8px;border-radius:99px;margin:2px 3px 0 0;border:1px solid #06b6d4">'+esc(getLangShort(o.code))+' · '+o.qty+' шт.</span>';
-        }).join('');
+        var parts = others.map(function(o){ return '<span style="display:inline-block;background:var(--card);padding:2px 8px;border-radius:99px;margin:2px 3px 0 0;border:1px solid #06b6d4">'+esc(getLangShort(o.code))+' · '+o.qty+' шт.</span>'; }).join('');
         langsBlock = '<div class="item-langs">🌍 Также на: '+parts+'</div>';
-      } else {
-        langsBlock = '<div class="item-langs" style="opacity:0.55">🌍 Только на этом языке</div>';
-      }
+      } else { langsBlock = '<div class="item-langs" style="opacity:0.55">🌍 Только на этом языке</div>'; }
     }
 
     var stock = parseInt(it.qty)||0;
@@ -1051,135 +1391,79 @@ function render(){
   }
   if($('list')) $('list').innerHTML = h;
 
-  try{ renderCountByType(); }catch(e){ console.error(e); }
-  try{ renderItemLangStats(); }catch(e){ console.error(e); }
-  try{ renderCountByLangType(); }catch(e){ console.error(e); }
-  try{ renderCharts(); }catch(e){ console.error(e); }
-  try{ updateStandBadges(); }catch(e){ console.error(e); }
-  try{ renderStand(); }catch(e){ console.error(e); }
+  try{ renderCountByType(); }catch(e){}
+  try{ renderItemLangStats(); }catch(e){}
+  try{ renderCountByLangType(); }catch(e){}
+  try{ renderCharts(); }catch(e){}
+  try{ updateStandBadges(); }catch(e){}
+  try{ renderStand(); }catch(e){}
 }
 
 function getOtherLangs(currentItem){
-  var name = getDisplayName(currentItem);
-  if(!name) return [];
+  var name = getDisplayName(currentItem); if(!name) return [];
   var map = {};
   items.forEach(function(it){
     if(it.id === currentItem.id) return;
     if(getDisplayName(it) !== name) return;
-    var code = it.lang || 'ru';
-    if(code === (currentItem.lang || 'ru')) return;
-    if(!map[code]) map[code] = 0;
-    map[code] += totalIt(it);
+    var code = it.lang || 'ru'; if(code === (currentItem.lang || 'ru')) return;
+    if(!map[code]) map[code] = 0; map[code] += totalIt(it);
   });
   return Object.keys(map).map(function(code){ return {code: code, qty: map[code]}; });
 }
 
-function toggleFav(id){
-  if(!hasPerm('count')) return;
-  var it = items.find(function(x){ return x.id == id; });
-  if(!it) return;
-  it.favorite = !it.favorite;
-  saveToLocal(); render();
-}
+function toggleFav(id){ if(!hasPerm('count')) return; var it = items.find(function(x){ return x.id == id; }); if(!it) return; it.favorite = !it.favorite; saveToLocal(); render(); }
 
-/* === STANDS === */
-function showStand(n){
-  curStand = n;
-  document.querySelectorAll('.stand-tab').forEach(function(t){ t.classList.remove('active'); });
-  var e = document.getElementById('st-'+n);
-  if(e) e.classList.add('active');
-  renderStand();
-}
+function showStand(n){ curStand = n; document.querySelectorAll('.stand-tab').forEach(function(t){ t.classList.remove('active'); }); var e = document.getElementById('st-'+n); if(e) e.classList.add('active'); renderStand(); }
 
 function renderStand(){
   var cont = document.getElementById('standContent'); if(!cont) return;
   var list = items.filter(function(it){ return stGet(it,curStand) > 0; });
-  if(list.length === 0){
-    cont.innerHTML = '<div class="stand-box"><div class="stand-title"><span class="st-name">🏛️ '+esc(standNames[curStand])+'</span></div><div class="stand-empty">Стенд пуст</div></div>';
-    return;
-  }
-  var totalInStand=0, totalGlobal=0;
-  var byType={}, byLang={};
+  if(list.length === 0){ cont.innerHTML = '<div class="stand-box"><div class="stand-title"><span class="st-name">🏛️ '+esc(standNames[curStand])+'</span></div><div class="stand-empty">Стенд пуст</div></div>'; return; }
+  var totalInStand=0, totalGlobal=0, byType={}, byLang={};
   list.forEach(function(it){
-    var inSt = stGet(it,curStand), glob = totalIt(it);
-    totalInStand += inSt; totalGlobal += glob;
-    var tp = it.type || 'Журнал';
-    if(!byType[tp]) byType[tp] = {inSt:0, glob:0};
-    byType[tp].inSt += inSt; byType[tp].glob += glob;
-    var code = it.lang || 'ru';
-    if(!byLang[code]) byLang[code] = {inSt:0, glob:0};
-    byLang[code].inSt += inSt; byLang[code].glob += glob;
+    var inSt = stGet(it,curStand), glob = totalIt(it); totalInStand += inSt; totalGlobal += glob;
+    var tp = it.type || 'Журнал'; if(!byType[tp]) byType[tp] = {inSt:0, glob:0}; byType[tp].inSt += inSt; byType[tp].glob += glob;
+    var code = it.lang || 'ru'; if(!byLang[code]) byLang[code] = {inSt:0, glob:0}; byLang[code].inSt += inSt; byLang[code].glob += glob;
   });
-
-  var h = '<div class="stand-box">';
-  h += '<div class="stand-title"><span class="st-name">🏛️ '+esc(standNames[curStand])+'</span></div>';
+  var h = '<div class="stand-box"><div class="stand-title"><span class="st-name">🏛️ '+esc(standNames[curStand])+'</span></div>';
   h += '<div class="stand-summary">На стенде: <b>'+totalInStand+'</b> шт. из <b>'+totalGlobal+'</b> · позиций: <b>'+list.length+'</b></div>';
-
   h += '<div class="stand-section-title">📋 По типам</div>';
-  ['Журнал','Брошюра','Постер'].forEach(function(tp){
-    if(!byType[tp]) return;
-    h += '<div class="stand-row"><span class="t-left">'+getTypeIcon(tp)+' '+esc(tp)+'</span><span class="t-right">'+byType[tp].inSt+' / '+byType[tp].glob+' шт.</span></div>';
-  });
-
+  ['Журнал','Брошюра','Постер'].forEach(function(tp){ if(!byType[tp]) return; h += '<div class="stand-row"><span class="t-left">'+getTypeIcon(tp)+' '+esc(tp)+'</span><span class="t-right">'+byType[tp].inSt+' / '+byType[tp].glob+' шт.</span></div>'; });
   var langs = Object.keys(byLang).sort(function(a,b){ return byLang[b].inSt - byLang[a].inSt; });
   h += '<div class="stand-section-title">🌍 По языкам</div>';
-  langs.forEach(function(code){
-    h += '<div class="stand-row"><span class="t-left">'+esc(getLangDisplay(code))+'</span><span class="t-right">'+byLang[code].inSt+' / '+byLang[code].glob+' шт.</span></div>';
-  });
-
+  langs.forEach(function(code){ h += '<div class="stand-row"><span class="t-left">'+esc(getLangDisplay(code))+'</span><span class="t-right">'+byLang[code].inSt+' / '+byLang[code].glob+' шт.</span></div>'; });
   h += '<div class="stand-section-title">📚 Содержимое ('+list.length+')</div>';
   list.sort(function(a,b){ return getDisplayName(a).localeCompare(getDisplayName(b)); });
   list.forEach(function(it){
-    var inSt = stGet(it,curStand), glob = totalIt(it);
-    var extra = getItemExtraInfo(it);
+    var inSt = stGet(it,curStand), glob = totalIt(it); var extra = getItemExtraInfo(it);
     var langTag = (it.lang && it.lang!=='ru') ? ' · '+esc(getLangShort(it.lang)) : '';
     var isLow = inSt < MIN_STAND_ALERT && parseInt(it.qty) > 0;
-    h += '<div class="stand-item '+(isLow?'low-stock':'')+'">'+
-      '<div class="ti-info"><div class="ti-name">'+getTypeIcon(it.type)+' '+esc(getDisplayName(it))+'</div>'+
-      '<div class="ti-meta">'+esc(getDisplayCat(it))+(extra?' · '+esc(extra):'')+langTag+'</div></div>'+
-      '<div class="ti-qty">'+inSt+' / '+glob+' шт.<span class="in-total">'+(isLow?'🚨 МАЛО':'на стенде / всего')+'</span></div>'+
-    '</div>';
+    h += '<div class="stand-item '+(isLow?'low-stock':'')+'"><div class="ti-info"><div class="ti-name">'+getTypeIcon(it.type)+' '+esc(getDisplayName(it))+'</div><div class="ti-meta">'+esc(getDisplayCat(it))+(extra?' · '+esc(extra):'')+langTag+'</div></div><div class="ti-qty">'+inSt+' / '+glob+' шт.<span class="in-total">'+(isLow?'🚨 МАЛО':'на стенде / всего')+'</span></div></div>';
   });
-  h += '</div>';
-  cont.innerHTML = h;
+  cont.innerHTML = h + '</div>';
 }
 
 function updateStandBadges(){
   for(var n=1;n<=4;n++){
     var cnt=0, alert=false;
-    items.forEach(function(it){
-      var sc = stGet(it,n); cnt += sc;
-      if(sc > 0 && sc < MIN_STAND_ALERT && parseInt(it.qty) > 0) alert = true;
-    });
-    var el = document.getElementById('stc-'+n);
-    if(el) el.innerHTML = cnt > 0 ? (cnt+' шт.' + (alert?' <span style="color:#ef4444">🚨</span>':'')) : '—';
-    var nm = document.getElementById('stn-'+n);
-    if(nm) nm.textContent = standNames[n];
-    var lbl = document.getElementById('addLblS'+n);
-    if(lbl) lbl.textContent = '🏛️ '+standNames[n];
+    items.forEach(function(it){ var sc = stGet(it,n); cnt += sc; if(sc > 0 && sc < MIN_STAND_ALERT && parseInt(it.qty) > 0) alert = true; });
+    var el = document.getElementById('stc-'+n); if(el) el.innerHTML = cnt > 0 ? (cnt+' шт.' + (alert?' <span style="color:#ef4444">🚨</span>':'')) : '—';
+    var nm = document.getElementById('stn-'+n); if(nm) nm.textContent = standNames[n];
+    var lbl = document.getElementById('addLblS'+n); if(lbl) lbl.textContent = '🏛️ '+standNames[n];
   }
 }
 
-/* === COUNT BY TYPE === */
 function renderCountByType(){
   var c = document.getElementById('countByType'); if(!c) return;
   var counts = {mag:0, booklet:0, poster:0, total:0};
-  items.forEach(function(it){
-    var q = totalIt(it);
-    counts.total += q;
-    if(it.type === 'Журнал') counts.mag += q;
-    else if(it.type === 'Брошюра') counts.booklet += q;
-    else if(it.type === 'Постер') counts.poster += q;
-  });
+  items.forEach(function(it){ var q = totalIt(it); counts.total += q; if(it.type === 'Журнал') counts.mag += q; else if(it.type === 'Брошюра') counts.booklet += q; else if(it.type === 'Постер') counts.poster += q; });
   var p = function(n){ return counts.total > 0 ? Math.round(n/counts.total*100) : 0; };
-  c.innerHTML =
-    '<div class="count-box"><div class="num" style="color:#f59e0b">'+counts.mag+'</div><div class="label">📰 Журналы</div><div class="small">'+p(counts.mag)+'%</div></div>'+
+  c.innerHTML = '<div class="count-box"><div class="num" style="color:#f59e0b">'+counts.mag+'</div><div class="label">📰 Журналы</div><div class="small">'+p(counts.mag)+'%</div></div>'+
     '<div class="count-box"><div class="num" style="color:#22c55e">'+counts.booklet+'</div><div class="label">📖 Брошюры</div><div class="small">'+p(counts.booklet)+'%</div></div>'+
     '<div class="count-box"><div class="num" style="color:#ec4899">'+counts.poster+'</div><div class="label">🖼️ Постеры</div><div class="small">'+p(counts.poster)+'%</div></div>'+
     '<div class="count-box" style="border:2px solid var(--primary)"><div class="num" style="color:var(--primary)">'+counts.total+'</div><div class="label">📦 Итого</div><div class="small">100%</div></div>';
 }
 
-/* === LANG STATS === */
 function renderItemLangStats(){
   var cont = document.getElementById('itemLangStats'); if(!cont) return;
   var q = ((document.getElementById('langStatSearch')||{}).value||'').toLowerCase().trim();
@@ -1187,37 +1471,19 @@ function renderItemLangStats(){
   items.forEach(function(it){
     var name = getDisplayName(it); if(!name) return;
     if(!groups[name]) groups[name] = {name:name, langs:{}, totalQty:0};
-    var code = it.lang || 'ru';
-    var tq = totalIt(it);
-    if(!groups[name].langs[code]) groups[name].langs[code] = 0;
-    groups[name].langs[code] += tq;
-    groups[name].totalQty += tq;
+    var code = it.lang || 'ru'; var tq = totalIt(it);
+    if(!groups[name].langs[code]) groups[name].langs[code] = 0; groups[name].langs[code] += tq; groups[name].totalQty += tq;
   });
   var list = Object.keys(groups).map(function(k){ return groups[k]; });
   if(q) list = list.filter(function(g){ return g.name.toLowerCase().indexOf(q) >= 0; });
-  list.sort(function(a,b){
-    var aL = Object.keys(a.langs).length, bL = Object.keys(b.langs).length;
-    if(bL !== aL) return bL - aL;
-    return b.totalQty - a.totalQty;
-  });
+  list.sort(function(a,b){ var aL = Object.keys(a.langs).length, bL = Object.keys(b.langs).length; if(bL !== aL) return bL - aL; return b.totalQty - a.totalQty; });
   if(list.length === 0){ cont.innerHTML = '<div class="small" style="text-align:center;padding:20px">—</div>'; return; }
   var h = '';
   list.forEach(function(g){
-    var langsArr = Object.keys(g.langs).map(function(code){ return {code:code, qty: g.langs[code]}; });
-    langsArr.sort(function(a,b){ return b.qty - a.qty; });
-    var cnt = langsArr.length;
-    var word = cnt===1 ? 'язык' : (cnt<5 ? 'языка' : 'языков');
-    var details = langsArr.map(function(o){
-      return '<div class="stat-lang-row"><span class="stat-lang-name">'+esc(getLangDisplay(o.code))+'</span><span class="stat-lang-qty'+(o.qty<=0?' zero':'')+'">'+o.qty+' шт.</span></div>';
-    }).join('');
-    h += '<div class="item-lang-stat">'+
-      '<div class="stat-head" onclick="this.parentNode.classList.toggle(\'open\')">'+
-        '<div class="stat-head-left"><div class="stat-name">'+esc(g.name)+'</div>'+
-        '<div class="stat-summary">🌍 <b>'+cnt+'</b> '+word+' · 📦 <b>'+g.totalQty+'</b> шт.</div></div>'+
-        '<div class="stat-arrow">▶</div>'+
-      '</div>'+
-      '<div class="stat-body">'+details+'</div>'+
-    '</div>';
+    var langsArr = Object.keys(g.langs).map(function(code){ return {code:code, qty: g.langs[code]}; }); langsArr.sort(function(a,b){ return b.qty - a.qty; });
+    var cnt = langsArr.length; var word = cnt===1 ? 'язык' : (cnt<5 ? 'языка' : 'языков');
+    var details = langsArr.map(function(o){ return '<div class="stat-lang-row"><span class="stat-lang-name">'+esc(getLangDisplay(o.code))+'</span><span class="stat-lang-qty'+(o.qty<=0?' zero':'')+'">'+o.qty+' шт.</span></div>'; }).join('');
+    h += '<div class="item-lang-stat"><div class="stat-head" onclick="this.parentNode.classList.toggle(\'open\')"><div class="stat-head-left"><div class="stat-name">'+esc(g.name)+'</div><div class="stat-summary">🌍 <b>'+cnt+'</b> '+word+' · 📦 <b>'+g.totalQty+'</b> шт.</div></div><div class="stat-arrow">▶</div></div><div class="stat-body">'+details+'</div></div>';
   });
   cont.innerHTML = h;
 }
@@ -1226,314 +1492,169 @@ function renderCountByLangType(){
   var tb = document.getElementById('countLangTypeBody'); if(!tb) return;
   var byLang = {}, totals = {mag:0, booklet:0, poster:0, total:0};
   items.forEach(function(it){
-    var code = it.lang || 'ru';
-    if(!byLang[code]) byLang[code] = {mag:0, booklet:0, poster:0, total:0};
+    var code = it.lang || 'ru'; if(!byLang[code]) byLang[code] = {mag:0, booklet:0, poster:0, total:0};
     var q = totalIt(it);
-    if(it.type === 'Журнал'){ byLang[code].mag += q; totals.mag += q; }
-    else if(it.type === 'Брошюра'){ byLang[code].booklet += q; totals.booklet += q; }
-    else if(it.type === 'Постер'){ byLang[code].poster += q; totals.poster += q; }
-    byLang[code].total += q;
-    totals.total += q;
+    if(it.type === 'Журнал'){ byLang[code].mag += q; totals.mag += q; } else if(it.type === 'Брошюра'){ byLang[code].booklet += q; totals.booklet += q; } else if(it.type === 'Постер'){ byLang[code].poster += q; totals.poster += q; }
+    byLang[code].total += q; totals.total += q;
   });
-  var langs = Object.keys(byLang).sort(function(a,b){
-    if(a==='ru') return -1;
-    if(b==='ru') return 1;
-    return byLang[b].total - byLang[a].total;
-  });
+  var langs = Object.keys(byLang).sort(function(a,b){ if(a==='ru') return -1; if(b==='ru') return 1; return byLang[b].total - byLang[a].total; });
   if(langs.length === 0){ tb.innerHTML = '<tr><td colspan="5" style="text-align:center">—</td></tr>'; return; }
   var h = '';
-  langs.forEach(function(code){
-    var c = byLang[code];
-    h += '<tr><td><b>'+esc(getLangDisplay(code))+'</b></td><td>'+c.mag+'</td><td>'+c.booklet+'</td><td>'+c.poster+'</td><td><b>'+c.total+'</b></td></tr>';
-  });
+  langs.forEach(function(code){ var c = byLang[code]; h += '<tr><td><b>'+esc(getLangDisplay(code))+'</b></td><td>'+c.mag+'</td><td>'+c.booklet+'</td><td>'+c.poster+'</td><td><b>'+c.total+'</b></td></tr>'; });
   h += '<tr class="total-row"><td>ВСЕГО</td><td>'+totals.mag+'</td><td>'+totals.booklet+'</td><td>'+totals.poster+'</td><td>'+totals.total+'</td></tr>';
   tb.innerHTML = h;
 }
 
-/* === CHARTS === */
 function renderCharts(){
   try{
     var ctx = document.getElementById('chartMain'); if(!ctx) return;
     var tc = {};
-    items.forEach(function(it){
-      var tp = getTypeDisplay(it.type);
-      tc[tp] = (tc[tp]||0) + totalIt(it);
-    });
-    var labels = Object.keys(tc);
-    var data = labels.map(function(k){ return tc[k]; });
+    items.forEach(function(it){ var tp = getTypeDisplay(it.type); tc[tp] = (tc[tp]||0) + totalIt(it); });
+    var labels = Object.keys(tc); var data = labels.map(function(k){ return tc[k]; });
     var isDay = document.body.classList.contains('day');
     if(chartMainInst) chartMainInst.destroy();
-    chartMainInst = new Chart(ctx, {
-      type: 'doughnut',
-      data: {labels: labels, datasets: [{data: data, backgroundColor:['#f59e0b','#22c55e','#ec4899','#06b6d4']}]},
-      options: {responsive: true, plugins: {legend: {labels: {color: isDay ? '#111' : '#fff'}}}}
-    });
-  }catch(e){ console.error(e); }
+    chartMainInst = new Chart(ctx, { type: 'doughnut', data: {labels: labels, datasets: [{data: data, backgroundColor:['#f59e0b','#22c55e','#ec4899','#06b6d4']}]}, options: {responsive: true, plugins: {legend: {labels: {color: isDay ? '#111' : '#fff'}}}} });
+  }catch(e){}
 }
 
-/* === QTY === */
 function changeQty(id, d){
   if(!hasPerm('count')) return;
   var it = items.find(function(x){ return x.id == id; }); if(!it) return;
-  var old = parseInt(it.qty)||0;
-  var nv = Math.max(0, old + d);
-  if(nv === old) return;
-  it.qty = nv;
-  saveToLocal(); render();
+  var old = parseInt(it.qty)||0; var nv = Math.max(0, old + d); if(nv === old) return;
+  it.qty = nv; saveToLocal(); render();
 }
 
 function setQtyDirect(id, val){
   if(!hasPerm('count')){ render(); return; }
   var it = items.find(function(x){ return x.id == id; }); if(!it) return;
-  var newTotal = Math.max(0, parseInt(val)||0);
-  var stands = stSum(it);
+  var newTotal = Math.max(0, parseInt(val)||0); var stands = stSum(it);
   if(newTotal < stands){ toast('❌ Меньше, чем на стендах ('+stands+')'); render(); return; }
-  var newStock = newTotal - stands;
-  if(newStock === it.qty){ render(); return; }
-  it.qty = newStock;
-  saveToLocal(); render();
+  var newStock = newTotal - stands; if(newStock === it.qty){ render(); return; }
+  it.qty = newStock; saveToLocal(); render();
 }
 
-/* === DELETE === */
 function deleteItem(id){
   if(!hasPerm('del')) return;
   customConfirm('Удалить это издание?', function(){
     var it = items.find(function(x){ return x.id == id; }); if(!it) return;
-    items = items.filter(function(x){ return x.id != id; });
-    saveToLocal(); render();
+    items = items.filter(function(x){ return x.id != id; }); saveToLocal(); render();
     toast('🗑️ Удалено: ' + getDisplayName(it));
   });
 }
 
-/* === STAND EDITOR === */
 var _standItemId = null;
 function openStandEditor(id){
   if(!hasPerm('count')) return;
   var it = items.find(function(x){ return x.id == id; }); if(!it) return;
-  _standItemId = id;
-  renderStandEditor();
-  document.getElementById('standOverlay').classList.add('show');
+  _standItemId = id; renderStandEditor(); document.getElementById('standOverlay').classList.add('show');
 }
-function closeStandEditor(){
-  document.getElementById('standOverlay').classList.remove('show');
-  _standItemId = null;
-}
+function closeStandEditor(){ document.getElementById('standOverlay').classList.remove('show'); _standItemId = null; }
 function renderStandEditor(){
   if(!_standItemId) return;
   var it = items.find(function(x){ return x.id == _standItemId; }); if(!it) return;
-  var stock = parseInt(it.qty)||0;
-  var sum = stSum(it);
-  var total = stock + sum;
+  var stock = parseInt(it.qty)||0; var sum = stSum(it); var total = stock + sum;
   document.getElementById('standTitle').textContent = '🏛️ ' + getDisplayName(it);
-
   var h = '<div class="stand-info" id="standInfoBox">Всего: <b>'+total+'</b> шт. · На стендах: <b>'+sum+'</b> · В запасе: <b>'+stock+'</b></div>';
   for(var n=1;n<=4;n++){
     h += '<div class="stand-field"><span class="sf-label">🏛️ '+esc(standNames[n])+'</span><select id="sted-'+n+'" onchange="standLiveUpdate()">';
     for(var i=0;i<=STAND_MAX;i++) h += '<option value="'+i+'"'+(stGet(it,n)===i?' selected':'')+'>'+i+'</option>';
     h += '</select></div>';
   }
-  h += '<div style="display:flex;gap:8px;margin-top:14px">'+
-    '<button class="sec" onclick="closeStandEditor()" style="flex:1;padding:12px">Отмена</button>'+
-    '<button onclick="saveStandEditor()" style="flex:1;padding:12px;background:#22c55e;color:#000">💾 Сохранить</button>'+
-  '</div>';
+  h += '<div style="display:flex;gap:8px;margin-top:14px"><button class="sec" onclick="closeStandEditor()" style="flex:1;padding:12px">Отмена</button><button onclick="saveStandEditor()" style="flex:1;padding:12px;background:#22c55e;color:#000">💾 Сохранить</button></div>';
   document.getElementById('standEditorContent').innerHTML = h;
 }
 function standLiveUpdate(){
   if(!_standItemId) return;
   var it = items.find(function(x){ return x.id == _standItemId; }); if(!it) return;
-  var stock = parseInt(it.qty)||0;
-  var oldStands = stSum(it);
-  var newStands = 0;
+  var stock = parseInt(it.qty)||0; var oldStands = stSum(it); var newStands = 0;
   for(var n=1;n<=4;n++) newStands += Math.max(0, parseInt(document.getElementById('sted-'+n).value)||0);
-  var delta = newStands - oldStands;
-  var projStock = stock - delta;
-  var projTotal = projStock + newStands;
+  var delta = newStands - oldStands; var projStock = stock - delta; var projTotal = projStock + newStands;
   var info = document.getElementById('standInfoBox');
-  if(info){
-    var color = projStock < 0 ? '#ef4444' : (projStock === 0 ? '#f59e0b' : '#22c55e');
-    info.innerHTML = 'Всего: <b>'+projTotal+'</b> шт. · На стендах: <b>'+newStands+'</b> · В запасе: <b style="color:'+color+'">'+projStock+'</b>';
-  }
+  if(info){ var color = projStock < 0 ? '#ef4444' : (projStock === 0 ? '#f59e0b' : '#22c55e'); info.innerHTML = 'Всего: <b>'+projTotal+'</b> шт. · На стендах: <b>'+newStands+'</b> · В запасе: <b style="color:'+color+'">'+projStock+'</b>'; }
 }
 function saveStandEditor(){
   if(!_standItemId){ closeStandEditor(); return; }
   var it = items.find(function(x){ return x.id == _standItemId; }); if(!it){ closeStandEditor(); return; }
-  var oldStands = stSum(it);
-  var vals = {}, newStands = 0;
-  for(var n=1;n<=4;n++){
-    var v = Math.max(0, Math.min(STAND_MAX, parseInt(document.getElementById('sted-'+n).value)||0));
-    vals[n] = v; newStands += v;
-  }
+  var oldStands = stSum(it); var vals = {}, newStands = 0;
+  for(var n=1;n<=4;n++){ var v = Math.max(0, Math.min(STAND_MAX, parseInt(document.getElementById('sted-'+n).value)||0)); vals[n] = v; newStands += v; }
   var delta = newStands - oldStands;
-  if(delta > 0){
-    if((parseInt(it.qty)||0) < delta){ toast('❌ В запасе только '+(it.qty||0)+' шт.'); return; }
-    it.qty = (parseInt(it.qty)||0) - delta;
-  } else if(delta < 0){
-    it.qty = (parseInt(it.qty)||0) + Math.abs(delta);
-  }
-  it.standCounts = vals;
-  saveToLocal(); render(); closeStandEditor();
-  toast('✅ Сохранено');
+  if(delta > 0){ if((parseInt(it.qty)||0) < delta){ toast('❌ В запасе только '+(it.qty||0)+' шт.'); return; } it.qty = (parseInt(it.qty)||0) - delta; }
+  else if(delta < 0){ it.qty = (parseInt(it.qty)||0) + Math.abs(delta); }
+  it.standCounts = vals; saveToLocal(); render(); closeStandEditor(); toast('✅ Сохранено');
 }
 
-/* === RENAME === */
 var _renamingId = null;
 function openRename(id){
   if(!hasPerm('rename')) return;
   var it = items.find(function(x){ return x.id == id; }); if(!it) return;
-  _renamingId = id;
-  var langOpts = '';
-  Object.keys(LANGS).forEach(function(code){
-    langOpts += '<option value="'+code+'"'+((it.lang||'ru')===code?' selected':'')+'>'+esc(getLangDisplay(code))+'</option>';
-  });
+  _renamingId = id; var langOpts = '';
+  Object.keys(LANGS).forEach(function(code){ langOpts += '<option value="'+code+'"'+((it.lang||'ru')===code?' selected':'')+'>'+esc(getLangDisplay(code))+'</option>'; });
   var html = '';
   html += '<div style="margin-bottom:8px"><label style="font-size:0.8em;margin:0 0 3px">📝 Название</label><input id="rn-ru" value="'+esc(getDisplayName(it))+'"></div>';
   html += '<div style="margin-bottom:8px"><label style="font-size:0.8em;margin:0 0 3px">💡 Тема</label><input id="rn-theme" value="'+esc(it.theme||'')+'" placeholder="тема выпуска"></div>';
   html += '<div style="margin-bottom:8px"><label style="font-size:0.8em;margin:0 0 3px">🌍 Язык</label><select id="rn-lang">'+langOpts+'</select></div>';
-  html += '<div class="row"><div><label style="font-size:0.8em;margin:0 0 3px">📅 Год</label><input id="rn-year" value="'+esc(it.year||'')+'"></div>';
-  html += '<div><label style="font-size:0.8em;margin:0 0 3px">🔢 Номер</label><input id="rn-issueNum" value="'+esc(it.issueNum||'')+'"></div></div>';
-  document.getElementById('rnFields').innerHTML = html;
-  document.getElementById('rnOverlay').classList.add('show');
+  html += '<div class="row"><div><label style="font-size:0.8em;margin:0 0 3px">📅 Год</label><input id="rn-year" value="'+esc(it.year||'')+'"></div><div><label style="font-size:0.8em;margin:0 0 3px">🔢 Номер</label><input id="rn-issueNum" value="'+esc(it.issueNum||'')+'"></div></div>';
+  document.getElementById('rnFields').innerHTML = html; document.getElementById('rnOverlay').classList.add('show');
 }
 function closeRename(){ document.getElementById('rnOverlay').classList.remove('show'); _renamingId = null; }
 function saveRename(){
   if(!_renamingId){ closeRename(); return; }
   var it = items.find(function(x){ return x.id == _renamingId; }); if(!it){ closeRename(); return; }
-  var nameEl = document.getElementById('rn-ru');
-  if(nameEl && nameEl.value.trim()){ if(!it.names) it.names = {}; it.names.ru = nameEl.value.trim(); }
-  var tEl = document.getElementById('rn-theme');
-  if(tEl) it.theme = tEl.value.trim();
-  var lEl = document.getElementById('rn-lang');
-  if(lEl) it.lang = lEl.value;
-  var yEl = document.getElementById('rn-year');
-  if(yEl) it.year = yEl.value.trim();
-  var iEl = document.getElementById('rn-issueNum');
-  if(iEl) it.issueNum = iEl.value.trim();
-  closeRename(); saveToLocal(); render();
-  toast('✅ Сохранено');
+  var nameEl = document.getElementById('rn-ru'); if(nameEl && nameEl.value.trim()){ if(!it.names) it.names = {}; it.names.ru = nameEl.value.trim(); }
+  var tEl = document.getElementById('rn-theme'); if(tEl) it.theme = tEl.value.trim();
+  var lEl = document.getElementById('rn-lang'); if(lEl) it.lang = lEl.value;
+  var yEl = document.getElementById('rn-year'); if(yEl) it.year = yEl.value.trim();
+  var iEl = document.getElementById('rn-issueNum'); if(iEl) it.issueNum = iEl.value.trim();
+  closeRename(); saveToLocal(); render(); toast('✅ Сохранено');
 }
 
-/* === ADD === */
 function setAddType(t){
-  currentAddType = t;
-  var map = {'Журнал':'a-mag','Брошюра':'a-booklet','Постер':'a-poster'};
+  currentAddType = t; var map = {'Журнал':'a-mag','Брошюра':'a-booklet','Постер':'a-poster'};
   document.querySelectorAll('.typebtn').forEach(function(b){ b.classList.remove('active'); });
   if(map[t]){ var e = document.getElementById(map[t]); if(e) e.classList.add('active'); }
 }
 
 function addItem(){
   if(!hasPerm('add')){ toast('⚠️ Нет прав'); return; }
-  var titleVal = (document.getElementById('title').value||'').trim();
-  if(!titleVal){ toast('⚠️ Введите название!'); return; }
-
-  var totalInput = parseInt(document.getElementById('qty').value)||0;
-  var yearVal = (document.getElementById('year').value||'').trim();
-  var issueNumVal = (document.getElementById('issueNum').value||'').trim();
-  var langVal = (document.getElementById('lang')||{}).value || 'ru';
-  var s1 = Math.max(0, Math.min(STAND_MAX, parseInt((document.getElementById('s1')||{}).value)||0));
-  var s2 = Math.max(0, Math.min(STAND_MAX, parseInt((document.getElementById('s2')||{}).value)||0));
-  var s3 = Math.max(0, Math.min(STAND_MAX, parseInt((document.getElementById('s3')||{}).value)||0));
-  var s4 = Math.max(0, Math.min(STAND_MAX, parseInt((document.getElementById('s4')||{}).value)||0));
-  var sSum = s1+s2+s3+s4;
-
-  if(sSum > totalInput){ toast('❌ На стендах '+sSum+', а всего '+totalInput); return; }
-
+  var titleVal = (document.getElementById('title').value||'').trim(); if(!titleVal){ toast('⚠️ Введите название!'); return; }
+  var totalInput = parseInt(document.getElementById('qty').value)||0; var yearVal = (document.getElementById('year').value||'').trim(); var issueNumVal = (document.getElementById('issueNum').value||'').trim(); var langVal = (document.getElementById('lang')||{}).value || 'ru';
+  var s1 = Math.max(0, Math.min(STAND_MAX, parseInt((document.getElementById('s1')||{}).value)||0)); var s2 = Math.max(0, Math.min(STAND_MAX, parseInt((document.getElementById('s2')||{}).value)||0)); var s3 = Math.max(0, Math.min(STAND_MAX, parseInt((document.getElementById('s3')||{}).value)||0)); var s4 = Math.max(0, Math.min(STAND_MAX, parseInt((document.getElementById('s4')||{}).value)||0));
+  var sSum = s1+s2+s3+s4; if(sSum > totalInput){ toast('❌ На стендах '+sSum+', а всего '+totalInput); return; }
   var stockQty = totalInput - sSum;
-  var newItem = {
-    id: Date.now() + Math.random(),
-    names: {ru: titleVal},
-    type: currentAddType,
-    cat: (document.getElementById('cat').value||'-'),
-    lang: langVal,
-    year: yearVal,
-    issueNum: issueNumVal,
-    theme: '',
-    qty: stockQty,
-    standCounts: {1:s1,2:s2,3:s3,4:s4},
-    favorite: false
-  };
+  var newItem = { id: Date.now() + Math.random(), names: {ru: titleVal}, type: currentAddType, cat: (document.getElementById('cat').value||'-'), lang: langVal, year: yearVal, issueNum: issueNumVal, theme: '', qty: stockQty, standCounts: {1:s1,2:s2,3:s3,4:s4}, favorite: false };
   items.push(newItem);
-  document.getElementById('title').value = '';
-  document.getElementById('year').value = '';
-  document.getElementById('issueNum').value = '';
-  document.getElementById('s1').value = '0';
-  document.getElementById('s2').value = '0';
-  document.getElementById('s3').value = '0';
-  document.getElementById('s4').value = '0';
-  saveToLocal(); render();
-  toast('✅ Добавлено: ' + titleVal + (sSum>0?', на стендах '+sSum:''));
+  document.getElementById('title').value = ''; document.getElementById('year').value = ''; document.getElementById('issueNum').value = ''; document.getElementById('s1').value = '0'; document.getElementById('s2').value = '0'; document.getElementById('s3').value = '0'; document.getElementById('s4').value = '0';
+  saveToLocal(); render(); toast('✅ Добавлено: ' + titleVal + (sSum>0?', на стендах '+sSum:''));
 }
 
-/* === FILTERS === */
 function setSort(v){ curSort = v; localStorage.setItem('stand_sort', v); render(); }
 function setTypeFilter(v){ curTypeFilter = v; render(); }
 function setLangFilter(v){ curLangFilter = v; render(); }
 function setStandFilter(v){ curStandFilter = v; localStorage.setItem('stand_filter', v); render(); }
 function debouncedRender(){ clearTimeout(renderTimer); renderTimer = setTimeout(render, 250); }
 
-/* === CUSTOM CONFIRM === */
 var _ccCallback = null;
 function customConfirm(msg, cb){
-  document.getElementById('ccTitle').textContent = 'Подтверждение';
-  document.getElementById('ccMsg').textContent = msg;
-  document.getElementById('ccOverlay').classList.add('show');
-  _ccCallback = cb;
+  document.getElementById('ccTitle').textContent = 'Подтверждение'; document.getElementById('ccMsg').textContent = msg; document.getElementById('ccOverlay').classList.add('show'); _ccCallback = cb;
 }
-function _ccClose(){
-  document.getElementById('ccOverlay').classList.remove('show');
-  _ccCallback = null;
-}
+function _ccClose(){ document.getElementById('ccOverlay').classList.remove('show'); _ccCallback = null; }
 document.getElementById('ccOk').onclick = function(){ var cb = _ccCallback; _ccClose(); if(cb) cb(); };
 document.getElementById('ccCancel').onclick = _ccClose;
 document.getElementById('ccOverlay').onclick = function(e){ if(e.target===this) _ccClose(); };
 
-/* === INIT === */
 function init(){
-  applyTheme();
-  loadFromLocal();
-
+  applyTheme(); loadFromLocal();
   if(currentUserEmail){
     currentUser = tryRestoreCurrentUser();
-    if(!currentUser){
-      currentUserEmail = '';
-      localStorage.removeItem('stand_user_email');
-    } else if(currentUser.active === false){
-      currentUser = null;
-      currentUserEmail = '';
-      localStorage.removeItem('stand_user_email');
-      localStorage.removeItem('stand_user_name');
-      localStorage.removeItem('stand_user_surname');
-    }
+    if(!currentUser){ currentUserEmail = ''; localStorage.removeItem('stand_user_email'); }
+    else if(currentUser.active === false){ currentUser = null; currentUserEmail = ''; localStorage.removeItem('stand_user_email'); localStorage.removeItem('stand_user_name'); localStorage.removeItem('stand_user_surname'); }
   }
-
-  if(!cloudId){
-    if(currentUser){
-      showRegister(true);
-    } else {
-      showRegister(false);
-    }
-    return;
-  }
-
-  if(currentUser){
-    document.getElementById('mainContent').style.display = 'block';
-    updateUI();
-    setupCollapsibleCards();
-  } else {
-    showRegister(false);
-  }
-
-  if(cloudEnabled && cloudId){
-    initFirebase();
-  } else {
-    setSyncState('offline');
-  }
+  if(!cloudId){ if(currentUser) showRegister(true); else showRegister(false); return; }
+  if(currentUser){ document.getElementById('mainContent').style.display = 'block'; updateUI(); setupCollapsibleCards(); } else { showRegister(false); }
+  if(cloudEnabled && cloudId){ initFirebase(); } else { setSyncState('offline'); }
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  init();
-}
+if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
 </script>
 </body>
 </html>

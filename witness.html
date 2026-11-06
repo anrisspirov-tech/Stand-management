@@ -31,15 +31,12 @@ button:disabled{opacity:0.5;cursor:not-allowed}
 .toast.ok{border-color:var(--ok);background:rgba(34,197,94,0.95);color:#000}
 .toast.err{border-color:var(--err);background:rgba(239,68,68,0.95)}
 
-/* Подсказка-гид */
 .guide-tip{background:rgba(6,182,212,0.12);border:2px solid #06b6d4;border-radius:10px;padding:11px 12px;margin-bottom:12px;font-size:0.92em;line-height:1.5;color:var(--text)}
 .guide-tip b{color:#06b6d4}
 
-/* Заголовок шага */
 .step-title{display:flex;align-items:center;gap:10px;margin:2px 0 12px;font-size:1.05em;font-weight:bold;line-height:1.3}
 .step-num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:var(--primary);color:#fff;border-radius:50%;font-size:0.9em;flex-shrink:0;font-weight:bold}
 
-/* Тележки — крупные кнопки 2×2 */
 .stand-tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:4px}
 .stand-tab{padding:14px 8px;font-size:1em;font-weight:bold;background:var(--card2);color:var(--text);border:2px solid var(--border);border-radius:10px;cursor:pointer;margin:0;transition:all 0.15s;text-align:center;line-height:1.3}
 .stand-tab.active{background:#06b6d4;color:#000;border-color:#06b6d4;box-shadow:0 0 12px rgba(6,182,212,0.55)}
@@ -53,6 +50,7 @@ button:disabled{opacity:0.5;cursor:not-allowed}
 
 .report-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
 .report-card{background:var(--card2);border:2px solid var(--border);border-radius:10px;padding:12px;transition:all 0.15s}
+.report-card.out-of-stock{opacity:0.55;border-style:dashed}
 .report-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
 .report-card-title{flex:1;min-width:0;font-weight:bold;line-height:1.3;word-break:break-word;font-size:1.05em}
 .report-card-lang{font-size:1em;color:#c084fc;font-weight:bold;line-height:1.3;margin-top:4px;word-break:break-word}
@@ -60,6 +58,8 @@ button:disabled{opacity:0.5;cursor:not-allowed}
 .report-card-theme::before{content:'💡 '}
 .report-card-meta{font-size:0.8em;color:var(--muted);margin-top:3px;line-height:1.4}
 .report-card-avail{font-size:0.85em;color:var(--ok);font-weight:bold;white-space:nowrap;background:rgba(34,197,94,0.15);padding:4px 10px;border-radius:99px;flex-shrink:0}
+.report-card.out-of-stock .report-card-avail{background:rgba(239,68,68,0.15);color:var(--err)}
+.report-card-out-note{text-align:center;color:var(--muted);font-size:0.88em;padding:8px 0 2px;line-height:1.4}
 
 .draft-badge{display:inline-block;background:rgba(34,197,94,0.2);color:var(--ok);font-weight:bold;padding:4px 10px;border-radius:8px;font-size:0.85em;margin-bottom:8px;border:1px solid var(--ok);}
 
@@ -178,7 +178,6 @@ var SK = (function(){
   var PFX = 'enc1:';
   var CLIENT_ID = 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
-  // ---------- Шифрование (ключ создаётся ОДИН раз и кэшируется) ----------
   var _keyP = null;
   function getKey(){
     if(!_keyP){
@@ -196,7 +195,6 @@ var SK = (function(){
   function toB64(u8){ var s = '', i; for(i = 0; i < u8.length; i += 8192) s += String.fromCharCode.apply(null, u8.subarray(i, i + 8192)); return btoa(s); }
   function fromB64(b){ var s = atob(b), u = new Uint8Array(s.length), i; for(i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; }
 
-  // Если шифрование недоступно — выбрасываем ошибку (открытый текст в облако НЕ уходит).
   async function encryptData(text){
     if(text == null || text === '') return text;
     text = String(text);
@@ -207,7 +205,6 @@ var SK = (function(){
     var all = new Uint8Array(12 + ct.length); all.set(iv, 0); all.set(ct, 12);
     return PFX + toB64(all);
   }
-  // Читает и новый формат (enc1:...), и старый (без префикса); обычный текст возвращает как есть.
   async function decryptData(t){
     if(t == null || t === '' || typeof t !== 'string') return t;
     var marked = t.indexOf(PFX) === 0, raw = marked ? t.slice(PFX.length) : t;
@@ -219,7 +216,6 @@ var SK = (function(){
       return new TextDecoder().decode(pt);
     }catch(e){ return t; }
   }
-  // Необратимый идентификатор email (для ID документов и поиска — сам email в базе не виден)
   var _hc = {};
   async function hashEmail(email){
     email = String(email || '').trim().toLowerCase(); if(!email) return '';
@@ -235,7 +231,6 @@ var SK = (function(){
     });
   }
 
-  // ---------- Утилиты слияния ----------
   function clone(o){ return o === undefined ? undefined : JSON.parse(JSON.stringify(o)); }
   function stable(o){
     if(o === null || typeof o !== 'object') return JSON.stringify(o);
@@ -269,7 +264,6 @@ var SK = (function(){
     return b !== undefined ? l : r;
   }
   function itemHKey(h){ return h.ts + '|' + h.action + '|' + h.delta + '|' + (h.note || ''); }
-  // Слияние одной позиции: числа (склад, стенды) складываются как ИЗМЕНЕНИЯ (дельты), а не перезаписываются
   function mergeItem(b, l, r){
     var out = clone(r);
     Object.keys(l).forEach(function(k){
@@ -295,14 +289,14 @@ var SK = (function(){
     r.forEach(function(ri){
       var id = String(ri.id); seen[id] = 1;
       var li = lm[id], bi = bm[id];
-      if(!li){ if(bi && eq(bi, ri)) return; out.push(ri); return; }   // удалено у нас и не менялось в облаке → удаляем
+      if(!li){ if(bi && eq(bi, ri)) return; out.push(ri); return; }
       if(eq(li, ri)){ out.push(ri); return; }
-      if(!bi){ out.push(ri); return; }                               // нет базы → облако главнее
+      if(!bi){ out.push(ri); return; }
       out.push(mergeItem(bi, li, ri));
     });
     l.forEach(function(li){
       var id = String(li.id); if(seen[id]) return;
-      var bi = bm[id]; if(bi && eq(bi, li)) return;                  // удалено в облаке другим устройством
+      var bi = bm[id]; if(bi && eq(bi, li)) return;
       out.push(li);
     });
     return out;
@@ -343,7 +337,6 @@ var SK = (function(){
     return out;
   }
 
-  // ---------- Шифрование/расшифровка состояния для облака ----------
   async function encItem(it){
     var o = Object.assign({}, it);
     if(Array.isArray(o.history) && o.history.length){ o.hx = await encryptData(JSON.stringify(o.history)); }
@@ -371,8 +364,6 @@ var SK = (function(){
     return o;
   }
 
-  // ---------- Движок синхронизации ----------
-  // o: {db(), fs, cloudId(), enabled(), keys[], getState(), applyState(s), clean:{items,users}, baseKey, onStatus(st)}
   function createEngine(o){
     var eng = {base: null, unsub: null, timer: null, retry: null, fails: 0, chain: Promise.resolve(), curId: null};
 
@@ -463,7 +454,6 @@ var SK = (function(){
       if(!res) return;
       eng.fails = 0;
       eng.base = clone(res.cloud); saveBase();
-      // правки, сделанные пока шла отправка, накладываем поверх, ничего не теряя
       var cur = o.getState();
       var fin = mergeState(res.local, cur, res.cloud, o.keys);
       if(!eq(fin, cur)) o.applyState(fin);
@@ -474,7 +464,6 @@ var SK = (function(){
 
     eng.schedule = schedule;
     eng.pushNow = function(force){ return enqueue(function(){ return doPush(!!force); }); };
-    // «Получить из облака»: облако главнее, локальные несинхронизированные правки отбрасываются
     eng.pullNow = function(){
       return enqueue(async function(){
         var db = o.db(), id = o.cloudId(); if(!db || !id) return;
@@ -506,7 +495,6 @@ var SK = (function(){
     return eng;
   }
 
-  // ---------- Отчёты со стенда: применяются ровно ОДИН раз тем приложением, которое открылось первым ----------
   async function applyReport(db, fs, cloudId, reportId, applierName){
     var reportRef = fs.doc(db, 'stands', cloudId, 'reports', reportId);
     var standRef = fs.doc(db, 'stands', cloudId);
@@ -551,7 +539,6 @@ var SK = (function(){
     });
     return out;
   }
-  // Запись документа только если его ещё нет (повторная отправка не может «воскресить» уже применённый отчёт)
   async function putOnce(db, fs, ref, data){
     var created = false;
     await fs.runTransaction(db, async function(tx){
@@ -658,7 +645,6 @@ function saveDraft(){
   }catch(e){}
 }
 
-// ИСПРАВЛЕННАЯ ФУНКЦИЯ ИНИЦИАЛИЗАЦИИ
 async function initFirebase(){
   try {
     const {initializeApp} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
@@ -668,15 +654,11 @@ async function initFirebase(){
       cloudDb = fsm.getFirestore(cloudApp);
     }
     cloudFns = fsm;
-    
-    // --- АНОНИМНАЯ АВТОРИЗАЦИЯ ---
     try {
       const {getAuth, signInAnonymously} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js');
       const auth = getAuth(cloudApp);
       if (!auth.currentUser) { await signInAnonymously(auth); }
     } catch(e) { console.warn('Auth failed:', e); }
-    // -----------------------------
-
     return cloudFns;
   } catch(e) {
     console.error("Firebase Init Error:", e);
@@ -684,7 +666,6 @@ async function initFirebase(){
   }
 }
 
-// Документ возвещателя хранится под необратимым ID (хэш email); старые документы с открытым email переносятся автоматически
 async function loadWitness(fns, standId, email){
   const eh = await SK.hashEmail(email);
   const ref = fns.doc(cloudDb, 'stands', standId, 'witnesses', eh);
@@ -745,7 +726,6 @@ async function doRegister(){
       return;
     }
 
-    // имя, фамилия и email хранятся в облаке только в зашифрованном виде
     await fns.setDoc(witnessRef, {
       email: await encryptData(email),
       name: await encryptData(name),
@@ -841,7 +821,7 @@ function subscribeToItems(){
   const fns = cloudFns;
   const standRef = fns.doc(cloudDb, 'stands', currentStandId);
   itemsUnsub = fns.onSnapshot(standRef, snap => {
-    if(!snap.exists()) return; // не затираем локальную копию
+    if(!snap.exists()) return;
     const data = snap.data();
     if(Array.isArray(data.items)) items = data.items;
     if(data.standNames && typeof data.standNames === 'object'){
@@ -857,16 +837,22 @@ function subscribeToItems(){
 
 function onItemsUpdated(){
   recomputeItemsOnStand();
-  fillDraftMeta();   // записи отчёта НЕ удаляются и не урезаются при обновлении склада
+  fillDraftMeta();
   renderStandTabs();
   renderWizard();
   renderCartBar();
 }
 
+// ИЗМЕНЕНО: показываем весь используемый каталог (что есть хотя бы на одной тележке),
+// чтобы на любой тележке было видно, что журнал в системе существует — просто на этой тележке его сейчас 0.
 function recomputeItemsOnStand(){
   itemsOnStand = items.filter(it => {
-    const count = (it.standCounts && parseInt(it.standCounts[currentWitnessStand])) || 0;
-    return count > 0;
+    if(REPORTABLE_TYPES.indexOf(getItemType(it)) === -1) return false;
+    const sc = it.standCounts || {};
+    for(let n = 1; n <= 4; n++){
+      if((parseInt(sc[n]) || 0) > 0) return true;
+    }
+    return false;
   });
 }
 
@@ -907,10 +893,14 @@ function getAvailableTypes(){
   return ordered;
 }
 
+// ИЗМЕНЕНО: сортировка — сначала те, что есть на текущей тележке (avail>0), потом остальные.
 function getReportableItemsForType(type){
   return itemsOnStand
-    .filter(it => getItemType(it) === type && REPORTABLE_TYPES.indexOf(getItemType(it)) !== -1)
+    .filter(it => getItemType(it) === type)
     .sort((a, b) => {
+      const avA = parseInt((a.standCounts || {})[currentWitnessStand]) || 0;
+      const avB = parseInt((b.standCounts || {})[currentWitnessStand]) || 0;
+      if((avA > 0) !== (avB > 0)) return avA > 0 ? -1 : 1;
       const cmpName = getItemName(a).localeCompare(getItemName(b));
       if(cmpName !== 0) return cmpName;
       const cmpLang = (a.lang||'ru').localeCompare(b.lang||'ru');
@@ -934,8 +924,7 @@ function renderWizard(){
 
   const types = getAvailableTypes();
   if(types.length === 0){
-    body.innerHTML = '<div class="card"><div class="wizard-empty">📦 На <b>' + esc(standNames[currentWitnessStand]) +
-      '</b> сейчас нет журналов или брошюр для отчёта.<br><br>Выберите другую тележку выше.</div></div>';
+    body.innerHTML = '<div class="card"><div class="wizard-empty">📦 Пока нет журналов или брошюр ни на одной тележке.<br><br>Обратитесь к координатору — литература ещё не назначена.</div></div>';
     return;
   }
   if (types.indexOf(currentTypeTab) === -1) currentTypeTab = types[0];
@@ -970,7 +959,8 @@ function renderWizard(){
   } else {
     listHtml = '<div class="report-list">';
     filtered.forEach(it => {
-      const avail = parseInt(it.standCounts[currentWitnessStand]) || 0;
+      const avail = parseInt((it.standCounts || {})[currentWitnessStand]) || 0;
+      const hasStock = avail > 0;
       const name = getItemName(it);
       const theme = getItemTheme(it);
       const extra = getItemExtra(it);
@@ -978,7 +968,7 @@ function renderWizard(){
       const idKey = String(it.id);
       const draftQty = draftQtyFor(idKey);
 
-      listHtml += '<div class="report-card">' +
+      listHtml += '<div class="report-card' + (hasStock ? '' : ' out-of-stock') + '">' +
         '<div class="report-card-head">' +
           '<div style="flex:1;min-width:0">' +
             '<div class="report-card-title">' + esc(name) + '</div>' +
@@ -988,11 +978,16 @@ function renderWizard(){
           '</div>' +
           '<div class="report-card-avail">' + avail + ' шт.</div>' +
         '</div>' +
-        '<div id="badge-' + idKey + '" class="draft-badge" style="display:' + (draftQty > 0 ? 'inline-block' : 'none') + ';">🛒 В отчёте: <span>' + draftQty + '</span> шт.</div>' +
-        '<div class="add-controls">' +
-          '<input type="number" id="add-qty-' + idKey + '" class="add-qty" value="1" min="1" max="' + avail + '" inputmode="numeric">' +
-          '<button class="add-btn" onclick="addToDraft(\'' + esc(idKey) + '\', \'add-qty-' + idKey + '\')">➕ Добавить в отчёт</button>' +
-        '</div>' +
+        (hasStock
+          ? (
+              '<div id="badge-' + idKey + '" class="draft-badge" style="display:' + (draftQty > 0 ? 'inline-block' : 'none') + ';">🛒 В отчёте: <span>' + draftQty + '</span> шт.</div>' +
+              '<div class="add-controls">' +
+                '<input type="number" id="add-qty-' + idKey + '" class="add-qty" value="1" min="1" max="' + avail + '" inputmode="numeric">' +
+                '<button class="add-btn" onclick="addToDraft(\'' + esc(idKey) + '\', \'add-qty-' + idKey + '\')">➕ Добавить в отчёт</button>' +
+              '</div>'
+            )
+          : '<div class="report-card-out-note">Этой литературы сейчас нет на ' + esc(standNames[currentWitnessStand]) + '</div>'
+        ) +
       '</div>';
     });
     listHtml += '</div>';
@@ -1021,7 +1016,8 @@ function addToDraft(id, qtyInputId) {
   if (q < 1) q = 1;
   const it = items.find(x => String(x.id) === String(id));
   if(!it) return;
-  const avail = parseInt(it.standCounts[currentWitnessStand]) || 0;
+  const avail = parseInt((it.standCounts || {})[currentWitnessStand]) || 0;
+  if(avail <= 0){ toast('На ' + standNames[currentWitnessStand] + ' нет этой литературы', 'err', 3000); return; }
   const key = dkey(currentWitnessStand, id);
   const currentInDraft = draft[key] ? (parseInt(draft[key].q) || 0) : 0;
 
@@ -1031,7 +1027,7 @@ function addToDraft(id, qtyInputId) {
     toast('На ' + standNames[currentWitnessStand] + ' есть только ' + q + ' шт.', 'err', 3000);
   }
   draft[key] = Object.assign({s:currentWitnessStand, id:String(id), at:(draft[key] && draft[key].at) || Date.now()}, itemMeta(it), {q: currentInDraft + q});
-  saveDraft();   // сразу в память телефона — переживает выключение экрана и перезапуск
+  saveDraft();
 
   const badge = document.getElementById('badge-' + id);
   if (badge) { badge.style.display = 'inline-block'; badge.querySelector('span').textContent = draft[key].q; }
@@ -1095,7 +1091,7 @@ function renderCartList() {
 function changeCartQty(key, delta) {
   const e = draft[key]; if(!e) return;
   const it = items.find(x => String(x.id) === String(e.id));
-  const avail = it ? (parseInt(it.standCounts[e.s]) || 0) : Infinity;
+  const avail = it ? (parseInt((it.standCounts || {})[e.s]) || 0) : Infinity;
   const next = (parseInt(e.q) || 0) + delta;
   if (next <= 0) { delete draft[key]; }
   else if (delta > 0 && next > avail) { toast('На стенде только ' + avail + ' шт.', 'err'); return; }
@@ -1148,7 +1144,6 @@ function renderOutboxBar(){
     el.textContent = flushing ? '⏳ Отправка отчёта…' : ('⚠️ Отчёт сохранён, но не отправлен (' + pending + ' шт.) — нажмите, чтобы повторить');
   } else el.style.display = 'none';
 }
-// Отправка с повтором: строки отправляются ровно один раз (ID документа постоянный), при обрыве связи ничего не теряется
 async function flushOutbox(){
   if(flushing || isDeactivated || !currentUser || !currentStandId) return;
   const ob = loadOutbox();
@@ -1204,7 +1199,6 @@ async function sendCart() {
     name: (currentUser.name + ' ' + currentUser.surname).trim(),
     lines: keys.map(k => ({s:draft[k].s, id:draft[k].id, q:draft[k].q, n:draft[k].n, t:draft[k].t, e:draft[k].e, l:draft[k].l, ty:draft[k].ty, at:draft[k].at, done:false}))
   };
-  // сначала в надёжную очередь, потом очищаем черновик — отчёт не может потеряться
   const ob = loadOutbox(); ob.push(entry); saveOutbox(ob);
   draft = {}; saveDraft(); renderCartBar(); closeCart(); renderWizard();
   toast('Отчёт сохранён, отправляется…', 'ok');
@@ -1230,7 +1224,7 @@ async function init(){
     const cached = JSON.parse(localStorage.getItem(LS_NAMES_JSON) || 'null');
     if(cached && typeof cached === 'object'){ for(let n=1; n<=4; n++){ if(cached[n]) standNames[n] = String(cached[n]); } }
   }catch(e){}
-  loadItemsCache();      // работает и без интернета
+  loadItemsCache();
   recomputeItemsOnStand();
   startApp();
   renderOutboxBar();

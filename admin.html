@@ -214,7 +214,6 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 #scrollTopBtn:active{transform:scale(0.95)}
 #adminBadge{display:none;position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;border-radius:99px;padding:1px 6px;font-size:0.65em;line-height:1.2;font-weight:bold;min-width:16px;text-align:center}
 
-/* Стили для больших вкладок */
 .main-tab{flex:1;padding:12px;border-radius:8px;font-weight:bold;font-size:1em;border:none;cursor:pointer;transition:all 0.2s}
 .main-tab.active{background:var(--primary);color:var(--primary-text);box-shadow:0 4px 10px rgba(245,158,11,0.4)}
 .main-tab:not(.active){background:var(--card2);color:var(--muted);border:1px solid var(--border)}
@@ -237,13 +236,11 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 
 <div class="wrap">
 
-<!-- ВКЛАДКИ -->
 <div style="display:flex;gap:10px;margin:10px 0;">
   <button class="main-tab active" id="tab-lit" onclick="switchView('lit')">📚 Литература</button>
   <button class="main-tab" id="tab-admin" onclick="switchView('admin')">⚙️ Управление</button>
 </div>
 
-<!-- РАЗДЕЛ 1: ЛИТЕРАТУРА -->
 <div id="view-lit">
   <div class="stats">
   <div class="stat"><div id="tot" style="font-weight:bold;font-size:1.2em">0</div><div class="small">Всего</div></div>
@@ -434,12 +431,11 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
   </div>
 </div>
 
-<!-- РАЗДЕЛ 2: УПРАВЛЕНИЕ -->
 <div id="view-admin" style="display:none">
   <div class="card" style="border:2px solid #06b6d4">
   <b style="color:#06b6d4">☁️ Синхронизация</b>
   <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
-  <button onclick="pushToCloud()" style="flex:1;background:#06b6d4;color:#000">☁️ Отправить</button>
+  <button onclick="pushToCloud(true)" style="flex:1;background:#06b6d4;color:#000">☁️ Отправить</button>
   <button onclick="pullFromCloud()" style="flex:1" class="sec">⬇️ Получить</button>
   </div>
   <label style="margin-top:10px">Stand ID</label>
@@ -572,7 +568,6 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 
 </div>
 
-<!-- ВСПЛЫВАЮЩИЕ ОКНА -->
 <div id="onboardOverlay">
 <div id="onboardBox">
 <div class="onb-icon">🔗</div>
@@ -697,6 +692,414 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <div id="toastBox"></div>
 
 <script>
+// ==========================================
+// ЯДРО СИНХРОНИЗАЦИИ И ШИФРОВАНИЯ (AES-GCM) — ОДИНАКОВО ВО ВСЕХ 3 ФАЙЛАХ
+// Ключ менять нельзя без пересоздания данных: он должен быть одинаковым во всех 3 файлах.
+// ==========================================
+const SECRET_KEY_STRING = "StandApp_SuperSecret_2026!777";
+
+if(typeof crypto === 'undefined' || !crypto.subtle){
+  setTimeout(function(){ if(typeof alert === 'function') alert('⚠️ Шифрование недоступно в этом режиме браузера. Откройте приложение через https:// или как установленное приложение — иначе синхронизация не будет работать (данные без шифрования в облако не отправляются).'); }, 1500);
+}
+var SK = (function(){
+  var PFX = 'enc1:';
+  var CLIENT_ID = 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+  // ---------- Шифрование (ключ создаётся ОДИН раз и кэшируется) ----------
+  var _keyP = null;
+  function getKey(){
+    if(!_keyP){
+      _keyP = (async function(){
+        var enc = new TextEncoder();
+        var km = await crypto.subtle.importKey('raw', enc.encode(SECRET_KEY_STRING), {name:'PBKDF2'}, false, ['deriveKey']);
+        return crypto.subtle.deriveKey(
+          {name:'PBKDF2', salt: enc.encode('stand-salt-123'), iterations:100000, hash:'SHA-256'},
+          km, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']);
+      })();
+      _keyP.catch(function(){ _keyP = null; });
+    }
+    return _keyP;
+  }
+  function toB64(u8){ var s = '', i; for(i = 0; i < u8.length; i += 8192) s += String.fromCharCode.apply(null, u8.subarray(i, i + 8192)); return btoa(s); }
+  function fromB64(b){ var s = atob(b), u = new Uint8Array(s.length), i; for(i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; }
+
+  // Если шифрование недоступно — выбрасываем ошибку (открытый текст в облако НЕ уходит).
+  async function encryptData(text){
+    if(text == null || text === '') return text;
+    text = String(text);
+    if(text.indexOf(PFX) === 0) return text;
+    var key = await getKey();
+    var iv = crypto.getRandomValues(new Uint8Array(12));
+    var ct = new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM', iv:iv}, key, new TextEncoder().encode(text)));
+    var all = new Uint8Array(12 + ct.length); all.set(iv, 0); all.set(ct, 12);
+    return PFX + toB64(all);
+  }
+  // Читает и новый формат (enc1:...), и старый (без префикса); обычный текст возвращает как есть.
+  async function decryptData(t){
+    if(t == null || t === '' || typeof t !== 'string') return t;
+    var marked = t.indexOf(PFX) === 0, raw = marked ? t.slice(PFX.length) : t;
+    if(!marked && (raw.length < 36 || /[^A-Za-z0-9+\/=]/.test(raw))) return t;
+    try{
+      var all = fromB64(raw); if(all.length < 29) return t;
+      var key = await getKey();
+      var pt = await crypto.subtle.decrypt({name:'AES-GCM', iv: all.slice(0, 12)}, key, all.slice(12));
+      return new TextDecoder().decode(pt);
+    }catch(e){ return t; }
+  }
+  // Необратимый идентификатор email (для ID документов и поиска — сам email в базе не виден)
+  var _hc = {};
+  async function hashEmail(email){
+    email = String(email || '').trim().toLowerCase(); if(!email) return '';
+    if(_hc[email]) return _hc[email];
+    var d = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(SECRET_KEY_STRING + '|' + email)));
+    var s = ''; for(var i = 0; i < d.length; i++) s += ('0' + d[i].toString(16)).slice(-2);
+    return (_hc[email] = s.slice(0, 40));
+  }
+  function withTimeout(p, ms){
+    return new Promise(function(res, rej){
+      var t = setTimeout(function(){ rej(new Error('timeout')); }, ms || 15000);
+      Promise.resolve(p).then(function(v){ clearTimeout(t); res(v); }, function(e){ clearTimeout(t); rej(e); });
+    });
+  }
+
+  // ---------- Утилиты слияния ----------
+  function clone(o){ return o === undefined ? undefined : JSON.parse(JSON.stringify(o)); }
+  function stable(o){
+    if(o === null || typeof o !== 'object') return JSON.stringify(o);
+    if(Array.isArray(o)) return '[' + o.map(stable).join(',') + ']';
+    return '{' + Object.keys(o).sort().map(function(k){ return JSON.stringify(k) + ':' + stable(o[k]); }).join(',') + '}';
+  }
+  function eq(a, b){ return stable(a) === stable(b); }
+  function idxBy(arr, fn){ var m = {}; (arr || []).forEach(function(x){ m[fn(x)] = x; }); return m; }
+
+  function mergeLog(b, l, r, keyFn, cap){
+    b = b || []; l = l || []; r = r || [];
+    if(eq(l, r)) return r; if(eq(l, b)) return r; if(eq(r, b)) return l;
+    var seen = {}, out = [];
+    r.concat(l).forEach(function(x){ var k = keyFn(x); if(seen[k]) return; seen[k] = 1; out.push(x); });
+    out.sort(function(a, c){ return (c.ts || 0) - (a.ts || 0); });
+    return out.slice(0, cap);
+  }
+  function mergeValue(b, l, r){
+    if(eq(l, r)) return r;
+    if(b !== undefined){ if(eq(l, b)) return r; if(eq(r, b)) return l; }
+    if(Array.isArray(l) && Array.isArray(r)){
+      var seen = {}, out = [];
+      r.concat(l).forEach(function(x){ var k = stable(x); if(seen[k]) return; seen[k] = 1; out.push(x); });
+      return out;
+    }
+    if(l && r && typeof l === 'object' && typeof r === 'object'){
+      var o = clone(r);
+      Object.keys(l).forEach(function(k){ o[k] = mergeValue((b && typeof b === 'object') ? b[k] : undefined, l[k], r[k]); });
+      return o;
+    }
+    return b !== undefined ? l : r;
+  }
+  function itemHKey(h){ return h.ts + '|' + h.action + '|' + h.delta + '|' + (h.note || ''); }
+  // Слияние одной позиции: числа (склад, стенды) складываются как ИЗМЕНЕНИЯ (дельты), а не перезаписываются
+  function mergeItem(b, l, r){
+    var out = clone(r);
+    Object.keys(l).forEach(function(k){
+      if(eq(l[k], b[k])) return;
+      if(k === 'qty'){
+        out.qty = Math.max(0, (parseInt(r.qty) || 0) + ((parseInt(l.qty) || 0) - (parseInt(b.qty) || 0)));
+      } else if(k === 'standCounts'){
+        var sc = {};
+        for(var n = 1; n <= 4; n++){
+          var bv = parseInt((b.standCounts || {})[n]) || 0, lv = parseInt((l.standCounts || {})[n]) || 0, rv = parseInt((r.standCounts || {})[n]) || 0;
+          sc[n] = (lv === bv) ? rv : Math.max(0, rv + (lv - bv));
+        }
+        out.standCounts = sc;
+      } else if(k === 'history'){
+        out.history = mergeLog(b.history, l.history, r.history, itemHKey, 50);
+      } else out[k] = clone(l[k]);
+    });
+    return out;
+  }
+  function mergeItems(b, l, r){
+    var bm = idxBy(b, function(x){ return String(x.id); }), lm = idxBy(l, function(x){ return String(x.id); });
+    var out = [], seen = {};
+    r.forEach(function(ri){
+      var id = String(ri.id); seen[id] = 1;
+      var li = lm[id], bi = bm[id];
+      if(!li){ if(bi && eq(bi, ri)) return; out.push(ri); return; }   // удалено у нас и не менялось в облаке → удаляем
+      if(eq(li, ri)){ out.push(ri); return; }
+      if(!bi){ out.push(ri); return; }                               // нет базы → облако главнее
+      out.push(mergeItem(bi, li, ri));
+    });
+    l.forEach(function(li){
+      var id = String(li.id); if(seen[id]) return;
+      var bi = bm[id]; if(bi && eq(bi, li)) return;                  // удалено в облаке другим устройством
+      out.push(li);
+    });
+    return out;
+  }
+  function ukey(u){ return String(u.email || '').toLowerCase() || ('id:' + u.id); }
+  function mergeObj(b, l, r){
+    var out = clone(r);
+    Object.keys(l).forEach(function(k){ if(!eq(l[k], b[k])) out[k] = clone(l[k]); });
+    return out;
+  }
+  function mergeUsers(b, l, r){
+    var bm = idxBy(b, ukey), lm = idxBy(l, ukey), out = [], seen = {};
+    r.forEach(function(ru){
+      var k = ukey(ru); seen[k] = 1;
+      var lu = lm[k], bu = bm[k];
+      if(!lu){ if(bu && eq(bu, ru)) return; out.push(ru); return; }
+      if(eq(lu, ru) || !bu){ out.push(ru); return; }
+      out.push(mergeObj(bu, lu, ru));
+    });
+    l.forEach(function(lu){
+      var k = ukey(lu); if(seen[k]) return;
+      var bu = bm[k]; if(bu && eq(bu, lu)) return;
+      out.push(lu);
+    });
+    return out;
+  }
+  function mergeState(base, local, remote, keys){
+    var out = {};
+    keys.forEach(function(k){
+      var b = base ? base[k] : undefined, l = local[k], r = remote[k];
+      if(l === undefined){ out[k] = r; return; }
+      if(r === undefined){ out[k] = l; return; }
+      if(k === 'items') out[k] = mergeItems(b || [], l, r);
+      else if(k === 'users') out[k] = mergeUsers(b || [], l, r);
+      else if(k === 'history') out[k] = mergeLog(b, l, r, function(x){ return x.ts + '|' + x.who + '|' + x.actionKey; }, 200);
+      else out[k] = mergeValue(b, l, r);
+    });
+    return out;
+  }
+
+  // ---------- Шифрование/расшифровка состояния для облака ----------
+  async function encItem(it){
+    var o = Object.assign({}, it);
+    if(Array.isArray(o.history) && o.history.length){ o.hx = await encryptData(JSON.stringify(o.history)); }
+    delete o.history;
+    return o;
+  }
+  async function decItem(it){
+    var o = Object.assign({}, it);
+    if(o.hx){ try{ o.history = JSON.parse(await decryptData(o.hx)); }catch(e){ o.history = []; } }
+    delete o.hx;
+    return o;
+  }
+  async function encUser(u){
+    var o = Object.assign({}, u);
+    o.eh = await hashEmail(u.email);
+    o.email = await encryptData(u.email);
+    o.name = await encryptData(u.name);
+    o.surname = await encryptData(u.surname);
+    return o;
+  }
+  async function decUser(u){
+    var o = Object.assign({}, u);
+    o.email = await decryptData(u.email); o.name = await decryptData(u.name); o.surname = await decryptData(u.surname);
+    delete o.eh;
+    return o;
+  }
+
+  // ---------- Движок синхронизации ----------
+  // o: {db(), fs, cloudId(), enabled(), keys[], getState(), applyState(s), clean:{items,users}, baseKey, onStatus(st)}
+  function createEngine(o){
+    var eng = {base: null, unsub: null, timer: null, retry: null, fails: 0, chain: Promise.resolve(), curId: null};
+
+    function enqueue(fn){
+      eng.chain = eng.chain.then(fn).catch(function(e){ console.error('sync:', e); o.onStatus('error'); });
+      return eng.chain;
+    }
+    function baseStoreKey(){ return o.baseKey + '_' + (o.cloudId() || ''); }
+    function loadBase(){ try{ var s = localStorage.getItem(baseStoreKey()); eng.base = s ? JSON.parse(s) : null; }catch(e){ eng.base = null; } }
+    function saveBase(){ try{ localStorage.setItem(baseStoreKey(), JSON.stringify(eng.base)); }catch(e){} }
+
+    async function decodeState(data){
+      var s = {};
+      if(o.keys.indexOf('items') >= 0 && Array.isArray(data.items)){
+        s.items = o.clean.items(await Promise.all(data.items.map(decItem)));
+      }
+      if(o.keys.indexOf('users') >= 0 && Array.isArray(data.users)){
+        s.users = o.clean.users(await Promise.all(data.users.map(decUser)));
+      }
+      if(o.keys.indexOf('history') >= 0){
+        if(data.historyX){ try{ s.history = JSON.parse(await decryptData(data.historyX)); }catch(e){ s.history = []; } }
+        else if(Array.isArray(data.history)) s.history = data.history;
+      }
+      if(o.keys.indexOf('adminPass') >= 0){
+        if(data.adminPassX) s.adminPass = await decryptData(data.adminPassX);
+        else if(typeof data.adminPass === 'string') s.adminPass = data.adminPass;
+      }
+      o.keys.forEach(function(k){
+        if(k === 'items' || k === 'users' || k === 'history' || k === 'adminPass') return;
+        if(data[k] !== undefined) s[k] = data[k];
+      });
+      return s;
+    }
+    async function encodeState(s){
+      var d = {}, del = {};
+      for(var i = 0; i < o.keys.length; i++){
+        var k = o.keys[i], v = s[k];
+        if(v === undefined) continue;
+        if(k === 'items') d.items = await Promise.all(v.map(encItem));
+        else if(k === 'users') d.users = await Promise.all(v.map(encUser));
+        else if(k === 'history'){ d.historyX = await encryptData(JSON.stringify(v)); del.history = 1; }
+        else if(k === 'adminPass'){ d.adminPassX = await encryptData(v); del.adminPass = 1; }
+        else d[k] = v;
+      }
+      return {data: d, del: del};
+    }
+    function hasContent(s){ return (s.items && s.items.length) || (s.users && s.users.length); }
+    function merge(local, remote){ return mergeState(eng.base, local, remote, o.keys); }
+
+    async function onRemote(snap){
+      var local = o.getState();
+      if(!snap.exists()){ if(hasContent(local)) schedule(200); o.onStatus('synced'); return; }
+      var remote = await decodeState(snap.data());
+      var merged = merge(local, remote);
+      eng.base = clone(remote); saveBase();
+      if(!eq(merged, local)) o.applyState(merged);
+      if(!eq(merged, remote)) schedule(300);
+      eng.fails = 0;
+      o.onStatus('synced');
+    }
+    async function doPush(force){
+      var db = o.db(), id = o.cloudId();
+      if(!o.enabled() || !db || !id) return;
+      o.onStatus('pushing');
+      var res = null, ref = o.fs.doc(db, 'stands', id);
+      try{
+        await o.fs.runTransaction(db, async function(tx){
+          res = null;
+          var snap = await tx.get(ref);
+          var local = o.getState(), remote = null, merged;
+          if(snap.exists()){
+            remote = await decodeState(snap.data());
+            merged = merge(local, remote);
+            if(!force && eq(merged, remote)){ res = {skip: true, local: local, cloud: remote}; return; }
+          } else merged = local;
+          var enc = await encodeState(merged);
+          var payload = Object.assign({updated: Date.now(), updatedBy: CLIENT_ID, v: 2}, enc.data);
+          Object.keys(enc.del).forEach(function(k){ payload[k] = o.fs.deleteField(); });
+          tx.set(ref, payload, {merge: true});
+          res = {local: local, cloud: merged};
+        });
+      }catch(e){
+        console.error('push failed:', e); o.onStatus('error');
+        eng.fails++; clearTimeout(eng.retry);
+        eng.retry = setTimeout(function(){ schedule(1); }, Math.min(60000, 3000 * eng.fails));
+        return;
+      }
+      if(!res) return;
+      eng.fails = 0;
+      eng.base = clone(res.cloud); saveBase();
+      // правки, сделанные пока шла отправка, накладываем поверх, ничего не теряя
+      var cur = o.getState();
+      var fin = mergeState(res.local, cur, res.cloud, o.keys);
+      if(!eq(fin, cur)) o.applyState(fin);
+      if(!eq(fin, res.cloud)) schedule(300);
+      o.onStatus('synced');
+    }
+    function schedule(ms){ clearTimeout(eng.timer); eng.timer = setTimeout(function(){ eng.pushNow(false); }, ms == null ? 800 : ms); }
+
+    eng.schedule = schedule;
+    eng.pushNow = function(force){ return enqueue(function(){ return doPush(!!force); }); };
+    // «Получить из облака»: облако главнее, локальные несинхронизированные правки отбрасываются
+    eng.pullNow = function(){
+      return enqueue(async function(){
+        var db = o.db(), id = o.cloudId(); if(!db || !id) return;
+        var snap = await o.fs.getDoc(o.fs.doc(db, 'stands', id));
+        if(!snap.exists()) return;
+        var remote = await decodeState(snap.data());
+        var local = o.getState();
+        var fin = mergeState(local, local, remote, o.keys);
+        eng.base = clone(remote); saveBase();
+        o.applyState(fin);
+        o.onStatus('synced');
+      });
+    };
+    eng.start = function(){
+      eng.stop();
+      var db = o.db(), id = o.cloudId();
+      if(!db || !id){ o.onStatus('offline'); return; }
+      eng.curId = id; loadBase(); o.onStatus('connecting');
+      eng.unsub = o.fs.onSnapshot(o.fs.doc(db, 'stands', id),
+        function(snap){ enqueue(function(){ return onRemote(snap); }); },
+        function(){ o.onStatus('error'); });
+    };
+    eng.stop = function(){
+      if(eng.unsub){ try{ eng.unsub(); }catch(e){} eng.unsub = null; }
+      clearTimeout(eng.timer); clearTimeout(eng.retry);
+    };
+    window.addEventListener('online', function(){ if(eng.unsub) schedule(200); });
+    document.addEventListener('visibilitychange', function(){ if(!document.hidden && eng.unsub) schedule(200); });
+    return eng;
+  }
+
+  // ---------- Отчёты со стенда: применяются ровно ОДИН раз тем приложением, которое открылось первым ----------
+  async function applyReport(db, fs, cloudId, reportId, applierName){
+    var reportRef = fs.doc(db, 'stands', cloudId, 'reports', reportId);
+    var standRef = fs.doc(db, 'stands', cloudId);
+    var out = null;
+    await fs.runTransaction(db, async function(tx){
+      out = null;
+      var rs = await tx.get(reportRef);
+      if(!rs.exists()) return;
+      var rep = rs.data();
+      if(rep.processed) return;
+      var ss = await tx.get(standRef);
+      var now = Date.now();
+      var by = applierName ? await encryptData(applierName) : '';
+      var who = rep.witnessName ? await decryptData(rep.witnessName) : '';
+      function finish(applied, note){
+        tx.update(reportRef, {processed: true, processedAt: now, appliedQty: applied, note: note || '', appliedBy: by});
+        out = {applied: applied, note: note || '', itemName: rep.itemName, who: who, qty: rep.qty};
+      }
+      if(!ss.exists()){ finish(0, 'stand not found'); return; }
+      var arr = Array.isArray(ss.data().items) ? ss.data().items.slice() : [];
+      var idx = -1;
+      for(var i = 0; i < arr.length; i++){ if(String(arr[i].id) === String(rep.itemId)){ idx = i; break; } }
+      if(idx < 0){ finish(0, 'литература не найдена'); return; }
+      var it = Object.assign({}, arr[idx]);
+      var sc = Object.assign({}, it.standCounts || {});
+      var sn = parseInt(rep.standNumber);
+      if(!sn || sn < 1 || sn > 4){ for(var j = 1; j <= 4; j++){ if((parseInt(sc[j]) || 0) > 0){ sn = j; break; } } }
+      if(!sn){ finish(0, 'стенд не определён'); return; }
+      var onStand = parseInt(sc[sn]) || 0, want = parseInt(rep.qty) || 0, actual = Math.min(onStand, want);
+      if(actual > 0){
+        sc[sn] = onStand - actual; it.standCounts = sc;
+        var hist = [];
+        if(it.hx){ try{ hist = JSON.parse(await decryptData(it.hx)) || []; }catch(e){ hist = []; } }
+        else if(Array.isArray(it.history)) hist = it.history;
+        hist.unshift({ts: now, who: applierName || '', action: 'remove', delta: -actual, oldQty: null, newQty: null, note: 'Отчёт: ' + who});
+        it.hx = await encryptData(JSON.stringify(hist.slice(0, 50)));
+        delete it.history;
+        arr[idx] = it;
+        tx.update(standRef, {items: arr, updated: now, updatedBy: CLIENT_ID});
+      }
+      finish(actual, actual < want ? ('на стенде было только ' + actual) : '');
+    });
+    return out;
+  }
+  // Запись документа только если его ещё нет (повторная отправка не может «воскресить» уже применённый отчёт)
+  async function putOnce(db, fs, ref, data){
+    var created = false;
+    await fs.runTransaction(db, async function(tx){
+      created = false;
+      var s = await tx.get(ref);
+      if(s.exists()) return;
+      tx.set(ref, data); created = true;
+    });
+    return created;
+  }
+
+  return {
+    CLIENT_ID: CLIENT_ID, encryptData: encryptData, decryptData: decryptData, hashEmail: hashEmail,
+    withTimeout: withTimeout, createEngine: createEngine, applyReport: applyReport, putOnce: putOnce,
+    mergeState: mergeState, clone: clone, eq: eq
+  };
+})();
+var encryptData = SK.encryptData, decryptData = SK.decryptData;
+// ==========================================
+
+
 var curLang = 'ru';
 var currentAddType = 'Журнал';
 var pendingPushTs = {};
@@ -708,9 +1111,7 @@ var MIN_STAND_ALERT = 3;
 var standNames = { 1:'Стенд 1', 2:'Стенд 2', 3:'Стенд 3', 4:'Стенд 4' };
 try{
   var _sn = JSON.parse(localStorage.getItem('stand_names')||'null');
-  if(_sn && typeof _sn==='object'){
-    for(var _k=1;_k<=4;_k++){ if(_sn[_k]) standNames[_k] = String(_sn[_k]); }
-  }
+  if(_sn && typeof _sn==='object'){ for(var _k=1;_k<=4;_k++){ if(_sn[_k]) standNames[_k] = String(_sn[_k]); } }
 }catch(e){}
 
 function switchView(view) {
@@ -1580,7 +1981,7 @@ function save(){
     localStorage.setItem('stand_names', JSON.stringify(standNames));
     localStorage.setItem('stand_local_ts', String(Date.now()));
   }catch(e){}
-  if(cloudEnabled && !isSyncingFromCloud && cloudDb){ clearTimeout(cloudPushTimeout); cloudPushTimeout=setTimeout(function(){ try{ pushToCloud(); }catch(e){} },800); }
+  if(cloudEnabled && !isSyncingFromCloud && cloudDb && syncEngine){ syncEngine.schedule(800); }
 }
 function addLog(actionKey, detail){
   var u=getCurrentUser();
@@ -2329,100 +2730,63 @@ function copyCloudId(){ if(navigator.clipboard) navigator.clipboard.writeText(cl
 function saveCloudId(){ cloudId=document.getElementById('cloudId').value.trim()||'stand-athens-1'; localStorage.setItem('stand_cloud_id',cloudId); cloudEnabled=true; localStorage.setItem('stand_cloud_enabled','true'); localStorage.setItem('stand_onboarded','true'); toast('✅ Сохранено'); initFirebase(); }
 function saveFbConfig(){ fbConfigStr=document.getElementById('fbConfig').value.trim(); localStorage.setItem('stand_fb_config',fbConfigStr); if(cloudEnabled) initFirebase(); }
 function getFirebaseConfig(){ try{ return JSON.parse(fbConfigStr); }catch(e){ return null; } }
+
+var syncEngine = null;
+function adminGetState(){
+  return {items:items, users:users, standNames:standNames, history:historyLog, savedTitles:savedTitles, removedSuggestions:removedSuggestions, adminPass:adminPass};
+}
+function adminApplyState(s){
+  isSyncingFromCloud = true;
+  try{
+    if(Array.isArray(s.items)) items = cleanItems(s.items);
+    if(Array.isArray(s.users)) users = cleanUsers(s.users);
+    if(Array.isArray(s.history)) historyLog = s.history;
+    if(Array.isArray(s.savedTitles)) savedTitles = s.savedTitles;
+    if(Array.isArray(s.removedSuggestions)) removedSuggestions = s.removedSuggestions;
+    if(typeof s.adminPass === 'string' && s.adminPass && s.adminPass !== adminPass){ adminPass = s.adminPass; localStorage.setItem('stand_pass', adminPass); }
+    if(s.standNames && typeof s.standNames === 'object'){
+      for(var n=1;n<=4;n++){ if(s.standNames[n]) standNames[n] = String(s.standNames[n]); }
+      refreshStandNamesUI();
+    }
+    save();
+    render(); renderUsers(); renderUserSelectList(); updateUserChip(); populateDatalists();
+  }catch(e){ console.error('apply state:', e); }
+  isSyncingFromCloud = false;
+}
 async function initFirebase(){
   setSyncState('connecting'); var cfg=getFirebaseConfig(); if(!cfg){ setSyncState('error'); return; }
   try{
-    const {initializeApp}=await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
-    const {getFirestore,doc,setDoc,onSnapshot,getDoc,collection,query,where,updateDoc,runTransaction} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
-    if(!cloudApp){ cloudApp=initializeApp(cfg); cloudDb=getFirestore(cloudApp); window._fb={doc,setDoc,onSnapshot,getDoc,collection,query,where,updateDoc,runTransaction}; }
-    if(cloudUnsub){ try{ cloudUnsub(); }catch(e){} cloudUnsub=null; }
-    var dRef=window._fb.doc(cloudDb,'stands',cloudId);
-    cloudUnsub=window._fb.onSnapshot(dRef, function(snap){
-      if(!snap.exists()){ setSyncState('synced'); return; }
-      var data=snap.data(); if(!data || isSyncingFromCloud) return;
-      if(data.updated && pendingPushTs[data.updated]){ setSyncState('synced'); return; }
-
-      var remoteTs = parseInt(data.updated) || 0;
-      var localTs = parseInt(localStorage.getItem('stand_local_ts') || '0');
-      if(remoteTs > 0 && remoteTs < localTs){ setSyncState('synced'); return; }
-
-      isSyncingFromCloud=true;
-
-      var remoteHasItems = Array.isArray(data.items) && data.items.length > 0;
-      if(remoteHasItems) items=cleanItems(data.items);
-      else if(items.length === 0) items = [];
-
-      var remoteHasUsers = Array.isArray(data.users) && data.users.length > 0;
-      if(remoteHasUsers) users=cleanUsers(data.users);
-
-      if(data.adminPass && data.adminPass!==adminPass){ adminPass=data.adminPass; localStorage.setItem('stand_pass',adminPass); }
-      if(data.history && Array.isArray(data.history)){ historyLog=data.history; }
-      if(data.savedTitles && Array.isArray(data.savedTitles)) savedTitles = data.savedTitles;
-      if(data.removedSuggestions && Array.isArray(data.removedSuggestions)) removedSuggestions = data.removedSuggestions;
-      if(data.standNames && typeof data.standNames==='object'){
-        for(var n=1;n<=4;n++){ if(data.standNames[n]) standNames[n] = String(data.standNames[n]); }
-        saveStandNamesToStorage();
-        refreshStandNamesUI();
-      }
-      // Persist without echo push
-      try{
-        localStorage.setItem('stand_items_v4', JSON.stringify(items));
-        localStorage.setItem('stand_users_v1', JSON.stringify(users));
-        localStorage.setItem('stand_history', JSON.stringify(historyLog));
-        localStorage.setItem('stand_names', JSON.stringify(standNames));
-        localStorage.setItem('stand_saved_titles', JSON.stringify(savedTitles));
-        localStorage.setItem('stand_removed_suggestions', JSON.stringify(removedSuggestions));
-      }catch(e){}
-
-      render(); renderUsers(); renderUserSelectList(); updateUserChip(); populateDatalists();
-      setSyncState('synced'); isSyncingFromCloud=false;
-    });
-    setSyncState('synced');
+    const {initializeApp} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
+    const fsm = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
+    if(!cloudApp){ cloudApp=initializeApp(cfg); cloudDb=fsm.getFirestore(cloudApp); window._fb=fsm; }
+    if(!syncEngine){
+      syncEngine = SK.createEngine({
+        db:function(){ return cloudDb; }, fs:fsm, cloudId:function(){ return cloudId; }, enabled:function(){ return cloudEnabled; },
+        keys:['items','users','standNames','history','savedTitles','removedSuggestions','adminPass'],
+        getState:adminGetState, applyState:adminApplyState,
+        clean:{items:cleanItems, users:cleanUsers}, baseKey:'stand_sync_base_admin', onStatus:setSyncState
+      });
+    }
+    syncEngine.start();
     try{ startWitnessSync(); }catch(e){ console.error('witness sync:', e); }
-  }catch(e){ setSyncState('error'); }
+    // одноразово: перезаписать облако в зашифрованном виде (имена, email, история)
+    if(!localStorage.getItem('stand_enc_v2')){
+      syncEngine.pushNow(true).then(function(){ localStorage.setItem('stand_enc_v2','1'); });
+    }
+  }catch(e){ console.error(e); setSyncState('error'); }
 }
-async function pushToCloud(){
-  if(!cloudEnabled || !cloudDb) return;
-  try{
-    setSyncState('pushing');
-    var dRef=window._fb.doc(cloudDb,'stands',cloudId);
-    var ts = Date.now();
-    pendingPushTs[ts] = true;
-    setTimeout(function(){ delete pendingPushTs[ts]; }, 15000);
-    await window._fb.setDoc(dRef,{items:items,users:users,adminPass:adminPass,history:historyLog,savedTitles:savedTitles,removedSuggestions:removedSuggestions,standNames:standNames,updated:ts},{merge:true});
-    localStorage.setItem('stand_local_ts', String(ts));
-    setSyncState('synced');
-  }catch(e){ setSyncState('error'); }
+function pushToCloud(force){
+  if(!syncEngine){ if(force===true) toast('⚠️ Нет подключения к облаку'); return; }
+  if(force===true){ syncEngine.pushNow(true).then(function(){ toast('☁️ Отправлено'); }); }
+  else syncEngine.schedule(300);
 }
 async function pullFromCloud(){
   if(!cloudEnabled){ toast('⚠️ Облако выключено'); return; }
-  if(!cloudDb){ toast('⚠️ Нет базы данных'); return; }
-  try{
-    setSyncState('pulling');
-    var dRef=window._fb.doc(cloudDb,'stands',cloudId);
-    var snap=await window._fb.getDoc(dRef);
-    if(snap.exists() && snap.data().items){
-      isSyncingFromCloud=true;
-      var data=snap.data();
-      items=cleanItems(data.items);
-      if(data.users) users=cleanUsers(data.users);
-      if(data.history && Array.isArray(data.history)) historyLog=data.history;
-      if(data.adminPass){ adminPass=data.adminPass; localStorage.setItem('stand_pass',adminPass); }
-      if(data.savedTitles) savedTitles=data.savedTitles;
-      if(data.removedSuggestions) removedSuggestions=data.removedSuggestions;
-      if(data.standNames && typeof data.standNames==='object'){
-        for(var n=1;n<=4;n++){ if(data.standNames[n]) standNames[n] = String(data.standNames[n]); }
-        saveStandNamesToStorage();
-        refreshStandNamesUI();
-      }
-      save(); render(); renderUsers(); renderUserSelectList(); updateUserChip(); populateDatalists();
-      setSyncState('synced'); isSyncingFromCloud=false;
-      toast('✅ Получено из облака');
-    } else { setSyncState('synced'); toast('⚠️ Ничего нет'); }
-  }catch(e){ setSyncState('error'); toast('❌ Ошибка: ' + e.message); }
+  if(!cloudDb || !syncEngine){ toast('⚠️ Нет базы данных'); return; }
+  try{ setSyncState('pulling'); await syncEngine.pullNow(); toast('✅ Получено из облака'); }
+  catch(e){ setSyncState('error'); toast('❌ Ошибка: ' + e.message); }
 }
 
-/* ============ WITNESS APP INTEGRATION ============ */
 var witnessUsers = [];
 var witnessReports = [];
 var witnessReportsUnsub = null;
@@ -2434,64 +2798,14 @@ async function processIncomingReport(reportId){
   if(processedReportIds[reportId]) return;
   processedReportIds[reportId] = true;
   try{
-    const {runTransaction, doc: fbDoc} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
-    const reportRef = fbDoc(cloudDb, 'stands', cloudId, 'reports', reportId);
-    const standRef = fbDoc(cloudDb, 'stands', cloudId);
-
-    var result = await runTransaction(cloudDb, async (tx) => {
-      const reportSnap = await tx.get(reportRef);
-      if(!reportSnap.exists()) return null;
-      const report = reportSnap.data();
-      if(report.processed) return null;
-
-      const standSnap = await tx.get(standRef);
-      if(!standSnap.exists()){
-        tx.update(reportRef, {processed:true, processedAt:Date.now(), appliedQty:0, note:'stand not found'});
-        return {report, applied: 0, note: 'stand not found'};
-      }
-      const stand = standSnap.data();
-      const freshItems = cleanItems(stand.items || []);
-      const freshItem = freshItems.find(x => String(x.id) === String(report.itemId));
-      if(!freshItem){
-        tx.update(reportRef, {processed:true, processedAt:Date.now(), appliedQty:0, note:'item not found'});
-        return {report, applied: 0, note: 'литература не найдена'};
-      }
-      
-      let standNum = parseInt(report.standNumber);
-      if(!standNum || standNum < 1 || standNum > 4){
-        for(let i=1; i<=4; i++){
-          if((parseInt(freshItem.standCounts[i])||0) > 0){ standNum = i; break; }
-        }
-      }
-      if(!standNum){
-        tx.update(reportRef, {processed:true, processedAt:Date.now(), appliedQty:0, note:'стенд не определён'});
-        return {report, applied: 0, note: 'стенд не определён'};
-      }
-      
-      let onStand = parseInt(freshItem.standCounts[standNum]) || 0;
-      let actual = Math.min(onStand, report.qty);
-      
-      if(actual > 0){
-        freshItem.standCounts[standNum] -= actual;
-        tx.update(standRef, {items: freshItems, updated: Date.now()});
-      }
-      
-      tx.update(reportRef, {
-        processed: true, processedAt: Date.now(), appliedQty: actual,
-        note: actual < report.qty ? 'на стенде было только '+actual : ''
-      });
-      return {report, applied: actual, freshItems, itemId: report.itemId};
-    });
-
-    if(!result) return;
-    if(result.applied > 0){
-      items = result.freshItems;
-      addItemHistory(result.itemId, 'remove', -result.applied, null, null, 'Отчёт: ' + result.report.witnessName);
-      addLog('📤 Отчёт', {userName: result.report.witnessName + ' · ' + result.report.itemName + ' · ' + result.applied + ' шт.'});
-      render();
-      toast('📤 ' + result.report.witnessName + ': −' + result.applied + ' ' + result.report.itemName, 4000);
+    var cu = getCurrentUser();
+    var r = await SK.applyReport(cloudDb, window._fb, cloudId, reportId, cu ? cu.name : 'Stand Pro');
+    if(!r) return; // уже применён другим приложением (Helper) — второй раз не вычитаем
+    if(r.applied > 0){
+      addLog('📤 Отчёт', {userName: r.who + ' · ' + r.itemName + ' · ' + r.applied + ' шт.'});
+      toast('📤 ' + r.who + ': −' + r.applied + ' ' + r.itemName, 4000);
     } else {
-      toast('⚠️ ' + result.report.witnessName + ': ' + (result.note || 'не списано'));
+      toast('⚠️ ' + r.who + ': ' + (r.note || 'не списано'));
     }
   }catch(e){
     console.error('Report process error:', e);
@@ -2499,46 +2813,80 @@ async function processIncomingReport(reportId){
   }
 }
 
+var migratingWitnesses = {}, migratingReports = {};
+async function migrateLegacyWitness(oldId, w){
+  if(migratingWitnesses[oldId]) return; migratingWitnesses[oldId] = true;
+  try{
+    var fb = window._fb, eh = await SK.hashEmail(oldId);
+    var newRef = fb.doc(cloudDb, 'stands', cloudId, 'witnesses', eh);
+    var ex = await fb.getDoc(newRef);
+    if(ex.exists()){
+      if(w.active === false) await fb.updateDoc(newRef, {active:false});
+    } else {
+      await fb.setDoc(newRef, {
+        email: await encryptData(oldId), name: await encryptData(w.name || ''), surname: await encryptData(w.surname || ''),
+        active: w.active !== false, consentGiven: !!w.consentGiven, createdAt: w.createdAt || Date.now(), lastSeen: w.lastSeen || Date.now()
+      });
+    }
+    await fb.deleteDoc(fb.doc(cloudDb, 'stands', cloudId, 'witnesses', oldId));
+  }catch(e){ delete migratingWitnesses[oldId]; console.error('witness migrate:', e); }
+}
+async function migrateReportPrivacy(id, r){
+  if(migratingReports[id]) return; migratingReports[id] = true;
+  try{
+    var fb = window._fb;
+    await fb.updateDoc(fb.doc(cloudDb, 'stands', cloudId, 'reports', id), {
+      witnessName: await encryptData(r.witnessName || ''), witnessEmail: await encryptData(r.witnessEmail || '')
+    });
+  }catch(e){ delete migratingReports[id]; console.error('report migrate:', e); }
+}
+
 function startWitnessSync(){
   if(!cloudDb) return;
+  var fb = window._fb;
+  var reportsRef = fb.collection(cloudDb, 'stands', cloudId, 'reports');
 
   if(witnessReportsUnsub) try{ witnessReportsUnsub(); }catch(e){}
-  (async () => {
-    const {collection, query, where, onSnapshot} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
-    const reportsRef = collection(cloudDb, 'stands', cloudId, 'reports');
-    const q = query(reportsRef, where('processed', '==', false));
-    witnessReportsUnsub = onSnapshot(q, snap => {
-      snap.forEach(d => {
-        if(!d.data().processed) processIncomingReport(d.id);
-      });
-    }, err => console.error('unprocessed listener:', err));
-  })();
+  witnessReportsUnsub = fb.onSnapshot(fb.query(reportsRef, fb.where('processed', '==', false)), function(snap){
+    snap.forEach(function(d){ if(!d.data().processed) processIncomingReport(d.id); });
+  }, function(err){ console.error('unprocessed listener:', err); });
 
   if(witnessAllReportsUnsub) try{ witnessAllReportsUnsub(); }catch(e){}
-  (async () => {
-    const {collection, onSnapshot} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
-    const reportsRef = collection(cloudDb, 'stands', cloudId, 'reports');
-    witnessAllReportsUnsub = onSnapshot(reportsRef, snap => {
-      witnessReports = [];
-      snap.forEach(d => witnessReports.push({id: d.id, ...d.data()}));
-      witnessReports.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+  witnessAllReportsUnsub = fb.onSnapshot(reportsRef, function(snap){
+    var docs = []; snap.forEach(function(d){ docs.push({id:d.id, data:d.data()}); });
+    Promise.all(docs.map(async function(d){
+      var r = Object.assign({id:d.id}, d.data);
+      var rawN = r.witnessName, rawE = r.witnessEmail;
+      r.witnessName = await decryptData(rawN);
+      r.witnessEmail = await decryptData(rawE);
+      if((rawE && String(rawE).indexOf('enc1:') !== 0) || (rawN && String(rawN).indexOf('enc1:') !== 0)) migrateReportPrivacy(d.id, r);
+      return r;
+    })).then(function(res){
+      witnessReports = res;
+      witnessReports.sort(function(a,b){ return (b.createdAt||0) - (a.createdAt||0); });
       updateAdminBadge();
       if(document.getElementById('witnessReportsList')) renderWitnessReportsUI();
-    }, err => console.error('all reports listener:', err));
-  })();
+    });
+  }, function(err){ console.error('all reports listener:', err); });
 
   if(witnessUsersUnsub) try{ witnessUsersUnsub(); }catch(e){}
-  (async () => {
-    const {collection, onSnapshot} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
-    const usersRef = collection(cloudDb, 'stands', cloudId, 'witnesses');
-    witnessUsersUnsub = onSnapshot(usersRef, snap => {
-      witnessUsers = [];
-      snap.forEach(d => witnessUsers.push({id: d.id, ...d.data()}));
-      witnessUsers.sort((a,b) => (b.lastSeen||0) - (a.lastSeen||0));
+  witnessUsersUnsub = fb.onSnapshot(fb.collection(cloudDb, 'stands', cloudId, 'witnesses'), function(snap){
+    var docs = []; snap.forEach(function(d){ docs.push({id:d.id, data:d.data()}); });
+    Promise.all(docs.map(async function(d){
+      var w = Object.assign({id:d.id}, d.data);
+      w.email = await decryptData(w.email);
+      if(!w.email && d.id.indexOf('@') >= 0) w.email = d.id;
+      w.name = await decryptData(w.name);
+      w.surname = await decryptData(w.surname);
+      if(d.id.indexOf('@') >= 0) migrateLegacyWitness(d.id, w);
+      return w;
+    })).then(function(res){
+      witnessUsers = res;
+      witnessUsers.sort(function(a,b){ return (b.lastSeen||0) - (a.lastSeen||0); });
       updateAdminBadge();
       if(document.getElementById('witnessList')) renderWitnessesUI();
-    }, err => console.error('witnesses listener:', err));
-  })();
+    });
+  }, function(err){ console.error('witnesses listener:', err); });
 }
 
 function updateAdminBadge(){
@@ -2596,7 +2944,9 @@ async function saveEditWitness() {
   if(!name || !surname) { toast('⚠️ Имя и фамилия не могут быть пустыми'); return; }
   try{
     const {updateDoc, doc: fbDoc} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
-    await updateDoc(fbDoc(cloudDb, 'stands', cloudId, 'witnesses', _editingWitnessEmail), {name: name, surname: surname});
+    const encName = await encryptData(name);
+    const encSurname = await encryptData(surname);
+    await updateDoc(fbDoc(cloudDb, 'stands', cloudId, 'witnesses', _editingWitnessEmail), {name: encName, surname: encSurname});
     toast('✅ Данные сохранены');
     closeEditWitness();
   }catch(e){ toast('❌ Ошибка: '+e.message); }
@@ -2645,7 +2995,6 @@ async function restoreWitness(witnessId){
     toast('✅ Доступ восстановлен');
   }catch(e){ toast('❌ Ошибка: '+e.message); }
 }
-/* ============ END WITNESS APP INTEGRATION ============ */
 
 function saveNewPass(){
   var np=document.getElementById('newPass').value.trim();

@@ -122,11 +122,13 @@ option{background:var(--card2);color:var(--text)}
 .user-chip.no-user{background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border)}
 .toolbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px}
 .toolbar select{padding:6px 8px;font-size:0.85em;flex:1;min-width:120px}
-#standOverlay,#rnOverlay,#ccOverlay,#regOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
-#standOverlay.show,#rnOverlay.show,#ccOverlay.show,#regOverlay.show{display:flex}
-#standBox,#rnBox,#ccBox,#regBox{background:var(--card);border:2px solid #06b6d4;border-radius:14px;padding:20px;max-width:440px;width:100%;max-height:90vh;overflow:auto}
+#standOverlay,#rnOverlay,#ccOverlay,#regOverlay,#addStandOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
+#standOverlay.show,#rnOverlay.show,#ccOverlay.show,#regOverlay.show,#addStandOverlay.show{display:flex}
+#standBox,#rnBox,#ccBox,#regBox,#addStandBox{background:var(--card);border:2px solid #06b6d4;border-radius:14px;padding:20px;max-width:440px;width:100%;max-height:90vh;overflow:auto}
+#addStandBox{border-color:#22c55e; display:flex; flex-direction:column;}
 #regBox{border-color:#f59e0b;text-align:left}
 #standBox h3,#rnBox h3,#regBox h3{color:#06b6d4;text-align:center;margin:0 0 12px;font-size:1.1em;line-height:1.3}
+#addStandBox h3{color:#22c55e;text-align:center;margin:0 0 12px;font-size:1.1em;line-height:1.3}
 #ccTitle{color:var(--primary);font-size:1.15em;font-weight:bold;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);text-align:center}
 #ccMsg{color:var(--text);font-size:1.05em;line-height:1.5;margin-bottom:20px}
 #ccButtons{display:flex;gap:10px}
@@ -313,6 +315,15 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 </div>
 
+<div id="addStandOverlay" onclick="if(event.target===this)closeAddToStand()">
+<div id="addStandBox" onclick="event.stopPropagation()">
+<h3 id="addStandTitle">➕ Добавить на стенд</h3>
+<input id="addStandSearch" placeholder="🔍 Поиск по названию, языку, теме..." oninput="renderAddStandList()" style="margin-bottom:10px;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text)">
+<div id="addStandList" style="flex:1;overflow-y:auto;margin-bottom:10px;min-height:200px;"></div>
+<button class="sec" onclick="closeAddToStand()" style="width:100%;padding:12px">Закрыть</button>
+</div>
+</div>
+
 <div id="rnOverlay" onclick="if(event.target===this)closeRename()">
 <div id="rnBox" onclick="event.stopPropagation()">
 <h3>✏️ Редактировать</h3>
@@ -353,16 +364,9 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <input id="regStandCode" placeholder="напр. stand-2026" style="margin-bottom:12px" autocomplete="off">
 <div class="small" id="regCodeHint" style="margin-top:-8px;margin-bottom:8px;color:#f59e0b;line-height:1.4"></div>
 <label>Имя *</label>
-<input id="regName" placeholder="Иван" style="margin-bottom:8px" autocomplete="given-name">
-<label>Фамилия</label>
-<input id="regSurname" placeholder="Иванов" style="margin-bottom:8px" autocomplete="family-name">
-<label>Email *</label>
-<input id="regEmail" type="email" placeholder="you@example.com" style="margin-bottom:12px" autocomplete="email">
+<input id="regName" placeholder="Иван" style="margin-bottom:12px" autocomplete="given-name">
 <button onclick="handleRegister()" style="width:100%;padding:14px;background:#22c55e;color:#000;font-size:1.05em;border-radius:10px">✓ Войти / Зарегистрироваться</button>
 <div class="small" id="regError" style="color:#ef4444;text-align:center;margin-top:10px;min-height:1.2em"></div>
-<div class="small" style="text-align:center;color:var(--muted);margin-top:8px;line-height:1.4">
-Если вы уже были зарегистрированы — введите тот же email.
-</div>
 </div>
 </div>
 
@@ -373,8 +377,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 'use strict';
 
 // ==========================================
-// ЯДРО СИНХРОНИЗАЦИИ И ШИФРОВАНИЯ (AES-GCM) — ОДИНАКОВО ВО ВСЕХ 3 ФАЙЛАХ
-// Ключ менять нельзя без пересоздания данных: он должен быть одинаковым во всех 3 файлах.
+// ЯДРО СИНХРОНИЗАЦИИ И ШИФРОВАНИЯ (AES-GCM)
 // ==========================================
 const SECRET_KEY_STRING = "StandApp_SuperSecret_2026!777";
 
@@ -385,7 +388,6 @@ var SK = (function(){
   var PFX = 'enc1:';
   var CLIENT_ID = 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
-  // ---------- Шифрование (ключ создаётся ОДИН раз и кэшируется) ----------
   var _keyP = null;
   function getKey(){
     if(!_keyP){
@@ -403,7 +405,6 @@ var SK = (function(){
   function toB64(u8){ var s = '', i; for(i = 0; i < u8.length; i += 8192) s += String.fromCharCode.apply(null, u8.subarray(i, i + 8192)); return btoa(s); }
   function fromB64(b){ var s = atob(b), u = new Uint8Array(s.length), i; for(i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; }
 
-  // Если шифрование недоступно — выбрасываем ошибку (открытый текст в облако НЕ уходит).
   async function encryptData(text){
     if(text == null || text === '') return text;
     text = String(text);
@@ -414,7 +415,6 @@ var SK = (function(){
     var all = new Uint8Array(12 + ct.length); all.set(iv, 0); all.set(ct, 12);
     return PFX + toB64(all);
   }
-  // Читает и новый формат (enc1:...), и старый (без префикса); обычный текст возвращает как есть.
   async function decryptData(t){
     if(t == null || t === '' || typeof t !== 'string') return t;
     var marked = t.indexOf(PFX) === 0, raw = marked ? t.slice(PFX.length) : t;
@@ -426,7 +426,6 @@ var SK = (function(){
       return new TextDecoder().decode(pt);
     }catch(e){ return t; }
   }
-  // Необратимый идентификатор email (для ID документов и поиска — сам email в базе не виден)
   var _hc = {};
   async function hashEmail(email){
     email = String(email || '').trim().toLowerCase(); if(!email) return '';
@@ -442,7 +441,6 @@ var SK = (function(){
     });
   }
 
-  // ---------- Утилиты слияния ----------
   function clone(o){ return o === undefined ? undefined : JSON.parse(JSON.stringify(o)); }
   function stable(o){
     if(o === null || typeof o !== 'object') return JSON.stringify(o);
@@ -476,7 +474,6 @@ var SK = (function(){
     return b !== undefined ? l : r;
   }
   function itemHKey(h){ return h.ts + '|' + h.action + '|' + h.delta + '|' + (h.note || ''); }
-  // Слияние одной позиции: числа (склад, стенды) складываются как ИЗМЕНЕНИЯ (дельты), а не перезаписываются
   function mergeItem(b, l, r){
     var out = clone(r);
     Object.keys(l).forEach(function(k){
@@ -502,14 +499,14 @@ var SK = (function(){
     r.forEach(function(ri){
       var id = String(ri.id); seen[id] = 1;
       var li = lm[id], bi = bm[id];
-      if(!li){ if(bi && eq(bi, ri)) return; out.push(ri); return; }   // удалено у нас и не менялось в облаке → удаляем
+      if(!li){ if(bi && eq(bi, ri)) return; out.push(ri); return; }
       if(eq(li, ri)){ out.push(ri); return; }
-      if(!bi){ out.push(ri); return; }                               // нет базы → облако главнее
+      if(!bi){ out.push(ri); return; }
       out.push(mergeItem(bi, li, ri));
     });
     l.forEach(function(li){
       var id = String(li.id); if(seen[id]) return;
-      var bi = bm[id]; if(bi && eq(bi, li)) return;                  // удалено в облаке другим устройством
+      var bi = bm[id]; if(bi && eq(bi, li)) return;
       out.push(li);
     });
     return out;
@@ -550,7 +547,6 @@ var SK = (function(){
     return out;
   }
 
-  // ---------- Шифрование/расшифровка состояния для облака ----------
   async function encItem(it){
     var o = Object.assign({}, it);
     if(Array.isArray(o.history) && o.history.length){ o.hx = await encryptData(JSON.stringify(o.history)); }
@@ -578,8 +574,6 @@ var SK = (function(){
     return o;
   }
 
-  // ---------- Движок синхронизации ----------
-  // o: {db(), fs, cloudId(), enabled(), keys[], getState(), applyState(s), clean:{items,users}, baseKey, onStatus(st)}
   function createEngine(o){
     var eng = {base: null, unsub: null, timer: null, retry: null, fails: 0, chain: Promise.resolve(), curId: null};
 
@@ -670,7 +664,6 @@ var SK = (function(){
       if(!res) return;
       eng.fails = 0;
       eng.base = clone(res.cloud); saveBase();
-      // правки, сделанные пока шла отправка, накладываем поверх, ничего не теряя
       var cur = o.getState();
       var fin = mergeState(res.local, cur, res.cloud, o.keys);
       if(!eq(fin, cur)) o.applyState(fin);
@@ -681,7 +674,6 @@ var SK = (function(){
 
     eng.schedule = schedule;
     eng.pushNow = function(force){ return enqueue(function(){ return doPush(!!force); }); };
-    // «Получить из облака»: облако главнее, локальные несинхронизированные правки отбрасываются
     eng.pullNow = function(){
       return enqueue(async function(){
         var db = o.db(), id = o.cloudId(); if(!db || !id) return;
@@ -713,7 +705,6 @@ var SK = (function(){
     return eng;
   }
 
-  // ---------- Отчёты со стенда: применяются ровно ОДИН раз тем приложением, которое открылось первым ----------
   async function applyReport(db, fs, cloudId, reportId, applierName){
     var reportRef = fs.doc(db, 'stands', cloudId, 'reports', reportId);
     var standRef = fs.doc(db, 'stands', cloudId);
@@ -758,7 +749,6 @@ var SK = (function(){
     });
     return out;
   }
-  // Запись документа только если его ещё нет (повторная отправка не может «воскресить» уже применённый отчёт)
   async function putOnce(db, fs, ref, data){
     var created = false;
     await fs.runTransaction(db, async function(tx){
@@ -1043,13 +1033,11 @@ async function initFirebase(){
       window._fb = fsm;
     }
     
-    // --- АНОНИМНАЯ АВТОРИЗАЦИЯ (ИСПРАВЛЕНИЕ СИНХРОНИЗАЦИИ) ---
     try {
       const {getAuth, signInAnonymously} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js');
       const auth = getAuth(cloudApp);
       if (!auth.currentUser) { await signInAnonymously(auth); }
     } catch(e) { console.warn('Auth failed:', e); }
-    // ---------------------------------------------------------
 
     if(!syncEngine){
       syncEngine = SK.createEngine({
@@ -1064,7 +1052,6 @@ async function initFirebase(){
   }catch(e){ console.error(e); setSyncState('error'); }
 }
 
-// ---------- Отчёты со стенда (из приложения «Стенд Отчёт») ----------
 function startReportSync(){
   if(!cloudDb || !cloudId) return;
   var fb = window._fb;
@@ -1102,7 +1089,7 @@ async function processReport(id){
   try{
     var r = await SK.applyReport(cloudDb, window._fb, cloudId, id, currentUser ? currentUser.name : 'Helper');
     delete unprocessedReportIds[id];
-    if(!r) return; // уже применён Stand Pro — второй раз не вычитаем
+    if(!r) return;
     if(r.applied > 0) toast('📤 ' + r.who + ': −' + r.applied + ' ' + r.itemName, 4000);
     else toast('⚠️ ' + r.who + ': ' + (r.note || 'не списано'));
   }catch(e){
@@ -1162,13 +1149,9 @@ function showRegister(prefill){
   if(ov) ov.classList.add('show');
   var hint = document.getElementById('regCodeHint');
   var nameEl = document.getElementById('regName');
-  var surEl = document.getElementById('regSurname');
-  var emEl = document.getElementById('regEmail');
   var codeEl = document.getElementById('regStandCode');
   if(prefill){
     if(nameEl) nameEl.value = localStorage.getItem('stand_user_name') || '';
-    if(surEl) surEl.value = localStorage.getItem('stand_user_surname') || '';
-    if(emEl) emEl.value = currentUserEmail || '';
     if(codeEl) codeEl.value = '';
     if(hint) hint.textContent = '⚠️ Введите код стенда, чтобы подключиться к данным координатора.';
   } else {
@@ -1185,40 +1168,41 @@ function hideRegister(){
 async function handleRegister(){
   var standCode = (document.getElementById('regStandCode').value || '').trim();
   var name = (document.getElementById('regName').value || '').trim();
-  var surname = (document.getElementById('regSurname').value || '').trim();
-  var email = (document.getElementById('regEmail').value || '').trim().toLowerCase();
   var errEl = document.getElementById('regError');
   errEl.textContent = '';
 
   if(!standCode){ errEl.textContent = '⚠️ Введите код стенда'; return; }
   if(standCode.length < 3){ errEl.textContent = '⚠️ Слишком короткий код стенда'; return; }
-  if(!email){ errEl.textContent = '⚠️ Введите email'; return; }
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ errEl.textContent = '⚠️ Некорректный email'; return; }
+  if(!name){ errEl.textContent = '⚠️ Введите имя'; return; }
 
-  var existing = users.find(function(u){ return u.email && u.email.toLowerCase() === email; });
+  var deviceId = localStorage.getItem('stand_user_device_id');
+  if(!deviceId){
+    deviceId = 'dev_' + (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+    localStorage.setItem('stand_user_device_id', deviceId);
+  }
+
+  var existing = users.find(function(u){ return u.email === deviceId; });
 
   if(existing){
     if(!existing.active){
       errEl.textContent = '❌ Ваш аккаунт деактивирован. Обратитесь к администратору.';
       return;
     }
-    if(name) existing.name = name;
-    if(surname) existing.surname = surname;
+    existing.name = name;
     currentUser = existing;
   } else {
-    if(!name){ errEl.textContent = '⚠️ Введите имя'; return; }
     var newUser = {
-      id: Date.now() + Math.random(), name: name, surname: surname, email: email,
+      id: Date.now() + Math.random(), name: name, surname: '', email: deviceId,
       role: 'counter', perms: JSON.parse(JSON.stringify(PERMS_PRESETS.counter)), active: true, createdAt: Date.now()
     };
     users.push(newUser);
     currentUser = newUser;
   }
 
-  currentUserEmail = email;
-  localStorage.setItem('stand_user_email', email);
-  localStorage.setItem('stand_user_name', currentUser.name || '');
-  localStorage.setItem('stand_user_surname', currentUser.surname || '');
+  currentUserEmail = deviceId;
+  localStorage.setItem('stand_user_email', deviceId);
+  localStorage.setItem('stand_user_name', name);
+  localStorage.setItem('stand_user_surname', '');
 
   cloudId = standCode;
   cloudEnabled = true;
@@ -1231,7 +1215,7 @@ async function handleRegister(){
   document.getElementById('mainContent').style.display = 'block';
   updateUI();
   setupCollapsibleCards();
-  toast('✅ Добро пожаловать, ' + (currentUser.name || currentUser.email) + '!');
+  toast('✅ Добро пожаловать, ' + name + '!');
 
   if(cloudId){ setTimeout(function(){ try{ initFirebase(); }catch(e){} }, 100); }
 }
@@ -1427,14 +1411,21 @@ function showStand(n){ curStand = n; document.querySelectorAll('.stand-tab').for
 function renderStand(){
   var cont = document.getElementById('standContent'); if(!cont) return;
   var list = items.filter(function(it){ return stGet(it,curStand) > 0; });
-  if(list.length === 0){ cont.innerHTML = '<div class="stand-box"><div class="stand-title"><span class="st-name">🏛️ '+esc(standNames[curStand])+'</span></div><div class="stand-empty">Стенд пуст</div></div>'; return; }
+  var h = '<div class="stand-box"><div class="stand-title"><span class="st-name">🏛️ '+esc(standNames[curStand])+'</span></div>';
+  
+  h += '<div style="margin-bottom:12px;display:flex;gap:6px">';
+  h += '<button onclick="openAddToStand()" style="flex:1;background:#22c55e;color:#000;padding:10px;border-radius:8px;font-weight:bold;border:0;cursor:pointer">➕ Добавить литературу на стенд</button>';
+  h += '</div>';
+
+  if(list.length === 0){ cont.innerHTML = h + '<div class="stand-empty">Стенд пуст</div></div>'; return; }
+  
   var totalInStand=0, totalGlobal=0, byType={}, byLang={};
   list.forEach(function(it){
     var inSt = stGet(it,curStand), glob = totalIt(it); totalInStand += inSt; totalGlobal += glob;
     var tp = it.type || 'Журнал'; if(!byType[tp]) byType[tp] = {inSt:0, glob:0}; byType[tp].inSt += inSt; byType[tp].glob += glob;
     var code = it.lang || 'ru'; if(!byLang[code]) byLang[code] = {inSt:0, glob:0}; byLang[code].inSt += inSt; byLang[code].glob += glob;
   });
-  var h = '<div class="stand-box"><div class="stand-title"><span class="st-name">🏛️ '+esc(standNames[curStand])+'</span></div>';
+  
   h += '<div class="stand-summary">На стенде: <b>'+totalInStand+'</b> шт. из <b>'+totalGlobal+'</b> · позиций: <b>'+list.length+'</b></div>';
   h += '<div class="stand-section-title">📋 По типам</div>';
   ['Журнал','Брошюра','Постер'].forEach(function(tp){ if(!byType[tp]) return; h += '<div class="stand-row"><span class="t-left">'+getTypeIcon(tp)+' '+esc(tp)+'</span><span class="t-right">'+byType[tp].inSt+' / '+byType[tp].glob+' шт.</span></div>'; });
@@ -1447,9 +1438,92 @@ function renderStand(){
     var inSt = stGet(it,curStand), glob = totalIt(it); var extra = getItemExtraInfo(it);
     var langTag = (it.lang && it.lang!=='ru') ? ' · '+esc(getLangShort(it.lang)) : '';
     var isLow = inSt < MIN_STAND_ALERT && parseInt(it.qty) > 0;
-    h += '<div class="stand-item '+(isLow?'low-stock':'')+'"><div class="ti-info"><div class="ti-name">'+getTypeIcon(it.type)+' '+esc(getDisplayName(it))+'</div><div class="ti-meta">'+esc(getDisplayCat(it))+(extra?' · '+esc(extra):'')+langTag+'</div></div><div class="ti-qty">'+inSt+' / '+glob+' шт.<span class="in-total">'+(isLow?'🚨 МАЛО':'на стенде / всего')+'</span></div></div>';
+    
+    var actionsHtml = '<div style="display:flex;gap:4px;margin-top:4px;justify-content:flex-end">' +
+        '<button onclick="adjustStandItem('+it.id+', -1)" style="padding:4px 10px;font-size:0.85em;background:var(--btn-bg);color:var(--text);border:1px solid var(--border);border-radius:6px">−</button>' +
+        '<button onclick="adjustStandItem('+it.id+', 1)" style="padding:4px 10px;font-size:0.85em;background:var(--primary);color:var(--primary-text);border:0;border-radius:6px">+</button>' +
+        '</div>';
+
+    h += '<div class="stand-item '+(isLow?'low-stock':'')+'">' +
+         '<div class="ti-info"><div class="ti-name">'+getTypeIcon(it.type)+' '+esc(getDisplayName(it))+'</div>' +
+         '<div class="ti-meta">'+esc(getDisplayCat(it))+(extra?' · '+esc(extra):'')+langTag+'</div></div>' +
+         '<div class="ti-qty" style="display:flex;flex-direction:column;align-items:flex-end">'+inSt+' / '+glob+' шт.' +
+         '<span class="in-total">'+(isLow?'🚨 МАЛО':'на стенде / всего')+'</span>' + actionsHtml + '</div></div>';
   });
   cont.innerHTML = h + '</div>';
+}
+
+function adjustStandItem(id, delta){
+  if(!hasPerm('count')) return;
+  var it = items.find(function(x){ return x.id == id; }); if(!it) return;
+  var cur = stGet(it, curStand);
+  var newVal = cur + delta;
+  if(newVal < 0) newVal = 0;
+  if(newVal > STAND_MAX) newVal = STAND_MAX;
+  var actualDelta = newVal - cur;
+  if(actualDelta === 0) return;
+
+  if(actualDelta > 0){
+    if((parseInt(it.qty)||0) < actualDelta){ toast('❌ В запасе только '+(it.qty||0)+' шт.'); return; }
+    it.qty = (parseInt(it.qty)||0) - actualDelta;
+  } else {
+    it.qty = (parseInt(it.qty)||0) + Math.abs(actualDelta);
+  }
+  it.standCounts[curStand] = newVal;
+  saveToLocal();
+  render();
+  if(document.getElementById('addStandOverlay').style.display === 'flex') renderAddStandList();
+}
+
+function openAddToStand(){
+  if(!hasPerm('count')) return;
+  document.getElementById('addStandTitle').textContent = '➕ Добавить на ' + standNames[curStand];
+  document.getElementById('addStandSearch').value = '';
+  document.getElementById('addStandOverlay').classList.add('show');
+  document.getElementById('addStandOverlay').style.display = 'flex';
+  renderAddStandList();
+}
+function closeAddToStand(){
+  document.getElementById('addStandOverlay').classList.remove('show');
+  document.getElementById('addStandOverlay').style.display = 'none';
+}
+function renderAddStandList(){
+  var el = document.getElementById('addStandList'); if(!el) return;
+  var q = (document.getElementById('addStandSearch').value||'').toLowerCase().trim();
+  var list = items.filter(function(it){
+    var name = getDisplayName(it).toLowerCase();
+    var theme = (it.theme||'').toLowerCase();
+    var lang = getLangDisplay(it.lang||'ru').toLowerCase();
+    return name.indexOf(q) >= 0 || theme.indexOf(q) >= 0 || lang.indexOf(q) >= 0;
+  });
+  if(list.length === 0){ el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted)">— не найдено —</div>'; return; }
+  
+  list.sort(function(a,b){
+    var sa = (parseInt(a.qty)||0) > 0 ? 1 : 0;
+    var sb = (parseInt(b.qty)||0) > 0 ? 1 : 0;
+    if(sa !== sb) return sb - sa;
+    return getDisplayName(a).localeCompare(getDisplayName(b));
+  });
+
+  var h = '';
+  list.forEach(function(it){
+    var stock = parseInt(it.qty)||0;
+    var onStand = stGet(it, curStand);
+    var stockColor = stock > 0 ? '#22c55e' : '#ef4444';
+    h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);gap:10px">'+
+         '<div style="flex:1;min-width:0">'+
+           '<div style="font-weight:bold;font-size:0.95em;line-height:1.3">'+esc(getDisplayName(it))+'</div>'+
+           '<div class="small">'+esc(getLangDisplay(it.lang))+(it.theme?' · '+esc(it.theme):'')+'</div>'+
+           '<div class="small" style="color:'+stockColor+'">📦 В запасе: '+stock+'</div>'+
+         '</div>'+
+         '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0">'+
+           '<button onclick="adjustStandItem('+it.id+',-1)" style="padding:6px 12px;background:var(--btn-bg);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:1.1em;font-weight:bold">−</button>'+
+           '<span style="font-weight:bold;width:24px;text-align:center;font-size:1.1em">'+onStand+'</span>'+
+           '<button onclick="adjustStandItem('+it.id+',1)" style="padding:6px 12px;background:#22c55e;color:#000;border:0;border-radius:6px;font-size:1.1em;font-weight:bold;'+(stock<=0?'opacity:0.5;pointer-events:none':'')+'">+</button>'+
+         '</div>'+
+         '</div>';
+  });
+  el.innerHTML = h;
 }
 
 function updateStandBadges(){

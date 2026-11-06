@@ -2,13 +2,13 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#a855f7">
 <title>Отчёт — Возвещатель</title>
 <style>
 :root{--bg:#0f0f0f;--card:#1e1e1e;--card2:#252525;--text:#fff;--muted:#999;--border:#333;--primary:#a855f7;--primary-text:#fff;--ok:#22c55e;--err:#ef4444}
 *{box-sizing:border-box}
-body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif;font-size:15px}
+body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif;font-size:15px;padding-bottom:80px;}
 .header{background:var(--card);padding:12px;text-align:center;border-bottom:3px solid var(--primary);position:sticky;top:0;z-index:100}
 h1{color:var(--primary);margin:0;font-size:1.2em}
 .wrap{padding:8px;max-width:600px;margin:0 auto}
@@ -18,6 +18,8 @@ label{color:var(--primary);font-size:0.85em;font-weight:bold;display:block;margi
 button{padding:12px;border-radius:8px;border:0;background:var(--primary);color:var(--primary-text);font-weight:bold;cursor:pointer;width:100%;font-size:1em}
 button:active{transform:scale(0.98)}
 button:disabled{opacity:0.5;cursor:not-allowed}
+
+/* Экраны */
 .reg-box{background:var(--card);border:2px solid var(--primary);border-radius:14px;padding:20px;max-width:400px;margin:40px auto;text-align:center}
 .reg-box h2{color:var(--primary);margin:0 0 8px}
 .reg-box .desc{color:var(--muted);font-size:0.9em;margin-bottom:16px;line-height:1.5}
@@ -29,53 +31,53 @@ button:disabled{opacity:0.5;cursor:not-allowed}
 @keyframes toastIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .toast.ok{border-color:var(--ok);background:rgba(34,197,94,0.95);color:#000}
 .toast.err{border-color:var(--err);background:rgba(239,68,68,0.95)}
+
+/* Табы стендов */
 .stand-tabs{display:flex;gap:5px;margin-bottom:12px}
 .stand-tab{flex:1;padding:10px 6px;font-size:0.85em;font-weight:bold;background:var(--card2);color:var(--text);border:2px solid var(--border);border-radius:8px;cursor:pointer;margin:0;transition:all 0.15s;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .stand-tab.active{background:#06b6d4;color:#000;border-color:#06b6d4;box-shadow:0 0 10px rgba(6,182,212,0.5)}
 .stand-tab .cnt{display:block;font-size:0.7em;opacity:0.85;font-weight:normal;margin-top:2px}
 
-/* WIZARD */
-.wizard-crumbs{background:var(--card2);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:0.85em;color:var(--muted);word-break:break-word;line-height:1.5;display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:32px}
-.crumb{color:var(--primary);font-weight:bold;background:rgba(168,85,247,0.1);padding:3px 8px;border-radius:99px}
-.crumb-arrow{color:var(--muted);font-weight:bold}
-.wizard-q{font-size:1.15em;font-weight:bold;color:var(--primary);text-align:center;margin:8px 0 16px;line-height:1.3}
-.wizard-step-num{font-size:0.75em;color:var(--muted);text-align:center;margin-bottom:4px;font-weight:normal}
+/* Табы типов (Журнал/Брошюра) */
+.type-tabs{display:flex;gap:8px;margin-bottom:14px}
+.type-tab{flex:1;padding:12px;font-size:1em;font-weight:bold;background:var(--card2);color:var(--text);border:2px solid var(--border);border-radius:10px;cursor:pointer;margin:0;transition:all 0.15s;text-align:center}
+.type-tab.active{background:var(--primary);color:var(--primary-text);border-color:var(--primary);box-shadow:0 0 12px rgba(168,85,247,0.4)}
 
-.choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.choice-btn{background:var(--card2);border:2px solid var(--border);border-radius:12px;padding:22px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all 0.15s;width:100%;margin:0;color:var(--text)}
-.choice-btn:hover{border-color:var(--primary);transform:translateY(-2px)}
-.choice-btn:active{transform:scale(0.97)}
-.choice-icon{font-size:2.6em;line-height:1}
-.choice-label{font-weight:bold;font-size:1.1em;color:var(--text)}
-.choice-meta{font-size:0.78em;color:var(--muted)}
+.wizard-search{margin-bottom:12px}
 
-.wizard-search{margin-bottom:10px}
-
+/* Карточки литературы */
 .report-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
 .report-card{background:var(--card2);border:2px solid var(--border);border-radius:10px;padding:12px;transition:all 0.15s}
-.report-card.active{border-color:var(--primary);background:rgba(168,85,247,0.1)}
 .report-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
 .report-card-title{flex:1;min-width:0;font-weight:bold;line-height:1.35;word-break:break-word;font-size:0.98em}
 .report-card-theme{font-size:0.92em;color:#c084fc;font-style:italic;font-weight:bold;line-height:1.3;margin-top:4px;word-break:break-word}
 .report-card-theme::before{content:'💡 '}
 .report-card-meta{font-size:0.78em;color:var(--muted);margin-top:4px;line-height:1.4}
 .report-card-avail{font-size:0.8em;color:var(--ok);font-weight:bold;white-space:nowrap;background:rgba(34,197,94,0.15);padding:3px 9px;border-radius:99px;flex-shrink:0}
-.report-qty-controls{display:flex;gap:8px;align-items:center}
-.rqty-btn{width:46px;height:46px;border-radius:50%;font-size:1.4em;font-weight:bold;border:0;cursor:pointer;background:var(--card);color:var(--text);padding:0;margin:0;border:2px solid var(--border);flex-shrink:0}
-.rqty-btn.plus{background:var(--primary);color:var(--primary-text);border-color:var(--primary)}
-.rqty-btn:active{transform:scale(0.93)}
-.rqty-input{font-size:1.3em;font-weight:bold;text-align:center;padding:8px 4px;border-radius:8px;border:2px solid var(--border);background:var(--card);color:var(--text);-moz-appearance:textfield;max-width:80px}
-.rqty-input::-webkit-outer-spin-button,.rqty-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
-.rqty-input:focus{outline:2px solid var(--primary);border-color:var(--primary)}
-.rqty-input.filled{border-color:var(--ok);background:rgba(34,197,94,0.1);color:var(--ok)}
+
+.draft-badge{display:inline-block;background:rgba(34,197,94,0.2);color:var(--ok);font-weight:bold;padding:4px 10px;border-radius:8px;font-size:0.85em;margin-bottom:8px;border:1px solid var(--ok);}
+
+.add-controls{display:flex;gap:8px;align-items:center}
+.add-qty{width:60px!important;padding:10px 4px!important;text-align:center;font-weight:bold;font-size:1.1em;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);}
+.add-btn{flex:1;background:var(--primary);color:var(--primary-text);border:0;border-radius:8px;padding:10px;font-weight:bold;cursor:pointer;font-size:1em;margin:0;}
 
 .wizard-empty{text-align:center;padding:30px 15px;color:var(--muted);line-height:1.5;font-size:0.95em}
 
-.wizard-nav{display:flex;gap:8px;margin-top:14px}
-.wizard-nav button{flex:1;background:var(--card2);color:var(--text);border:1px solid var(--border)}
+/* Плавающая панель отчета */
+#draftBar{position:fixed;bottom:0;left:0;width:100%;background:var(--ok);color:#000;padding:16px;text-align:center;font-weight:bold;font-size:1.1em;display:none;cursor:pointer;z-index:900;box-shadow:0 -4px 15px rgba(0,0,0,0.3);border-top:2px solid #166534;animation:slideUp 0.3s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
-.wizard-submit{width:100%;padding:18px;font-size:1.15em;background:var(--ok);color:#000;border:0;border-radius:10px;font-weight:bold;cursor:pointer;margin-top:8px}
-.wizard-submit:disabled{background:var(--card2);color:var(--muted);cursor:not-allowed}
+/* Модалка черновика */
+#cartOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;justify-content:center;align-items:flex-end;}
+#cartOverlay.show{display:flex}
+#cartBox{background:var(--card);width:100%;max-width:600px;border-radius:20px 20px 0 0;padding:20px;max-height:85vh;overflow-y:auto;animation:slideUp 0.3s ease}
+.cart-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.cart-item:last-child{border-bottom:0}
+.cart-qty{display:flex;align-items:center;gap:5px;background:var(--card2);border-radius:8px;padding:4px;}
+.cart-qty button{width:32px;height:32px;padding:0;border-radius:6px;background:var(--border);color:var(--text);font-size:1.2em;margin:0;}
+.cart-qty span{font-weight:bold;min-width:24px;text-align:center;}
+.cart-del{background:transparent;color:var(--err);width:36px;height:36px;padding:0;font-size:1.2em;display:flex;align-items:center;justify-content:center;margin:0;border-radius:8px;}
+.cart-del:active{background:rgba(239,68,68,0.2)}
 </style>
 </head>
 <body>
@@ -93,7 +95,15 @@ button:disabled{opacity:0.5;cursor:not-allowed}
     <input id="regSurname" placeholder="Иванов" autocomplete="family-name">
     <label>Email</label>
     <input id="regEmail" type="email" placeholder="you@example.com" autocomplete="email">
-    <button onclick="doRegister()" style="margin-top:16px">✓ Войти</button>
+    
+    <div style="margin: 15px 0; text-align: left;">
+      <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; color: var(--muted); font-size: 0.85em; font-weight: normal; line-height: 1.4; margin: 0;">
+        <input type="checkbox" id="privacyConsent" style="width: auto; margin-top: 3px; flex-shrink: 0;">
+        <span>Я даю согласие на обработку моих персональных данных (Имя, Фамилия, Email) для целей работы приложения.</span>
+      </label>
+    </div>
+
+    <button onclick="doRegister()" style="margin-top:0">✓ Войти</button>
     <div class="err" id="regErr"></div>
     <div class="info" id="regInfo"></div>
   </div>
@@ -107,19 +117,39 @@ button:disabled{opacity:0.5;cursor:not-allowed}
       <button onclick="logout()" style="width:auto;padding:4px 10px;font-size:0.75em;background:var(--card2);color:var(--muted);border:1px solid var(--border);margin-left:8px">Выйти</button>
     </div>
   </div>
+  
   <div class="wrap">
     <div class="card">
       <label>🏛️ Выберите стенд</label>
       <div class="stand-tabs" id="standTabs"></div>
     </div>
 
-    <div class="card">
-      <div class="wizard-crumbs" id="wizardBreadcrumbs"></div>
-      <div id="wizardBody"></div>
-      <div class="wizard-nav" id="wizardNav" style="display:none">
-        <button onclick="wizardBack()">← Назад</button>
-      </div>
+    <div id="wizardBody"></div>
+  </div>
+</div>
+
+<!-- Плавающая панель черновика -->
+<div id="draftBar" onclick="openCart()">
+  📋 В отчёте: <span id="draftBarText">0 шт.</span> — Нажмите, чтобы проверить
+</div>
+
+<!-- Модалка черновика -->
+<div id="cartOverlay" onclick="if(event.target===this) closeCart()">
+  <div id="cartBox" onclick="event.stopPropagation()">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h2 style="margin:0; color:var(--primary); font-size:1.3em;">📋 Черновик отчёта</h2>
+      <button onclick="closeCart()" style="background:var(--card2); color:var(--text); border:1px solid var(--border); padding:6px 12px; width:auto; border-radius:8px; font-size:1.1em;">✕</button>
     </div>
+    
+    <div id="cartList" style="margin-bottom:16px;"></div>
+    
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding:12px; background:var(--card2); border-radius:8px;">
+      <span style="font-weight:bold; color:var(--muted);">Всего:</span>
+      <span style="font-weight:bold; font-size:1.2em;"><span id="cartTotal">0</span> шт.</span>
+    </div>
+    
+    <button id="sendCartBtn" onclick="sendCart()" style="width:100%; padding:16px; font-size:1.1em; background:var(--ok); color:#000; border:0; border-radius:10px; font-weight:bold; margin-bottom:8px;">✓ Отправить отчёт</button>
+    <button onclick="clearCart()" style="width:100%; padding:12px; background:var(--card2); color:var(--err); border:1px solid var(--err); border-radius:10px; font-weight:bold;">🗑️ Очистить черновик</button>
   </div>
 </div>
 
@@ -138,7 +168,9 @@ let standNames = { 1:'Стенд 1', 2:'Стенд 2', 3:'Стенд 3', 4:'Ст
 let currentWitnessStand = 1;
 let itemsUnsub=null;
 
-let wizard = { step: 1, type: null, qty: {}, search: '' };
+let draft = {}; // Корзина (черновик)
+let currentTypeTab = 'Журнал';
+let searchTerm = '';
 
 const LS_STAND='witness_stand_id';
 const LS_EMAIL='witness_email';
@@ -167,6 +199,25 @@ function getTypeIcon(tp){ if(tp==='Журнал') return '📰'; if(tp==='Бро
 function getItemExtra(it){ const p=[]; if(it.issueNum) p.push('№'+it.issueNum); if(it.year) p.push(String(it.year)); return p.join(' · '); }
 function getItemTheme(it){ return String(it.theme || '').trim(); }
 
+// --- Работа с локальным черновиком ---
+function loadDraft() {
+  try {
+    const saved = localStorage.getItem('report_draft_' + currentStandId);
+    draft = saved ? JSON.parse(saved) : {};
+  } catch(e) { draft = {}; }
+}
+
+function saveDraft() {
+  try {
+    if (Object.keys(draft).length === 0) {
+      localStorage.removeItem('report_draft_' + currentStandId);
+    } else {
+      localStorage.setItem('report_draft_' + currentStandId, JSON.stringify(draft));
+    }
+  } catch(e){}
+}
+
+// --- Инициализация Firebase ---
 async function initFirebase(){
   const {initializeApp} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
   const {getFirestore, doc, getDoc, setDoc, collection, onSnapshot, addDoc} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
@@ -181,7 +232,15 @@ async function doRegister(){
   const email = document.getElementById('regEmail').value.trim().toLowerCase();
   const errEl = document.getElementById('regErr');
   const infoEl = document.getElementById('regInfo');
+  
   errEl.textContent=''; infoEl.textContent='';
+
+  const consentEl = document.getElementById('privacyConsent');
+  if (!consentEl || !consentEl.checked) {
+    errEl.textContent = '⚠️ Необходимо согласие на обработку персональных данных';
+    return;
+  }
+
   if(!standId){ errEl.textContent='⚠️ Введите код стенда'; return; }
   if(standId.length<3){ errEl.textContent='⚠️ Слишком короткий код'; return; }
   if(!name){ errEl.textContent='⚠️ Введите имя'; return; }
@@ -199,6 +258,7 @@ async function doRegister(){
     }
     await fns.setDoc(witnessRef, {
       email, name, surname, active: true,
+      consentGiven: true,
       createdAt: snap.exists() ? (snap.data().createdAt || Date.now()) : Date.now(),
       lastSeen: Date.now()
     }, {merge: true});
@@ -212,6 +272,9 @@ async function doRegister(){
     currentStandId = standId;
     infoEl.style.color='#22c55e';
     infoEl.textContent='✅ Готово!';
+    
+    consentEl.checked = false;
+    
     setTimeout(() => {
       startApp();
       subscribeToItems();
@@ -227,8 +290,12 @@ function startApp(){
   document.getElementById('regScreen').style.display='none';
   document.getElementById('mainScreen').style.display='block';
   document.getElementById('userInfo').textContent = '👤 ' + (currentUser && currentUser.name || '') + ' ' + (currentUser && currentUser.surname || '');
+  
+  loadDraft(); // Загружаем черновик при старте
+  
   renderStandTabs();
-  wizardReset();
+  renderCartBar();
+  renderWizard();
 }
 
 function logout(){
@@ -248,6 +315,7 @@ function logout(){
   document.getElementById('regName').value='';
   document.getElementById('regSurname').value='';
   document.getElementById('regEmail').value='';
+  document.getElementById('privacyConsent').checked = false;
 }
 
 function showDeactivated(){
@@ -283,25 +351,27 @@ function subscribeToItems(){
 function onItemsUpdated(){
   recomputeItemsOnStand();
   renderStandTabs();
-
-  if(wizard.type && getAvailableTypes().indexOf(wizard.type) === -1){
-    wizardReset();
-    return;
-  }
-
+  
+  // Валидация черновика: удаляем то, чего нет, и обрезаем количество
   let changed = false;
-  const newQty = {};
-  Object.keys(wizard.qty).forEach(id => {
+  Object.keys(draft).forEach(id => {
     const it = itemsOnStand.find(x => String(x.id) === String(id));
-    if(!it || REPORTABLE_TYPES.indexOf(getItemType(it)) === -1) { changed = true; return; }
-    const avail = parseInt(it.standCounts[currentWitnessStand]) || 0;
-    let v = parseInt(wizard.qty[id]) || 0;
-    if(v > avail){ v = avail; changed = true; }
-    if(v > 0){ newQty[id] = v; } else if(wizard.qty[id] > 0){ changed = true; }
+    if (!it) {
+      delete draft[id];
+      changed = true;
+    } else {
+      const avail = parseInt(it.standCounts[currentWitnessStand]) || 0;
+      if (draft[id] > avail) {
+        draft[id] = avail;
+        if (draft[id] <= 0) delete draft[id];
+        changed = true;
+      }
+    }
   });
-  if(changed) wizard.qty = newQty;
-
+  if (changed) saveDraft();
+  
   renderWizard();
+  renderCartBar();
 }
 
 function recomputeItemsOnStand(){
@@ -330,14 +400,18 @@ function renderStandTabs(){
 }
 
 function selectWitnessStand(s){
+  saveDraft(); // сохраняем черновик текущего стенда
   currentWitnessStand = s;
   try{ localStorage.setItem(LS_CUR_STAND, String(s)); }catch(e){}
+  
+  loadDraft(); // загружаем черновик нового стенда
   recomputeItemsOnStand();
   renderStandTabs();
-  wizardReset();
+  renderWizard();
+  renderCartBar();
 }
 
-/* ============ WIZARD ============ */
+// --- Основной рендеринг ---
 
 function getAvailableTypes(){
   var seen = {}, present = [];
@@ -366,161 +440,47 @@ function getReportableItemsForType(type){
     });
 }
 
-function wizardReset(){
-  wizard = { step: 1, type: null, qty: {}, search: '' };
-  recomputeItemsOnStand();
-  const types = getAvailableTypes();
-  if(types.length === 1){
-    wizard.type = types[0];
-    wizard.step = 2;
-  }
+function selectTypeTab(tp) {
+  currentTypeTab = tp;
+  searchTerm = ''; // при смене таба сбрасываем поиск
   renderWizard();
-}
-
-function wizardPickType(tp){
-  if(REPORTABLE_TYPES.indexOf(tp) === -1) return;
-  wizard.type = tp;
-  wizard.step = 2;
-  wizard.qty = {};
-  wizard.search = '';
-  renderWizard();
-}
-
-function wizardBack(){
-  if(wizard.step === 2){
-    const types = getAvailableTypes();
-    if(types.length === 1){
-      wizard.qty = {};
-      wizard.search = '';
-      renderWizard();
-      return;
-    }
-    wizard.step = 1;
-    wizard.type = null;
-    wizard.qty = {};
-    wizard.search = '';
-    renderWizard();
-  } else {
-    wizardReset();
-  }
-}
-
-function wizardSetQty(itemId, val){
-  const it = items.find(x => String(x.id) === String(itemId));
-  if(!it) return;
-  const avail = parseInt(it.standCounts[currentWitnessStand]) || 0;
-  let v = parseInt(val) || 0;
-  if(v < 0) v = 0;
-  if(v > avail) v = avail;
-  if(v === 0) delete wizard.qty[itemId];
-  else wizard.qty[itemId] = v;
-  updateQtyUI(itemId);
-  updateSubmitButton();
-  updateBreadcrumbs();
-}
-
-function wizardQtyDelta(itemId, d){
-  const cur = parseInt(wizard.qty[itemId]) || 0;
-  wizardSetQty(itemId, cur + d);
-  const input = document.getElementById('rqty-' + itemId);
-  if(input){
-    const v = parseInt(wizard.qty[itemId]) || 0;
-    input.value = v;
-    input.classList.toggle('filled', v > 0);
-  }
-}
-
-function updateQtyUI(itemId){
-  const input = document.getElementById('rqty-' + itemId);
-  if(input){
-    const v = parseInt(wizard.qty[itemId]) || 0;
-    input.value = v;
-    input.classList.toggle('filled', v > 0);
-  }
-  const card = document.getElementById('rcard-' + itemId);
-  if(card){
-    card.classList.toggle('active', (parseInt(wizard.qty[itemId]) || 0) > 0);
-  }
-}
-
-function updateSubmitButton(){
-  const btn = document.getElementById('submitAllBtn');
-  if(!btn) return;
-  const totalPositions = Object.keys(wizard.qty).length;
-  const totalQty = Object.values(wizard.qty).reduce((s,v) => s + (parseInt(v)||0), 0);
-  btn.disabled = totalPositions === 0;
-  if(totalPositions === 0){
-    btn.textContent = '✓ Отправить отчёт';
-  } else {
-    btn.textContent = '✓ Отправить (' + totalQty + ' шт.' + (totalPositions > 1 ? ' · ' + totalPositions + ' поз.' : '') + ')';
-  }
-}
-
-function updateBreadcrumbs(){
-  const crumbs = document.getElementById('wizardBreadcrumbs');
-  if(!crumbs) return;
-  if(wizard.step === 1){
-    crumbs.innerHTML = '<span style="color:var(--muted);font-size:0.85em">Выберите, что ушло</span>';
-    return;
-  }
-  let parts = [getTypeIcon(wizard.type) + ' ' + esc(wizard.type)];
-  const totalPositions = Object.keys(wizard.qty).length;
-  const totalQty = Object.values(wizard.qty).reduce((s,v) => s + (parseInt(v)||0), 0);
-  if(totalPositions > 0){
-    parts.push(totalQty + ' шт. · ' + totalPositions + ' ' + (totalPositions === 1 ? 'позиция' : 'позиции'));
-  }
-  crumbs.innerHTML = parts.map(p => '<span class="crumb">' + p + '</span>').join(' <span class="crumb-arrow">→</span> ');
 }
 
 function renderWizard(){
   const body = document.getElementById('wizardBody');
-  const nav = document.getElementById('wizardNav');
   if(!body) return;
 
-  updateBreadcrumbs();
-  nav.style.display = (wizard.step === 2) ? 'flex' : 'none';
-
-  if(wizard.step === 1) renderStepType(body);
-  else if(wizard.step === 2) renderStepReport(body);
-}
-
-function renderStepType(body){
   const types = getAvailableTypes();
   if(types.length === 0){
-    body.innerHTML = '<div class="wizard-empty">' +
+    body.innerHTML = '<div class="card"><div class="wizard-empty">' +
       '📦 На стенде <b>"' + esc(standNames[currentWitnessStand]) + '"</b><br>нет журналов или брошюр для отчёта.<br>' +
       '<span style="font-size:0.85em">Попробуйте другой стенд или дождитесь синхронизации.</span>' +
-      '</div>';
+      '</div></div>';
     return;
   }
-  let h = '<div class="wizard-step-num">Шаг 1</div>';
-  h += '<div class="wizard-q">Что ушло?</div>';
-  h += '<div class="choice-grid">';
-  types.forEach(tp => {
-    const count = itemsOnStand.filter(it => getItemType(it) === tp).length;
-    h += '<button class="choice-btn" onclick="wizardPickType(\'' + esc(tp).replace(/'/g, "\\'") + '\')">' +
-      '<div class="choice-icon">' + getTypeIcon(tp) + '</div>' +
-      '<div class="choice-label">' + esc(tp) + '</div>' +
-      '<div class="choice-meta">' + count + ' ' + (count === 1 ? 'выпуск' : 'выпусков') + '</div>' +
-      '</button>';
-  });
-  h += '</div>';
-  body.innerHTML = h;
-}
 
-function renderStepReport(body){
-  const allItems = getReportableItemsForType(wizard.type);
+  if (types.indexOf(currentTypeTab) === -1) {
+    currentTypeTab = types[0];
+  }
+
+  let tabsHtml = '';
+  types.forEach(tp => {
+    const active = tp === currentTypeTab ? 'active' : '';
+    tabsHtml += `<button type="button" class="type-tab ${active}" onclick="selectTypeTab('${tp}')">${getTypeIcon(tp)} ${tp}</button>`;
+  });
+
+  const allItems = getReportableItemsForType(currentTypeTab);
 
   let searchHtml = '';
   if(allItems.length > 5){
-    searchHtml = '<div class="wizard-search">' +
-      '<input id="wizardSearchInput" placeholder="🔍 Поиск по названию или теме..." value="' + esc(wizard.search) + '" oninput="wizardSearchChange(this.value)" autocomplete="off">' +
-      '</div>';
+    searchHtml = `<div class="wizard-search">
+      <input id="wizardSearchInput" placeholder="🔍 Поиск по названию или теме..." value="${esc(searchTerm)}" oninput="searchChange(this.value)" autocomplete="off">
+    </div>`;
   }
 
   let filtered = allItems;
-  if(wizard.search){
-    const q = wizard.search.toLowerCase();
+  if(searchTerm){
+    const q = searchTerm.toLowerCase();
     filtered = allItems.filter(it => {
       const name = getItemName(it).toLowerCase();
       const theme = getItemTheme(it).toLowerCase();
@@ -530,97 +490,264 @@ function renderStepReport(body){
     });
   }
 
-  let h = '<div class="wizard-step-num">Шаг 2</div>';
-  h += '<div class="wizard-q">' + getTypeIcon(wizard.type) + ' ' + esc(wizard.type) + ' — отметьте, сколько ушло</div>';
-  h += searchHtml;
-
+  let listHtml = '';
   if(filtered.length === 0){
-    h += '<div class="wizard-empty">Ничего не найдено</div>';
-    body.innerHTML = h;
-    return;
-  }
+    listHtml = '<div class="wizard-empty">Ничего не найдено</div>';
+  } else {
+    listHtml = '<div class="report-list">';
+    filtered.forEach(it => {
+      const avail = parseInt(it.standCounts[currentWitnessStand]) || 0;
+      const name = getItemName(it);
+      const theme = getItemTheme(it);
+      const extra = getItemExtra(it);
+      const lang = langDisplay(it.lang || 'ru');
+      const idKey = String(it.id);
+      const draftQty = parseInt(draft[idKey]) || 0;
 
-  h += '<div class="report-list">';
-  filtered.forEach(it => {
-    const avail = parseInt(it.standCounts[currentWitnessStand]) || 0;
-    const name = getItemName(it);
-    const theme = getItemTheme(it);
-    const extra = getItemExtra(it);
-    const lang = langDisplay(it.lang || 'ru');
-    const idKey = String(it.id);
-    const curQty = parseInt(wizard.qty[idKey]) || 0;
-    const active = curQty > 0;
-
-    h += '<div class="report-card ' + (active ? 'active' : '') + '" id="rcard-' + idKey + '">' +
-      '<div class="report-card-head">' +
-        '<div style="flex:1;min-width:0">' +
-          '<div class="report-card-title">' + esc(name) + '</div>' +
-          (theme ? '<div class="report-card-theme">' + esc(theme) + '</div>' : '') +
-          '<div class="report-card-meta">' +
-            '🌍 ' + esc(lang) +
-            (extra ? ' · 📅 ' + esc(extra) : '') +
+      listHtml += '<div class="report-card">' +
+        '<div class="report-card-head">' +
+          '<div style="flex:1;min-width:0">' +
+            '<div class="report-card-title">' + esc(name) + '</div>' +
+            (theme ? '<div class="report-card-theme">' + esc(theme) + '</div>' : '') +
+            '<div class="report-card-meta">' +
+              '🌍 ' + esc(lang) +
+              (extra ? ' · 📅 ' + esc(extra) : '') +
+            '</div>' +
           '</div>' +
+          '<div class="report-card-avail">' + avail + ' шт.</div>' +
         '</div>' +
-        '<div class="report-card-avail">' + avail + ' шт.</div>' +
-      '</div>' +
-      '<div class="report-qty-controls">' +
-        '<button class="rqty-btn" onclick="wizardQtyDelta(\'' + esc(idKey) + '\', -1)">−</button>' +
-        '<input id="rqty-' + idKey + '" class="rqty-input ' + (active ? 'filled' : '') + '" type="number" min="0" max="' + avail + '" value="' + curQty + '" oninput="wizardSetQty(\'' + esc(idKey) + '\', this.value)" inputmode="numeric">' +
-        '<button class="rqty-btn plus" onclick="wizardQtyDelta(\'' + esc(idKey) + '\', 1)">+</button>' +
-      '</div>' +
-    '</div>';
-  });
-  h += '</div>';
+        
+        // Бейдж с количеством в черновике
+        '<div id="badge-' + idKey + '" class="draft-badge" style="display:' + (draftQty > 0 ? 'inline-block' : 'none') + ';">' +
+          '🛒 В отчёте: <span>' + draftQty + '</span> шт.' +
+        '</div>' +
 
-  h += '<button id="submitAllBtn" class="wizard-submit" onclick="submitAllReports()" disabled>✓ Отправить отчёт</button>';
-
-  body.innerHTML = h;
-  updateSubmitButton();
-
-  if(wizard.search){
-    const si = document.getElementById('wizardSearchInput');
-    if(si) si.focus();
+        '<div class="add-controls">' +
+          '<input type="number" id="add-qty-' + idKey + '" class="add-qty" value="1" min="1" max="' + avail + '" inputmode="numeric">' +
+          '<button class="add-btn" onclick="addToDraft(\'' + esc(idKey) + '\', \'add-qty-' + idKey + '\')">➕ Записать</button>' +
+        '</div>' +
+      '</div>';
+    });
+    listHtml += '</div>';
   }
+
+  body.innerHTML = '<div class="card">' +
+    '<div class="type-tabs">' + tabsHtml + '</div>' +
+    searchHtml +
+    listHtml +
+    '</div>';
 }
 
-function wizardSearchChange(val){
-  wizard.search = String(val || '');
-  const body = document.getElementById('wizardBody');
-  const searchInput = document.getElementById('wizardSearchInput');
-  const cursorPos = searchInput ? searchInput.selectionStart : null;
-  renderStepReport(body);
-  if(cursorPos !== null){
-    const si = document.getElementById('wizardSearchInput');
-    if(si){
-      si.focus();
-      try{ si.setSelectionRange(cursorPos, cursorPos); }catch(e){}
+function searchChange(val) {
+  searchTerm = String(val || '');
+  const input = document.getElementById('wizardSearchInput');
+  const cursorPos = input ? input.selectionStart : null;
+  
+  renderWizard();
+  
+  if (cursorPos !== null) {
+    const newInput = document.getElementById('wizardSearchInput');
+    if (newInput) {
+      newInput.focus();
+      try { newInput.setSelectionRange(cursorPos, cursorPos); } catch(e){}
     }
   }
 }
 
-/* ============ SUBMIT ============ */
+// --- Логика корзины ---
 
-async function submitAllReports(){
-  const ids = Object.keys(wizard.qty).filter(id => (parseInt(wizard.qty[id]) || 0) > 0);
-  if(ids.length === 0){ toast('Введите количество','err'); return; }
+function addToDraft(id, qtyInputId) {
+  const qtyEl = document.getElementById(qtyInputId);
+  if(!qtyEl) return;
+  
+  let q = parseInt(qtyEl.value) || 1;
+  if (q < 1) q = 1;
+  
+  const it = items.find(x => String(x.id) === String(id));
+  if(!it) return;
+  
+  const avail = parseInt(it.standCounts[currentWitnessStand]) || 0;
+  const currentInDraft = parseInt(draft[id]) || 0;
+  
+  if (currentInDraft + q > avail) {
+    q = avail - currentInDraft;
+    if (q <= 0) {
+      toast('На стенде больше нет этой литературы', 'err');
+      return;
+    }
+    toast('Можно добавить только ' + q + ' шт.', 'err');
+  }
+  
+  draft[id] = currentInDraft + q;
+  saveDraft();
+  
+  // Обновляем бейдж на карточке
+  const badge = document.getElementById('badge-' + id);
+  if (badge) {
+    badge.style.display = 'inline-block';
+    badge.querySelector('span').textContent = draft[id];
+  }
+  
+  // Сбрасываем инпут
+  qtyEl.value = '1';
+  
+  renderCartBar();
+  toast('Добавлено: ' + q + ' шт.', 'ok');
+}
 
-  const btn = document.getElementById('submitAllBtn');
-  if(btn){ btn.disabled = true; btn.textContent = '⏳ Отправка...'; }
+function renderCartBar() {
+  const ids = Object.keys(draft);
+  let totalQty = 0;
+  ids.forEach(id => { totalQty += parseInt(draft[id]) || 0; });
+  
+  const bar = document.getElementById('draftBar');
+  const txt = document.getElementById('draftBarText');
+  
+  if (ids.length > 0 && totalQty > 0) {
+    bar.style.display = 'block';
+    txt.textContent = totalQty + ' шт. (' + ids.length + ' поз.)';
+  } else {
+    bar.style.display = 'none';
+  }
+}
 
-  let success = 0, failed = 0, totalQtySent = 0;
+function openCart() {
+  renderCartList();
+  document.getElementById('cartOverlay').classList.add('show');
+}
 
-  try{
+function closeCart() {
+  document.getElementById('cartOverlay').classList.remove('show');
+}
+
+function renderCartList() {
+  const container = document.getElementById('cartList');
+  const ids = Object.keys(draft);
+  
+  if (ids.length === 0) {
+    container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--muted);">В отчёте пока ничего нет.</div>';
+    document.getElementById('sendCartBtn').disabled = true;
+    document.getElementById('cartTotal').textContent = '0';
+    return;
+  }
+  
+  document.getElementById('sendCartBtn').disabled = false;
+  
+  let html = '';
+  let total = 0;
+  
+  // Сортируем по названию
+  ids.sort((a, b) => {
+    const itA = items.find(x => String(x.id) === String(a));
+    const itB = items.find(x => String(x.id) === String(b));
+    if(!itA || !itB) return 0;
+    return getItemName(itA).localeCompare(getItemName(itB));
+  });
+
+  ids.forEach(id => {
+    const it = items.find(x => String(x.id) === String(id));
+    if (!it) return;
+    const q = parseInt(draft[id]) || 0;
+    if (q <= 0) return;
+    
+    total += q;
+    const extra = getItemExtra(it);
+    
+    html += `
+      <div class="cart-item">
+        <div style="flex:1; min-width:0;">
+          <div style="font-weight:bold; font-size:0.95em; line-height:1.3;">${esc(getItemName(it))}</div>
+          <div style="font-size:0.8em; color:var(--muted); margin-top:2px;">🌍 ${esc(langDisplay(it.lang))} ${extra ? '· 📅 ' + esc(extra) : ''}</div>
+        </div>
+        <div class="cart-qty">
+          <button onclick="changeCartQty('${id}', -1)">−</button>
+          <span>${q}</span>
+          <button onclick="changeCartQty('${id}', 1)">+</button>
+        </div>
+        <button class="cart-del" onclick="removeFromDraft('${id}')">🗑️</button>
+      </div>
+    `;
+  });
+  
+  container.innerHTML = html;
+  document.getElementById('cartTotal').textContent = total;
+}
+
+function changeCartQty(id, delta) {
+  const it = items.find(x => String(x.id) === String(id));
+  if (!it) return;
+  
+  const avail = parseInt(it.standCounts[currentWitnessStand]) || 0;
+  let cur = parseInt(draft[id]) || 0;
+  let next = cur + delta;
+  
+  if (next <= 0) {
+    delete draft[id];
+  } else if (next > avail) {
+    toast('На стенде только ' + avail + ' шт.', 'err');
+    return;
+  } else {
+    draft[id] = next;
+  }
+  
+  saveDraft();
+  renderCartList();
+  renderCartBar();
+  
+  // Обновляем бейдж на карточке
+  const badge = document.getElementById('badge-' + id);
+  if (badge) {
+    if (draft[id] > 0) {
+      badge.style.display = 'inline-block';
+      badge.querySelector('span').textContent = draft[id];
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+}
+
+function removeFromDraft(id) {
+  delete draft[id];
+  saveDraft();
+  renderCartList();
+  renderCartBar();
+  
+  const badge = document.getElementById('badge-' + id);
+  if (badge) badge.style.display = 'none';
+}
+
+function clearCart() {
+  if (!confirm('Точно очистить весь черновик отчёта?')) return;
+  draft = {};
+  saveDraft();
+  renderCartBar();
+  renderWizard(); // обновить бейджи на карточках
+  closeCart();
+  toast('Черновик очищен');
+}
+
+async function sendCart() {
+  const ids = Object.keys(draft);
+  if (ids.length === 0) return;
+  
+  const btn = document.getElementById('sendCartBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Отправка...';
+  
+  let success = 0, failed = 0, totalSent = 0;
+  
+  try {
     const fns = cloudFns || await initFirebase();
     const reportsRef = fns.collection(cloudDb, 'stands', currentStandId, 'reports');
-
-    for(const id of ids){
+    
+    for (const id of ids) {
       const it = items.find(x => String(x.id) === String(id));
-      if(!it){ failed++; continue; }
-      const qty = parseInt(wizard.qty[id]) || 0;
-      const avail = parseInt(it.standCounts[currentWitnessStand]) || 0;
-      if(qty <= 0 || qty > avail){ failed++; continue; }
-
-      try{
+      if (!it) { failed++; continue; }
+      
+      const qty = parseInt(draft[id]) || 0;
+      if (qty <= 0) continue;
+      
+      try {
         await fns.addDoc(reportsRef, {
           witnessEmail: currentUser.email,
           witnessName: currentUser.name + ' ' + currentUser.surname,
@@ -640,36 +767,40 @@ async function submitAllReports(){
           note: ''
         });
         success++;
-        totalQtySent += qty;
-      }catch(e){ console.error('Report error:', e); failed++; }
+        totalSent += qty;
+      } catch(e) { 
+        console.error('Report error:', e); 
+        failed++; 
+      }
     }
-
+    
+    // Обновляем lastSeen
     try {
       const witnessRef = fns.doc(cloudDb, 'stands', currentStandId, 'witnesses', currentUser.email);
       await fns.setDoc(witnessRef, {lastSeen: Date.now()}, {merge: true});
     } catch(e){}
-
-    if(success > 0 && failed === 0){
-      toast('✓ Отправлено: ' + totalQtySent + ' шт.' + (success > 1 ? ' · ' + success + ' позиции' : ''), 'ok', 3000);
-      wizard.qty = {};
-      renderStepReport(document.getElementById('wizardBody'));
-    } else if(success > 0 && failed > 0){
-      toast('⚠️ Отправлено ' + success + ', ошибок ' + failed, 'err', 3500);
-      wizard.qty = {};
-      renderStepReport(document.getElementById('wizardBody'));
+    
+    if (success > 0) {
+      draft = {};
+      saveDraft();
+      renderCartBar();
+      closeCart();
+      renderWizard(); // обновить бейджи
+      toast('✓ Отправлено: ' + totalSent + ' шт.', 'ok', 3000);
     } else {
       toast('❌ Не удалось отправить', 'err');
-      if(btn){ btn.disabled = false; updateSubmitButton(); }
+      btn.disabled = false;
+      btn.textContent = '✓ Отправить отчёт';
     }
-  }catch(e){
+  } catch(e) {
     console.error(e);
     toast('❌ Ошибка: ' + (e.message || 'попробуйте ещё раз'), 'err');
-    if(btn){ btn.disabled = false; updateSubmitButton(); }
+    btn.disabled = false;
+    btn.textContent = '✓ Отправить отчёт';
   }
 }
 
-/* ============ INIT ============ */
-
+// --- Init ---
 async function init(){
   const standId = localStorage.getItem(LS_STAND);
   const email = localStorage.getItem(LS_EMAIL);

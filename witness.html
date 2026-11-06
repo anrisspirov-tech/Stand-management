@@ -19,7 +19,6 @@ button{padding:12px;border-radius:8px;border:0;background:var(--primary);color:v
 button:active{transform:scale(0.98)}
 button:disabled{opacity:0.5;cursor:not-allowed}
 
-/* Экраны */
 .reg-box{background:var(--card);border:2px solid var(--primary);border-radius:14px;padding:20px;max-width:400px;margin:40px auto;text-align:center}
 .reg-box h2{color:var(--primary);margin:0 0 8px}
 .reg-box .desc{color:var(--muted);font-size:0.9em;margin-bottom:16px;line-height:1.5}
@@ -32,20 +31,17 @@ button:disabled{opacity:0.5;cursor:not-allowed}
 .toast.ok{border-color:var(--ok);background:rgba(34,197,94,0.95);color:#000}
 .toast.err{border-color:var(--err);background:rgba(239,68,68,0.95)}
 
-/* Табы стендов */
 .stand-tabs{display:flex;gap:5px;margin-bottom:12px}
 .stand-tab{flex:1;padding:10px 6px;font-size:0.85em;font-weight:bold;background:var(--card2);color:var(--text);border:2px solid var(--border);border-radius:8px;cursor:pointer;margin:0;transition:all 0.15s;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .stand-tab.active{background:#06b6d4;color:#000;border-color:#06b6d4;box-shadow:0 0 10px rgba(6,182,212,0.5)}
 .stand-tab .cnt{display:block;font-size:0.7em;opacity:0.85;font-weight:normal;margin-top:2px}
 
-/* Табы типов (Журнал/Брошюра) */
 .type-tabs{display:flex;gap:8px;margin-bottom:14px}
 .type-tab{flex:1;padding:12px;font-size:1em;font-weight:bold;background:var(--card2);color:var(--text);border:2px solid var(--border);border-radius:10px;cursor:pointer;margin:0;transition:all 0.15s;text-align:center}
 .type-tab.active{background:var(--primary);color:var(--primary-text);border-color:var(--primary);box-shadow:0 0 12px rgba(168,85,247,0.4)}
 
 .wizard-search{margin-bottom:12px}
 
-/* Карточки литературы */
 .report-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
 .report-card{background:var(--card2);border:2px solid var(--border);border-radius:10px;padding:12px;transition:all 0.15s}
 .report-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
@@ -63,11 +59,9 @@ button:disabled{opacity:0.5;cursor:not-allowed}
 
 .wizard-empty{text-align:center;padding:30px 15px;color:var(--muted);line-height:1.5;font-size:0.95em}
 
-/* Плавающая панель отчета */
 #draftBar{position:fixed;bottom:0;left:0;width:100%;background:var(--ok);color:#000;padding:16px;text-align:center;font-weight:bold;font-size:1.1em;display:none;cursor:pointer;z-index:900;box-shadow:0 -4px 15px rgba(0,0,0,0.3);border-top:2px solid #166534;animation:slideUp 0.3s ease}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
-/* Модалка черновика */
 #cartOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;justify-content:center;align-items:flex-end;}
 #cartOverlay.show{display:flex}
 #cartBox{background:var(--card);width:100%;max-width:600px;border-radius:20px 20px 0 0;padding:20px;max-height:85vh;overflow-y:auto;animation:slideUp 0.3s ease}
@@ -128,12 +122,10 @@ button:disabled{opacity:0.5;cursor:not-allowed}
   </div>
 </div>
 
-<!-- Плавающая панель черновика -->
 <div id="draftBar" onclick="openCart()">
   📋 В отчёте: <span id="draftBarText">0 шт.</span> — Нажмите, чтобы проверить
 </div>
 
-<!-- Модалка черновика -->
 <div id="cartOverlay" onclick="if(event.target===this) closeCart()">
   <div id="cartBox" onclick="event.stopPropagation()">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
@@ -156,19 +148,60 @@ button:disabled{opacity:0.5;cursor:not-allowed}
 <div class="toast-box" id="toastBox"></div>
 
 <script>
+// ==========================================
+// МОДУЛЬ ШИФРОВАНИЯ ДАННЫХ (AES-GCM)
+// ==========================================
+const SECRET_KEY_STRING = "StandApp_SuperSecret_2026!777"; // ОБЯЗАТЕЛЬНО ПОМЕНЯЙТЕ И СДЕЛАЙТЕ ОДИНАКОВЫМ ВО ВСЕХ 3 ФАЙЛАХ!
+
+async function getCryptoKey() {
+  const enc = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw', enc.encode(SECRET_KEY_STRING), {name: 'PBKDF2'}, false, ['deriveKey']
+  );
+  return crypto.subtle.deriveKey(
+    {name: 'PBKDF2', salt: enc.encode('stand-salt-123'), iterations: 100000, hash: 'SHA-256'},
+    keyMaterial, {name: 'AES-GCM', length: 256}, false, ['encrypt', 'decrypt']
+  );
+}
+
+async function encryptData(text) {
+  if (!text) return text;
+  try {
+    const enc = new TextEncoder();
+    const key = await getCryptoKey();
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const ciphertext = await crypto.subtle.encrypt({name: 'AES-GCM', iv}, key, enc.encode(text));
+    const combined = new Uint8Array(iv.length + ciphertext.byteLength);
+    combined.set(iv, 0);
+    combined.set(new Uint8Array(ciphertext), iv.length);
+    return btoa(String.fromCharCode(...combined));
+  } catch(e) { return text; }
+}
+
+async function decryptData(encryptedText) {
+  if (!encryptedText) return encryptedText;
+  try {
+    const combined = new Uint8Array(atob(encryptedText).split('').map(c => c.charCodeAt(0)));
+    if (combined.length < 13) return encryptedText;
+    const iv = combined.slice(0, 12);
+    const ciphertext = combined.slice(12);
+    const key = await getCryptoKey();
+    const decrypted = await crypto.subtle.decrypt({name: 'AES-GCM', iv}, key, ciphertext);
+    return new TextDecoder().decode(decrypted);
+  } catch(e) { return encryptedText; }
+}
+// ==========================================
+
 const FIREBASE_CONFIG = {"apiKey":"AIzaSyCKoGOE84zPuc4t6UQrDYMbooCR43p0FyQ","authDomain":"stand-management-a46a7.firebaseapp.com","projectId":"stand-management-a46a7","storageBucket":"stand-management-a46a7.firebasestorage.app","messagingSenderId":"304875768432","appId":"1:304875768432:web:470adb4707b8a3680482b5"};
 
 const REPORTABLE_TYPES = ['Журнал', 'Брошюра'];
-
 let cloudApp=null, cloudDb=null, cloudFns=null;
 let currentUser=null, currentStandId='';
-let items=[];
-let itemsOnStand=[];
+let items=[], itemsOnStand=[];
 let standNames = { 1:'Стенд 1', 2:'Стенд 2', 3:'Стенд 3', 4:'Стенд 4' };
 let currentWitnessStand = 1;
 let itemsUnsub=null;
-
-let draft = {}; // Корзина (черновик)
+let draft = {}; 
 let currentTypeTab = 'Журнал';
 let searchTerm = '';
 
@@ -199,30 +232,48 @@ function getTypeIcon(tp){ if(tp==='Журнал') return '📰'; if(tp==='Бро
 function getItemExtra(it){ const p=[]; if(it.issueNum) p.push('№'+it.issueNum); if(it.year) p.push(String(it.year)); return p.join(' · '); }
 function getItemTheme(it){ return String(it.theme || '').trim(); }
 
-// --- Работа с локальным черновиком ---
 function loadDraft() {
   try {
     const saved = localStorage.getItem('report_draft_' + currentStandId);
     draft = saved ? JSON.parse(saved) : {};
   } catch(e) { draft = {}; }
 }
-
 function saveDraft() {
   try {
-    if (Object.keys(draft).length === 0) {
-      localStorage.removeItem('report_draft_' + currentStandId);
-    } else {
-      localStorage.setItem('report_draft_' + currentStandId, JSON.stringify(draft));
-    }
+    if (Object.keys(draft).length === 0) localStorage.removeItem('report_draft_' + currentStandId);
+    else localStorage.setItem('report_draft_' + currentStandId, JSON.stringify(draft));
   } catch(e){}
 }
 
-// --- Инициализация Firebase ---
+// ИСПРАВЛЕННАЯ ФУНКЦИЯ ИНИЦИАЛИЗАЦИИ
 async function initFirebase(){
-  const {initializeApp} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
-  const {getFirestore, doc, getDoc, setDoc, collection, onSnapshot, addDoc} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
-  if(!cloudApp){ cloudApp = initializeApp(FIREBASE_CONFIG); cloudDb = getFirestore(cloudApp); cloudFns = {doc, getDoc, setDoc, collection, onSnapshot, addDoc}; }
-  return cloudFns;
+  try {
+    const {initializeApp} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
+    const {getFirestore, doc, getDoc, setDoc, collection, onSnapshot, addDoc, getAuth, signInAnonymously} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
+    
+    // Если приложение уже было инициализировано, просто вернем функции
+    if(!cloudApp){ 
+      cloudApp = initializeApp(FIREBASE_CONFIG); 
+      cloudDb = getFirestore(cloudApp); 
+    }
+    
+    // ВСЕГДА обновляем объект с функциями, чтобы не было undefined
+    cloudFns = {doc, getDoc, setDoc, collection, onSnapshot, addDoc}; 
+    
+    // Попытка анонимного входа (если включен в Firebase, это спасет от permission denied)
+    try {
+      const {getAuth, signInAnonymously} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js');
+      const auth = getAuth(cloudApp);
+      if (!auth.currentUser) {
+        await signInAnonymously(auth);
+      }
+    } catch(e) { console.warn('Auth failed (возможно, не включена в Firebase):', e); }
+    
+    return cloudFns;
+  } catch(e) {
+    console.error("Firebase Init Error:", e);
+    throw e; // Пробрасываем ошибку, чтобы ее поймал init()
+  }
 }
 
 async function doRegister(){
@@ -247,6 +298,7 @@ async function doRegister(){
   if(!surname){ errEl.textContent='⚠️ Введите фамилию'; return; }
   if(!email || !email.includes('@')){ errEl.textContent='⚠️ Неверный email'; return; }
   infoEl.textContent='⏳ Регистрация...';
+  
   try{
     const fns = await initFirebase();
     const witnessRef = fns.doc(cloudDb, 'stands', standId, 'witnesses', email);
@@ -256,8 +308,16 @@ async function doRegister(){
       infoEl.textContent='';
       return;
     }
+
+    // ШИФРУЕМ ИМЯ И ФАМИЛИЮ
+    const encName = await encryptData(name);
+    const encSurname = await encryptData(surname);
+
     await fns.setDoc(witnessRef, {
-      email, name, surname, active: true,
+      email: email, 
+      name: encName,     
+      surname: encSurname, 
+      active: true,
       consentGiven: true,
       createdAt: snap.exists() ? (snap.data().createdAt || Date.now()) : Date.now(),
       lastSeen: Date.now()
@@ -290,9 +350,7 @@ function startApp(){
   document.getElementById('regScreen').style.display='none';
   document.getElementById('mainScreen').style.display='block';
   document.getElementById('userInfo').textContent = '👤 ' + (currentUser && currentUser.name || '') + ' ' + (currentUser && currentUser.surname || '');
-  
-  loadDraft(); // Загружаем черновик при старте
-  
+  loadDraft();
   renderStandTabs();
   renderCartBar();
   renderWizard();
@@ -351,15 +409,11 @@ function subscribeToItems(){
 function onItemsUpdated(){
   recomputeItemsOnStand();
   renderStandTabs();
-  
-  // Валидация черновика: удаляем то, чего нет, и обрезаем количество
   let changed = false;
   Object.keys(draft).forEach(id => {
     const it = itemsOnStand.find(x => String(x.id) === String(id));
-    if (!it) {
-      delete draft[id];
-      changed = true;
-    } else {
+    if (!it) { delete draft[id]; changed = true; } 
+    else {
       const avail = parseInt(it.standCounts[currentWitnessStand]) || 0;
       if (draft[id] > avail) {
         draft[id] = avail;
@@ -369,7 +423,6 @@ function onItemsUpdated(){
     }
   });
   if (changed) saveDraft();
-  
   renderWizard();
   renderCartBar();
 }
@@ -388,30 +441,24 @@ function renderStandTabs(){
   for(let s = 1; s <= 4; s++){
     const activeClass = (s === currentWitnessStand) ? 'active' : '';
     let totalOnStand = 0;
-    items.forEach(it => {
-      totalOnStand += (it.standCounts && parseInt(it.standCounts[s])) || 0;
-    });
+    items.forEach(it => { totalOnStand += (it.standCounts && parseInt(it.standCounts[s])) || 0; });
     html += `<button type="button" class="stand-tab ${activeClass}" onclick="selectWitnessStand(${s})">
-      🏛️ ${esc(standNames[s])}
-      <span class="cnt">${totalOnStand > 0 ? totalOnStand + ' шт.' : '—'}</span>
+      🏛️ ${esc(standNames[s])} <span class="cnt">${totalOnStand > 0 ? totalOnStand + ' шт.' : '—'}</span>
     </button>`;
   }
   tabsDiv.innerHTML = html;
 }
 
 function selectWitnessStand(s){
-  saveDraft(); // сохраняем черновик текущего стенда
+  saveDraft();
   currentWitnessStand = s;
   try{ localStorage.setItem(LS_CUR_STAND, String(s)); }catch(e){}
-  
-  loadDraft(); // загружаем черновик нового стенда
+  loadDraft();
   recomputeItemsOnStand();
   renderStandTabs();
   renderWizard();
   renderCartBar();
 }
-
-// --- Основной рендеринг ---
 
 function getAvailableTypes(){
   var seen = {}, present = [];
@@ -442,7 +489,7 @@ function getReportableItemsForType(type){
 
 function selectTypeTab(tp) {
   currentTypeTab = tp;
-  searchTerm = ''; // при смене таба сбрасываем поиск
+  searchTerm = '';
   renderWizard();
 }
 
@@ -452,16 +499,10 @@ function renderWizard(){
 
   const types = getAvailableTypes();
   if(types.length === 0){
-    body.innerHTML = '<div class="card"><div class="wizard-empty">' +
-      '📦 На стенде <b>"' + esc(standNames[currentWitnessStand]) + '"</b><br>нет журналов или брошюр для отчёта.<br>' +
-      '<span style="font-size:0.85em">Попробуйте другой стенд или дождитесь синхронизации.</span>' +
-      '</div></div>';
+    body.innerHTML = '<div class="card"><div class="wizard-empty">📦 На стенде <b>"' + esc(standNames[currentWitnessStand]) + '"</b><br>нет журналов или брошюр для отчёта.</div></div>';
     return;
   }
-
-  if (types.indexOf(currentTypeTab) === -1) {
-    currentTypeTab = types[0];
-  }
+  if (types.indexOf(currentTypeTab) === -1) currentTypeTab = types[0];
 
   let tabsHtml = '';
   types.forEach(tp => {
@@ -470,12 +511,9 @@ function renderWizard(){
   });
 
   const allItems = getReportableItemsForType(currentTypeTab);
-
   let searchHtml = '';
   if(allItems.length > 5){
-    searchHtml = `<div class="wizard-search">
-      <input id="wizardSearchInput" placeholder="🔍 Поиск по названию или теме..." value="${esc(searchTerm)}" oninput="searchChange(this.value)" autocomplete="off">
-    </div>`;
+    searchHtml = `<div class="wizard-search"><input id="wizardSearchInput" placeholder="🔍 Поиск по названию или теме..." value="${esc(searchTerm)}" oninput="searchChange(this.value)" autocomplete="off"></div>`;
   }
 
   let filtered = allItems;
@@ -509,19 +547,11 @@ function renderWizard(){
           '<div style="flex:1;min-width:0">' +
             '<div class="report-card-title">' + esc(name) + '</div>' +
             (theme ? '<div class="report-card-theme">' + esc(theme) + '</div>' : '') +
-            '<div class="report-card-meta">' +
-              '🌍 ' + esc(lang) +
-              (extra ? ' · 📅 ' + esc(extra) : '') +
-            '</div>' +
+            '<div class="report-card-meta">🌍 ' + esc(lang) + (extra ? ' · 📅 ' + esc(extra) : '') + '</div>' +
           '</div>' +
           '<div class="report-card-avail">' + avail + ' шт.</div>' +
         '</div>' +
-        
-        // Бейдж с количеством в черновике
-        '<div id="badge-' + idKey + '" class="draft-badge" style="display:' + (draftQty > 0 ? 'inline-block' : 'none') + ';">' +
-          '🛒 В отчёте: <span>' + draftQty + '</span> шт.' +
-        '</div>' +
-
+        '<div id="badge-' + idKey + '" class="draft-badge" style="display:' + (draftQty > 0 ? 'inline-block' : 'none') + ';">🛒 В отчёте: <span>' + draftQty + '</span> шт.</div>' +
         '<div class="add-controls">' +
           '<input type="number" id="add-qty-' + idKey + '" class="add-qty" value="1" min="1" max="' + avail + '" inputmode="numeric">' +
           '<button class="add-btn" onclick="addToDraft(\'' + esc(idKey) + '\', \'add-qty-' + idKey + '\')">➕ Записать</button>' +
@@ -530,67 +560,42 @@ function renderWizard(){
     });
     listHtml += '</div>';
   }
-
-  body.innerHTML = '<div class="card">' +
-    '<div class="type-tabs">' + tabsHtml + '</div>' +
-    searchHtml +
-    listHtml +
-    '</div>';
+  body.innerHTML = '<div class="card"><div class="type-tabs">' + tabsHtml + '</div>' + searchHtml + listHtml + '</div>';
 }
 
 function searchChange(val) {
   searchTerm = String(val || '');
   const input = document.getElementById('wizardSearchInput');
   const cursorPos = input ? input.selectionStart : null;
-  
   renderWizard();
-  
   if (cursorPos !== null) {
     const newInput = document.getElementById('wizardSearchInput');
-    if (newInput) {
-      newInput.focus();
-      try { newInput.setSelectionRange(cursorPos, cursorPos); } catch(e){}
-    }
+    if (newInput) { newInput.focus(); try { newInput.setSelectionRange(cursorPos, cursorPos); } catch(e){} }
   }
 }
-
-// --- Логика корзины ---
 
 function addToDraft(id, qtyInputId) {
   const qtyEl = document.getElementById(qtyInputId);
   if(!qtyEl) return;
-  
   let q = parseInt(qtyEl.value) || 1;
   if (q < 1) q = 1;
-  
   const it = items.find(x => String(x.id) === String(id));
   if(!it) return;
-  
   const avail = parseInt(it.standCounts[currentWitnessStand]) || 0;
   const currentInDraft = parseInt(draft[id]) || 0;
   
   if (currentInDraft + q > avail) {
     q = avail - currentInDraft;
-    if (q <= 0) {
-      toast('На стенде больше нет этой литературы', 'err');
-      return;
-    }
+    if (q <= 0) { toast('На стенде больше нет этой литературы', 'err'); return; }
     toast('Можно добавить только ' + q + ' шт.', 'err');
   }
   
   draft[id] = currentInDraft + q;
   saveDraft();
   
-  // Обновляем бейдж на карточке
   const badge = document.getElementById('badge-' + id);
-  if (badge) {
-    badge.style.display = 'inline-block';
-    badge.querySelector('span').textContent = draft[id];
-  }
-  
-  // Сбрасываем инпут
+  if (badge) { badge.style.display = 'inline-block'; badge.querySelector('span').textContent = draft[id]; }
   qtyEl.value = '1';
-  
   renderCartBar();
   toast('Добавлено: ' + q + ' шт.', 'ok');
 }
@@ -599,44 +604,27 @@ function renderCartBar() {
   const ids = Object.keys(draft);
   let totalQty = 0;
   ids.forEach(id => { totalQty += parseInt(draft[id]) || 0; });
-  
   const bar = document.getElementById('draftBar');
   const txt = document.getElementById('draftBarText');
-  
-  if (ids.length > 0 && totalQty > 0) {
-    bar.style.display = 'block';
-    txt.textContent = totalQty + ' шт. (' + ids.length + ' поз.)';
-  } else {
-    bar.style.display = 'none';
-  }
+  if (ids.length > 0 && totalQty > 0) { bar.style.display = 'block'; txt.textContent = totalQty + ' шт. (' + ids.length + ' поз.)'; } 
+  else { bar.style.display = 'none'; }
 }
 
-function openCart() {
-  renderCartList();
-  document.getElementById('cartOverlay').classList.add('show');
-}
-
-function closeCart() {
-  document.getElementById('cartOverlay').classList.remove('show');
-}
+function openCart() { renderCartList(); document.getElementById('cartOverlay').classList.add('show'); }
+function closeCart() { document.getElementById('cartOverlay').classList.remove('show'); }
 
 function renderCartList() {
   const container = document.getElementById('cartList');
   const ids = Object.keys(draft);
-  
   if (ids.length === 0) {
     container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--muted);">В отчёте пока ничего нет.</div>';
     document.getElementById('sendCartBtn').disabled = true;
     document.getElementById('cartTotal').textContent = '0';
     return;
   }
-  
   document.getElementById('sendCartBtn').disabled = false;
-  
   let html = '';
   let total = 0;
-  
-  // Сортируем по названию
   ids.sort((a, b) => {
     const itA = items.find(x => String(x.id) === String(a));
     const itB = items.find(x => String(x.id) === String(b));
@@ -649,12 +637,9 @@ function renderCartList() {
     if (!it) return;
     const q = parseInt(draft[id]) || 0;
     if (q <= 0) return;
-    
     total += q;
     const extra = getItemExtra(it);
-    
-    html += `
-      <div class="cart-item">
+    html += `<div class="cart-item">
         <div style="flex:1; min-width:0;">
           <div style="font-weight:bold; font-size:0.95em; line-height:1.3;">${esc(getItemName(it))}</div>
           <div style="font-size:0.8em; color:var(--muted); margin-top:2px;">🌍 ${esc(langDisplay(it.lang))} ${extra ? '· 📅 ' + esc(extra) : ''}</div>
@@ -665,10 +650,8 @@ function renderCartList() {
           <button onclick="changeCartQty('${id}', 1)">+</button>
         </div>
         <button class="cart-del" onclick="removeFromDraft('${id}')">🗑️</button>
-      </div>
-    `;
+      </div>`;
   });
-  
   container.innerHTML = html;
   document.getElementById('cartTotal').textContent = total;
 }
@@ -676,131 +659,78 @@ function renderCartList() {
 function changeCartQty(id, delta) {
   const it = items.find(x => String(x.id) === String(id));
   if (!it) return;
-  
   const avail = parseInt(it.standCounts[currentWitnessStand]) || 0;
   let cur = parseInt(draft[id]) || 0;
   let next = cur + delta;
-  
-  if (next <= 0) {
-    delete draft[id];
-  } else if (next > avail) {
-    toast('На стенде только ' + avail + ' шт.', 'err');
-    return;
-  } else {
-    draft[id] = next;
-  }
-  
-  saveDraft();
-  renderCartList();
-  renderCartBar();
-  
-  // Обновляем бейдж на карточке
+  if (next <= 0) { delete draft[id]; } 
+  else if (next > avail) { toast('На стенде только ' + avail + ' шт.', 'err'); return; } 
+  else { draft[id] = next; }
+  saveDraft(); renderCartList(); renderCartBar();
   const badge = document.getElementById('badge-' + id);
   if (badge) {
-    if (draft[id] > 0) {
-      badge.style.display = 'inline-block';
-      badge.querySelector('span').textContent = draft[id];
-    } else {
-      badge.style.display = 'none';
-    }
+    if (draft[id] > 0) { badge.style.display = 'inline-block'; badge.querySelector('span').textContent = draft[id]; } 
+    else { badge.style.display = 'none'; }
   }
 }
 
 function removeFromDraft(id) {
   delete draft[id];
-  saveDraft();
-  renderCartList();
-  renderCartBar();
-  
+  saveDraft(); renderCartList(); renderCartBar();
   const badge = document.getElementById('badge-' + id);
   if (badge) badge.style.display = 'none';
 }
 
 function clearCart() {
   if (!confirm('Точно очистить весь черновик отчёта?')) return;
-  draft = {};
-  saveDraft();
-  renderCartBar();
-  renderWizard(); // обновить бейджи на карточках
-  closeCart();
-  toast('Черновик очищен');
+  draft = {}; saveDraft(); renderCartBar(); renderWizard(); closeCart(); toast('Черновик очищен');
 }
 
 async function sendCart() {
   const ids = Object.keys(draft);
   if (ids.length === 0) return;
-  
   const btn = document.getElementById('sendCartBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Отправка...';
-  
+  btn.disabled = true; btn.textContent = '⏳ Отправка...';
   let success = 0, failed = 0, totalSent = 0;
   
   try {
-    const fns = cloudFns || await initFirebase();
+    const fns = await initFirebase(); // Всегда проверяем инициализацию
     const reportsRef = fns.collection(cloudDb, 'stands', currentStandId, 'reports');
     
     for (const id of ids) {
       const it = items.find(x => String(x.id) === String(id));
       if (!it) { failed++; continue; }
-      
       const qty = parseInt(draft[id]) || 0;
       if (qty <= 0) continue;
-      
       try {
         await fns.addDoc(reportsRef, {
           witnessEmail: currentUser.email,
           witnessName: currentUser.name + ' ' + currentUser.surname,
-          itemId: it.id,
-          itemName: getItemName(it),
-          itemTheme: getItemTheme(it),
-          itemExtra: getItemExtra(it),
-          itemLang: it.lang || 'ru',
-          itemType: it.type || 'Журнал',
-          standNumber: currentWitnessStand,
-          standName: standNames[currentWitnessStand],
-          qty: qty,
-          processed: false,
-          appliedQty: null,
-          createdAt: Date.now(),
-          processedAt: null,
-          note: ''
+          itemId: it.id, itemName: getItemName(it), itemTheme: getItemTheme(it),
+          itemExtra: getItemExtra(it), itemLang: it.lang || 'ru', itemType: it.type || 'Журнал',
+          standNumber: currentWitnessStand, standName: standNames[currentWitnessStand],
+          qty: qty, processed: false, appliedQty: null,
+          createdAt: Date.now(), processedAt: null, note: ''
         });
-        success++;
-        totalSent += qty;
-      } catch(e) { 
-        console.error('Report error:', e); 
-        failed++; 
-      }
+        success++; totalSent += qty;
+      } catch(e) { failed++; }
     }
-    
-    // Обновляем lastSeen
     try {
       const witnessRef = fns.doc(cloudDb, 'stands', currentStandId, 'witnesses', currentUser.email);
       await fns.setDoc(witnessRef, {lastSeen: Date.now()}, {merge: true});
     } catch(e){}
     
     if (success > 0) {
-      draft = {};
-      saveDraft();
-      renderCartBar();
-      closeCart();
-      renderWizard(); // обновить бейджи
+      draft = {}; saveDraft(); renderCartBar(); closeCart(); renderWizard();
       toast('✓ Отправлено: ' + totalSent + ' шт.', 'ok', 3000);
     } else {
-      toast('❌ Не удалось отправить', 'err');
-      btn.disabled = false;
-      btn.textContent = '✓ Отправить отчёт';
+      toast('❌ Не удалось отправить', 'err'); btn.disabled = false; btn.textContent = '✓ Отправить отчёт';
     }
   } catch(e) {
-    console.error(e);
     toast('❌ Ошибка: ' + (e.message || 'попробуйте ещё раз'), 'err');
-    btn.disabled = false;
-    btn.textContent = '✓ Отправить отчёт';
+    btn.disabled = false; btn.textContent = '✓ Отправить отчёт';
   }
 }
 
-// --- Init ---
 async function init(){
   const standId = localStorage.getItem(LS_STAND);
   const email = localStorage.getItem(LS_EMAIL);
@@ -814,17 +744,11 @@ async function init(){
 
   currentUser = {email, name: savedName, surname: savedSurname};
   currentStandId = standId;
-
   const savedStand = parseInt(localStorage.getItem(LS_CUR_STAND));
   if(savedStand >= 1 && savedStand <= 4) currentWitnessStand = savedStand;
-
   try{
     const cached = JSON.parse(localStorage.getItem(LS_NAMES_JSON) || 'null');
-    if(cached && typeof cached === 'object'){
-      for(let n=1; n<=4; n++){
-        if(cached[n]) standNames[n] = String(cached[n]);
-      }
-    }
+    if(cached && typeof cached === 'object'){ for(let n=1; n<=4; n++){ if(cached[n]) standNames[n] = String(cached[n]); } }
   }catch(e){}
 
   startApp();
@@ -836,49 +760,36 @@ async function init(){
 
     if(snap.exists()){
       const data = snap.data();
-      if(data.active === false){
-        showDeactivated();
-        return;
-      }
+      if(data.active === false){ showDeactivated(); return; }
+      
+      const decName = await decryptData(data.name);
+      const decSurname = await decryptData(data.surname);
       let changed = false;
-      if(data.name && data.name !== currentUser.name){
-        currentUser.name = data.name;
-        localStorage.setItem(LS_NAME, data.name);
-        changed = true;
-      }
-      if(data.surname && data.surname !== currentUser.surname){
-        currentUser.surname = data.surname;
-        localStorage.setItem(LS_SURNAME, data.surname);
-        changed = true;
-      }
-      if(changed){
-        document.getElementById('userInfo').textContent = '👤 ' + currentUser.name + ' ' + currentUser.surname;
-      }
+      if(decName && decName !== currentUser.name){ currentUser.name = decName; localStorage.setItem(LS_NAME, decName); changed = true; }
+      if(decSurname && decSurname !== currentUser.surname){ currentUser.surname = decSurname; localStorage.setItem(LS_SURNAME, decSurname); changed = true; }
+      if(changed){ document.getElementById('userInfo').textContent = '👤 ' + currentUser.name + ' ' + currentUser.surname; }
       try{ await fns.setDoc(witnessRef, {lastSeen: Date.now()}, {merge: true}); }catch(e){}
     } else {
       if(savedName){
         try{
+          const encName = await encryptData(savedName);
+          const encSurname = await encryptData(savedSurname);
           await fns.setDoc(witnessRef, {
-            email, name: savedName, surname: savedSurname, active: true,
+            email: email, name: encName, surname: encSurname, active: true,
             createdAt: Date.now(), lastSeen: Date.now()
           }, {merge: true});
-        }catch(e){ console.warn('Could not recreate witness doc:', e); }
+        }catch(e){}
       }
     }
-
     subscribeToItems();
   }catch(e){
-    console.warn('Firebase verification failed, keeping local session:', e);
-    toast('⚠️ Нет связи с сервером, работаем офлайн', 'err', 4000);
+    console.warn('Firebase verification failed:', e);
+    toast('⚠️ Нет связи с сервером: ' + e.message, 'err', 4000);
     try{ subscribeToItems(); }catch(err){}
   }
 }
 
-if(document.readyState === 'loading'){
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  init();
-}
+if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
 </script>
 </body>
 </html>

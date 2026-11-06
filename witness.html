@@ -26,15 +26,24 @@ button:disabled{opacity:0.5;cursor:not-allowed}
 .reg-box .err{color:var(--err);font-size:0.85em;margin-top:8px;min-height:1.2em}
 .reg-box .info{color:var(--primary);font-size:0.85em;margin-top:8px;min-height:1.2em}
 .toast-box{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none;max-width:92vw}
-.toast{background:rgba(0,0,0,0.92);color:#fff;padding:10px 20px;border-radius:22px;font-size:0.9em;font-weight:bold;border:2px solid var(--primary);box-shadow:0 6px 20px rgba(0,0,0,0.55);animation:toastIn 0.25s ease;text-align:center}
+.toast{background:rgba(0,0,0,0.92);color:#fff;padding:10px 20px;border-radius:22px;font-size:0.9em;font-weight:bold;border:2px solid var(--primary);box-shadow:0 6px 20px rgba(0,0,0,0.55);animation:toastIn 0.25s ease;text-align:center;white-space:pre-line;line-height:1.35}
 @keyframes toastIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .toast.ok{border-color:var(--ok);background:rgba(34,197,94,0.95);color:#000}
 .toast.err{border-color:var(--err);background:rgba(239,68,68,0.95)}
 
-.stand-tabs{display:flex;gap:5px;margin-bottom:12px}
-.stand-tab{flex:1;padding:10px 6px;font-size:0.85em;font-weight:bold;background:var(--card2);color:var(--text);border:2px solid var(--border);border-radius:8px;cursor:pointer;margin:0;transition:all 0.15s;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.stand-tab.active{background:#06b6d4;color:#000;border-color:#06b6d4;box-shadow:0 0 10px rgba(6,182,212,0.5)}
-.stand-tab .cnt{display:block;font-size:0.7em;opacity:0.85;font-weight:normal;margin-top:2px}
+/* Подсказка-гид */
+.guide-tip{background:rgba(6,182,212,0.12);border:2px solid #06b6d4;border-radius:10px;padding:11px 12px;margin-bottom:12px;font-size:0.92em;line-height:1.5;color:var(--text)}
+.guide-tip b{color:#06b6d4}
+
+/* Заголовок шага */
+.step-title{display:flex;align-items:center;gap:10px;margin:2px 0 12px;font-size:1.05em;font-weight:bold;line-height:1.3}
+.step-num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:var(--primary);color:#fff;border-radius:50%;font-size:0.9em;flex-shrink:0;font-weight:bold}
+
+/* Тележки — крупные кнопки 2×2 */
+.stand-tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:4px}
+.stand-tab{padding:14px 8px;font-size:1em;font-weight:bold;background:var(--card2);color:var(--text);border:2px solid var(--border);border-radius:10px;cursor:pointer;margin:0;transition:all 0.15s;text-align:center;line-height:1.3}
+.stand-tab.active{background:#06b6d4;color:#000;border-color:#06b6d4;box-shadow:0 0 12px rgba(6,182,212,0.55)}
+.stand-tab .cnt{display:block;font-size:0.78em;opacity:0.9;font-weight:normal;margin-top:3px}
 
 .type-tabs{display:flex;gap:8px;margin-bottom:14px}
 .type-tab{flex:1;padding:12px;font-size:1em;font-weight:bold;background:var(--card2);color:var(--text);border:2px solid var(--border);border-radius:10px;cursor:pointer;margin:0;transition:all 0.15s;text-align:center}
@@ -45,17 +54,18 @@ button:disabled{opacity:0.5;cursor:not-allowed}
 .report-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
 .report-card{background:var(--card2);border:2px solid var(--border);border-radius:10px;padding:12px;transition:all 0.15s}
 .report-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
-.report-card-title{flex:1;min-width:0;font-weight:bold;line-height:1.35;word-break:break-word;font-size:0.98em}
-.report-card-theme{font-size:0.92em;color:#c084fc;font-style:italic;font-weight:bold;line-height:1.3;margin-top:4px;word-break:break-word}
+.report-card-title{flex:1;min-width:0;font-weight:bold;line-height:1.3;word-break:break-word;font-size:1.05em}
+.report-card-lang{font-size:1em;color:#c084fc;font-weight:bold;line-height:1.3;margin-top:4px;word-break:break-word}
+.report-card-theme{font-size:0.92em;color:#c084fc;font-style:italic;font-weight:bold;line-height:1.3;margin-top:3px;word-break:break-word}
 .report-card-theme::before{content:'💡 '}
-.report-card-meta{font-size:0.78em;color:var(--muted);margin-top:4px;line-height:1.4}
-.report-card-avail{font-size:0.8em;color:var(--ok);font-weight:bold;white-space:nowrap;background:rgba(34,197,94,0.15);padding:3px 9px;border-radius:99px;flex-shrink:0}
+.report-card-meta{font-size:0.8em;color:var(--muted);margin-top:3px;line-height:1.4}
+.report-card-avail{font-size:0.85em;color:var(--ok);font-weight:bold;white-space:nowrap;background:rgba(34,197,94,0.15);padding:4px 10px;border-radius:99px;flex-shrink:0}
 
 .draft-badge{display:inline-block;background:rgba(34,197,94,0.2);color:var(--ok);font-weight:bold;padding:4px 10px;border-radius:8px;font-size:0.85em;margin-bottom:8px;border:1px solid var(--ok);}
 
 .add-controls{display:flex;gap:8px;align-items:center}
 .add-qty{width:60px!important;padding:10px 4px!important;text-align:center;font-weight:bold;font-size:1.1em;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);}
-.add-btn{flex:1;background:var(--primary);color:var(--primary-text);border:0;border-radius:8px;padding:10px;font-weight:bold;cursor:pointer;font-size:1em;margin:0;}
+.add-btn{flex:1;background:var(--primary);color:var(--primary-text);border:0;border-radius:8px;padding:12px;font-weight:bold;cursor:pointer;font-size:1em;margin:0;}
 
 .wizard-empty{text-align:center;padding:30px 15px;color:var(--muted);line-height:1.5;font-size:0.95em}
 
@@ -80,7 +90,7 @@ button:disabled{opacity:0.5;cursor:not-allowed}
   <div class="reg-box">
     <div class="icon">📤</div>
     <h2>Отчёт о распространении</h2>
-    <div class="desc">Выберите стенд, укажите что и сколько ушло. Отчёт уйдёт координатору.</div>
+    <div class="desc">Выберите тележку, укажите что и сколько ушло. Отчёт уйдёт координатору.</div>
     <label>Код стенда (у координатора)</label>
     <input id="regStandId" placeholder="напр. stand-2026" autocomplete="off">
     <label>Имя</label>
@@ -114,7 +124,10 @@ button:disabled{opacity:0.5;cursor:not-allowed}
   
   <div class="wrap">
     <div class="card">
-      <label>🏛️ Выберите стенд</label>
+      <div class="guide-tip">
+        💡 <b>Как это работает:</b> посмотрите на номер тележки, с которой берёте литературу. Выберите её ниже → найдите название журнала или брошюры → укажите, сколько взяли. Приложение запишет тележку и язык автоматически.
+      </div>
+      <div class="step-title"><span class="step-num">1</span> С какой тележки взяли?</div>
       <div class="stand-tabs" id="standTabs"></div>
     </div>
 
@@ -128,9 +141,13 @@ button:disabled{opacity:0.5;cursor:not-allowed}
 
 <div id="cartOverlay" onclick="if(event.target===this) closeCart()">
   <div id="cartBox" onclick="event.stopPropagation()">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-      <h2 style="margin:0; color:var(--primary); font-size:1.3em;">📋 Черновик отчёта</h2>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h2 style="margin:0; color:var(--primary); font-size:1.3em;">📋 Ваш отчёт</h2>
       <button onclick="closeCart()" style="background:var(--card2); color:var(--text); border:1px solid var(--border); padding:6px 12px; width:auto; border-radius:8px; font-size:1.1em;">✕</button>
+    </div>
+
+    <div style="color:var(--muted); font-size:0.9em; margin-bottom:12px; line-height:1.5;">
+      Проверьте перед отправкой: 🏛️ тележка → название → 🌍 язык → сколько штук
     </div>
     
     <div id="cartList" style="margin-bottom:16px;"></div>
@@ -562,7 +579,7 @@ const REPORTABLE_TYPES = ['Журнал', 'Брошюра'];
 let cloudApp=null, cloudDb=null, cloudFns=null;
 let currentUser=null, currentStandId='';
 let items=[], itemsOnStand=[];
-let standNames = { 1:'Стенд 1', 2:'Стенд 2', 3:'Стенд 3', 4:'Стенд 4' };
+let standNames = { 1:'Тележка 1', 2:'Тележка 2', 3:'Тележка 3', 4:'Тележка 4' };
 let currentWitnessStand = 1;
 let itemsUnsub=null;
 let draft = {}; 
@@ -862,7 +879,8 @@ function renderStandTabs(){
     let totalOnStand = 0;
     items.forEach(it => { totalOnStand += (it.standCounts && parseInt(it.standCounts[s])) || 0; });
     html += `<button type="button" class="stand-tab ${activeClass}" onclick="selectWitnessStand(${s})">
-      🏛️ ${esc(standNames[s])} <span class="cnt">${totalOnStand > 0 ? totalOnStand + ' шт.' : '—'}</span>
+      <div>${esc(standNames[s])}</div>
+      <span class="cnt">${totalOnStand > 0 ? totalOnStand + ' шт.' : '—'}</span>
     </button>`;
   }
   tabsDiv.innerHTML = html;
@@ -916,7 +934,8 @@ function renderWizard(){
 
   const types = getAvailableTypes();
   if(types.length === 0){
-    body.innerHTML = '<div class="card"><div class="wizard-empty">📦 На стенде <b>"' + esc(standNames[currentWitnessStand]) + '"</b><br>нет журналов или брошюр для отчёта.</div></div>';
+    body.innerHTML = '<div class="card"><div class="wizard-empty">📦 На <b>' + esc(standNames[currentWitnessStand]) +
+      '</b> сейчас нет журналов или брошюр для отчёта.<br><br>Выберите другую тележку выше.</div></div>';
     return;
   }
   if (types.indexOf(currentTypeTab) === -1) currentTypeTab = types[0];
@@ -963,21 +982,25 @@ function renderWizard(){
         '<div class="report-card-head">' +
           '<div style="flex:1;min-width:0">' +
             '<div class="report-card-title">' + esc(name) + '</div>' +
+            '<div class="report-card-lang">🌍 ' + esc(lang) + '</div>' +
             (theme ? '<div class="report-card-theme">' + esc(theme) + '</div>' : '') +
-            '<div class="report-card-meta">🌍 ' + esc(lang) + (extra ? ' · 📅 ' + esc(extra) : '') + '</div>' +
+            (extra ? '<div class="report-card-meta">📅 ' + esc(extra) + '</div>' : '') +
           '</div>' +
           '<div class="report-card-avail">' + avail + ' шт.</div>' +
         '</div>' +
         '<div id="badge-' + idKey + '" class="draft-badge" style="display:' + (draftQty > 0 ? 'inline-block' : 'none') + ';">🛒 В отчёте: <span>' + draftQty + '</span> шт.</div>' +
         '<div class="add-controls">' +
           '<input type="number" id="add-qty-' + idKey + '" class="add-qty" value="1" min="1" max="' + avail + '" inputmode="numeric">' +
-          '<button class="add-btn" onclick="addToDraft(\'' + esc(idKey) + '\', \'add-qty-' + idKey + '\')">➕ Записать</button>' +
+          '<button class="add-btn" onclick="addToDraft(\'' + esc(idKey) + '\', \'add-qty-' + idKey + '\')">➕ Добавить в отчёт</button>' +
         '</div>' +
       '</div>';
     });
     listHtml += '</div>';
   }
-  body.innerHTML = '<div class="card"><div class="type-tabs">' + tabsHtml + '</div>' + searchHtml + listHtml + '</div>';
+
+  const step2Html = '<div class="step-title"><span class="step-num">2</span> Что взяли с <span style="color:#06b6d4">' +
+                    esc(standNames[currentWitnessStand]) + '</span>?</div>';
+  body.innerHTML = '<div class="card">' + step2Html + '<div class="type-tabs">' + tabsHtml + '</div>' + searchHtml + listHtml + '</div>';
 }
 
 function searchChange(val) {
@@ -1004,8 +1027,8 @@ function addToDraft(id, qtyInputId) {
 
   if (currentInDraft + q > avail) {
     q = avail - currentInDraft;
-    if (q <= 0) { toast('На стенде больше нет этой литературы', 'err'); return; }
-    toast('Можно добавить только ' + q + ' шт.', 'err');
+    if (q <= 0) { toast('На ' + standNames[currentWitnessStand] + ' больше нет этой литературы', 'err', 3000); return; }
+    toast('На ' + standNames[currentWitnessStand] + ' есть только ' + q + ' шт.', 'err', 3000);
   }
   draft[key] = Object.assign({s:currentWitnessStand, id:String(id), at:(draft[key] && draft[key].at) || Date.now()}, itemMeta(it), {q: currentInDraft + q});
   saveDraft();   // сразу в память телефона — переживает выключение экрана и перезапуск
@@ -1014,7 +1037,7 @@ function addToDraft(id, qtyInputId) {
   if (badge) { badge.style.display = 'inline-block'; badge.querySelector('span').textContent = draft[key].q; }
   qtyEl.value = '1';
   renderCartBar();
-  toast('Записано: ' + q + ' шт.', 'ok');
+  toast('✓ Добавлено:\n' + standNames[currentWitnessStand] + '\n' + getItemName(it) + ' · ' + langDisplay(it.lang || 'ru') + '\n' + q + ' шт.', 'ok', 3200);
 }
 
 function renderCartBar() {
@@ -1052,8 +1075,10 @@ function renderCartList() {
     const extra = e.e || '';
     html += `<div class="cart-item">
         <div style="flex:1; min-width:0;">
-          <div style="font-weight:bold; font-size:0.95em; line-height:1.3;">${esc(e.n || '—')}</div>
-          <div style="font-size:0.8em; color:var(--muted); margin-top:2px;">🏛️ ${esc(standNames[e.s] || ('Стенд ' + e.s))} · 🌍 ${esc(langDisplay(e.l))} ${extra ? '· 📅 ' + esc(extra) : ''}</div>
+          <div style="font-size:0.9em; color:#06b6d4; font-weight:bold;">🏛️ ${esc(standNames[e.s] || ('Тележка ' + e.s))}</div>
+          <div style="font-weight:bold; font-size:1.02em; line-height:1.3; margin-top:3px;">${esc(e.n || '—')}</div>
+          <div style="font-size:0.95em; color:#c084fc; font-weight:bold; margin-top:3px;">🌍 ${esc(langDisplay(e.l))}</div>
+          ${extra ? '<div style="font-size:0.8em; color:var(--muted); margin-top:3px;">📅 ' + esc(extra) + '</div>' : ''}
         </div>
         <div class="cart-qty">
           <button onclick="changeCartQty('${k}', -1)">−</button>
@@ -1145,7 +1170,7 @@ async function flushOutbox(){
           witnessEmail: encEmail, witnessEh: eh, witnessName: encName,
           itemId: ln.id, itemName: ln.n || '—', itemTheme: ln.t || '', itemExtra: ln.e || '',
           itemLang: ln.l || 'ru', itemType: ln.ty || 'Журнал',
-          standNumber: ln.s, standName: standNames[ln.s] || ('Стенд ' + ln.s),
+          standNumber: ln.s, standName: standNames[ln.s] || ('Тележка ' + ln.s),
           qty: ln.q, processed: false, appliedQty: null,
           batchId: en.batchId, shiftEndedAt: en.createdAt,
           createdAt: ln.at || en.createdAt, processedAt: null, note: ''

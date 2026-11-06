@@ -1042,6 +1042,15 @@ async function initFirebase(){
       cloudDb = fsm.getFirestore(cloudApp);
       window._fb = fsm;
     }
+    
+    // --- АНОНИМНАЯ АВТОРИЗАЦИЯ (ИСПРАВЛЕНИЕ СИНХРОНИЗАЦИИ) ---
+    try {
+      const {getAuth, signInAnonymously} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js');
+      const auth = getAuth(cloudApp);
+      if (!auth.currentUser) { await signInAnonymously(auth); }
+    } catch(e) { console.warn('Auth failed:', e); }
+    // ---------------------------------------------------------
+
     if(!syncEngine){
       syncEngine = SK.createEngine({
         db:function(){ return cloudDb; }, fs:fsm, cloudId:function(){ return cloudId; }, enabled:function(){ return cloudEnabled; },

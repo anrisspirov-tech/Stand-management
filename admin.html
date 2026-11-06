@@ -2881,7 +2881,7 @@ function startWitnessSync(){
   witnessAllReportsUnsub = fb.onSnapshot(reportsRef, function(snap){
     var docs = []; snap.forEach(function(d){ docs.push({id:d.id, data:d.data()}); });
     Promise.all(docs.map(async function(d){
-      var r = Object.assign({id:d.id}, d.data());
+      var r = Object.assign({id:d.id}, d.data);
       var rawN = r.witnessName, rawE = r.witnessEmail;
       r.witnessName = await decryptData(rawN);
       r.witnessEmail = await decryptData(rawE);
@@ -2899,7 +2899,7 @@ function startWitnessSync(){
   witnessUsersUnsub = fb.onSnapshot(fb.collection(cloudDb, 'stands', cloudId, 'witnesses'), function(snap){
     var docs = []; snap.forEach(function(d){ docs.push({id:d.id, data:d.data()}); });
     Promise.all(docs.map(async function(d){
-      var w = Object.assign({id:d.id}, d.data());
+      var w = Object.assign({id:d.id}, d.data);
       w.email = await decryptData(w.email);
       if(!w.email && d.id.indexOf('@') >= 0) w.email = d.id;
       w.name = await decryptData(w.name);

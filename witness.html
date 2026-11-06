@@ -123,7 +123,7 @@ button:disabled{opacity:0.5;cursor:not-allowed}
 </div>
 
 <div id="draftBar" onclick="openCart()">
-  📋 В отчёте: <span id="draftBarText">0 шт.</span> — Нажмите, чтобы проверить
+  📋 В отчёте: <span id="draftBarText">0 шт.</span> — сохраняется на телефоне. Нажмите, чтобы проверить
 </div>
 
 <div id="cartOverlay" onclick="if(event.target===this) closeCart()">
@@ -140,7 +140,7 @@ button:disabled{opacity:0.5;cursor:not-allowed}
       <span style="font-weight:bold; font-size:1.2em;"><span id="cartTotal">0</span> шт.</span>
     </div>
     
-    <button id="sendCartBtn" onclick="sendCart()" style="width:100%; padding:16px; font-size:1.1em; background:var(--ok); color:#000; border:0; border-radius:10px; font-weight:bold; margin-bottom:8px;">✓ Отправить отчёт</button>
+    <button id="sendCartBtn" onclick="sendCart()" style="width:100%; padding:16px; font-size:1.1em; background:var(--ok); color:#000; border:0; border-radius:10px; font-weight:bold; margin-bottom:8px;">✓ Закончить смену и отправить отчёт</button>
     <button onclick="clearCart()" style="width:100%; padding:12px; background:var(--card2); color:var(--err); border:1px solid var(--err); border-radius:10px; font-weight:bold;">🗑️ Очистить черновик</button>
   </div>
 </div>
@@ -149,48 +149,412 @@ button:disabled{opacity:0.5;cursor:not-allowed}
 
 <script>
 // ==========================================
-// МОДУЛЬ ШИФРОВАНИЯ ДАННЫХ (AES-GCM)
+// ЯДРО СИНХРОНИЗАЦИИ И ШИФРОВАНИЯ (AES-GCM) — ОДИНАКОВО ВО ВСЕХ 3 ФАЙЛАХ
+// Ключ менять нельзя без пересоздания данных: он должен быть одинаковым во всех 3 файлах.
 // ==========================================
-const SECRET_KEY_STRING = "StandApp_SuperSecret_2026!777"; // ОБЯЗАТЕЛЬНО ПОМЕНЯЙТЕ И СДЕЛАЙТЕ ОДИНАКОВЫМ ВО ВСЕХ 3 ФАЙЛАХ!
+const SECRET_KEY_STRING = "StandApp_SuperSecret_2026!777";
 
-async function getCryptoKey() {
-  const enc = new TextEncoder();
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw', enc.encode(SECRET_KEY_STRING), {name: 'PBKDF2'}, false, ['deriveKey']
-  );
-  return crypto.subtle.deriveKey(
-    {name: 'PBKDF2', salt: enc.encode('stand-salt-123'), iterations: 100000, hash: 'SHA-256'},
-    keyMaterial, {name: 'AES-GCM', length: 256}, false, ['encrypt', 'decrypt']
-  );
+if(typeof crypto === 'undefined' || !crypto.subtle){
+  setTimeout(function(){ if(typeof alert === 'function') alert('⚠️ Шифрование недоступно в этом режиме браузера. Откройте приложение через https:// или как установленное приложение — иначе синхронизация не будет работать (данные без шифрования в облако не отправляются).'); }, 1500);
 }
+var SK = (function(){
+  var PFX = 'enc1:';
+  var CLIENT_ID = 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
-async function encryptData(text) {
-  if (!text) return text;
-  try {
-    const enc = new TextEncoder();
-    const key = await getCryptoKey();
-    const iv = crypto.getRandomValues(new Uint8Array(12));
-    const ciphertext = await crypto.subtle.encrypt({name: 'AES-GCM', iv}, key, enc.encode(text));
-    const combined = new Uint8Array(iv.length + ciphertext.byteLength);
-    combined.set(iv, 0);
-    combined.set(new Uint8Array(ciphertext), iv.length);
-    return btoa(String.fromCharCode(...combined));
-  } catch(e) { return text; }
-}
+  // ---------- Шифрование (ключ создаётся ОДИН раз и кэшируется) ----------
+  var _keyP = null;
+  function getKey(){
+    if(!_keyP){
+      _keyP = (async function(){
+        var enc = new TextEncoder();
+        var km = await crypto.subtle.importKey('raw', enc.encode(SECRET_KEY_STRING), {name:'PBKDF2'}, false, ['deriveKey']);
+        return crypto.subtle.deriveKey(
+          {name:'PBKDF2', salt: enc.encode('stand-salt-123'), iterations:100000, hash:'SHA-256'},
+          km, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']);
+      })();
+      _keyP.catch(function(){ _keyP = null; });
+    }
+    return _keyP;
+  }
+  function toB64(u8){ var s = '', i; for(i = 0; i < u8.length; i += 8192) s += String.fromCharCode.apply(null, u8.subarray(i, i + 8192)); return btoa(s); }
+  function fromB64(b){ var s = atob(b), u = new Uint8Array(s.length), i; for(i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; }
 
-async function decryptData(encryptedText) {
-  if (!encryptedText) return encryptedText;
-  try {
-    const combined = new Uint8Array(atob(encryptedText).split('').map(c => c.charCodeAt(0)));
-    if (combined.length < 13) return encryptedText;
-    const iv = combined.slice(0, 12);
-    const ciphertext = combined.slice(12);
-    const key = await getCryptoKey();
-    const decrypted = await crypto.subtle.decrypt({name: 'AES-GCM', iv}, key, ciphertext);
-    return new TextDecoder().decode(decrypted);
-  } catch(e) { return encryptedText; }
-}
+  // Если шифрование недоступно — выбрасываем ошибку (открытый текст в облако НЕ уходит).
+  async function encryptData(text){
+    if(text == null || text === '') return text;
+    text = String(text);
+    if(text.indexOf(PFX) === 0) return text;
+    var key = await getKey();
+    var iv = crypto.getRandomValues(new Uint8Array(12));
+    var ct = new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM', iv:iv}, key, new TextEncoder().encode(text)));
+    var all = new Uint8Array(12 + ct.length); all.set(iv, 0); all.set(ct, 12);
+    return PFX + toB64(all);
+  }
+  // Читает и новый формат (enc1:...), и старый (без префикса); обычный текст возвращает как есть.
+  async function decryptData(t){
+    if(t == null || t === '' || typeof t !== 'string') return t;
+    var marked = t.indexOf(PFX) === 0, raw = marked ? t.slice(PFX.length) : t;
+    if(!marked && (raw.length < 36 || /[^A-Za-z0-9+\/=]/.test(raw))) return t;
+    try{
+      var all = fromB64(raw); if(all.length < 29) return t;
+      var key = await getKey();
+      var pt = await crypto.subtle.decrypt({name:'AES-GCM', iv: all.slice(0, 12)}, key, all.slice(12));
+      return new TextDecoder().decode(pt);
+    }catch(e){ return t; }
+  }
+  // Необратимый идентификатор email (для ID документов и поиска — сам email в базе не виден)
+  var _hc = {};
+  async function hashEmail(email){
+    email = String(email || '').trim().toLowerCase(); if(!email) return '';
+    if(_hc[email]) return _hc[email];
+    var d = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(SECRET_KEY_STRING + '|' + email)));
+    var s = ''; for(var i = 0; i < d.length; i++) s += ('0' + d[i].toString(16)).slice(-2);
+    return (_hc[email] = s.slice(0, 40));
+  }
+  function withTimeout(p, ms){
+    return new Promise(function(res, rej){
+      var t = setTimeout(function(){ rej(new Error('timeout')); }, ms || 15000);
+      Promise.resolve(p).then(function(v){ clearTimeout(t); res(v); }, function(e){ clearTimeout(t); rej(e); });
+    });
+  }
+
+  // ---------- Утилиты слияния ----------
+  function clone(o){ return o === undefined ? undefined : JSON.parse(JSON.stringify(o)); }
+  function stable(o){
+    if(o === null || typeof o !== 'object') return JSON.stringify(o);
+    if(Array.isArray(o)) return '[' + o.map(stable).join(',') + ']';
+    return '{' + Object.keys(o).sort().map(function(k){ return JSON.stringify(k) + ':' + stable(o[k]); }).join(',') + '}';
+  }
+  function eq(a, b){ return stable(a) === stable(b); }
+  function idxBy(arr, fn){ var m = {}; (arr || []).forEach(function(x){ m[fn(x)] = x; }); return m; }
+
+  function mergeLog(b, l, r, keyFn, cap){
+    b = b || []; l = l || []; r = r || [];
+    if(eq(l, r)) return r; if(eq(l, b)) return r; if(eq(r, b)) return l;
+    var seen = {}, out = [];
+    r.concat(l).forEach(function(x){ var k = keyFn(x); if(seen[k]) return; seen[k] = 1; out.push(x); });
+    out.sort(function(a, c){ return (c.ts || 0) - (a.ts || 0); });
+    return out.slice(0, cap);
+  }
+  function mergeValue(b, l, r){
+    if(eq(l, r)) return r;
+    if(b !== undefined){ if(eq(l, b)) return r; if(eq(r, b)) return l; }
+    if(Array.isArray(l) && Array.isArray(r)){
+      var seen = {}, out = [];
+      r.concat(l).forEach(function(x){ var k = stable(x); if(seen[k]) return; seen[k] = 1; out.push(x); });
+      return out;
+    }
+    if(l && r && typeof l === 'object' && typeof r === 'object'){
+      var o = clone(r);
+      Object.keys(l).forEach(function(k){ o[k] = mergeValue((b && typeof b === 'object') ? b[k] : undefined, l[k], r[k]); });
+      return o;
+    }
+    return b !== undefined ? l : r;
+  }
+  function itemHKey(h){ return h.ts + '|' + h.action + '|' + h.delta + '|' + (h.note || ''); }
+  // Слияние одной позиции: числа (склад, стенды) складываются как ИЗМЕНЕНИЯ (дельты), а не перезаписываются
+  function mergeItem(b, l, r){
+    var out = clone(r);
+    Object.keys(l).forEach(function(k){
+      if(eq(l[k], b[k])) return;
+      if(k === 'qty'){
+        out.qty = Math.max(0, (parseInt(r.qty) || 0) + ((parseInt(l.qty) || 0) - (parseInt(b.qty) || 0)));
+      } else if(k === 'standCounts'){
+        var sc = {};
+        for(var n = 1; n <= 4; n++){
+          var bv = parseInt((b.standCounts || {})[n]) || 0, lv = parseInt((l.standCounts || {})[n]) || 0, rv = parseInt((r.standCounts || {})[n]) || 0;
+          sc[n] = (lv === bv) ? rv : Math.max(0, rv + (lv - bv));
+        }
+        out.standCounts = sc;
+      } else if(k === 'history'){
+        out.history = mergeLog(b.history, l.history, r.history, itemHKey, 50);
+      } else out[k] = clone(l[k]);
+    });
+    return out;
+  }
+  function mergeItems(b, l, r){
+    var bm = idxBy(b, function(x){ return String(x.id); }), lm = idxBy(l, function(x){ return String(x.id); });
+    var out = [], seen = {};
+    r.forEach(function(ri){
+      var id = String(ri.id); seen[id] = 1;
+      var li = lm[id], bi = bm[id];
+      if(!li){ if(bi && eq(bi, ri)) return; out.push(ri); return; }   // удалено у нас и не менялось в облаке → удаляем
+      if(eq(li, ri)){ out.push(ri); return; }
+      if(!bi){ out.push(ri); return; }                               // нет базы → облако главнее
+      out.push(mergeItem(bi, li, ri));
+    });
+    l.forEach(function(li){
+      var id = String(li.id); if(seen[id]) return;
+      var bi = bm[id]; if(bi && eq(bi, li)) return;                  // удалено в облаке другим устройством
+      out.push(li);
+    });
+    return out;
+  }
+  function ukey(u){ return String(u.email || '').toLowerCase() || ('id:' + u.id); }
+  function mergeObj(b, l, r){
+    var out = clone(r);
+    Object.keys(l).forEach(function(k){ if(!eq(l[k], b[k])) out[k] = clone(l[k]); });
+    return out;
+  }
+  function mergeUsers(b, l, r){
+    var bm = idxBy(b, ukey), lm = idxBy(l, ukey), out = [], seen = {};
+    r.forEach(function(ru){
+      var k = ukey(ru); seen[k] = 1;
+      var lu = lm[k], bu = bm[k];
+      if(!lu){ if(bu && eq(bu, ru)) return; out.push(ru); return; }
+      if(eq(lu, ru) || !bu){ out.push(ru); return; }
+      out.push(mergeObj(bu, lu, ru));
+    });
+    l.forEach(function(lu){
+      var k = ukey(lu); if(seen[k]) return;
+      var bu = bm[k]; if(bu && eq(bu, lu)) return;
+      out.push(lu);
+    });
+    return out;
+  }
+  function mergeState(base, local, remote, keys){
+    var out = {};
+    keys.forEach(function(k){
+      var b = base ? base[k] : undefined, l = local[k], r = remote[k];
+      if(l === undefined){ out[k] = r; return; }
+      if(r === undefined){ out[k] = l; return; }
+      if(k === 'items') out[k] = mergeItems(b || [], l, r);
+      else if(k === 'users') out[k] = mergeUsers(b || [], l, r);
+      else if(k === 'history') out[k] = mergeLog(b, l, r, function(x){ return x.ts + '|' + x.who + '|' + x.actionKey; }, 200);
+      else out[k] = mergeValue(b, l, r);
+    });
+    return out;
+  }
+
+  // ---------- Шифрование/расшифровка состояния для облака ----------
+  async function encItem(it){
+    var o = Object.assign({}, it);
+    if(Array.isArray(o.history) && o.history.length){ o.hx = await encryptData(JSON.stringify(o.history)); }
+    delete o.history;
+    return o;
+  }
+  async function decItem(it){
+    var o = Object.assign({}, it);
+    if(o.hx){ try{ o.history = JSON.parse(await decryptData(o.hx)); }catch(e){ o.history = []; } }
+    delete o.hx;
+    return o;
+  }
+  async function encUser(u){
+    var o = Object.assign({}, u);
+    o.eh = await hashEmail(u.email);
+    o.email = await encryptData(u.email);
+    o.name = await encryptData(u.name);
+    o.surname = await encryptData(u.surname);
+    return o;
+  }
+  async function decUser(u){
+    var o = Object.assign({}, u);
+    o.email = await decryptData(u.email); o.name = await decryptData(u.name); o.surname = await decryptData(u.surname);
+    delete o.eh;
+    return o;
+  }
+
+  // ---------- Движок синхронизации ----------
+  // o: {db(), fs, cloudId(), enabled(), keys[], getState(), applyState(s), clean:{items,users}, baseKey, onStatus(st)}
+  function createEngine(o){
+    var eng = {base: null, unsub: null, timer: null, retry: null, fails: 0, chain: Promise.resolve(), curId: null};
+
+    function enqueue(fn){
+      eng.chain = eng.chain.then(fn).catch(function(e){ console.error('sync:', e); o.onStatus('error'); });
+      return eng.chain;
+    }
+    function baseStoreKey(){ return o.baseKey + '_' + (o.cloudId() || ''); }
+    function loadBase(){ try{ var s = localStorage.getItem(baseStoreKey()); eng.base = s ? JSON.parse(s) : null; }catch(e){ eng.base = null; } }
+    function saveBase(){ try{ localStorage.setItem(baseStoreKey(), JSON.stringify(eng.base)); }catch(e){} }
+
+    async function decodeState(data){
+      var s = {};
+      if(o.keys.indexOf('items') >= 0 && Array.isArray(data.items)){
+        s.items = o.clean.items(await Promise.all(data.items.map(decItem)));
+      }
+      if(o.keys.indexOf('users') >= 0 && Array.isArray(data.users)){
+        s.users = o.clean.users(await Promise.all(data.users.map(decUser)));
+      }
+      if(o.keys.indexOf('history') >= 0){
+        if(data.historyX){ try{ s.history = JSON.parse(await decryptData(data.historyX)); }catch(e){ s.history = []; } }
+        else if(Array.isArray(data.history)) s.history = data.history;
+      }
+      if(o.keys.indexOf('adminPass') >= 0){
+        if(data.adminPassX) s.adminPass = await decryptData(data.adminPassX);
+        else if(typeof data.adminPass === 'string') s.adminPass = data.adminPass;
+      }
+      o.keys.forEach(function(k){
+        if(k === 'items' || k === 'users' || k === 'history' || k === 'adminPass') return;
+        if(data[k] !== undefined) s[k] = data[k];
+      });
+      return s;
+    }
+    async function encodeState(s){
+      var d = {}, del = {};
+      for(var i = 0; i < o.keys.length; i++){
+        var k = o.keys[i], v = s[k];
+        if(v === undefined) continue;
+        if(k === 'items') d.items = await Promise.all(v.map(encItem));
+        else if(k === 'users') d.users = await Promise.all(v.map(encUser));
+        else if(k === 'history'){ d.historyX = await encryptData(JSON.stringify(v)); del.history = 1; }
+        else if(k === 'adminPass'){ d.adminPassX = await encryptData(v); del.adminPass = 1; }
+        else d[k] = v;
+      }
+      return {data: d, del: del};
+    }
+    function hasContent(s){ return (s.items && s.items.length) || (s.users && s.users.length); }
+    function merge(local, remote){ return mergeState(eng.base, local, remote, o.keys); }
+
+    async function onRemote(snap){
+      var local = o.getState();
+      if(!snap.exists()){ if(hasContent(local)) schedule(200); o.onStatus('synced'); return; }
+      var remote = await decodeState(snap.data());
+      var merged = merge(local, remote);
+      eng.base = clone(remote); saveBase();
+      if(!eq(merged, local)) o.applyState(merged);
+      if(!eq(merged, remote)) schedule(300);
+      eng.fails = 0;
+      o.onStatus('synced');
+    }
+    async function doPush(force){
+      var db = o.db(), id = o.cloudId();
+      if(!o.enabled() || !db || !id) return;
+      o.onStatus('pushing');
+      var res = null, ref = o.fs.doc(db, 'stands', id);
+      try{
+        await o.fs.runTransaction(db, async function(tx){
+          res = null;
+          var snap = await tx.get(ref);
+          var local = o.getState(), remote = null, merged;
+          if(snap.exists()){
+            remote = await decodeState(snap.data());
+            merged = merge(local, remote);
+            if(!force && eq(merged, remote)){ res = {skip: true, local: local, cloud: remote}; return; }
+          } else merged = local;
+          var enc = await encodeState(merged);
+          var payload = Object.assign({updated: Date.now(), updatedBy: CLIENT_ID, v: 2}, enc.data);
+          Object.keys(enc.del).forEach(function(k){ payload[k] = o.fs.deleteField(); });
+          tx.set(ref, payload, {merge: true});
+          res = {local: local, cloud: merged};
+        });
+      }catch(e){
+        console.error('push failed:', e); o.onStatus('error');
+        eng.fails++; clearTimeout(eng.retry);
+        eng.retry = setTimeout(function(){ schedule(1); }, Math.min(60000, 3000 * eng.fails));
+        return;
+      }
+      if(!res) return;
+      eng.fails = 0;
+      eng.base = clone(res.cloud); saveBase();
+      // правки, сделанные пока шла отправка, накладываем поверх, ничего не теряя
+      var cur = o.getState();
+      var fin = mergeState(res.local, cur, res.cloud, o.keys);
+      if(!eq(fin, cur)) o.applyState(fin);
+      if(!eq(fin, res.cloud)) schedule(300);
+      o.onStatus('synced');
+    }
+    function schedule(ms){ clearTimeout(eng.timer); eng.timer = setTimeout(function(){ eng.pushNow(false); }, ms == null ? 800 : ms); }
+
+    eng.schedule = schedule;
+    eng.pushNow = function(force){ return enqueue(function(){ return doPush(!!force); }); };
+    // «Получить из облака»: облако главнее, локальные несинхронизированные правки отбрасываются
+    eng.pullNow = function(){
+      return enqueue(async function(){
+        var db = o.db(), id = o.cloudId(); if(!db || !id) return;
+        var snap = await o.fs.getDoc(o.fs.doc(db, 'stands', id));
+        if(!snap.exists()) return;
+        var remote = await decodeState(snap.data());
+        var local = o.getState();
+        var fin = mergeState(local, local, remote, o.keys);
+        eng.base = clone(remote); saveBase();
+        o.applyState(fin);
+        o.onStatus('synced');
+      });
+    };
+    eng.start = function(){
+      eng.stop();
+      var db = o.db(), id = o.cloudId();
+      if(!db || !id){ o.onStatus('offline'); return; }
+      eng.curId = id; loadBase(); o.onStatus('connecting');
+      eng.unsub = o.fs.onSnapshot(o.fs.doc(db, 'stands', id),
+        function(snap){ enqueue(function(){ return onRemote(snap); }); },
+        function(){ o.onStatus('error'); });
+    };
+    eng.stop = function(){
+      if(eng.unsub){ try{ eng.unsub(); }catch(e){} eng.unsub = null; }
+      clearTimeout(eng.timer); clearTimeout(eng.retry);
+    };
+    window.addEventListener('online', function(){ if(eng.unsub) schedule(200); });
+    document.addEventListener('visibilitychange', function(){ if(!document.hidden && eng.unsub) schedule(200); });
+    return eng;
+  }
+
+  // ---------- Отчёты со стенда: применяются ровно ОДИН раз тем приложением, которое открылось первым ----------
+  async function applyReport(db, fs, cloudId, reportId, applierName){
+    var reportRef = fs.doc(db, 'stands', cloudId, 'reports', reportId);
+    var standRef = fs.doc(db, 'stands', cloudId);
+    var out = null;
+    await fs.runTransaction(db, async function(tx){
+      out = null;
+      var rs = await tx.get(reportRef);
+      if(!rs.exists()) return;
+      var rep = rs.data();
+      if(rep.processed) return;
+      var ss = await tx.get(standRef);
+      var now = Date.now();
+      var by = applierName ? await encryptData(applierName) : '';
+      var who = rep.witnessName ? await decryptData(rep.witnessName) : '';
+      function finish(applied, note){
+        tx.update(reportRef, {processed: true, processedAt: now, appliedQty: applied, note: note || '', appliedBy: by});
+        out = {applied: applied, note: note || '', itemName: rep.itemName, who: who, qty: rep.qty};
+      }
+      if(!ss.exists()){ finish(0, 'stand not found'); return; }
+      var arr = Array.isArray(ss.data().items) ? ss.data().items.slice() : [];
+      var idx = -1;
+      for(var i = 0; i < arr.length; i++){ if(String(arr[i].id) === String(rep.itemId)){ idx = i; break; } }
+      if(idx < 0){ finish(0, 'литература не найдена'); return; }
+      var it = Object.assign({}, arr[idx]);
+      var sc = Object.assign({}, it.standCounts || {});
+      var sn = parseInt(rep.standNumber);
+      if(!sn || sn < 1 || sn > 4){ for(var j = 1; j <= 4; j++){ if((parseInt(sc[j]) || 0) > 0){ sn = j; break; } } }
+      if(!sn){ finish(0, 'стенд не определён'); return; }
+      var onStand = parseInt(sc[sn]) || 0, want = parseInt(rep.qty) || 0, actual = Math.min(onStand, want);
+      if(actual > 0){
+        sc[sn] = onStand - actual; it.standCounts = sc;
+        var hist = [];
+        if(it.hx){ try{ hist = JSON.parse(await decryptData(it.hx)) || []; }catch(e){ hist = []; } }
+        else if(Array.isArray(it.history)) hist = it.history;
+        hist.unshift({ts: now, who: applierName || '', action: 'remove', delta: -actual, oldQty: null, newQty: null, note: 'Отчёт: ' + who});
+        it.hx = await encryptData(JSON.stringify(hist.slice(0, 50)));
+        delete it.history;
+        arr[idx] = it;
+        tx.update(standRef, {items: arr, updated: now, updatedBy: CLIENT_ID});
+      }
+      finish(actual, actual < want ? ('на стенде было только ' + actual) : '');
+    });
+    return out;
+  }
+  // Запись документа только если его ещё нет (повторная отправка не может «воскресить» уже применённый отчёт)
+  async function putOnce(db, fs, ref, data){
+    var created = false;
+    await fs.runTransaction(db, async function(tx){
+      created = false;
+      var s = await tx.get(ref);
+      if(s.exists()) return;
+      tx.set(ref, data); created = true;
+    });
+    return created;
+  }
+
+  return {
+    CLIENT_ID: CLIENT_ID, encryptData: encryptData, decryptData: decryptData, hashEmail: hashEmail,
+    withTimeout: withTimeout, createEngine: createEngine, applyReport: applyReport, putOnce: putOnce,
+    mergeState: mergeState, clone: clone, eq: eq
+  };
+})();
+var encryptData = SK.encryptData, decryptData = SK.decryptData;
 // ==========================================
+
 
 const FIREBASE_CONFIG = {"apiKey":"AIzaSyCKoGOE84zPuc4t6UQrDYMbooCR43p0FyQ","authDomain":"stand-management-a46a7.firebaseapp.com","projectId":"stand-management-a46a7","storageBucket":"stand-management-a46a7.firebasestorage.app","messagingSenderId":"304875768432","appId":"1:304875768432:web:470adb4707b8a3680482b5"};
 
@@ -211,6 +575,10 @@ const LS_NAME='witness_name';
 const LS_SURNAME='witness_surname';
 const LS_NAMES_JSON='witness_stand_names';
 const LS_CUR_STAND='witness_current_stand';
+const LS_DRAFT2='report_draft_v2_';
+const LS_OUTBOX='report_outbox_v1_';
+const LS_ITEMS='witness_items_cache_';
+let isDeactivated=false, flushing=false, flushTimer=null;
 
 function toast(msg, type, ms){
   ms = ms || 2500;
@@ -232,48 +600,100 @@ function getTypeIcon(tp){ if(tp==='Журнал') return '📰'; if(tp==='Бро
 function getItemExtra(it){ const p=[]; if(it.issueNum) p.push('№'+it.issueNum); if(it.year) p.push(String(it.year)); return p.join(' · '); }
 function getItemTheme(it){ return String(it.theme || '').trim(); }
 
-function loadDraft() {
-  try {
-    const saved = localStorage.getItem('report_draft_' + currentStandId);
-    draft = saved ? JSON.parse(saved) : {};
-  } catch(e) { draft = {}; }
+function dkey(s,id){ return s + ':' + id; }
+function draftQtyFor(id){ const e = draft[dkey(currentWitnessStand, id)]; return e ? (parseInt(e.q) || 0) : 0; }
+function itemMeta(it){ return {n:getItemName(it), t:getItemTheme(it), e:getItemExtra(it), l:it.lang||'ru', ty:getItemType(it)}; }
+function loadDraft(){
+  draft = {};
+  try{
+    const raw = localStorage.getItem(LS_DRAFT2 + currentStandId);
+    if(raw){ draft = JSON.parse(raw) || {}; }
+    else {
+      const old = localStorage.getItem('report_draft_' + currentStandId);
+      if(old){
+        const o = JSON.parse(old) || {};
+        Object.keys(o).forEach(id => {
+          const q = parseInt(o[id]) || 0; if(q <= 0) return;
+          draft[dkey(currentWitnessStand, id)] = {s:currentWitnessStand, id:String(id), q:q, at:Date.now()};
+        });
+        localStorage.setItem(LS_DRAFT2 + currentStandId, JSON.stringify(draft));
+        localStorage.removeItem('report_draft_' + currentStandId);
+      }
+    }
+  }catch(e){ draft = {}; }
+  fillDraftMeta();
 }
-function saveDraft() {
-  try {
-    if (Object.keys(draft).length === 0) localStorage.removeItem('report_draft_' + currentStandId);
-    else localStorage.setItem('report_draft_' + currentStandId, JSON.stringify(draft));
-  } catch(e){}
+function fillDraftMeta(){
+  let changed = false;
+  Object.keys(draft).forEach(k => {
+    const e = draft[k]; if(!e || e.n) return;
+    const it = items.find(x => String(x.id) === String(e.id));
+    if(it){ Object.assign(e, itemMeta(it)); changed = true; }
+  });
+  if(changed) saveDraft();
+}
+function saveDraft(){
+  try{
+    const keys = Object.keys(draft).filter(k => draft[k] && draft[k].q > 0);
+    const clean = {}; keys.forEach(k => clean[k] = draft[k]); draft = clean;
+    if(keys.length === 0) localStorage.removeItem(LS_DRAFT2 + currentStandId);
+    else localStorage.setItem(LS_DRAFT2 + currentStandId, JSON.stringify(draft));
+  }catch(e){}
 }
 
 // ИСПРАВЛЕННАЯ ФУНКЦИЯ ИНИЦИАЛИЗАЦИИ
 async function initFirebase(){
   try {
     const {initializeApp} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
-    const {getFirestore, doc, getDoc, setDoc, collection, onSnapshot, addDoc, getAuth, signInAnonymously} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
-    
-    // Если приложение уже было инициализировано, просто вернем функции
-    if(!cloudApp){ 
-      cloudApp = initializeApp(FIREBASE_CONFIG); 
-      cloudDb = getFirestore(cloudApp); 
+    const fsm = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
+    if(!cloudApp){
+      cloudApp = initializeApp(FIREBASE_CONFIG);
+      cloudDb = fsm.getFirestore(cloudApp);
     }
+    cloudFns = fsm;
     
-    // ВСЕГДА обновляем объект с функциями, чтобы не было undefined
-    cloudFns = {doc, getDoc, setDoc, collection, onSnapshot, addDoc}; 
-    
-    // Попытка анонимного входа (если включен в Firebase, это спасет от permission denied)
+    // --- АНОНИМНАЯ АВТОРИЗАЦИЯ ---
     try {
       const {getAuth, signInAnonymously} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js');
       const auth = getAuth(cloudApp);
-      if (!auth.currentUser) {
-        await signInAnonymously(auth);
-      }
-    } catch(e) { console.warn('Auth failed (возможно, не включена в Firebase):', e); }
-    
+      if (!auth.currentUser) { await signInAnonymously(auth); }
+    } catch(e) { console.warn('Auth failed:', e); }
+    // -----------------------------
+
     return cloudFns;
   } catch(e) {
     console.error("Firebase Init Error:", e);
-    throw e; // Пробрасываем ошибку, чтобы ее поймал init()
+    throw e;
   }
+}
+
+// Документ возвещателя хранится под необратимым ID (хэш email); старые документы с открытым email переносятся автоматически
+async function loadWitness(fns, standId, email){
+  const eh = await SK.hashEmail(email);
+  const ref = fns.doc(cloudDb, 'stands', standId, 'witnesses', eh);
+  const snap = await fns.getDoc(ref);
+  let data = snap.exists() ? snap.data() : null;
+  try{
+    const lref = fns.doc(cloudDb, 'stands', standId, 'witnesses', email);
+    const ls = await fns.getDoc(lref);
+    if(ls.exists()){
+      const ld = ls.data();
+      if(!data){
+        data = {
+          email: await encryptData(email),
+          name: await encryptData(await decryptData(ld.name || '')),
+          surname: await encryptData(await decryptData(ld.surname || '')),
+          active: ld.active !== false, consentGiven: !!ld.consentGiven,
+          createdAt: ld.createdAt || Date.now(), lastSeen: Date.now()
+        };
+        await fns.setDoc(ref, data);
+      } else if(ld.active === false && data.active !== false){
+        await fns.updateDoc(ref, {active: false}); data.active = false;
+      }
+      await fns.deleteDoc(lref);
+    }
+  }catch(e){ console.warn('legacy witness migrate:', e); }
+  return {ref, data};
 }
 
 async function doRegister(){
@@ -283,7 +703,7 @@ async function doRegister(){
   const email = document.getElementById('regEmail').value.trim().toLowerCase();
   const errEl = document.getElementById('regErr');
   const infoEl = document.getElementById('regInfo');
-  
+
   errEl.textContent=''; infoEl.textContent='';
 
   const consentEl = document.getElementById('privacyConsent');
@@ -298,28 +718,24 @@ async function doRegister(){
   if(!surname){ errEl.textContent='⚠️ Введите фамилию'; return; }
   if(!email || !email.includes('@')){ errEl.textContent='⚠️ Неверный email'; return; }
   infoEl.textContent='⏳ Регистрация...';
-  
+
   try{
     const fns = await initFirebase();
-    const witnessRef = fns.doc(cloudDb, 'stands', standId, 'witnesses', email);
-    const snap = await fns.getDoc(witnessRef);
-    if(snap.exists() && snap.data().active === false){
+    const {ref: witnessRef, data: existing} = await loadWitness(fns, standId, email);
+    if(existing && existing.active === false){
       errEl.textContent='❌ Доступ отозван администратором';
       infoEl.textContent='';
       return;
     }
 
-    // ШИФРУЕМ ИМЯ И ФАМИЛИЮ
-    const encName = await encryptData(name);
-    const encSurname = await encryptData(surname);
-
+    // имя, фамилия и email хранятся в облаке только в зашифрованном виде
     await fns.setDoc(witnessRef, {
-      email: email, 
-      name: encName,     
-      surname: encSurname, 
+      email: await encryptData(email),
+      name: await encryptData(name),
+      surname: await encryptData(surname),
       active: true,
       consentGiven: true,
-      createdAt: snap.exists() ? (snap.data().createdAt || Date.now()) : Date.now(),
+      createdAt: existing ? (existing.createdAt || Date.now()) : Date.now(),
       lastSeen: Date.now()
     }, {merge: true});
 
@@ -330,14 +746,16 @@ async function doRegister(){
 
     currentUser = {email, name, surname};
     currentStandId = standId;
+    isDeactivated = false;
     infoEl.style.color='#22c55e';
     infoEl.textContent='✅ Готово!';
-    
+
     consentEl.checked = false;
-    
+
     setTimeout(() => {
       startApp();
       subscribeToItems();
+      flushOutbox();
     }, 300);
   }catch(e){
     console.error(e);
@@ -387,42 +805,43 @@ function showDeactivated(){
   document.getElementById('regEmail').value = localStorage.getItem(LS_EMAIL) || '';
 }
 
+function cacheItems(){
+  try{
+    const slim = items.map(it => ({id:it.id, name:it.name, names:{ru:(it.names && it.names.ru) || ''}, type:it.type, lang:it.lang, year:it.year, issueNum:it.issueNum, theme:it.theme, standCounts:it.standCounts}));
+    localStorage.setItem(LS_ITEMS + currentStandId, JSON.stringify({items:slim, names:standNames}));
+  }catch(e){}
+}
+function loadItemsCache(){
+  try{
+    const c = JSON.parse(localStorage.getItem(LS_ITEMS + currentStandId) || 'null');
+    if(c && Array.isArray(c.items)) items = c.items;
+    if(c && c.names){ for(let n=1; n<=4; n++){ if(c.names[n]) standNames[n] = String(c.names[n]); } }
+  }catch(e){}
+}
 function subscribeToItems(){
   if(itemsUnsub){ try{ itemsUnsub(); }catch(e){} itemsUnsub=null; }
   if(!cloudFns || !cloudDb || !currentStandId) return;
   const fns = cloudFns;
   const standRef = fns.doc(cloudDb, 'stands', currentStandId);
   itemsUnsub = fns.onSnapshot(standRef, snap => {
-    if(!snap.exists()){ items=[]; onItemsUpdated(); return; }
+    if(!snap.exists()) return; // не затираем локальную копию
     const data = snap.data();
-    items = Array.isArray(data.items) ? data.items : [];
+    if(Array.isArray(data.items)) items = data.items;
     if(data.standNames && typeof data.standNames === 'object'){
       for(let n=1; n<=4; n++){
         if(data.standNames[n]) standNames[n] = String(data.standNames[n]);
       }
       try{ localStorage.setItem(LS_NAMES_JSON, JSON.stringify(standNames)); }catch(e){}
     }
+    cacheItems();
     onItemsUpdated();
-  }, err => { console.error(err); toast('Ошибка синхронизации','err'); });
+  }, err => { console.error(err); });
 }
 
 function onItemsUpdated(){
   recomputeItemsOnStand();
+  fillDraftMeta();   // записи отчёта НЕ удаляются и не урезаются при обновлении склада
   renderStandTabs();
-  let changed = false;
-  Object.keys(draft).forEach(id => {
-    const it = itemsOnStand.find(x => String(x.id) === String(id));
-    if (!it) { delete draft[id]; changed = true; } 
-    else {
-      const avail = parseInt(it.standCounts[currentWitnessStand]) || 0;
-      if (draft[id] > avail) {
-        draft[id] = avail;
-        if (draft[id] <= 0) delete draft[id];
-        changed = true;
-      }
-    }
-  });
-  if (changed) saveDraft();
   renderWizard();
   renderCartBar();
 }
@@ -450,10 +869,8 @@ function renderStandTabs(){
 }
 
 function selectWitnessStand(s){
-  saveDraft();
   currentWitnessStand = s;
   try{ localStorage.setItem(LS_CUR_STAND, String(s)); }catch(e){}
-  loadDraft();
   recomputeItemsOnStand();
   renderStandTabs();
   renderWizard();
@@ -540,7 +957,7 @@ function renderWizard(){
       const extra = getItemExtra(it);
       const lang = langDisplay(it.lang || 'ru');
       const idKey = String(it.id);
-      const draftQty = parseInt(draft[idKey]) || 0;
+      const draftQty = draftQtyFor(idKey);
 
       listHtml += '<div class="report-card">' +
         '<div class="report-card-head">' +
@@ -582,31 +999,31 @@ function addToDraft(id, qtyInputId) {
   const it = items.find(x => String(x.id) === String(id));
   if(!it) return;
   const avail = parseInt(it.standCounts[currentWitnessStand]) || 0;
-  const currentInDraft = parseInt(draft[id]) || 0;
-  
+  const key = dkey(currentWitnessStand, id);
+  const currentInDraft = draft[key] ? (parseInt(draft[key].q) || 0) : 0;
+
   if (currentInDraft + q > avail) {
     q = avail - currentInDraft;
     if (q <= 0) { toast('На стенде больше нет этой литературы', 'err'); return; }
     toast('Можно добавить только ' + q + ' шт.', 'err');
   }
-  
-  draft[id] = currentInDraft + q;
-  saveDraft();
-  
+  draft[key] = Object.assign({s:currentWitnessStand, id:String(id), at:(draft[key] && draft[key].at) || Date.now()}, itemMeta(it), {q: currentInDraft + q});
+  saveDraft();   // сразу в память телефона — переживает выключение экрана и перезапуск
+
   const badge = document.getElementById('badge-' + id);
-  if (badge) { badge.style.display = 'inline-block'; badge.querySelector('span').textContent = draft[id]; }
+  if (badge) { badge.style.display = 'inline-block'; badge.querySelector('span').textContent = draft[key].q; }
   qtyEl.value = '1';
   renderCartBar();
-  toast('Добавлено: ' + q + ' шт.', 'ok');
+  toast('Записано: ' + q + ' шт.', 'ok');
 }
 
 function renderCartBar() {
-  const ids = Object.keys(draft);
+  const keys = Object.keys(draft).filter(k => draft[k] && draft[k].q > 0);
   let totalQty = 0;
-  ids.forEach(id => { totalQty += parseInt(draft[id]) || 0; });
+  keys.forEach(k => { totalQty += parseInt(draft[k].q) || 0; });
   const bar = document.getElementById('draftBar');
   const txt = document.getElementById('draftBarText');
-  if (ids.length > 0 && totalQty > 0) { bar.style.display = 'block'; txt.textContent = totalQty + ' шт. (' + ids.length + ' поз.)'; } 
+  if (keys.length > 0 && totalQty > 0) { bar.style.display = 'block'; txt.textContent = totalQty + ' шт. (' + keys.length + ' поз.)'; }
   else { bar.style.display = 'none'; }
 }
 
@@ -615,69 +1032,68 @@ function closeCart() { document.getElementById('cartOverlay').classList.remove('
 
 function renderCartList() {
   const container = document.getElementById('cartList');
-  const ids = Object.keys(draft);
-  if (ids.length === 0) {
+  const keys = Object.keys(draft).filter(k => draft[k] && draft[k].q > 0);
+  if (keys.length === 0) {
     container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--muted);">В отчёте пока ничего нет.</div>';
     document.getElementById('sendCartBtn').disabled = true;
     document.getElementById('cartTotal').textContent = '0';
     return;
   }
   document.getElementById('sendCartBtn').disabled = false;
-  let html = '';
-  let total = 0;
-  ids.sort((a, b) => {
-    const itA = items.find(x => String(x.id) === String(a));
-    const itB = items.find(x => String(x.id) === String(b));
-    if(!itA || !itB) return 0;
-    return getItemName(itA).localeCompare(getItemName(itB));
+  keys.sort((a, b) => {
+    const ea = draft[a], eb = draft[b];
+    if(ea.s !== eb.s) return ea.s - eb.s;
+    return String(ea.n || '').localeCompare(String(eb.n || ''));
   });
-
-  ids.forEach(id => {
-    const it = items.find(x => String(x.id) === String(id));
-    if (!it) return;
-    const q = parseInt(draft[id]) || 0;
-    if (q <= 0) return;
-    total += q;
-    const extra = getItemExtra(it);
+  let html = '', total = 0;
+  keys.forEach(k => {
+    const e = draft[k];
+    const q = parseInt(e.q) || 0; total += q;
+    const extra = e.e || '';
     html += `<div class="cart-item">
         <div style="flex:1; min-width:0;">
-          <div style="font-weight:bold; font-size:0.95em; line-height:1.3;">${esc(getItemName(it))}</div>
-          <div style="font-size:0.8em; color:var(--muted); margin-top:2px;">🌍 ${esc(langDisplay(it.lang))} ${extra ? '· 📅 ' + esc(extra) : ''}</div>
+          <div style="font-weight:bold; font-size:0.95em; line-height:1.3;">${esc(e.n || '—')}</div>
+          <div style="font-size:0.8em; color:var(--muted); margin-top:2px;">🏛️ ${esc(standNames[e.s] || ('Стенд ' + e.s))} · 🌍 ${esc(langDisplay(e.l))} ${extra ? '· 📅 ' + esc(extra) : ''}</div>
         </div>
         <div class="cart-qty">
-          <button onclick="changeCartQty('${id}', -1)">−</button>
+          <button onclick="changeCartQty('${k}', -1)">−</button>
           <span>${q}</span>
-          <button onclick="changeCartQty('${id}', 1)">+</button>
+          <button onclick="changeCartQty('${k}', 1)">+</button>
         </div>
-        <button class="cart-del" onclick="removeFromDraft('${id}')">🗑️</button>
+        <button class="cart-del" onclick="removeFromDraft('${k}')">🗑️</button>
       </div>`;
   });
   container.innerHTML = html;
   document.getElementById('cartTotal').textContent = total;
 }
 
-function changeCartQty(id, delta) {
-  const it = items.find(x => String(x.id) === String(id));
-  if (!it) return;
-  const avail = parseInt(it.standCounts[currentWitnessStand]) || 0;
-  let cur = parseInt(draft[id]) || 0;
-  let next = cur + delta;
-  if (next <= 0) { delete draft[id]; } 
-  else if (next > avail) { toast('На стенде только ' + avail + ' шт.', 'err'); return; } 
-  else { draft[id] = next; }
+function changeCartQty(key, delta) {
+  const e = draft[key]; if(!e) return;
+  const it = items.find(x => String(x.id) === String(e.id));
+  const avail = it ? (parseInt(it.standCounts[e.s]) || 0) : Infinity;
+  const next = (parseInt(e.q) || 0) + delta;
+  if (next <= 0) { delete draft[key]; }
+  else if (delta > 0 && next > avail) { toast('На стенде только ' + avail + ' шт.', 'err'); return; }
+  else { e.q = next; }
   saveDraft(); renderCartList(); renderCartBar();
-  const badge = document.getElementById('badge-' + id);
-  if (badge) {
-    if (draft[id] > 0) { badge.style.display = 'inline-block'; badge.querySelector('span').textContent = draft[id]; } 
-    else { badge.style.display = 'none'; }
+  if(e.s === currentWitnessStand){
+    const badge = document.getElementById('badge-' + e.id);
+    if (badge) {
+      const q = draftQtyFor(e.id);
+      if (q > 0) { badge.style.display = 'inline-block'; badge.querySelector('span').textContent = q; }
+      else { badge.style.display = 'none'; }
+    }
   }
 }
 
-function removeFromDraft(id) {
-  delete draft[id];
+function removeFromDraft(key) {
+  const e = draft[key];
+  delete draft[key];
   saveDraft(); renderCartList(); renderCartBar();
-  const badge = document.getElementById('badge-' + id);
-  if (badge) badge.style.display = 'none';
+  if(e && e.s === currentWitnessStand){
+    const badge = document.getElementById('badge-' + e.id);
+    if (badge) badge.style.display = 'none';
+  }
 }
 
 function clearCart() {
@@ -685,50 +1101,89 @@ function clearCart() {
   draft = {}; saveDraft(); renderCartBar(); renderWizard(); closeCart(); toast('Черновик очищен');
 }
 
-async function sendCart() {
-  const ids = Object.keys(draft);
-  if (ids.length === 0) return;
-  const btn = document.getElementById('sendCartBtn');
-  btn.disabled = true; btn.textContent = '⏳ Отправка...';
-  let success = 0, failed = 0, totalSent = 0;
-  
-  try {
-    const fns = await initFirebase(); // Всегда проверяем инициализацию
-    const reportsRef = fns.collection(cloudDb, 'stands', currentStandId, 'reports');
-    
-    for (const id of ids) {
-      const it = items.find(x => String(x.id) === String(id));
-      if (!it) { failed++; continue; }
-      const qty = parseInt(draft[id]) || 0;
-      if (qty <= 0) continue;
-      try {
-        await fns.addDoc(reportsRef, {
-          witnessEmail: currentUser.email,
-          witnessName: currentUser.name + ' ' + currentUser.surname,
-          itemId: it.id, itemName: getItemName(it), itemTheme: getItemTheme(it),
-          itemExtra: getItemExtra(it), itemLang: it.lang || 'ru', itemType: it.type || 'Журнал',
-          standNumber: currentWitnessStand, standName: standNames[currentWitnessStand],
-          qty: qty, processed: false, appliedQty: null,
-          createdAt: Date.now(), processedAt: null, note: ''
-        });
-        success++; totalSent += qty;
-      } catch(e) { failed++; }
-    }
-    try {
-      const witnessRef = fns.doc(cloudDb, 'stands', currentStandId, 'witnesses', currentUser.email);
-      await fns.setDoc(witnessRef, {lastSeen: Date.now()}, {merge: true});
-    } catch(e){}
-    
-    if (success > 0) {
-      draft = {}; saveDraft(); renderCartBar(); closeCart(); renderWizard();
-      toast('✓ Отправлено: ' + totalSent + ' шт.', 'ok', 3000);
-    } else {
-      toast('❌ Не удалось отправить', 'err'); btn.disabled = false; btn.textContent = '✓ Отправить отчёт';
-    }
-  } catch(e) {
-    toast('❌ Ошибка: ' + (e.message || 'попробуйте ещё раз'), 'err');
-    btn.disabled = false; btn.textContent = '✓ Отправить отчёт';
+function loadOutbox(){ try{ return JSON.parse(localStorage.getItem(LS_OUTBOX + currentStandId) || '[]') || []; }catch(e){ return []; } }
+function saveOutbox(ob){
+  try{
+    if(ob.length) localStorage.setItem(LS_OUTBOX + currentStandId, JSON.stringify(ob));
+    else localStorage.removeItem(LS_OUTBOX + currentStandId);
+  }catch(e){}
+}
+function renderOutboxBar(){
+  let pending = 0;
+  loadOutbox().forEach(en => en.lines.forEach(l => { if(!l.done) pending += (parseInt(l.q) || 0); }));
+  let el = document.getElementById('outboxBar');
+  if(!el){
+    el = document.createElement('div'); el.id = 'outboxBar';
+    el.style.cssText = 'position:fixed;top:0;left:0;width:100%;background:#f59e0b;color:#000;padding:10px;text-align:center;font-weight:bold;z-index:9000;display:none;cursor:pointer';
+    el.onclick = function(){ flushOutbox(); };
+    document.body.appendChild(el);
   }
+  if(pending > 0){
+    el.style.display = 'block';
+    el.textContent = flushing ? '⏳ Отправка отчёта…' : ('⚠️ Отчёт сохранён, но не отправлен (' + pending + ' шт.) — нажмите, чтобы повторить');
+  } else el.style.display = 'none';
+}
+// Отправка с повтором: строки отправляются ровно один раз (ID документа постоянный), при обрыве связи ничего не теряется
+async function flushOutbox(){
+  if(flushing || isDeactivated || !currentUser || !currentStandId) return;
+  const ob = loadOutbox();
+  if(!ob.length){ renderOutboxBar(); return; }
+  flushing = true; renderOutboxBar();
+  clearTimeout(flushTimer);
+  let sent = 0, ok = true;
+  try{
+    const fns = await SK.withTimeout(initFirebase(), 20000);
+    const eh = await SK.hashEmail(currentUser.email);
+    const encEmail = await encryptData(currentUser.email);
+    for(const en of ob){
+      const encName = await encryptData(en.name);
+      for(const ln of en.lines){
+        if(ln.done) continue;
+        const docId = en.batchId + '_' + ln.s + '_' + String(ln.id).replace(/[^A-Za-z0-9]/g, '');
+        const ref = fns.doc(cloudDb, 'stands', currentStandId, 'reports', docId);
+        await SK.withTimeout(SK.putOnce(cloudDb, fns, ref, {
+          witnessEmail: encEmail, witnessEh: eh, witnessName: encName,
+          itemId: ln.id, itemName: ln.n || '—', itemTheme: ln.t || '', itemExtra: ln.e || '',
+          itemLang: ln.l || 'ru', itemType: ln.ty || 'Журнал',
+          standNumber: ln.s, standName: standNames[ln.s] || ('Стенд ' + ln.s),
+          qty: ln.q, processed: false, appliedQty: null,
+          batchId: en.batchId, shiftEndedAt: en.createdAt,
+          createdAt: ln.at || en.createdAt, processedAt: null, note: ''
+        }), 20000);
+        ln.done = true; sent += (parseInt(ln.q) || 0);
+        saveOutbox(ob);
+      }
+    }
+    try{
+      const {ref: wref} = await loadWitness(fns, currentStandId, currentUser.email);
+      await fns.setDoc(wref, {lastSeen: Date.now()}, {merge: true});
+    }catch(e){}
+  }catch(e){
+    ok = false; console.warn('flush failed:', e);
+  }
+  const rest = ob.filter(en => !en.lines.every(l => l.done));
+  saveOutbox(rest);
+  flushing = false; renderOutboxBar();
+  if(rest.length){ flushTimer = setTimeout(flushOutbox, 20000); if(!ok) toast('⚠️ Нет связи — отчёт сохранён, отправится автоматически', 'err', 3500); }
+  else if(sent > 0){ toast('✓ Отчёт отправлен: ' + sent + ' шт.', 'ok', 3500); }
+}
+
+async function sendCart() {
+  const keys = Object.keys(draft).filter(k => draft[k] && draft[k].q > 0);
+  if (keys.length === 0) return;
+  let total = 0; keys.forEach(k => total += parseInt(draft[k].q) || 0);
+  if (!confirm('Закончить смену и отправить отчёт?\nВсего: ' + total + ' шт.')) return;
+  const entry = {
+    batchId: 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    createdAt: Date.now(),
+    name: (currentUser.name + ' ' + currentUser.surname).trim(),
+    lines: keys.map(k => ({s:draft[k].s, id:draft[k].id, q:draft[k].q, n:draft[k].n, t:draft[k].t, e:draft[k].e, l:draft[k].l, ty:draft[k].ty, at:draft[k].at, done:false}))
+  };
+  // сначала в надёжную очередь, потом очищаем черновик — отчёт не может потеряться
+  const ob = loadOutbox(); ob.push(entry); saveOutbox(ob);
+  draft = {}; saveDraft(); renderCartBar(); closeCart(); renderWizard();
+  toast('Отчёт сохранён, отправляется…', 'ok');
+  flushOutbox();
 }
 
 async function init(){
@@ -750,18 +1205,18 @@ async function init(){
     const cached = JSON.parse(localStorage.getItem(LS_NAMES_JSON) || 'null');
     if(cached && typeof cached === 'object'){ for(let n=1; n<=4; n++){ if(cached[n]) standNames[n] = String(cached[n]); } }
   }catch(e){}
-
+  loadItemsCache();      // работает и без интернета
+  recomputeItemsOnStand();
   startApp();
+  renderOutboxBar();
+  try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
 
   try{
     const fns = await initFirebase();
-    const witnessRef = fns.doc(cloudDb, 'stands', standId, 'witnesses', email);
-    const snap = await fns.getDoc(witnessRef);
+    const {ref: witnessRef, data} = await loadWitness(fns, standId, email);
 
-    if(snap.exists()){
-      const data = snap.data();
-      if(data.active === false){ showDeactivated(); return; }
-      
+    if(data){
+      if(data.active === false){ isDeactivated = true; showDeactivated(); return; }
       const decName = await decryptData(data.name);
       const decSurname = await decryptData(data.surname);
       let changed = false;
@@ -772,22 +1227,28 @@ async function init(){
     } else {
       if(savedName){
         try{
-          const encName = await encryptData(savedName);
-          const encSurname = await encryptData(savedSurname);
           await fns.setDoc(witnessRef, {
-            email: email, name: encName, surname: encSurname, active: true,
+            email: await encryptData(email), name: await encryptData(savedName), surname: await encryptData(savedSurname), active: true,
             createdAt: Date.now(), lastSeen: Date.now()
           }, {merge: true});
         }catch(e){}
       }
     }
     subscribeToItems();
+    flushOutbox();
   }catch(e){
     console.warn('Firebase verification failed:', e);
-    toast('⚠️ Нет связи с сервером: ' + e.message, 'err', 4000);
+    toast('⚠️ Нет связи с сервером — записи сохраняются на телефоне', 'err', 4000);
     try{ subscribeToItems(); }catch(err){}
+    flushTimer = setTimeout(flushOutbox, 20000);
   }
 }
+
+window.addEventListener('online', function(){ flushOutbox(); });
+document.addEventListener('visibilitychange', function(){
+  if(document.hidden){ try{ saveDraft(); }catch(e){} } else { flushOutbox(); }
+});
+window.addEventListener('pagehide', function(){ try{ saveDraft(); }catch(e){} });
 
 if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
 </script>

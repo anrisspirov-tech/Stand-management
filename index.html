@@ -596,7 +596,7 @@ var SK = (function(){
     var eng = {base: null, unsub: null, timer: null, retry: null, fails: 0, chain: Promise.resolve(), curId: null};
 
     function enqueue(fn){
-      eng.chain = eng.chain.then(fn).catch(function(e){ console.error('sync:', e); o.onStatus('error'); });
+      eng.chain = eng.chain.then(fn).catch(function(e){ console.error('sync:', e); o.onStatus('error', e); });
       return eng.chain;
     }
     function baseStoreKey(){ return o.baseKey + '_' + (o.cloudId() || ''); }
@@ -674,7 +674,7 @@ var SK = (function(){
           res = {local: local, cloud: merged};
         });
       }catch(e){
-        console.error('push failed:', e); o.onStatus('error');
+        console.error('push failed:', e); o.onStatus('error', e);
         eng.fails++; clearTimeout(eng.retry);
         eng.retry = setTimeout(function(){ schedule(1); }, Math.min(60000, 3000 * eng.fails));
         return;
@@ -714,7 +714,7 @@ var SK = (function(){
       eng.curId = id; loadBase(); o.onStatus('connecting');
       eng.unsub = o.fs.onSnapshot(o.fs.doc(db, 'stands', id),
         function(snap){ enqueue(function(){ return onRemote(snap); }); },
-        function(){ o.onStatus('error'); });
+        function(err){ console.error('listen:', err); o.onStatus('error', err); });
     };
     eng.stop = function(){
       if(eng.unsub){ try{ eng.unsub(); }catch(e){} eng.unsub = null; }
@@ -979,7 +979,10 @@ function applyTheme(){
   if(b) b.textContent = saved === 'day' ? '☀️' : '🌙';
 }
 
-function setSyncState(state){
+var _syncErr = '';
+function setSyncState(state, err){
+  if(err) _syncErr = String((err && err.code) ? (err.code + ': ' + (err.message||'')) : (err && err.message) || err).slice(0,220);
+  else if(state === 'synced') _syncErr = '';
   var chip = document.getElementById('syncChip'), txt = document.getElementById('syncChipText');
   if(!chip || !txt) return;
   chip.className = 'sync-chip';
@@ -990,7 +993,7 @@ function setSyncState(state){
 }
 function showSyncInfo(){
   var t = document.getElementById('syncChipText');
-  toast('Статус: ' + (t ? t.textContent : '—'));
+  toast('Статус: ' + (t ? t.textContent : '—') + (_syncErr ? ' — ' + _syncErr : ''), 9000);
 }
 
 var syncEngine = null;
@@ -1052,11 +1055,16 @@ function notifyItemChanges(oldItems, newItems){
   else toast('🔔 Изменений в литературе: ' + ev.length + ' (см. 🔔)', 5000);
   try{ beep(880, 0.12); vibrate(60); }catch(e){}
   try{
-    if(document.hidden && 'Notification' in window && Notification.permission === 'granted'){
+    if('Notification' in window && Notification.permission === 'granted'){
       new Notification('Stand Helper', {body: ev[0].text + (ev.length > 1 ? ' (+' + (ev.length - 1) + ')' : '')});
     }
   }catch(e){}
 }
+function askNotifyPermission(){
+  try{ if(notifyOn() && 'Notification' in window && Notification.permission === 'default') Notification.requestPermission(); }catch(e){}
+}
+setTimeout(askNotifyPermission, 2500);
+document.addEventListener('click', function once(){ askNotifyPermission(); document.removeEventListener('click', once); });
 function updateBellBadge(){
   var n = changeFeed.filter(function(e){ return e.ts > feedReadTs; }).length;
   var b = document.getElementById('bellBadge'); if(!b) return;
@@ -1149,6 +1157,12 @@ async function initFirebase(){
       cloudDb = fsm.getFirestore(cloudApp);
       window._fb = fsm;
     }
+    // анонимный вход (как в отчёте и админке) — нужен, если правила базы требуют авторизацию
+    try{
+      const {getAuth, signInAnonymously} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js');
+      const auth = getAuth(cloudApp);
+      if(!auth.currentUser){ await SK.withTimeout(signInAnonymously(auth), 8000); }
+    }catch(e){ console.warn('Auth failed:', e); }
     if(!syncEngine){
       syncEngine = SK.createEngine({
         db:function(){ return cloudDb; }, fs:fsm, cloudId:function(){ return cloudId; }, enabled:function(){ return cloudEnabled; },

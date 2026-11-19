@@ -104,7 +104,11 @@ option{background:var(--card2);color:var(--text)}
 .stand-item .ti-info{flex:1;min-width:0}
 .stand-item .ti-name{font-weight:bold;word-break:break-word}
 .stand-item .ti-meta{color:var(--muted);font-size:0.78em;margin-top:2px}
-.stand-item .ti-qty{font-weight:bold;color:#06b6d4;font-size:1.05em;white-space:nowrap;text-align:right}
+.stand-item .ti-controls{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.stand-item .ti-step-btn{width:34px;height:34px;padding:0;border-radius:8px;font-size:1.15em;font-weight:bold;display:inline-flex;align-items:center;justify-content:center;margin:0;line-height:1}
+.stand-item .ti-step-btn.minus{background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border)}
+.stand-item .ti-step-btn.plus{background:#06b6d4;color:#000;border:0}
+.stand-item .ti-qty{font-weight:bold;color:#06b6d4;font-size:1.05em;white-space:nowrap;text-align:center;min-width:66px}
 .stand-item.low-stock .ti-qty{color:#ef4444}
 .stand-item .ti-qty .in-total{font-size:0.7em;color:var(--muted);font-weight:normal;display:block}
 .stand-empty{text-align:center;padding:20px;color:var(--muted);font-size:0.9em}
@@ -153,6 +157,18 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 #chgOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
 #chgOverlay.show{display:flex}
 #chgBox{background:var(--card);border:2px solid #06b6d4;border-radius:14px;padding:16px;max-width:480px;width:100%;max-height:90vh;overflow:auto}
+
+/* Правое выдвижное меню навигации по окнам */
+#rightDrawerBackdrop{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.65);z-index:99990}
+#rightDrawerBackdrop.show{display:block}
+#rightDrawer{position:fixed;top:0;right:0;width:285px;max-width:85vw;height:100%;background:var(--card);border-left:3px solid var(--primary);z-index:99991;transform:translateX(100%);transition:transform 0.28s ease;display:flex;flex-direction:column;box-shadow:-8px 0 28px rgba(0,0,0,0.6)}
+#rightDrawer.show{transform:translateX(0)}
+.drawer-head{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--header)}
+.drawer-head b{color:var(--primary);font-size:1.05em}
+.drawer-body{padding:10px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:6px}
+.drawer-item{width:100%;text-align:left;padding:12px 14px;border-radius:10px;background:var(--card2);color:var(--text);border:1px solid var(--border);font-size:0.95em;font-weight:bold;cursor:pointer;margin:0;display:flex;align-items:center;gap:8px;transition:background 0.15s,border-color 0.15s}
+.drawer-item:hover,.drawer-item:active{border-color:var(--primary);background:var(--btn-bg)}
+.card.nav-highlight{box-shadow:0 0 0 3px var(--primary),0 0 18px rgba(245,158,11,0.55);transition:box-shadow 0.3s}
 </style>
 </head>
 <body>
@@ -167,6 +183,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <button onclick="openChangeFeed()" id="bBell" style="padding:6px 10px;font-size:0.85em;background:#06b6d4;color:#000">🔔<span id="bellBadge" style="display:none;margin-left:3px;background:#ef4444;color:#fff;border-radius:10px;padding:0 6px;font-size:0.85em"></span></button>
 <button onclick="openReports()" id="bReports" style="padding:6px 10px;font-size:0.85em;background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border)">📤 Отчёты <span id="repBadge" style="display:none;background:#ef4444;color:#fff;border-radius:10px;padding:0 6px;font-size:0.85em"></span></button>
 <button onclick="toggleTheme()" id="bTheme" style="padding:6px 10px;font-size:0.85em;background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border)">🌙</button>
+<button onclick="openRightMenu()" id="bRightMenu" style="padding:6px 12px;font-size:0.85em;background:var(--primary);color:var(--primary-text)">☰ Меню</button>
 </div>
 </div>
 
@@ -186,12 +203,12 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <div class="stat" style="border:2px solid #06b6d4"><div id="tot-stands" style="font-weight:bold;font-size:1.3em;color:#06b6d4">0</div><div class="small">🏛️ На стендах</div></div>
 </div>
 
-<div class="card" data-collapsible="types" style="border:2px solid #22c55e">
+<div class="card" id="card-types" data-collapsible="types" style="border:2px solid #22c55e">
 <b style="color:#22c55e">📚 Подсчёт по типам</b>
 <div id="countByType" class="count-grid" style="margin-top:10px"></div>
 </div>
 
-<div class="card" data-collapsible="stands" style="border:2px solid #06b6d4">
+<div class="card" id="card-stands" data-collapsible="stands" style="border:2px solid #06b6d4">
 <b style="color:#06b6d4">🏛️ Стенды</b>
 <div class="small" style="margin:6px 0 0;color:var(--muted)">Сколько из общего количества стоит на каждом стенде.</div>
 <div class="stand-tabs">
@@ -203,7 +220,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <div id="standContent" style="margin-top:10px"></div>
 </div>
 
-<div class="card" data-collapsible="langstats" style="border:2px solid #a855f7">
+<div class="card" id="card-langstats" data-collapsible="langstats" style="border:2px solid #a855f7">
 <b style="color:#a855f7">📚 Литература по языкам</b>
 <div class="small" style="margin:6px 0 8px;color:var(--muted)">На скольких языках есть каждое название и сколько всего штук.</div>
 <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
@@ -212,7 +229,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <div id="itemLangStats"></div>
 </div>
 
-<div class="card" data-collapsible="langtable" style="border:2px solid #f59e0b">
+<div class="card" id="card-langtable" data-collapsible="langtable" style="border:2px solid #f59e0b">
 <b style="color:#f59e0b">🌍 По языкам</b>
 <div style="overflow:auto">
 <table class="count-table">
@@ -222,7 +239,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 </div>
 
-<div class="card" data-collapsible="charts">
+<div class="card" id="card-charts" data-collapsible="charts">
 <b>📊 Графики</b>
 <canvas id="chartMain" style="max-height:220px;margin-top:8px"></canvas>
 <div style="display:flex;gap:4px;margin-top:8px">
@@ -230,7 +247,7 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 </div>
 
-<div class="card" data-collapsible="items">
+<div class="card" id="card-items" data-collapsible="items">
 <div style="display:flex;justify-content:space-between;align-items:center">
 <b>📦 Все издания</b>
 </div>
@@ -308,6 +325,16 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <button onclick="addItem()" style="width:100%;margin-top:16px">➕ Добавить</button>
 </div>
 
+</div>
+
+<!-- Правое меню навигации -->
+<div id="rightDrawerBackdrop" onclick="closeRightMenu()"></div>
+<div id="rightDrawer" aria-hidden="true">
+<div class="drawer-head">
+<b>📑 Разделы и окна</b>
+<button class="sec" onclick="closeRightMenu()" style="padding:6px 10px;margin:0">✕</button>
+</div>
+<div class="drawer-body" id="rightDrawerList"></div>
 </div>
 
 <div id="standOverlay" onclick="if(event.target===this)closeStandEditor()">
@@ -397,7 +424,6 @@ var SK = (function(){
   var PFX = 'enc1:';
   var CLIENT_ID = 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
-  // ---------- Шифрование (ключ создаётся ОДИН раз и кэшируется) ----------
   var _keyP = null;
   function getKey(){
     if(!_keyP){
@@ -415,7 +441,6 @@ var SK = (function(){
   function toB64(u8){ var s = '', i; for(i = 0; i < u8.length; i += 8192) s += String.fromCharCode.apply(null, u8.subarray(i, i + 8192)); return btoa(s); }
   function fromB64(b){ var s = atob(b), u = new Uint8Array(s.length), i; for(i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; }
 
-  // Если шифрование недоступно — выбрасываем ошибку (открытый текст в облако НЕ уходит).
   async function encryptData(text){
     if(text == null || text === '') return text;
     text = String(text);
@@ -426,7 +451,6 @@ var SK = (function(){
     var all = new Uint8Array(12 + ct.length); all.set(iv, 0); all.set(ct, 12);
     return PFX + toB64(all);
   }
-  // Читает и новый формат (enc1:...), и старый (без префикса); обычный текст возвращает как есть.
   async function decryptData(t){
     if(t == null || t === '' || typeof t !== 'string') return t;
     var marked = t.indexOf(PFX) === 0, raw = marked ? t.slice(PFX.length) : t;
@@ -438,7 +462,6 @@ var SK = (function(){
       return new TextDecoder().decode(pt);
     }catch(e){ return t; }
   }
-  // Необратимый идентификатор email (для ID документов и поиска — сам email в базе не виден)
   var _hc = {};
   async function hashEmail(email){
     email = String(email || '').trim().toLowerCase(); if(!email) return '';
@@ -454,7 +477,6 @@ var SK = (function(){
     });
   }
 
-  // ---------- Утилиты слияния ----------
   function clone(o){ return o === undefined ? undefined : JSON.parse(JSON.stringify(o)); }
   function stable(o){
     if(o === null || typeof o !== 'object') return JSON.stringify(o);
@@ -488,7 +510,6 @@ var SK = (function(){
     return b !== undefined ? l : r;
   }
   function itemHKey(h){ return h.ts + '|' + h.action + '|' + h.delta + '|' + (h.note || ''); }
-  // Слияние одной позиции: числа (склад, стенды) складываются как ИЗМЕНЕНИЯ (дельты), а не перезаписываются
   function mergeItem(b, l, r){
     var out = clone(r);
     Object.keys(l).forEach(function(k){
@@ -514,14 +535,14 @@ var SK = (function(){
     r.forEach(function(ri){
       var id = String(ri.id); seen[id] = 1;
       var li = lm[id], bi = bm[id];
-      if(!li){ if(bi && eq(bi, ri)) return; out.push(ri); return; }   // удалено у нас и не менялось в облаке → удаляем
+      if(!li){ if(bi && eq(bi, ri)) return; out.push(ri); return; }
       if(eq(li, ri)){ out.push(ri); return; }
-      if(!bi){ out.push(ri); return; }                               // нет базы → облако главнее
+      if(!bi){ out.push(ri); return; }
       out.push(mergeItem(bi, li, ri));
     });
     l.forEach(function(li){
       var id = String(li.id); if(seen[id]) return;
-      var bi = bm[id]; if(bi && eq(bi, li)) return;                  // удалено в облаке другим устройством
+      var bi = bm[id]; if(bi && eq(bi, li)) return;
       out.push(li);
     });
     return out;
@@ -562,7 +583,6 @@ var SK = (function(){
     return out;
   }
 
-  // ---------- Шифрование/расшифровка состояния для облака ----------
   async function encItem(it){
     var o = Object.assign({}, it);
     if(Array.isArray(o.history) && o.history.length){ o.hx = await encryptData(JSON.stringify(o.history)); }
@@ -590,8 +610,6 @@ var SK = (function(){
     return o;
   }
 
-  // ---------- Движок синхронизации ----------
-  // o: {db(), fs, cloudId(), enabled(), keys[], getState(), applyState(s), clean:{items,users}, baseKey, onStatus(st)}
   function createEngine(o){
     var eng = {base: null, unsub: null, timer: null, retry: null, fails: 0, chain: Promise.resolve(), curId: null};
 
@@ -682,7 +700,6 @@ var SK = (function(){
       if(!res) return;
       eng.fails = 0;
       eng.base = clone(res.cloud); saveBase();
-      // правки, сделанные пока шла отправка, накладываем поверх, ничего не теряя
       var cur = o.getState();
       var fin = mergeState(res.local, cur, res.cloud, o.keys);
       if(!eq(fin, cur)) o.applyState(fin);
@@ -693,7 +710,6 @@ var SK = (function(){
 
     eng.schedule = schedule;
     eng.pushNow = function(force){ return enqueue(function(){ return doPush(!!force); }); };
-    // «Получить из облака»: облако главнее, локальные несинхронизированные правки отбрасываются
     eng.pullNow = function(){
       return enqueue(async function(){
         var db = o.db(), id = o.cloudId(); if(!db || !id) return;
@@ -725,7 +741,6 @@ var SK = (function(){
     return eng;
   }
 
-  // ---------- Отчёты со стенда: применяются ровно ОДИН раз тем приложением, которое открылось первым ----------
   async function applyReport(db, fs, cloudId, reportId, applierName){
     var reportRef = fs.doc(db, 'stands', cloudId, 'reports', reportId);
     var standRef = fs.doc(db, 'stands', cloudId);
@@ -770,7 +785,6 @@ var SK = (function(){
     });
     return out;
   }
-  // Запись документа только если его ещё нет (повторная отправка не может «воскресить» уже применённый отчёт)
   async function putOnce(db, fs, ref, data){
     var created = false;
     await fs.runTransaction(db, async function(tx){
@@ -790,7 +804,6 @@ var SK = (function(){
 })();
 var encryptData = SK.encryptData, decryptData = SK.decryptData;
 // ==========================================
-
 
 var STAND_MAX = 10;
 var MIN_STAND_ALERT = 3;
@@ -866,6 +879,63 @@ function hasPerm(perm){
   if(!currentUser) return false;
   if(currentUser.role === 'admin') return true;
   return !!(currentUser.perms && currentUser.perms[perm]);
+}
+
+// Правое выдвижное меню навигации по разделам
+function openRightMenu(){
+  renderRightMenu();
+  document.getElementById('rightDrawerBackdrop').classList.add('show');
+  var dr = document.getElementById('rightDrawer');
+  dr.classList.add('show');
+  dr.setAttribute('aria-hidden', 'false');
+}
+function closeRightMenu(){
+  document.getElementById('rightDrawerBackdrop').classList.remove('show');
+  var dr = document.getElementById('rightDrawer');
+  dr.classList.remove('show');
+  dr.setAttribute('aria-hidden', 'true');
+}
+function renderRightMenu(){
+  var listEl = document.getElementById('rightDrawerList');
+  if(!listEl) return;
+  var sections = [
+    { id: 'card-types', title: '📚 Подсчёт по типам', visible: true },
+    { id: 'card-stands', title: '🏛️ Стенды', visible: true },
+    { id: 'card-langstats', title: '📚 Литература по языкам', visible: true },
+    { id: 'card-langtable', title: '🌍 По языкам', visible: true },
+    { id: 'card-charts', title: '📊 Графики', visible: true },
+    { id: 'card-items', title: '📦 Все издания', visible: true },
+    { id: 'addCard', title: '➕ Добавить новое издание', visible: hasPerm('add') }
+  ];
+  var h = '';
+  sections.forEach(function(sec){
+    if(!sec.visible) return;
+    h += '<button type="button" class="drawer-item" onclick="navigateToCard(\''+sec.id+'\')">'+esc(sec.title)+'</button>';
+  });
+  h += '<div style="border-top:1px solid var(--border);margin:6px 0"></div>';
+  h += '<button type="button" class="drawer-item" onclick="closeRightMenu();openChangeFeed()">🔔 Изменения в литературе</button>';
+  h += '<button type="button" class="drawer-item" onclick="closeRightMenu();openReports()">📤 Отчёты со стенда</button>';
+  listEl.innerHTML = h;
+}
+function navigateToCard(cardId){
+  closeRightMenu();
+  var card = document.getElementById(cardId);
+  if(!card) return;
+  if(card.classList.contains('collapsed')){
+    card.classList.remove('collapsed');
+    var colKey = card.getAttribute('data-collapsible');
+    if(colKey){
+      var s = getCardStates();
+      s[colKey] = false;
+      saveCardStates(s);
+    }
+  }
+  var headerEl = document.querySelector('.header');
+  var offset = (headerEl ? headerEl.offsetHeight : 60) + 10;
+  var y = card.getBoundingClientRect().top + window.pageYOffset - offset;
+  window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+  card.classList.add('nav-highlight');
+  setTimeout(function(){ card.classList.remove('nav-highlight'); }, 1400);
 }
 
 function getCardStates(){ try{ return JSON.parse(localStorage.getItem('stand_cards_collapsed')||'{}'); }catch(e){ return {}; } }
@@ -1157,7 +1227,6 @@ async function initFirebase(){
       cloudDb = fsm.getFirestore(cloudApp);
       window._fb = fsm;
     }
-    // анонимный вход (как в отчёте и админке) — нужен, если правила базы требуют авторизацию
     try{
       const {getAuth, signInAnonymously} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js');
       const auth = getAuth(cloudApp);
@@ -1176,7 +1245,6 @@ async function initFirebase(){
   }catch(e){ console.error(e); setSyncState('error'); }
 }
 
-// ---------- Отчёты со стенда (из приложения «Стенд Отчёт») ----------
 function startReportSync(){
   if(!cloudDb || !cloudId) return;
   var fb = window._fb;
@@ -1214,7 +1282,7 @@ async function processReport(id){
   try{
     var r = await SK.applyReport(cloudDb, window._fb, cloudId, id, currentUser ? currentUser.name : 'Helper');
     delete unprocessedReportIds[id];
-    if(!r) return; // уже применён Stand Pro — второй раз не вычитаем
+    if(!r) return;
     if(r.applied > 0) toast('📤 ' + r.who + ': −' + r.applied + ' ' + r.itemName, 4000);
     else toast('⚠️ ' + r.who + ': ' + (r.note || 'не списано'));
   }catch(e){
@@ -1536,6 +1604,40 @@ function toggleFav(id){ if(!hasPerm('count')) return; var it = items.find(functi
 
 function showStand(n){ curStand = n; document.querySelectorAll('.stand-tab').forEach(function(t){ t.classList.remove('active'); }); var e = document.getElementById('st-'+n); if(e) e.classList.add('active'); renderStand(); }
 
+// Изменение количества на стенде:
+// − (уменьшение на стенде, напр. с 6 до 4) возвращает разницу в it.qty, поэтому общее количество (totalIt = qty + stSum) НЕ уменьшается.
+// + (увеличение на стенде) уменьшает общий запас (it.qty), фиксируя расход литературы для статистики.
+function adjustStandItemQty(id, standNum, delta){
+  if(!hasPerm('count')){ toast('⚠️ Нет прав'); return; }
+  var it = items.find(function(x){ return x.id == id; });
+  if(!it) return;
+  if(!it.standCounts) it.standCounts = {1:0,2:0,3:0,4:0};
+  var curOnStand = stGet(it, standNum);
+  var stock = parseInt(it.qty) || 0;
+
+  if(delta < 0){
+    var takeBack = Math.min(curOnStand, Math.abs(delta));
+    if(takeBack <= 0) return;
+    it.standCounts[standNum] = curOnStand - takeBack;
+    it.qty = stock + takeBack; // Общее количество (Всего) остаётся прежним!
+    logHist(it, 'stand', 0, null, null, (standNames[standNum]||('Стенд '+standNum))+': '+curOnStand+' → '+it.standCounts[standNum]+' (без уменьшения общего кол-ва)');
+    vibrate(10);
+    saveToLocal();
+    render();
+    toast('🏛️ На стенде: '+it.standCounts[standNum]+' (всего по-прежнему '+totalIt(it)+')');
+  } else if(delta > 0){
+    if(curOnStand >= STAND_MAX){ toast('⚠️ Максимум на стенде: '+STAND_MAX); return; }
+    if(stock < delta){ toast('❌ В запасе нет свободных экз. (в запасе: '+stock+')'); return; }
+    it.standCounts[standNum] = curOnStand + delta;
+    it.qty = stock - delta; // Списывается из общего запаса
+    logHist(it, 'stand', 0, null, null, (standNames[standNum]||('Стенд '+standNum))+': '+curOnStand+' → '+it.standCounts[standNum]+' (из запаса −'+delta+')');
+    vibrate(10);
+    saveToLocal();
+    render();
+    toast('🏛️ На стенде: '+it.standCounts[standNum]+' (из запаса −'+delta+')');
+  }
+}
+
 function renderStand(){
   var cont = document.getElementById('standContent'); if(!cont) return;
   var list = items.filter(function(it){ return stGet(it,curStand) > 0; });
@@ -1546,6 +1648,7 @@ function renderStand(){
     var tp = it.type || 'Журнал'; if(!byType[tp]) byType[tp] = {inSt:0, glob:0}; byType[tp].inSt += inSt; byType[tp].glob += glob;
     var code = it.lang || 'ru'; if(!byLang[code]) byLang[code] = {inSt:0, glob:0}; byLang[code].inSt += inSt; byLang[code].glob += glob;
   });
+  var canCount = hasPerm('count');
   var h = '<div class="stand-box"><div class="stand-title"><span class="st-name">🏛️ '+esc(standNames[curStand])+'</span></div>';
   h += '<div class="stand-summary">На стенде: <b>'+totalInStand+'</b> шт. из <b>'+totalGlobal+'</b> · позиций: <b>'+list.length+'</b></div>';
   h += '<div class="stand-section-title">📋 По типам</div>';
@@ -1559,7 +1662,17 @@ function renderStand(){
     var inSt = stGet(it,curStand), glob = totalIt(it); var extra = getItemExtraInfo(it);
     var langTag = (it.lang && it.lang!=='ru') ? ' · '+esc(getLangShort(it.lang)) : '';
     var isLow = inSt < MIN_STAND_ALERT && parseInt(it.qty) > 0;
-    h += '<div class="stand-item '+(isLow?'low-stock':'')+'"><div class="ti-info"><div class="ti-name">'+getTypeIcon(it.type)+' '+esc(getDisplayName(it))+'</div><div class="ti-meta">'+esc(getDisplayCat(it))+(extra?' · '+esc(extra):'')+langTag+'</div></div><div class="ti-qty">'+inSt+' / '+glob+' шт.<span class="in-total">'+(isLow?'🚨 МАЛО':'на стенде / всего')+'</span></div></div>';
+    var controlsHtml = '<div class="ti-controls">';
+    if(canCount){
+      controlsHtml += '<button type="button" class="ti-step-btn minus" onclick="adjustStandItemQty('+it.id+','+curStand+',-1)" title="Уменьшить на стенде (без уменьшения общего количества)">−</button>';
+    }
+    controlsHtml += '<div class="ti-qty">'+inSt+' / '+glob+' шт.<span class="in-total">'+(isLow?'🚨 МАЛО':'на стенде / всего')+'</span></div>';
+    if(canCount){
+      controlsHtml += '<button type="button" class="ti-step-btn plus" onclick="adjustStandItemQty('+it.id+','+curStand+',1)" title="Добавить на стенд (списать из общего запаса)">+</button>';
+    }
+    controlsHtml += '</div>';
+
+    h += '<div class="stand-item '+(isLow?'low-stock':'')+'"><div class="ti-info"><div class="ti-name">'+getTypeIcon(it.type)+' '+esc(getDisplayName(it))+'</div><div class="ti-meta">'+esc(getDisplayCat(it))+(extra?' · '+esc(extra):'')+langTag+'</div></div>'+controlsHtml+'</div>';
   });
   cont.innerHTML = h + '</div>';
 }

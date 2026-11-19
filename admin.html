@@ -217,9 +217,6 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 .main-tab{flex:1;padding:12px;border-radius:8px;font-weight:bold;font-size:1em;border:none;cursor:pointer;transition:all 0.2s}
 .main-tab.active{background:var(--primary);color:var(--primary-text);box-shadow:0 4px 10px rgba(245,158,11,0.4)}
 .main-tab:not(.active){background:var(--card2);color:var(--muted);border:1px solid var(--border)}
-#chgOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
-#chgOverlay.show{display:flex}
-#chgBox{background:var(--card);border:2px solid #06b6d4;border-radius:14px;padding:16px;max-width:480px;width:100%;max-height:90vh;overflow:auto}
 </style>
 </head>
 <body>
@@ -233,7 +230,6 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 <div style="margin-top:6px;display:flex;gap:3px;justify-content:center;flex-wrap:wrap">
 <button onclick="toggleTheme()" id="bTheme" style="padding:6px 10px;font-size:0.85em;background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border)">🌙</button>
 <button onclick="openQuickCount()" style="padding:6px 10px;font-size:0.85em;background:#a855f7;color:#fff">🎯</button>
-<button onclick="openChangeFeed()" id="bBell" style="padding:6px 10px;font-size:0.85em;background:#06b6d4;color:#000">🔔<span id="bellBadge" style="display:none;margin-left:3px;background:#ef4444;color:#fff;border-radius:10px;padding:0 6px;font-size:0.85em"></span></button>
 <button onclick="installPWA()" id="bInstall" style="padding:6px 10px;font-size:0.85em;background:#06b6d4;color:#000;display:none">📲</button>
 </div>
 </div>
@@ -693,14 +689,6 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 
 <button id="scrollTopBtn" onclick="scrollToTop()" title="Наверх">⬆️</button>
 
-<div id="chgOverlay" onclick="if(event.target===this)closeChangeFeed()">
-<div id="chgBox" onclick="event.stopPropagation()">
-<h3 style="color:#06b6d4;text-align:center;margin:0 0 10px;font-size:1.1em">🔔 Изменения в литературе</h3>
-<label style="display:flex;gap:8px;align-items:center;margin:0 0 8px;font-size:0.95em"><input type="checkbox" id="chgOn" onchange="toggleNotify(this.checked)" style="width:auto;margin:0"> Уведомлять об изменениях</label>
-<div id="chgList"></div>
-<div style="display:flex;gap:8px;margin-top:12px"><button class="sec" onclick="clearChangeFeed()" style="flex:1;padding:12px">Очистить</button><button class="sec" onclick="closeChangeFeed()" style="flex:1;padding:12px">Закрыть</button></div>
-</div>
-</div>
 <div id="toastBox"></div>
 
 <script>
@@ -2761,105 +2749,10 @@ function saveFbConfig(){ fbConfigStr=document.getElementById('fbConfig').value.t
 function getFirebaseConfig(){ try{ return JSON.parse(fbConfigStr); }catch(e){ return null; } }
 
 var syncEngine = null;
-// ==========================================
-// УВЕДОМЛЕНИЯ ОБ ИЗМЕНЕНИЯХ В ЛИТЕРАТУРЕ (от помощников, других устройств и отчётов)
-// ==========================================
-var NOTIFY_KEY = 'stand_notify_on', FEED_KEY = 'stand_change_feed', FEED_READ_KEY = 'stand_change_feed_read';
-var changeFeed = []; try{ changeFeed = JSON.parse(localStorage.getItem(FEED_KEY) || '[]') || []; }catch(e){ changeFeed = []; }
-var feedReadTs = parseInt(localStorage.getItem(FEED_READ_KEY) || '0') || 0;
-function notifyOn(){ return localStorage.getItem(NOTIFY_KEY) !== '0'; }
-function feedSave(){ try{ localStorage.setItem(FEED_KEY, JSON.stringify(changeFeed.slice(0, 100))); }catch(e){} }
-function itemLabel(it){ var s = ''; try{ s = getDisplayName(it); }catch(e){} return s || (it.names && it.names.ru) || it.name || '—'; }
-function sameVal(a, b){ return JSON.stringify(a == null ? '' : a) === JSON.stringify(b == null ? '' : b); }
-
-function diffItemChanges(oldArr, newArr){
-  var ev = [], om = {}, nm = {};
-  oldArr.forEach(function(x){ om[String(x.id)] = x; });
-  newArr.forEach(function(x){ nm[String(x.id)] = x; });
-  newArr.forEach(function(n){
-    var o = om[String(n.id)], title = itemLabel(n);
-    if(!o){
-      var h0 = (n.history || [])[0];
-      ev.push({icon:'➕', who:(h0 && h0.who) || '', text:'Добавлено: ' + title + ' (' + totalIt(n) + ' шт.)'});
-      return;
-    }
-    var oh = o.history || [];
-    var newH = (n.history || []).filter(function(h){ return !oh.some(function(x){ return x.ts === h.ts && x.action === h.action && x.delta === h.delta; }); });
-    var who = newH.length ? (newH[0].who || '') : '';
-    var note = newH.length ? String(newH[0].note || '') : '';
-    var parts = [];
-    var tO = totalIt(o), tN = totalIt(n);
-    if((parseInt(o.qty)||0) !== (parseInt(n.qty)||0)) parts.push('склад ' + (parseInt(o.qty)||0) + ' → ' + (parseInt(n.qty)||0));
-    for(var k = 1; k <= 4; k++){
-      var a = stGet(o, k), b = stGet(n, k);
-      if(a !== b) parts.push((standNames[k] || ('Стенд ' + k)) + ': ' + a + ' → ' + b);
-    }
-    if(tN !== tO) parts.push('всего ' + (tN > tO ? '+' : '') + (tN - tO));
-    var oldTitle = itemLabel(o);
-    var descChanged = oldTitle !== title || !sameVal(o.theme, n.theme) || !sameVal(o.lang, n.lang) || !sameVal(o.year, n.year) || !sameVal(o.issueNum, n.issueNum);
-    if(descChanged) parts.push(oldTitle !== title ? ('переименовано: «' + oldTitle + '»') : 'изменено описание');
-    if(!parts.length) return;
-    var isReport = note.indexOf('Отчёт:') === 0;
-    ev.push({icon: isReport ? '📤' : (descChanged && tN === tO && !parts.some(function(p){ return p.indexOf('склад') === 0 || p.indexOf(':') > 0 && p.indexOf('→') > 0; }) ? '✏️' : '📦'),
-             who: isReport ? note.replace('Отчёт:', '').trim() : who,
-             text: (isReport ? 'Отчёт: ' : '') + title + ' — ' + parts.join('; ')});
-  });
-  oldArr.forEach(function(o){ if(!nm[String(o.id)]) ev.push({icon:'🗑️', who:'', text:'Удалено: ' + itemLabel(o)}); });
-  return ev;
-}
-
-function notifyItemChanges(oldItems, newItems){
-  if(!notifyOn() || !Array.isArray(oldItems) || !oldItems.length) return;
-  var ev = diffItemChanges(oldItems, newItems);
-  if(!ev.length) return;
-  var now = Date.now();
-  ev.forEach(function(e, i){ e.ts = now + i; changeFeed.unshift(e); });
-  changeFeed = changeFeed.slice(0, 100); feedSave(); updateBellBadge();
-  if(document.getElementById('chgOverlay') && document.getElementById('chgOverlay').classList.contains('show')) renderChangeFeed();
-  if(ev.length <= 3){ ev.forEach(function(e){ toast('🔔 ' + e.icon + ' ' + (e.who ? e.who + ': ' : '') + e.text, 5000); }); }
-  else toast('🔔 Изменений в литературе: ' + ev.length + ' (см. 🔔)', 5000);
-  try{ beep(880, 0.12); vibrate(60); }catch(e){}
-  try{
-    if(document.hidden && 'Notification' in window && Notification.permission === 'granted'){
-      new Notification('Stand Admin', {body: (ev[0].who ? ev[0].who + ': ' : '') + ev[0].text + (ev.length > 1 ? ' (+' + (ev.length - 1) + ')' : '')});
-    }
-  }catch(e){}
-}
-function updateBellBadge(){
-  var n = changeFeed.filter(function(e){ return e.ts > feedReadTs; }).length;
-  var b = document.getElementById('bellBadge'); if(!b) return;
-  if(n > 0){ b.style.display = 'inline-block'; b.textContent = n > 99 ? '99+' : n; } else b.style.display = 'none';
-}
-function openChangeFeed(){
-  renderChangeFeed();
-  document.getElementById('chgOverlay').classList.add('show');
-  feedReadTs = Date.now(); try{ localStorage.setItem(FEED_READ_KEY, String(feedReadTs)); }catch(e){}
-  updateBellBadge();
-}
-function closeChangeFeed(){ document.getElementById('chgOverlay').classList.remove('show'); renderChangeFeed(); }
-function toggleNotify(on){
-  localStorage.setItem(NOTIFY_KEY, on ? '1' : '0');
-  if(on && 'Notification' in window && Notification.permission === 'default'){ try{ Notification.requestPermission(); }catch(e){} }
-}
-function clearChangeFeed(){ changeFeed = []; feedSave(); renderChangeFeed(); updateBellBadge(); }
-function renderChangeFeed(){
-  var el = document.getElementById('chgList'); if(!el) return;
-  var cb = document.getElementById('chgOn'); if(cb) cb.checked = notifyOn();
-  if(!changeFeed.length){ el.innerHTML = '<div class="small" style="text-align:center;padding:20px">— изменений пока нет —</div>'; return; }
-  el.innerHTML = changeFeed.slice(0, 60).map(function(e){
-    var when = new Date(e.ts).toLocaleString('ru-RU');
-    var fresh = e.ts > feedReadTs;
-    return '<div style="padding:8px 0;border-bottom:1px solid var(--border)' + (fresh ? ';background:rgba(6,182,212,0.12)' : '') + '">' +
-      '<div style="font-weight:bold">' + esc(e.icon || '') + ' ' + esc(e.text) + '</div>' +
-      '<div class="small">' + (e.who ? '👤 ' + esc(e.who) + ' · ' : '') + esc(when) + '</div></div>';
-  }).join('');
-}
-setTimeout(function(){ try{ updateBellBadge(); }catch(e){} }, 300);
 function adminGetState(){
   return {items:items, users:users, standNames:standNames, history:historyLog, savedTitles:savedTitles, removedSuggestions:removedSuggestions, adminPass:adminPass};
 }
 function adminApplyState(s){
-  var _oldItems = items;
   isSyncingFromCloud = true;
   try{
     if(Array.isArray(s.items)) items = cleanItems(s.items);
@@ -2876,7 +2769,6 @@ function adminApplyState(s){
     render(); renderUsers(); renderUserSelectList(); updateUserChip(); populateDatalists();
   }catch(e){ console.error('apply state:', e); }
   isSyncingFromCloud = false;
-  try{ notifyItemChanges(_oldItems, items); }catch(e){ console.error('notify:', e); }
 }
 async function initFirebase(){
   setSyncState('connecting'); var cfg=getFirebaseConfig(); if(!cfg){ setSyncState('error'); return; }
@@ -2937,7 +2829,7 @@ async function processIncomingReport(reportId){
     if(!r) return; // уже применён другим приложением (Helper) — второй раз не вычитаем
     if(r.applied > 0){
       addLog('📤 Отчёт', {userName: r.who + ' · ' + r.itemName + ' · ' + r.applied + ' шт.'});
-      if(!notifyOn()) toast('📤 ' + r.who + ': −' + r.applied + ' ' + r.itemName, 4000);
+      toast('📤 ' + r.who + ': −' + r.applied + ' ' + r.itemName, 4000);
     } else {
       toast('⚠️ ' + r.who + ': ' + (r.note || 'не списано'));
     }
@@ -2989,7 +2881,7 @@ function startWitnessSync(){
   witnessAllReportsUnsub = fb.onSnapshot(reportsRef, function(snap){
     var docs = []; snap.forEach(function(d){ docs.push({id:d.id, data:d.data()}); });
     Promise.all(docs.map(async function(d){
-      var r = Object.assign({id:d.id}, d.data);
+      var r = Object.assign({id:d.id}, d.data());
       var rawN = r.witnessName, rawE = r.witnessEmail;
       r.witnessName = await decryptData(rawN);
       r.witnessEmail = await decryptData(rawE);
@@ -3007,7 +2899,7 @@ function startWitnessSync(){
   witnessUsersUnsub = fb.onSnapshot(fb.collection(cloudDb, 'stands', cloudId, 'witnesses'), function(snap){
     var docs = []; snap.forEach(function(d){ docs.push({id:d.id, data:d.data()}); });
     Promise.all(docs.map(async function(d){
-      var w = Object.assign({id:d.id}, d.data);
+      var w = Object.assign({id:d.id}, d.data());
       w.email = await decryptData(w.email);
       if(!w.email && d.id.indexOf('@') >= 0) w.email = d.id;
       w.name = await decryptData(w.name);

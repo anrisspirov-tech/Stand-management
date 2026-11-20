@@ -122,13 +122,11 @@ option{background:var(--card2);color:var(--text)}
 .user-chip.no-user{background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border)}
 .toolbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px}
 .toolbar select{padding:6px 8px;font-size:0.85em;flex:1;min-width:120px}
-#standOverlay,#rnOverlay,#ccOverlay,#regOverlay,#addStandOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
-#standOverlay.show,#rnOverlay.show,#ccOverlay.show,#regOverlay.show,#addStandOverlay.show{display:flex}
-#standBox,#rnBox,#ccBox,#regBox,#addStandBox{background:var(--card);border:2px solid #06b6d4;border-radius:14px;padding:20px;max-width:440px;width:100%;max-height:90vh;overflow:auto}
-#addStandBox{border-color:#22c55e; display:flex; flex-direction:column;}
+#standOverlay,#rnOverlay,#ccOverlay,#regOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
+#standOverlay.show,#rnOverlay.show,#ccOverlay.show,#regOverlay.show{display:flex}
+#standBox,#rnBox,#ccBox,#regBox{background:var(--card);border:2px solid #06b6d4;border-radius:14px;padding:20px;max-width:440px;width:100%;max-height:90vh;overflow:auto}
 #regBox{border-color:#f59e0b;text-align:left}
 #standBox h3,#rnBox h3,#regBox h3{color:#06b6d4;text-align:center;margin:0 0 12px;font-size:1.1em;line-height:1.3}
-#addStandBox h3{color:#22c55e;text-align:center;margin:0 0 12px;font-size:1.1em;line-height:1.3}
 #ccTitle{color:var(--primary);font-size:1.15em;font-weight:bold;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);text-align:center}
 #ccMsg{color:var(--text);font-size:1.05em;line-height:1.5;margin-bottom:20px}
 #ccButtons{display:flex;gap:10px}
@@ -152,23 +150,63 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 #repOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
 #repOverlay.show{display:flex}
 #repBox{background:var(--card);border:2px solid #06b6d4;border-radius:14px;padding:16px;max-width:480px;width:100%;max-height:90vh;overflow:auto}
+#chgOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
+#chgOverlay.show{display:flex}
+#chgBox{background:var(--card);border:2px solid #06b6d4;border-radius:14px;padding:16px;max-width:480px;width:100%;max-height:90vh;overflow:auto}
+
+/* ===== МЕНЮ / РАЗДЕЛЫ / КНОПКИ НА СТЕНДАХ ===== */
+#uikMenuBtn{position:absolute;left:8px;top:8px;width:44px;height:44px;padding:0;margin:0;border-radius:10px;font-size:1.6em;line-height:1;background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border);z-index:101}
+#uikOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:100000}
+#uikOverlay.show{display:block}
+#uikDrawer{position:absolute;top:0;left:0;height:100%;width:82%;max-width:340px;background:var(--card);border-right:3px solid var(--primary);overflow-y:auto;padding:10px 10px 30px;box-shadow:4px 0 18px rgba(0,0,0,0.5)}
+.uik-head{font-weight:bold;font-size:1.2em;color:var(--primary);padding:8px 4px 10px;display:flex;justify-content:space-between;align-items:center}
+.uik-group{font-size:0.72em;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin:14px 4px 4px}
+.uik-item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:12px 10px;margin:3px 0;font-size:0.98em;background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border);border-radius:10px}
+.uik-item span.ic{width:1.6em;text-align:center}
+.uik-item.on{border-color:var(--primary);background:rgba(245,158,11,0.16)}
+.uik-item .bd{margin-left:auto;background:#ef4444;color:#fff;border-radius:10px;padding:0 7px;font-size:0.85em}
+.uik-pres{font-size:0.82em;padding:6px 8px;margin:2px 0 6px;border-radius:8px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.4)}
+#uikBar{display:none;align-items:center;gap:8px;margin:8px 0;padding:8px 10px;background:var(--card);border:1px solid var(--border);border-radius:10px}
+#uikBar button{margin:0;padding:8px 12px}
+#uikBar b{flex:1}
+body.uik .main-tab, body.uik .card-controls{display:none!important}
+body.uik .card:not(.sec-active){display:none!important}
+body.uik .card.sec-active{display:block!important}
+body.sec-mode .stats{display:none!important}
+.ti-ctl{display:flex;gap:6px;align-items:center;margin-left:8px;flex-shrink:0}
+.sc-btn{width:40px;height:40px;padding:0;margin:0;font-size:1.4em;border-radius:10px;background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border)}
+.sc-btn.plus{background:#22c55e;color:#000;border-color:#22c55e}
+.uik-addlit{width:100%;margin:10px 0 4px;padding:12px;background:#22c55e;color:#000;font-size:1em;border-radius:10px}
+#pkOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99998;justify-content:center;align-items:center;padding:14px}
+#pkOverlay.show{display:flex}
+#pkBox{background:var(--card);border:2px solid #22c55e;border-radius:14px;padding:14px;max-width:520px;width:100%;max-height:92vh;display:flex;flex-direction:column}
+#pkList{overflow-y:auto;margin-top:8px;flex:1}
+.pk-row{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+.pk-info{flex:1;min-width:0}
+.pk-name{font-weight:bold;word-break:break-word;font-size:0.92em}
+.pk-meta{font-size:0.75em;color:var(--muted);margin-top:2px}
+.pk-row input{width:62px;padding:8px;margin:0;text-align:center}
+.pk-row button{margin:0;padding:10px 12px;background:#22c55e;color:#000}
 </style>
 </head>
 <body>
 
 <div class="header">
+<button id="uikMenuBtn" type="button" onclick="uikOpenMenu()" aria-label="Меню">☰</button>
 <h1>STAND HELPER</h1>
 <div style="margin-top:6px;display:flex;gap:5px;justify-content:center;align-items:center;flex-wrap:wrap">
 <span class="sync-chip offline" id="syncChip" onclick="showSyncInfo()"><span class="sync-dot"></span><span id="syncChipText">Офлайн</span></span>
 <span class="user-chip no-user" id="userChip" onclick="confirmLogout()">👤 <span id="userChipText">—</span></span>
 </div>
 <div style="margin-top:6px;display:flex;gap:3px;justify-content:center;flex-wrap:wrap">
+<button onclick="openChangeFeed()" id="bBell" style="padding:6px 10px;font-size:0.85em;background:#06b6d4;color:#000">🔔<span id="bellBadge" style="display:none;margin-left:3px;background:#ef4444;color:#fff;border-radius:10px;padding:0 6px;font-size:0.85em"></span></button>
 <button onclick="openReports()" id="bReports" style="padding:6px 10px;font-size:0.85em;background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border)">📤 Отчёты <span id="repBadge" style="display:none;background:#ef4444;color:#fff;border-radius:10px;padding:0 6px;font-size:0.85em"></span></button>
 <button onclick="toggleTheme()" id="bTheme" style="padding:6px 10px;font-size:0.85em;background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border)">🌙</button>
 </div>
 </div>
 
 <div class="wrap" id="mainContent" style="display:none">
+<div id="uikBar"><button type="button" class="sec" onclick="uikBack()">← Главная</button><b id="uikBarTitle"></b></div>
 
 <div class="stats">
 <div class="stat"><div id="tot" style="font-weight:bold;font-size:1.2em">0</div><div class="small">Всего</div></div>
@@ -315,15 +353,6 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 </div>
 
-<div id="addStandOverlay" onclick="if(event.target===this)closeAddToStand()">
-<div id="addStandBox" onclick="event.stopPropagation()">
-<h3 id="addStandTitle">➕ Добавить на стенд</h3>
-<input id="addStandSearch" placeholder="🔍 Поиск по названию, языку, теме..." oninput="renderAddStandList()" style="margin-bottom:10px;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text)">
-<div id="addStandList" style="flex:1;overflow-y:auto;margin-bottom:10px;min-height:200px;"></div>
-<button class="sec" onclick="closeAddToStand()" style="width:100%;padding:12px">Закрыть</button>
-</div>
-</div>
-
 <div id="rnOverlay" onclick="if(event.target===this)closeRename()">
 <div id="rnBox" onclick="event.stopPropagation()">
 <h3>✏️ Редактировать</h3>
@@ -335,6 +364,14 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 </div>
 
+<div id="chgOverlay" onclick="if(event.target===this)closeChangeFeed()">
+<div id="chgBox" onclick="event.stopPropagation()">
+<h3 style="color:#06b6d4;text-align:center;margin:0 0 10px;font-size:1.1em">🔔 Изменения в литературе</h3>
+<label style="display:flex;gap:8px;align-items:center;margin:0 0 8px;font-size:0.95em"><input type="checkbox" id="chgOn" onchange="toggleNotify(this.checked)" style="width:auto;margin:0"> Уведомлять об изменениях</label>
+<div id="chgList"></div>
+<div style="display:flex;gap:8px;margin-top:12px"><button class="sec" onclick="clearChangeFeed()" style="flex:1;padding:12px">Очистить</button><button class="sec" onclick="closeChangeFeed()" style="flex:1;padding:12px">Закрыть</button></div>
+</div>
+</div>
 <div id="repOverlay" onclick="if(event.target===this)closeReports()">
 <div id="repBox" onclick="event.stopPropagation()">
 <h3 style="color:#06b6d4;text-align:center;margin:0 0 12px;font-size:1.1em">📤 Отчёты со стенда</h3>
@@ -378,6 +415,21 @@ body.day .notice-box{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
 </div>
 
 <button id="scrollTopBtn" onclick="scrollToTop()" title="Наверх">⬆️</button>
+
+<div id="uikOverlay" onclick="uikCloseMenu()">
+<div id="uikDrawer" onclick="event.stopPropagation()">
+<div class="uik-head"><span>☰ Меню</span><button type="button" class="sec" onclick="uikCloseMenu()" style="margin:0;padding:6px 12px">✕</button></div>
+<div id="uikList"></div>
+</div>
+</div>
+<div id="pkOverlay" onclick="if(event.target===this)uikClosePicker()">
+<div id="pkBox" onclick="event.stopPropagation()">
+<h3 id="pkTitle" style="color:#22c55e;margin:0 0 8px;font-size:1.05em">➕ Добавить литературу на стенд</h3>
+<input id="pkSearch" placeholder="🔍 Поиск по названию..." oninput="uikRenderPicker()" style="margin:0">
+<div id="pkList"></div>
+<button type="button" class="sec" onclick="uikClosePicker()" style="width:100%;padding:12px;margin-top:10px">Закрыть</button>
+</div>
+</div>
 <div id="toastBox"></div>
 
 <script>
@@ -595,7 +647,7 @@ var SK = (function(){
     var eng = {base: null, unsub: null, timer: null, retry: null, fails: 0, chain: Promise.resolve(), curId: null};
 
     function enqueue(fn){
-      eng.chain = eng.chain.then(fn).catch(function(e){ console.error('sync:', e); o.onStatus('error'); });
+      eng.chain = eng.chain.then(fn).catch(function(e){ console.error('sync:', e); o.onStatus('error', e); });
       return eng.chain;
     }
     function baseStoreKey(){ return o.baseKey + '_' + (o.cloudId() || ''); }
@@ -673,7 +725,7 @@ var SK = (function(){
           res = {local: local, cloud: merged};
         });
       }catch(e){
-        console.error('push failed:', e); o.onStatus('error');
+        console.error('push failed:', e); o.onStatus('error', e);
         eng.fails++; clearTimeout(eng.retry);
         eng.retry = setTimeout(function(){ schedule(1); }, Math.min(60000, 3000 * eng.fails));
         return;
@@ -713,7 +765,7 @@ var SK = (function(){
       eng.curId = id; loadBase(); o.onStatus('connecting');
       eng.unsub = o.fs.onSnapshot(o.fs.doc(db, 'stands', id),
         function(snap){ enqueue(function(){ return onRemote(snap); }); },
-        function(){ o.onStatus('error'); });
+        function(err){ console.error('listen:', err); o.onStatus('error', err); });
     };
     eng.stop = function(){
       if(eng.unsub){ try{ eng.unsub(); }catch(e){} eng.unsub = null; }
@@ -791,7 +843,7 @@ var encryptData = SK.encryptData, decryptData = SK.decryptData;
 // ==========================================
 
 
-var STAND_MAX = 10;
+var STAND_MAX = 99;
 var MIN_STAND_ALERT = 3;
 var PERM_KEYS = ['count','add','del','rename'];
 var PERMS_PRESETS = {
@@ -933,6 +985,7 @@ function cleanUsers(arr){
       perms: {},
       createdAt: u.createdAt || Date.now()
     };
+    o.online = !!u.online; o.lastActive = parseInt(u.lastActive) || 0;
     var preset = PERMS_PRESETS[o.role] || PERMS_PRESETS.counter;
     PERM_KEYS.forEach(function(k){
       o.perms[k] = (u.perms && typeof u.perms[k]==='boolean') ? u.perms[k] : (preset[k] || false);
@@ -978,7 +1031,10 @@ function applyTheme(){
   if(b) b.textContent = saved === 'day' ? '☀️' : '🌙';
 }
 
-function setSyncState(state){
+var _syncErr = '';
+function setSyncState(state, err){
+  if(err) _syncErr = String((err && err.code) ? (err.code + ': ' + (err.message||'')) : (err && err.message) || err).slice(0,220);
+  else if(state === 'synced') _syncErr = '';
   var chip = document.getElementById('syncChip'), txt = document.getElementById('syncChipText');
   if(!chip || !txt) return;
   chip.className = 'sync-chip';
@@ -989,14 +1045,313 @@ function setSyncState(state){
 }
 function showSyncInfo(){
   var t = document.getElementById('syncChipText');
-  toast('Статус: ' + (t ? t.textContent : '—'));
+  toast('Статус: ' + (t ? t.textContent : '—') + (_syncErr ? ' — ' + _syncErr : ''), 9000);
 }
 
 var syncEngine = null;
 var helperReports = [], unprocessedReportIds = {}, processedReportIds = {}, repUnsubA = null, repUnsubB = null;
 
+var NOTIFY_KEY = 'stand_notify_on_h', FEED_KEY = 'stand_change_feed_h', FEED_READ_KEY = 'stand_change_feed_read_h';
+var changeFeed = []; try{ changeFeed = JSON.parse(localStorage.getItem(FEED_KEY) || '[]') || []; }catch(e){ changeFeed = []; }
+var feedReadTs = parseInt(localStorage.getItem(FEED_READ_KEY) || '0') || 0;
+function notifyOn(){ return localStorage.getItem(NOTIFY_KEY) !== '0'; }
+function feedSave(){ try{ localStorage.setItem(FEED_KEY, JSON.stringify(changeFeed.slice(0, 100))); }catch(e){} }
+function itemLabel(it){ var s = ''; try{ s = getDisplayName(it); }catch(e){} return s || (it.names && it.names.ru) || it.name || '—'; }
+function sameVal(a, b){ return JSON.stringify(a == null ? '' : a) === JSON.stringify(b == null ? '' : b); }
+
+function diffItemChanges(oldArr, newArr){
+  var ev = [], om = {}, nm = {};
+  oldArr.forEach(function(x){ om[String(x.id)] = x; });
+  newArr.forEach(function(x){ nm[String(x.id)] = x; });
+  newArr.forEach(function(n){
+    var o = om[String(n.id)], title = itemLabel(n);
+    if(!o){
+      var h0 = (n.history || [])[0];
+      ev.push({icon:'➕', who:'', text:'Добавлено: ' + title + ' (' + totalIt(n) + ' шт.)'});
+      return;
+    }
+    var oh = o.history || [];
+    var newH = (n.history || []).filter(function(h){ return !oh.some(function(x){ return x.ts === h.ts && x.action === h.action && x.delta === h.delta; }); });
+    var who = newH.length ? (newH[0].who || '') : '';
+    var note = newH.length ? String(newH[0].note || '') : '';
+    var parts = [];
+    var tO = totalIt(o), tN = totalIt(n);
+    if((parseInt(o.qty)||0) !== (parseInt(n.qty)||0)) parts.push('склад ' + (parseInt(o.qty)||0) + ' → ' + (parseInt(n.qty)||0));
+    for(var k = 1; k <= 4; k++){
+      var a = stGet(o, k), b = stGet(n, k);
+      if(a !== b) parts.push((standNames[k] || ('Стенд ' + k)) + ': ' + a + ' → ' + b);
+    }
+    if(tN !== tO) parts.push('всего ' + (tN > tO ? '+' : '') + (tN - tO));
+    var oldTitle = itemLabel(o);
+    var descChanged = oldTitle !== title || !sameVal(o.theme, n.theme) || !sameVal(o.lang, n.lang) || !sameVal(o.year, n.year) || !sameVal(o.issueNum, n.issueNum);
+    if(descChanged) parts.push(oldTitle !== title ? ('переименовано: «' + oldTitle + '»') : 'изменено описание');
+    if(!parts.length) return;
+    var isReport = note.indexOf('Отчёт:') === 0;
+    ev.push({icon: isReport ? '📤' : (descChanged && tN === tO && !parts.some(function(p){ return p.indexOf('склад') === 0 || p.indexOf(':') > 0 && p.indexOf('→') > 0; }) ? '✏️' : '📦'),
+             who: '',
+             text: (isReport ? 'Отчёт: ' : '') + title + ' — ' + parts.join('; ')});
+  });
+  oldArr.forEach(function(o){ if(!nm[String(o.id)]) ev.push({icon:'🗑️', who:'', text:'Удалено: ' + itemLabel(o)}); });
+  return ev;
+}
+
+function notifyItemChanges(oldItems, newItems){
+  if(!notifyOn() || !Array.isArray(oldItems) || !oldItems.length) return;
+  var ev = diffItemChanges(oldItems, newItems);
+  if(!ev.length) return;
+  var now = Date.now();
+  ev.forEach(function(e, i){ e.ts = now + i; changeFeed.unshift(e); });
+  changeFeed = changeFeed.slice(0, 100); feedSave(); updateBellBadge();
+  if(document.getElementById('chgOverlay') && document.getElementById('chgOverlay').classList.contains('show')) renderChangeFeed();
+  if(ev.length <= 3){ ev.forEach(function(e){ toast('🔔 ' + e.icon + ' ' + e.text, 5000); }); }
+  else toast('🔔 Изменений в литературе: ' + ev.length + ' (см. 🔔)', 5000);
+  try{ beep(880, 0.12); vibrate(60); }catch(e){}
+  try{
+    if('Notification' in window && Notification.permission === 'granted'){
+      new Notification('Stand Helper', {body: ev[0].text + (ev.length > 1 ? ' (+' + (ev.length - 1) + ')' : '')});
+    }
+  }catch(e){}
+}
+function askNotifyPermission(){
+  try{ if(notifyOn() && 'Notification' in window && Notification.permission === 'default') Notification.requestPermission(); }catch(e){}
+}
+setTimeout(askNotifyPermission, 2500);
+document.addEventListener('click', function once(){ askNotifyPermission(); document.removeEventListener('click', once); });
+function updateBellBadge(){
+  var n = changeFeed.filter(function(e){ return e.ts > feedReadTs; }).length;
+  var b = document.getElementById('bellBadge'); if(!b) return;
+  if(n > 0){ b.style.display = 'inline-block'; b.textContent = n > 99 ? '99+' : n; } else b.style.display = 'none';
+}
+function openChangeFeed(){
+  renderChangeFeed();
+  document.getElementById('chgOverlay').classList.add('show');
+  feedReadTs = Date.now(); try{ localStorage.setItem(FEED_READ_KEY, String(feedReadTs)); }catch(e){}
+  updateBellBadge();
+}
+function closeChangeFeed(){ document.getElementById('chgOverlay').classList.remove('show'); renderChangeFeed(); }
+function toggleNotify(on){
+  localStorage.setItem(NOTIFY_KEY, on ? '1' : '0');
+  if(on && 'Notification' in window && Notification.permission === 'default'){ try{ Notification.requestPermission(); }catch(e){} }
+}
+function clearChangeFeed(){ changeFeed = []; feedSave(); renderChangeFeed(); updateBellBadge(); }
+function renderChangeFeed(){
+  var el = document.getElementById('chgList'); if(!el) return;
+  var cb = document.getElementById('chgOn'); if(cb) cb.checked = notifyOn();
+  if(!changeFeed.length){ el.innerHTML = '<div class="small" style="text-align:center;padding:20px">— изменений пока нет —</div>'; return; }
+  el.innerHTML = changeFeed.slice(0, 60).map(function(e){
+    var when = new Date(e.ts).toLocaleString('ru-RU');
+    var fresh = e.ts > feedReadTs;
+    return '<div style="padding:8px 0;border-bottom:1px solid var(--border)' + (fresh ? ';background:rgba(6,182,212,0.12)' : '') + '">' +
+      '<div style="font-weight:bold">' + esc(e.icon || '') + ' ' + esc(e.text) + '</div>' +
+      '<div class="small">' + esc(when) + '</div></div>';
+  }).join('');
+}
+setTimeout(function(){ try{ updateBellBadge(); }catch(e){} }, 300);
+function beep(freq,dur){ try{ var C=window.AudioContext||window.webkitAudioContext; var c=new C(); var o=c.createOscillator(),g=c.createGain(); o.connect(g); g.connect(c.destination); o.frequency.value=freq||900; g.gain.value=0.08; o.start(); o.stop(c.currentTime+(dur||0.12)); }catch(e){} }
+function vibrate(ms){ try{ if(navigator.vibrate) navigator.vibrate(ms||10); }catch(e){} }
+// ==========================================
+// МЕНЮ, ОТДЕЛЬНЫЕ ОКНА РАЗДЕЛОВ И КНОПКИ «+ / −» НА СТЕНДАХ (общий блок Helper и Admin)
+// ==========================================
+// false = кнопки на стенде меняют только количество НА СТЕНДЕ и НЕ уменьшают запас/общее количество
+var STAND_ADJUST_AFFECTS_STOCK = false;
+var uikCurrent = 'home', uikOpened = null, uikPickStand = 1;
+
+function uikOpen(key, fromPop){
+  var secs = uikSections(), sec = null, i;
+  for(i = 0; i < secs.length; i++) if(secs[i].key === key) sec = secs[i];
+  if(key !== 'home' && (!sec || (sec.hidden && sec.hidden()))){ toast('Раздел недоступен'); key = 'home'; sec = null; }
+  if(uikOpened){ uikOpened.classList.add('collapsed'); uikOpened = null; }
+  var act = document.querySelectorAll('.card.sec-active'); for(i = 0; i < act.length; i++) act[i].classList.remove('sec-active');
+  var b = document.body, card = null;
+  b.classList.add('uik');
+  if(key === 'home'){
+    card = document.querySelector('.card[data-collapsible="stands"]');
+    b.classList.remove('sec-mode'); b.classList.add('home-mode');
+    if(typeof uikSwitch === 'function') uikSwitch('lit');
+  } else {
+    card = sec.card();
+    b.classList.add('sec-mode'); b.classList.remove('home-mode');
+    if(typeof uikSwitch === 'function') uikSwitch(sec.view || 'lit');
+  }
+  if(card){
+    card.classList.add('sec-active');
+    if(card.classList.contains('collapsed')){ uikOpened = card; card.classList.remove('collapsed'); }
+  }
+  uikCurrent = key;
+  if(sec && sec.onOpen){ try{ sec.onOpen(); }catch(e){} }
+  var bar = document.getElementById('uikBar'), bt = document.getElementById('uikBarTitle');
+  if(bar){ bar.style.display = (key === 'home') ? 'none' : 'flex'; }
+  if(bt && sec) bt.textContent = sec.icon + ' ' + sec.title;
+  if(!fromPop){
+    try{
+      if(key !== 'home'){ if(history.state && history.state.uik) history.replaceState({uik:key}, ''); else history.pushState({uik:key}, ''); }
+    }catch(e){}
+  }
+  window.scrollTo(0, 0);
+  try{ if(key === 'home') renderStand(); }catch(e){}
+}
+function uikBack(){
+  try{ if(history.state && history.state.uik){ history.back(); return; } }catch(e){}
+  uikOpen('home');
+}
+window.addEventListener('popstate', function(){ if(uikCurrent !== 'home') uikOpen('home', true); });
+
+function uikOpenMenu(){
+  if(typeof uikMenuAllowed === 'function' && !uikMenuAllowed()) return;
+  uikRenderMenu();
+  document.getElementById('uikOverlay').classList.add('show');
+}
+function uikCloseMenu(){ document.getElementById('uikOverlay').classList.remove('show'); }
+function uikRenderMenu(){
+  var secs = uikSections(), acts = uikActions(), h = '', grp = null;
+  if(typeof uikPresenceHtml === 'function') h += uikPresenceHtml();
+  h += '<button type="button" class="uik-item' + (uikCurrent === 'home' ? ' on' : '') + '" onclick="uikPick(\'home\')"><span class="ic">🏠</span> Главная — Стенды</button>';
+  secs.forEach(function(s){
+    if(s.hidden && s.hidden()) return;
+    if(s.group !== grp){ grp = s.group; h += '<div class="uik-group">' + esc(grp) + '</div>'; }
+    h += '<button type="button" class="uik-item' + (s.key === uikCurrent ? ' on' : '') + '" onclick="uikPick(\'' + s.key + '\')"><span class="ic">' + s.icon + '</span> ' + esc(s.title) + '</button>';
+  });
+  if(acts.length){
+    h += '<div class="uik-group">Действия</div>';
+    acts.forEach(function(a, i){
+      var n = a.badge ? (a.badge() || 0) : 0;
+      h += '<button type="button" class="uik-item" onclick="uikAct(' + i + ')"><span class="ic">' + a.icon + '</span> ' + esc(a.title) + (n > 0 ? '<span class="bd">' + n + '</span>' : '') + '</button>';
+    });
+  }
+  document.getElementById('uikList').innerHTML = h;
+}
+function uikPick(key){ uikCloseMenu(); uikOpen(key); }
+function uikAct(i){ var a = uikActions()[i]; uikCloseMenu(); if(a && a.fn) setTimeout(a.fn, 60); }
+function uikInit(){
+  var tl = document.getElementById('tab-lit'); if(tl && tl.parentElement) tl.parentElement.style.display = 'none';
+  document.body.classList.add('uik');
+  uikOpen('home', true);
+}
+
+// ----- кнопки на стендах -----
+function uikFind(id){ for(var i = 0; i < items.length; i++) if(String(items[i].id) === String(id)) return items[i]; return null; }
+function uikCanCount(quiet){
+  var ok = false; try{ ok = hasPerm('count'); }catch(e){}
+  if(!ok && !quiet) toast('⚠️ Нет права менять количество');
+  return ok;
+}
+function uikStandCtl(it, n){
+  if(!uikCanCount(true)) return '';
+  var id = String(it.id).replace(/[^0-9.\-]/g, '');
+  return '<div class="ti-ctl"><button type="button" class="sc-btn" onclick="standAdjust(\'' + id + '\',' + n + ',-1)">−</button><button type="button" class="sc-btn plus" onclick="standAdjust(\'' + id + '\',' + n + ',1)">+</button></div>';
+}
+function uikStandAddBtn(n){
+  if(!uikCanCount(true)){
+    try{ if(typeof getCurrentUser === 'function' && !getCurrentUser()) return '<div class="small" style="margin:8px 0;color:#f59e0b">👤 Выберите пользователя (вверху), чтобы менять количество</div>'; }catch(e){}
+    return '';
+  }
+  return '<button type="button" class="uik-addlit" onclick="uikOpenPicker(' + n + ')">➕ Добавить литературу на стенд</button>';
+}
+function standAdjust(id, n, d){
+  if(!uikCanCount()) return;
+  var it = uikFind(id); if(!it) return;
+  var old = stGet(it, n), nv = Math.max(0, Math.min(STAND_MAX, old + d));
+  if(nv === old){ if(d > 0) toast('Максимум на стенде: ' + STAND_MAX + ' шт.'); return; }
+  if(typeof uikPre === 'function') uikPre(it, n, d);
+  var sc = {}; for(var k = 1; k <= 4; k++) sc[k] = stGet(it, k);
+  sc[n] = nv; it.standCounts = sc;
+  if(STAND_ADJUST_AFFECTS_STOCK) it.qty = Math.max(0, (parseInt(it.qty) || 0) - (nv - old));
+  uikHist(it, 'stand', nv - old, old, nv, (standNames[n] || ('Стенд ' + n)) + ': ' + old + ' → ' + nv);
+  try{ vibrate(10); }catch(e){}
+  uikSave(); uikRender();
+}
+function uikOpenPicker(n){
+  if(!uikCanCount()) return;
+  uikPickStand = n;
+  document.getElementById('pkTitle').textContent = '➕ На стенд: ' + (standNames[n] || ('Стенд ' + n));
+  document.getElementById('pkSearch').value = '';
+  uikRenderPicker();
+  document.getElementById('pkOverlay').classList.add('show');
+}
+function uikClosePicker(){ document.getElementById('pkOverlay').classList.remove('show'); }
+function uikRenderPicker(){
+  var q = (document.getElementById('pkSearch').value || '').toLowerCase().trim();
+  var list = items.filter(function(it){
+    if(!q) return true;
+    var s = (getDisplayName(it) + ' ' + getDisplayCat(it) + ' ' + getItemExtraInfo(it) + ' ' + (it.lang || '')).toLowerCase();
+    return s.indexOf(q) >= 0;
+  });
+  list.sort(function(a, b){ return getDisplayName(a).localeCompare(getDisplayName(b)); });
+  var box = document.getElementById('pkList');
+  if(!list.length){ box.innerHTML = '<div class="small" style="text-align:center;padding:20px">— ничего не найдено —</div>'; return; }
+  box.innerHTML = list.slice(0, 80).map(function(it){
+    var id = String(it.id).replace(/[^0-9.\-]/g, '');
+    var extra = getItemExtraInfo(it);
+    var langTag = (it.lang && it.lang !== 'ru') ? ' · ' + esc(getLangShort(it.lang)) : '';
+    return '<div class="pk-row"><div class="pk-info"><div class="pk-name">' + getTypeIcon(it.type) + ' ' + esc(getDisplayName(it)) + '</div>' +
+      '<div class="pk-meta">' + esc(getDisplayCat(it)) + (extra ? ' · ' + esc(extra) : '') + langTag + ' · на этом стенде: <b>' + stGet(it, uikPickStand) + '</b> · всего: <b>' + totalIt(it) + '</b></div></div>' +
+      '<input type="number" inputmode="numeric" min="1" value="1" id="pkq-' + id + '">' +
+      '<button type="button" onclick="uikPickAdd(\'' + id + '\')">➕</button></div>';
+  }).join('') + (list.length > 80 ? '<div class="small" style="text-align:center;padding:8px">Показаны первые 80 — уточните поиск</div>' : '');
+}
+function uikPickAdd(id){
+  var el = document.getElementById('pkq-' + id);
+  var q = Math.max(1, parseInt(el ? el.value : 1) || 1);
+  var it = uikFind(id); if(!it) return;
+  var before = stGet(it, uikPickStand);
+  standAdjust(id, uikPickStand, q);
+  var after = stGet(uikFind(id), uikPickStand);
+  if(after > before) toast('✅ +' + (after - before) + ' на ' + (standNames[uikPickStand] || ('Стенд ' + uikPickStand)));
+  uikRenderPicker();
+}
+function uikMenuAllowed(){ return !!currentUser; }
+function uikSections(){
+  function c(sel){ return function(){ return document.querySelector(sel); }; }
+  return [
+    {key:'types', icon:'📚', title:'Подсчёт по типам', group:'Литература', view:'lit', card:c('.card[data-collapsible="types"]')},
+    {key:'langstats', icon:'🌍', title:'Литература по языкам', group:'Литература', view:'lit', card:c('.card[data-collapsible="langstats"]')},
+    {key:'charts', icon:'📊', title:'Графики', group:'Литература', view:'lit', card:c('.card[data-collapsible="charts"]'), onOpen:function(){ renderCharts(); }},
+    {key:'items', icon:'📦', title:'Все издания', group:'Литература', view:'lit', card:c('.card[data-collapsible="items"]')},
+    {key:'add', icon:'➕', title:'Добавить издание', group:'Литература', view:'lit', card:c('#addCard'), hidden:function(){ return !hasPerm('add'); }}
+  ];
+}
+function uikActions(){
+  return [
+    {icon:'🔔', title:'Изменения в литературе', fn:openChangeFeed, badge:function(){ return changeFeed.filter(function(e){ return e.ts > feedReadTs; }).length; }},
+    {icon:'📤', title:'Отчёты со стенда', fn:openReports, badge:function(){ return helperReports.filter(function(r){ return !r.processed; }).length; }},
+    {icon:'🌙', title:'Тема: день / ночь', fn:toggleTheme},
+    {icon:'🔄', title:'Статус синхронизации', fn:showSyncInfo},
+    {icon:'🚪', title:'Сменить пользователя / выйти', fn:confirmLogout}
+  ];
+}
+function uikHist(it, a, d, o, n, note){ logHist(it, a, d, o, n, note); }
+function uikSave(){ saveToLocal(); }
+function uikRender(){ render(); }
+
+// ----- присутствие: кто в сети (видит администратор) -----
+var presHb = null, presOff = null;
+function presenceSet(on){
+  try{
+    if(!currentUser || !currentUserEmail) return;
+    var em = currentUserEmail.toLowerCase();
+    var me = users.find(function(u){ return u.email && u.email.toLowerCase() === em; });
+    if(!me) return;
+    var now = Date.now();
+    if(on && me.online && now - (me.lastActive || 0) < 100000) return;
+    if(!on && !me.online) return;
+    me.online = !!on; me.lastActive = now;
+    try{ localStorage.setItem('stand_users_v1', JSON.stringify(users)); }catch(e){}
+    if(syncEngine) syncEngine.schedule(300);
+  }catch(e){}
+}
+function presenceStart(){
+  presenceSet(true);
+  if(!presHb) presHb = setInterval(function(){ if(!document.hidden) presenceSet(true); }, 120000);
+}
+document.addEventListener('visibilitychange', function(){
+  if(document.hidden){
+    clearTimeout(presOff);
+    presOff = setTimeout(function(){ presenceSet(false); if(syncEngine) syncEngine.pushNow(false); }, 40000);
+  } else { clearTimeout(presOff); presenceSet(true); }
+});
 function helperGetState(){ return {items:items, users:users, standNames:standNames}; }
 function helperApplyState(s){
+  var _oldItems = items;
   isSyncingFromCloud = true;
   var restored = false;
   try{
@@ -1033,6 +1388,7 @@ function helperApplyState(s){
     }
   }catch(e){ console.error('apply state:', e); }
   isSyncingFromCloud = false;
+  try{ notifyItemChanges(_oldItems, items); }catch(e){ console.error('notify:', e); }
   if(restored && syncEngine) syncEngine.schedule(500);
 }
 
@@ -1053,15 +1409,12 @@ async function initFirebase(){
       cloudDb = fsm.getFirestore(cloudApp);
       window._fb = fsm;
     }
-    
-    // --- АНОНИМНАЯ АВТОРИЗАЦИЯ (ИСПРАВЛЕНИЕ СИНХРОНИЗАЦИИ) ---
-    try {
+    // анонимный вход (как в отчёте и админке) — нужен, если правила базы требуют авторизацию
+    try{
       const {getAuth, signInAnonymously} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js');
       const auth = getAuth(cloudApp);
-      if (!auth.currentUser) { await signInAnonymously(auth); }
-    } catch(e) { console.warn('Auth failed:', e); }
-    // ---------------------------------------------------------
-
+      if(!auth.currentUser){ await SK.withTimeout(signInAnonymously(auth), 8000); }
+    }catch(e){ console.warn('Auth failed:', e); }
     if(!syncEngine){
       syncEngine = SK.createEngine({
         db:function(){ return cloudDb; }, fs:fsm, cloudId:function(){ return cloudId; }, enabled:function(){ return cloudEnabled; },
@@ -1249,16 +1602,24 @@ async function handleRegister(){
 
 function confirmLogout(){
   if(!confirm('Выйти из аккаунта? В следующий раз нужно будет снова войти.')) return;
-  currentUser = null;
-  currentUserEmail = '';
-  localStorage.removeItem('stand_user_email');
-  localStorage.removeItem('stand_user_name');
-  localStorage.removeItem('stand_user_surname');
-  localStorage.removeItem('stand_cloud_id');
-  localStorage.removeItem('stand_cloud_enabled');
-  cloudId = ''; cloudEnabled = false;
-  if(syncEngine){ syncEngine.stop(); } if(repUnsubA){ try{ repUnsubA(); }catch(e){} repUnsubA=null; } if(repUnsubB){ try{ repUnsubB(); }catch(e){} repUnsubB=null; }
-  showRegister();
+  presenceSet(false);
+  var done = false;
+  function finish(){
+    if(done) return; done = true;
+    currentUser = null;
+    currentUserEmail = '';
+    localStorage.removeItem('stand_user_email');
+    localStorage.removeItem('stand_user_name');
+    localStorage.removeItem('stand_user_surname');
+    localStorage.removeItem('stand_cloud_id');
+    localStorage.removeItem('stand_cloud_enabled');
+    cloudId = ''; cloudEnabled = false;
+    if(syncEngine){ syncEngine.stop(); } if(repUnsubA){ try{ repUnsubA(); }catch(e){} repUnsubA=null; } if(repUnsubB){ try{ repUnsubB(); }catch(e){} repUnsubB=null; }
+    showRegister();
+  }
+  if(syncEngine && cloudEnabled){
+    Promise.race([syncEngine.pushNow(true), new Promise(function(r){ setTimeout(r, 2500); })]).then(finish, finish);
+  } else finish();
 }
 
 function updateUI(){
@@ -1276,6 +1637,7 @@ function updateUI(){
   render();
   initAddStandSelects();
   try{ drainReports(); }catch(e){}
+  try{ presenceStart(); }catch(e){}
 }
 
 function initAddStandSelects(){
@@ -1438,23 +1800,16 @@ function showStand(n){ curStand = n; document.querySelectorAll('.stand-tab').for
 function renderStand(){
   var cont = document.getElementById('standContent'); if(!cont) return;
   var list = items.filter(function(it){ return stGet(it,curStand) > 0; });
-  var h = '<div class="stand-box"><div class="stand-title"><span class="st-name">🏛️ '+esc(standNames[curStand])+'</span></div>';
-  
-  // ДОБАВЛЕНО: Кнопка для открытия списка добавления
-  h += '<div style="margin-bottom:12px;display:flex;gap:6px">';
-  h += '<button onclick="openAddToStand()" style="flex:1;background:#22c55e;color:#000;padding:10px;border-radius:8px;font-weight:bold;border:0;cursor:pointer">➕ Добавить литературу на стенд</button>';
-  h += '</div>';
-
-  if(list.length === 0){ cont.innerHTML = h + '<div class="stand-empty">Стенд пуст</div></div>'; return; }
-  
+  if(list.length === 0){ cont.innerHTML = '<div class="stand-box"><div class="stand-title"><span class="st-name">🏛️ '+esc(standNames[curStand])+'</span></div><div class="stand-empty">Стенд пуст</div>'+uikStandAddBtn(curStand)+'</div>'; return; }
   var totalInStand=0, totalGlobal=0, byType={}, byLang={};
   list.forEach(function(it){
     var inSt = stGet(it,curStand), glob = totalIt(it); totalInStand += inSt; totalGlobal += glob;
     var tp = it.type || 'Журнал'; if(!byType[tp]) byType[tp] = {inSt:0, glob:0}; byType[tp].inSt += inSt; byType[tp].glob += glob;
     var code = it.lang || 'ru'; if(!byLang[code]) byLang[code] = {inSt:0, glob:0}; byLang[code].inSt += inSt; byLang[code].glob += glob;
   });
-  
+  var h = '<div class="stand-box"><div class="stand-title"><span class="st-name">🏛️ '+esc(standNames[curStand])+'</span></div>';
   h += '<div class="stand-summary">На стенде: <b>'+totalInStand+'</b> шт. из <b>'+totalGlobal+'</b> · позиций: <b>'+list.length+'</b></div>';
+  h += uikStandAddBtn(curStand);
   h += '<div class="stand-section-title">📋 По типам</div>';
   ['Журнал','Брошюра','Постер'].forEach(function(tp){ if(!byType[tp]) return; h += '<div class="stand-row"><span class="t-left">'+getTypeIcon(tp)+' '+esc(tp)+'</span><span class="t-right">'+byType[tp].inSt+' / '+byType[tp].glob+' шт.</span></div>'; });
   var langs = Object.keys(byLang).sort(function(a,b){ return byLang[b].inSt - byLang[a].inSt; });
@@ -1462,104 +1817,13 @@ function renderStand(){
   langs.forEach(function(code){ h += '<div class="stand-row"><span class="t-left">'+esc(getLangDisplay(code))+'</span><span class="t-right">'+byLang[code].inSt+' / '+byLang[code].glob+' шт.</span></div>'; });
   h += '<div class="stand-section-title">📚 Содержимое ('+list.length+')</div>';
   list.sort(function(a,b){ return getDisplayName(a).localeCompare(getDisplayName(b)); });
-  
   list.forEach(function(it){
     var inSt = stGet(it,curStand), glob = totalIt(it); var extra = getItemExtraInfo(it);
     var langTag = (it.lang && it.lang!=='ru') ? ' · '+esc(getLangShort(it.lang)) : '';
     var isLow = inSt < MIN_STAND_ALERT && parseInt(it.qty) > 0;
-    
-    // ДОБАВЛЕНО: Кнопки + и - прямо в строке
-    var actionsHtml = '<div style="display:flex;gap:4px;margin-top:4px;justify-content:flex-end">' +
-        '<button onclick="adjustStandItem('+it.id+', -1)" style="padding:4px 10px;font-size:0.85em;background:var(--btn-bg);color:var(--text);border:1px solid var(--border);border-radius:6px">−</button>' +
-        '<button onclick="adjustStandItem('+it.id+', 1)" style="padding:4px 10px;font-size:0.85em;background:var(--primary);color:var(--primary-text);border:0;border-radius:6px">+</button>' +
-        '</div>';
-
-    h += '<div class="stand-item '+(isLow?'low-stock':'')+'">' +
-         '<div class="ti-info"><div class="ti-name">'+getTypeIcon(it.type)+' '+esc(getDisplayName(it))+'</div>' +
-         '<div class="ti-meta">'+esc(getDisplayCat(it))+(extra?' · '+esc(extra):'')+langTag+'</div></div>' +
-         '<div class="ti-qty" style="display:flex;flex-direction:column;align-items:flex-end">'+inSt+' / '+glob+' шт.' +
-         '<span class="in-total">'+(isLow?'🚨 МАЛО':'на стенде / всего')+'</span>' + actionsHtml + '</div></div>';
+    h += '<div class="stand-item '+(isLow?'low-stock':'')+'"><div class="ti-info"><div class="ti-name">'+getTypeIcon(it.type)+' '+esc(getDisplayName(it))+'</div><div class="ti-meta">'+esc(getDisplayCat(it))+(extra?' · '+esc(extra):'')+langTag+'</div></div><div class="ti-qty">'+inSt+' / '+glob+' шт.<span class="in-total">'+(isLow?'🚨 МАЛО':'на стенде / всего')+'</span></div>'+uikStandCtl(it,curStand)+'</div>';
   });
   cont.innerHTML = h + '</div>';
-}
-
-// НОВАЯ ФУНКЦИЯ: Логика добавления и убавления со стенда
-function adjustStandItem(id, delta){
-  if(!hasPerm('count')) return;
-  var it = items.find(function(x){ return x.id == id; }); if(!it) return;
-  var cur = stGet(it, curStand);
-  var newVal = cur + delta;
-  if(newVal < 0) newVal = 0;
-  if(newVal > STAND_MAX) newVal = STAND_MAX;
-  var actualDelta = newVal - cur;
-  if(actualDelta === 0) return;
-
-  if(actualDelta > 0){
-    // Кладем на стенд, берем из запаса
-    if((parseInt(it.qty)||0) < actualDelta){ toast('❌ В запасе только '+(it.qty||0)+' шт.'); return; }
-    it.qty = (parseInt(it.qty)||0) - actualDelta;
-  } else {
-    // Забираем со стенда, возвращаем в запас
-    it.qty = (parseInt(it.qty)||0) + Math.abs(actualDelta);
-  }
-  it.standCounts[curStand] = newVal;
-  saveToLocal();
-  render();
-  if(document.getElementById('addStandOverlay').classList.contains('show')) {
-     renderAddStandList();
-  }
-}
-
-// НОВЫЕ ФУНКЦИИ: Модальное окно добавления
-function openAddToStand(){
-  if(!hasPerm('count')) return;
-  document.getElementById('addStandTitle').textContent = '➕ Добавить на ' + standNames[curStand];
-  document.getElementById('addStandSearch').value = '';
-  document.getElementById('addStandOverlay').classList.add('show');
-  document.getElementById('addStandOverlay').style.display = 'flex';
-  renderAddStandList();
-}
-function closeAddToStand(){
-  document.getElementById('addStandOverlay').classList.remove('show');
-  document.getElementById('addStandOverlay').style.display = 'none';
-}
-function renderAddStandList(){
-  var el = document.getElementById('addStandList'); if(!el) return;
-  var q = (document.getElementById('addStandSearch').value||'').toLowerCase().trim();
-  var list = items.filter(function(it){
-    var name = getDisplayName(it).toLowerCase();
-    var theme = (it.theme||'').toLowerCase();
-    var lang = getLangDisplay(it.lang||'ru').toLowerCase();
-    return name.indexOf(q) >= 0 || theme.indexOf(q) >= 0 || lang.indexOf(q) >= 0;
-  });
-  if(list.length === 0){ el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted)">— не найдено —</div>'; return; }
-  
-  list.sort(function(a,b){
-    var sa = (parseInt(a.qty)||0) > 0 ? 1 : 0;
-    var sb = (parseInt(b.qty)||0) > 0 ? 1 : 0;
-    if(sa !== sb) return sb - sa;
-    return getDisplayName(a).localeCompare(getDisplayName(b));
-  });
-
-  var h = '';
-  list.forEach(function(it){
-    var stock = parseInt(it.qty)||0;
-    var onStand = stGet(it, curStand);
-    var stockColor = stock > 0 ? '#22c55e' : '#ef4444';
-    h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);gap:10px">'+
-         '<div style="flex:1;min-width:0">'+
-           '<div style="font-weight:bold;font-size:0.95em;line-height:1.3">'+esc(getDisplayName(it))+'</div>'+
-           '<div class="small">'+esc(getLangDisplay(it.lang))+(it.theme?' · '+esc(it.theme):'')+'</div>'+
-           '<div class="small" style="color:'+stockColor+'">📦 В запасе: '+stock+'</div>'+
-         '</div>'+
-         '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0">'+
-           '<button onclick="adjustStandItem('+it.id+',-1)" style="padding:6px 12px;background:var(--btn-bg);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:1.1em;font-weight:bold">−</button>'+
-           '<span style="font-weight:bold;width:24px;text-align:center;font-size:1.1em">'+onStand+'</span>'+
-           '<button onclick="adjustStandItem('+it.id+',1)" style="padding:6px 12px;background:#22c55e;color:#000;border:0;border-radius:6px;font-size:1.1em;font-weight:bold;'+(stock<=0?'opacity:0.5;pointer-events:none':'')+'">+</button>'+
-         '</div>'+
-         '</div>';
-  });
-  el.innerHTML = h;
 }
 
 function updateStandBadges(){
@@ -1636,11 +1900,19 @@ function renderCharts(){
   }catch(e){}
 }
 
+function logHist(it, action, delta, oldQty, newQty, note){
+  if(!it) return;
+  if(!Array.isArray(it.history)) it.history = [];
+  it.history.unshift({ts: Date.now(), who: currentUser ? currentUser.name : '', action: action, delta: parseInt(delta)||0,
+    oldQty: (oldQty != null ? parseInt(oldQty) : null), newQty: (newQty != null ? parseInt(newQty) : null), note: note || ''});
+  if(it.history.length > 50) it.history = it.history.slice(0, 50);
+}
+
 function changeQty(id, d){
   if(!hasPerm('count')) return;
   var it = items.find(function(x){ return x.id == id; }); if(!it) return;
   var old = parseInt(it.qty)||0; var nv = Math.max(0, old + d); if(nv === old) return;
-  it.qty = nv; saveToLocal(); render();
+  it.qty = nv; logHist(it, nv>old?'add':'remove', nv-old, old, nv); saveToLocal(); render();
 }
 
 function setQtyDirect(id, val){
@@ -1649,7 +1921,7 @@ function setQtyDirect(id, val){
   var newTotal = Math.max(0, parseInt(val)||0); var stands = stSum(it);
   if(newTotal < stands){ toast('❌ Меньше, чем на стендах ('+stands+')'); render(); return; }
   var newStock = newTotal - stands; if(newStock === it.qty){ render(); return; }
-  it.qty = newStock; saveToLocal(); render();
+  var _old = parseInt(it.qty)||0; it.qty = newStock; logHist(it, newStock>_old?'add':'remove', newStock-_old, _old, newStock); saveToLocal(); render();
 }
 
 function deleteItem(id){
@@ -1699,7 +1971,7 @@ function saveStandEditor(){
   var delta = newStands - oldStands;
   if(delta > 0){ if((parseInt(it.qty)||0) < delta){ toast('❌ В запасе только '+(it.qty||0)+' шт.'); return; } it.qty = (parseInt(it.qty)||0) - delta; }
   else if(delta < 0){ it.qty = (parseInt(it.qty)||0) + Math.abs(delta); }
-  it.standCounts = vals; saveToLocal(); render(); closeStandEditor(); toast('✅ Сохранено');
+  it.standCounts = vals; logHist(it, 'stand', 0, null, null, 'Стенды: '+vals[1]+'/'+vals[2]+'/'+vals[3]+'/'+vals[4]); saveToLocal(); render(); closeStandEditor(); toast('✅ Сохранено');
 }
 
 var _renamingId = null;
@@ -1724,7 +1996,7 @@ function saveRename(){
   var lEl = document.getElementById('rn-lang'); if(lEl) it.lang = lEl.value;
   var yEl = document.getElementById('rn-year'); if(yEl) it.year = yEl.value.trim();
   var iEl = document.getElementById('rn-issueNum'); if(iEl) it.issueNum = iEl.value.trim();
-  closeRename(); saveToLocal(); render(); toast('✅ Сохранено');
+  logHist(it, 'rename', 0, null, null); closeRename(); saveToLocal(); render(); toast('✅ Сохранено');
 }
 
 function setAddType(t){
@@ -1741,6 +2013,7 @@ function addItem(){
   var sSum = s1+s2+s3+s4; if(sSum > totalInput){ toast('❌ На стендах '+sSum+', а всего '+totalInput); return; }
   var stockQty = totalInput - sSum;
   var newItem = { id: Date.now() + Math.random(), names: {ru: titleVal}, type: currentAddType, cat: (document.getElementById('cat').value||'-'), lang: langVal, year: yearVal, issueNum: issueNumVal, theme: '', qty: stockQty, standCounts: {1:s1,2:s2,3:s3,4:s4}, favorite: false };
+  logHist(newItem, 'create', stockQty, 0, stockQty);
   items.push(newItem);
   document.getElementById('title').value = ''; document.getElementById('year').value = ''; document.getElementById('issueNum').value = ''; document.getElementById('s1').value = '0'; document.getElementById('s2').value = '0'; document.getElementById('s3').value = '0'; document.getElementById('s4').value = '0';
   saveToLocal(); render(); toast('✅ Добавлено: ' + titleVal + (sSum>0?', на стендах '+sSum:''));
@@ -1773,7 +2046,7 @@ function init(){
   if(cloudEnabled && cloudId){ initFirebase(); } else { setSyncState('offline'); }
 }
 
-if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', function(){ init(); try{ uikInit(); }catch(e){ console.error(e); } }); } else { init(); try{ uikInit(); }catch(e){ console.error(e); } }
 </script>
 </body>
 </html>

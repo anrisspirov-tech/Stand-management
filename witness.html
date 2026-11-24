@@ -25,25 +25,16 @@ button:disabled{opacity:0.5;cursor:not-allowed}
 .reg-box .icon{font-size:3em;margin-bottom:8px}
 .reg-box .err{color:var(--err);font-size:0.85em;margin-top:8px;min-height:1.2em}
 .reg-box .info{color:var(--primary);font-size:0.85em;margin-top:8px;min-height:1.2em}
-.reg-box label{text-align:left}
-.consent-note{color:var(--muted);font-size:0.75em;line-height:1.4;margin-top:12px;text-align:center}
-
 .toast-box{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none;max-width:92vw}
-.toast{background:rgba(0,0,0,0.92);color:#fff;padding:10px 20px;border-radius:22px;font-size:0.9em;font-weight:bold;border:2px solid var(--primary);box-shadow:0 6px 20px rgba(0,0,0,0.55);animation:toastIn 0.25s ease;text-align:center;white-space:pre-line;line-height:1.35}
+.toast{background:rgba(0,0,0,0.92);color:#fff;padding:10px 20px;border-radius:22px;font-size:0.9em;font-weight:bold;border:2px solid var(--primary);box-shadow:0 6px 20px rgba(0,0,0,0.55);animation:toastIn 0.25s ease;text-align:center}
 @keyframes toastIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .toast.ok{border-color:var(--ok);background:rgba(34,197,94,0.95);color:#000}
 .toast.err{border-color:var(--err);background:rgba(239,68,68,0.95)}
 
-.guide-tip{background:rgba(6,182,212,0.12);border:2px solid #06b6d4;border-radius:10px;padding:11px 12px;margin-bottom:12px;font-size:0.92em;line-height:1.5;color:var(--text)}
-.guide-tip b{color:#06b6d4}
-
-.step-title{display:flex;align-items:center;gap:10px;margin:2px 0 12px;font-size:1.05em;font-weight:bold;line-height:1.3}
-.step-num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:var(--primary);color:#fff;border-radius:50%;font-size:0.9em;flex-shrink:0;font-weight:bold}
-
-.stand-tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:4px}
-.stand-tab{padding:14px 8px;font-size:1em;font-weight:bold;background:var(--card2);color:var(--text);border:2px solid var(--border);border-radius:10px;cursor:pointer;margin:0;transition:all 0.15s;text-align:center;line-height:1.3}
-.stand-tab.active{background:#06b6d4;color:#000;border-color:#06b6d4;box-shadow:0 0 12px rgba(6,182,212,0.55)}
-.stand-tab .cnt{display:block;font-size:0.78em;opacity:0.9;font-weight:normal;margin-top:3px}
+.stand-tabs{display:flex;gap:5px;margin-bottom:12px}
+.stand-tab{flex:1;padding:10px 6px;font-size:0.85em;font-weight:bold;background:var(--card2);color:var(--text);border:2px solid var(--border);border-radius:8px;cursor:pointer;margin:0;transition:all 0.15s;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stand-tab.active{background:#06b6d4;color:#000;border-color:#06b6d4;box-shadow:0 0 10px rgba(6,182,212,0.5)}
+.stand-tab .cnt{display:block;font-size:0.7em;opacity:0.85;font-weight:normal;margin-top:2px}
 
 .type-tabs{display:flex;gap:8px;margin-bottom:14px}
 .type-tab{flex:1;padding:12px;font-size:1em;font-weight:bold;background:var(--card2);color:var(--text);border:2px solid var(--border);border-radius:10px;cursor:pointer;margin:0;transition:all 0.15s;text-align:center}
@@ -53,22 +44,18 @@ button:disabled{opacity:0.5;cursor:not-allowed}
 
 .report-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
 .report-card{background:var(--card2);border:2px solid var(--border);border-radius:10px;padding:12px;transition:all 0.15s}
-.report-card.out-of-stock{opacity:0.55;border-style:dashed}
 .report-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
-.report-card-title{flex:1;min-width:0;font-weight:bold;line-height:1.3;word-break:break-word;font-size:1.05em}
-.report-card-lang{font-size:1em;color:#c084fc;font-weight:bold;line-height:1.3;margin-top:4px;word-break:break-word}
-.report-card-theme{font-size:0.92em;color:#c084fc;font-style:italic;font-weight:bold;line-height:1.3;margin-top:3px;word-break:break-word}
+.report-card-title{flex:1;min-width:0;font-weight:bold;line-height:1.35;word-break:break-word;font-size:0.98em}
+.report-card-theme{font-size:0.92em;color:#c084fc;font-style:italic;font-weight:bold;line-height:1.3;margin-top:4px;word-break:break-word}
 .report-card-theme::before{content:'💡 '}
-.report-card-meta{font-size:0.8em;color:var(--muted);margin-top:3px;line-height:1.4}
-.report-card-avail{font-size:0.85em;color:var(--ok);font-weight:bold;white-space:nowrap;background:rgba(34,197,94,0.15);padding:4px 10px;border-radius:99px;flex-shrink:0}
-.report-card.out-of-stock .report-card-avail{background:rgba(239,68,68,0.15);color:var(--err)}
-.report-card-out-note{text-align:center;color:var(--muted);font-size:0.88em;padding:8px 0 2px;line-height:1.4}
+.report-card-meta{font-size:0.78em;color:var(--muted);margin-top:4px;line-height:1.4}
+.report-card-avail{font-size:0.8em;color:var(--ok);font-weight:bold;white-space:nowrap;background:rgba(34,197,94,0.15);padding:3px 9px;border-radius:99px;flex-shrink:0}
 
 .draft-badge{display:inline-block;background:rgba(34,197,94,0.2);color:var(--ok);font-weight:bold;padding:4px 10px;border-radius:8px;font-size:0.85em;margin-bottom:8px;border:1px solid var(--ok);}
 
 .add-controls{display:flex;gap:8px;align-items:center}
 .add-qty{width:60px!important;padding:10px 4px!important;text-align:center;font-weight:bold;font-size:1.1em;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);}
-.add-btn{flex:1;background:var(--primary);color:var(--primary-text);border:0;border-radius:8px;padding:12px;font-weight:bold;cursor:pointer;font-size:1em;margin:0;}
+.add-btn{flex:1;background:var(--primary);color:var(--primary-text);border:0;border-radius:8px;padding:10px;font-weight:bold;cursor:pointer;font-size:1em;margin:0;}
 
 .wizard-empty{text-align:center;padding:30px 15px;color:var(--muted);line-height:1.5;font-size:0.95em}
 
@@ -85,6 +72,12 @@ button:disabled{opacity:0.5;cursor:not-allowed}
 .cart-qty span{font-weight:bold;min-width:24px;text-align:center;}
 .cart-del{background:transparent;color:var(--err);width:36px;height:36px;padding:0;font-size:1.2em;display:flex;align-items:center;justify-content:center;margin:0;border-radius:8px;}
 .cart-del:active{background:rgba(239,68,68,0.2)}
+#ccOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;justify-content:center;align-items:center;padding:20px}
+#ccOverlay.show{display:flex}
+#ccBox{background:var(--card);border:2px solid var(--primary);border-radius:14px;padding:18px;max-width:380px;width:100%}
+#ccMsg{white-space:pre-line;margin:6px 0 16px;line-height:1.4}
+.cc-row{display:flex;gap:10px}
+.cc-row button{flex:1;padding:14px;font-size:1em;border-radius:10px;border:0;cursor:pointer}
 </style>
 </head>
 <body>
@@ -93,15 +86,26 @@ button:disabled{opacity:0.5;cursor:not-allowed}
   <div class="reg-box">
     <div class="icon">📤</div>
     <h2>Отчёт о распространении</h2>
-    <div class="desc">Введите имя и код стенда от координатора. Один раз — потом приложение запомнит вас.</div>
-    <label>Имя</label>
-    <input id="regName" placeholder="Иван" autocomplete="given-name">
+    <div class="desc">Выберите стенд, укажите что и сколько ушло. Отчёт уйдёт координатору.</div>
     <label>Код стенда (у координатора)</label>
     <input id="regStandId" placeholder="напр. stand-2026" autocomplete="off">
-    <button onclick="doRegister()" style="margin-top:16px">✓ Войти</button>
+    <label>Имя</label>
+    <input id="regName" placeholder="Иван" autocomplete="given-name">
+    <label>Фамилия</label>
+    <input id="regSurname" placeholder="Иванов" autocomplete="family-name">
+    <label>Email</label>
+    <input id="regEmail" type="email" placeholder="you@example.com" autocomplete="email">
+    
+    <div style="margin: 15px 0; text-align: left;">
+      <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; color: var(--muted); font-size: 0.85em; font-weight: normal; line-height: 1.4; margin: 0;">
+        <input type="checkbox" id="privacyConsent" style="width: auto; margin-top: 3px; flex-shrink: 0;">
+        <span>Я даю согласие на обработку моих персональных данных (Имя, Фамилия, Email) для целей работы приложения.</span>
+      </label>
+    </div>
+
+    <button onclick="doRegister()" style="margin-top:0">✓ Войти</button>
     <div class="err" id="regErr"></div>
     <div class="info" id="regInfo"></div>
-    <div class="consent-note">Нажимая «Войти», вы даёте согласие на обработку вашего имени и данных о распространении литературы для работы приложения.</div>
   </div>
 </div>
 
@@ -116,10 +120,7 @@ button:disabled{opacity:0.5;cursor:not-allowed}
   
   <div class="wrap">
     <div class="card">
-      <div class="guide-tip">
-        💡 <b>Как это работает:</b> посмотрите на номер тележки, с которой берёте литературу. Выберите её ниже → найдите название журнала или брошюры → укажите, сколько взяли. Приложение запишет тележку и язык автоматически.
-      </div>
-      <div class="step-title"><span class="step-num">1</span> С какой тележки взяли?</div>
+      <label>🏛️ Выберите стенд</label>
       <div class="stand-tabs" id="standTabs"></div>
     </div>
 
@@ -133,13 +134,9 @@ button:disabled{opacity:0.5;cursor:not-allowed}
 
 <div id="cartOverlay" onclick="if(event.target===this) closeCart()">
   <div id="cartBox" onclick="event.stopPropagation()">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <h2 style="margin:0; color:var(--primary); font-size:1.3em;">📋 Ваш отчёт</h2>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h2 style="margin:0; color:var(--primary); font-size:1.3em;">📋 Черновик отчёта</h2>
       <button onclick="closeCart()" style="background:var(--card2); color:var(--text); border:1px solid var(--border); padding:6px 12px; width:auto; border-radius:8px; font-size:1.1em;">✕</button>
-    </div>
-
-    <div style="color:var(--muted); font-size:0.9em; margin-bottom:12px; line-height:1.5;">
-      Проверьте перед отправкой: 🏛️ тележка → название → 🌍 язык → сколько штук
     </div>
     
     <div id="cartList" style="margin-bottom:16px;"></div>
@@ -154,6 +151,7 @@ button:disabled{opacity:0.5;cursor:not-allowed}
   </div>
 </div>
 
+<div id="ccOverlay"><div id="ccBox" onclick="event.stopPropagation()"><h3 id="ccTitle" style="margin:0 0 6px;color:var(--primary)">Подтверждение</h3><div id="ccMsg"></div><div class="cc-row"><button type="button" id="ccCancel" style="background:var(--card2);color:var(--text);border:1px solid var(--border)">Отмена</button><button type="button" id="ccOk" style="background:var(--ok);color:#000;font-weight:bold">OK</button></div></div></div>
 <div class="toast-box" id="toastBox"></div>
 
 <script>
@@ -163,13 +161,24 @@ button:disabled{opacity:0.5;cursor:not-allowed}
 // ==========================================
 const SECRET_KEY_STRING = "StandApp_SuperSecret_2026!777";
 
+// Сообщение внутри приложения вместо системного alert() (без адреса сайта)
+function kitNotice(msg){
+  try{
+    var d = document.createElement('div');
+    d.style.cssText = 'position:fixed;top:0;left:0;width:100%;z-index:2147483000;background:#f59e0b;color:#000;padding:14px;text-align:center;font-weight:bold;font-size:0.95em;cursor:pointer';
+    d.textContent = msg + ' (нажмите, чтобы закрыть)';
+    d.onclick = function(){ d.remove(); };
+    (document.body || document.documentElement).appendChild(d);
+  }catch(e){ console.warn(msg); }
+}
 if(typeof crypto === 'undefined' || !crypto.subtle){
-  setTimeout(function(){ if(typeof alert === 'function') alert('⚠️ Шифрование недоступно в этом режиме браузера. Откройте приложение через https:// или как установленное приложение — иначе синхронизация не будет работать (данные без шифрования в облако не отправляются).'); }, 1500);
+  setTimeout(function(){ kitNotice('⚠️ Шифрование недоступно в этом режиме браузера. Откройте приложение через https:// или как установленное приложение — иначе синхронизация не будет работать (данные без шифрования в облако не отправляются).'); }, 1500);
 }
 var SK = (function(){
   var PFX = 'enc1:';
   var CLIENT_ID = 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
+  // ---------- Шифрование (ключ создаётся ОДИН раз и кэшируется) ----------
   var _keyP = null;
   function getKey(){
     if(!_keyP){
@@ -187,6 +196,7 @@ var SK = (function(){
   function toB64(u8){ var s = '', i; for(i = 0; i < u8.length; i += 8192) s += String.fromCharCode.apply(null, u8.subarray(i, i + 8192)); return btoa(s); }
   function fromB64(b){ var s = atob(b), u = new Uint8Array(s.length), i; for(i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; }
 
+  // Если шифрование недоступно — выбрасываем ошибку (открытый текст в облако НЕ уходит).
   async function encryptData(text){
     if(text == null || text === '') return text;
     text = String(text);
@@ -197,6 +207,7 @@ var SK = (function(){
     var all = new Uint8Array(12 + ct.length); all.set(iv, 0); all.set(ct, 12);
     return PFX + toB64(all);
   }
+  // Читает и новый формат (enc1:...), и старый (без префикса); обычный текст возвращает как есть.
   async function decryptData(t){
     if(t == null || t === '' || typeof t !== 'string') return t;
     var marked = t.indexOf(PFX) === 0, raw = marked ? t.slice(PFX.length) : t;
@@ -208,6 +219,7 @@ var SK = (function(){
       return new TextDecoder().decode(pt);
     }catch(e){ return t; }
   }
+  // Необратимый идентификатор email (для ID документов и поиска — сам email в базе не виден)
   var _hc = {};
   async function hashEmail(email){
     email = String(email || '').trim().toLowerCase(); if(!email) return '';
@@ -223,6 +235,7 @@ var SK = (function(){
     });
   }
 
+  // ---------- Утилиты слияния ----------
   function clone(o){ return o === undefined ? undefined : JSON.parse(JSON.stringify(o)); }
   function stable(o){
     if(o === null || typeof o !== 'object') return JSON.stringify(o);
@@ -256,6 +269,7 @@ var SK = (function(){
     return b !== undefined ? l : r;
   }
   function itemHKey(h){ return h.ts + '|' + h.action + '|' + h.delta + '|' + (h.note || ''); }
+  // Слияние одной позиции: числа (склад, стенды) складываются как ИЗМЕНЕНИЯ (дельты), а не перезаписываются
   function mergeItem(b, l, r){
     var out = clone(r);
     Object.keys(l).forEach(function(k){
@@ -281,14 +295,14 @@ var SK = (function(){
     r.forEach(function(ri){
       var id = String(ri.id); seen[id] = 1;
       var li = lm[id], bi = bm[id];
-      if(!li){ if(bi && eq(bi, ri)) return; out.push(ri); return; }
+      if(!li){ if(bi && eq(bi, ri)) return; out.push(ri); return; }   // удалено у нас и не менялось в облаке → удаляем
       if(eq(li, ri)){ out.push(ri); return; }
-      if(!bi){ out.push(ri); return; }
+      if(!bi){ out.push(ri); return; }                               // нет базы → облако главнее
       out.push(mergeItem(bi, li, ri));
     });
     l.forEach(function(li){
       var id = String(li.id); if(seen[id]) return;
-      var bi = bm[id]; if(bi && eq(bi, li)) return;
+      var bi = bm[id]; if(bi && eq(bi, li)) return;                  // удалено в облаке другим устройством
       out.push(li);
     });
     return out;
@@ -329,6 +343,7 @@ var SK = (function(){
     return out;
   }
 
+  // ---------- Шифрование/расшифровка состояния для облака ----------
   async function encItem(it){
     var o = Object.assign({}, it);
     if(Array.isArray(o.history) && o.history.length){ o.hx = await encryptData(JSON.stringify(o.history)); }
@@ -356,6 +371,8 @@ var SK = (function(){
     return o;
   }
 
+  // ---------- Движок синхронизации ----------
+  // o: {db(), fs, cloudId(), enabled(), keys[], getState(), applyState(s), clean:{items,users}, baseKey, onStatus(st)}
   function createEngine(o){
     var eng = {base: null, unsub: null, timer: null, retry: null, fails: 0, chain: Promise.resolve(), curId: null};
 
@@ -446,6 +463,7 @@ var SK = (function(){
       if(!res) return;
       eng.fails = 0;
       eng.base = clone(res.cloud); saveBase();
+      // правки, сделанные пока шла отправка, накладываем поверх, ничего не теряя
       var cur = o.getState();
       var fin = mergeState(res.local, cur, res.cloud, o.keys);
       if(!eq(fin, cur)) o.applyState(fin);
@@ -456,6 +474,7 @@ var SK = (function(){
 
     eng.schedule = schedule;
     eng.pushNow = function(force){ return enqueue(function(){ return doPush(!!force); }); };
+    // «Получить из облака»: облако главнее, локальные несинхронизированные правки отбрасываются
     eng.pullNow = function(){
       return enqueue(async function(){
         var db = o.db(), id = o.cloudId(); if(!db || !id) return;
@@ -487,6 +506,7 @@ var SK = (function(){
     return eng;
   }
 
+  // ---------- Отчёты со стенда: применяются ровно ОДИН раз тем приложением, которое открылось первым ----------
   async function applyReport(db, fs, cloudId, reportId, applierName){
     var reportRef = fs.doc(db, 'stands', cloudId, 'reports', reportId);
     var standRef = fs.doc(db, 'stands', cloudId);
@@ -531,6 +551,7 @@ var SK = (function(){
     });
     return out;
   }
+  // Запись документа только если его ещё нет (повторная отправка не может «воскресить» уже применённый отчёт)
   async function putOnce(db, fs, ref, data){
     var created = false;
     await fs.runTransaction(db, async function(tx){
@@ -558,7 +579,7 @@ const REPORTABLE_TYPES = ['Журнал', 'Брошюра'];
 let cloudApp=null, cloudDb=null, cloudFns=null;
 let currentUser=null, currentStandId='';
 let items=[], itemsOnStand=[];
-let standNames = { 1:'Тележка 1', 2:'Тележка 2', 3:'Тележка 3', 4:'Тележка 4' };
+let standNames = { 1:'Стенд 1', 2:'Стенд 2', 3:'Стенд 3', 4:'Стенд 4' };
 let currentWitnessStand = 1;
 let itemsUnsub=null;
 let draft = {}; 
@@ -566,11 +587,9 @@ let currentTypeTab = 'Журнал';
 let searchTerm = '';
 
 const LS_STAND='witness_stand_id';
+const LS_EMAIL='witness_email';
 const LS_NAME='witness_name';
-const LS_DEVICE_ID='witness_device_id';
-// Старые ключи — читаются только для миграции
-const LS_EMAIL_OLD='witness_email';
-const LS_SURNAME_OLD='witness_surname';
+const LS_SURNAME='witness_surname';
 const LS_NAMES_JSON='witness_stand_names';
 const LS_CUR_STAND='witness_current_stand';
 const LS_DRAFT2='report_draft_v2_';
@@ -588,27 +607,6 @@ function toast(msg, type, ms){
   setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity 0.3s'; setTimeout(()=>el.remove(), 300); }, ms);
 }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-
-// Постоянный идентификатор устройства (заменяет email в старой версии).
-// Для старых пользователей (у кого был email) — берём его, чтобы их документ в облаке нашёлся.
-function genDeviceId(){
-  try{
-    if(typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') return 'dev_' + crypto.randomUUID();
-  }catch(e){}
-  return 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 10);
-}
-function getOrCreateDeviceId(){
-  let id = localStorage.getItem(LS_DEVICE_ID);
-  if(id) return id;
-  const oldEmail = (localStorage.getItem(LS_EMAIL_OLD) || '').trim().toLowerCase();
-  if(oldEmail){
-    id = oldEmail; // миграция: старый пользователь — используем email как ключ, документ не потеряется
-  } else {
-    id = genDeviceId();
-  }
-  try{ localStorage.setItem(LS_DEVICE_ID, id); }catch(e){}
-  return id;
-}
 
 const LANGS = {ru:'Русский',en:'Английский',de:'Немецкий',es:'Испанский',fr:'Французский',it:'Итальянский',pt:'Португальский',pl:'Польский',uk:'Украинский',tr:'Турецкий',el:'Греческий',ko:'Корейский',ja:'Японский',zh:'Китайский',ro:'Румынский',hu:'Венгерский',cs:'Чешский',bg:'Болгарский',sr:'Сербский',hr:'Хорватский',sw:'Суахили',hi:'Хинди',ar:'Арабский',hy:'Армянский',ka:'Грузинский',he:'Иврит',other:'Другой'};
 const LANG_FLAGS = {ru:'🇷🇺',en:'🇬🇧',de:'🇩🇪',es:'🇪🇸',fr:'🇫🇷',it:'🇮🇹',pt:'🇵🇹',pl:'🇵🇱',uk:'🇺🇦',tr:'🇹🇷',el:'🇬🇷',ko:'🇰🇷',ja:'🇯🇵',zh:'🇨🇳',ro:'🇷🇴',hu:'🇭🇺',cs:'🇨🇿',bg:'🇧🇬',sr:'🇷🇸',hr:'🇭🇷',sw:'🇰🇪',hi:'🇮🇳',ar:'🇸🇦',hy:'🇦🇲',ka:'🇬🇪',he:'🇮🇱',other:'🌐'};
@@ -628,6 +626,7 @@ function loadDraft(){
     const raw = localStorage.getItem(LS_DRAFT2 + currentStandId);
     if(raw){ draft = JSON.parse(raw) || {}; }
     else {
+      // перенос старого формата (id -> количество), чтобы ничего не потерять после обновления
       const old = localStorage.getItem('report_draft_' + currentStandId);
       if(old){
         const o = JSON.parse(old) || {};
@@ -660,6 +659,7 @@ function saveDraft(){
   }catch(e){}
 }
 
+// ИСПРАВЛЕННАЯ ФУНКЦИЯ ИНИЦИАЛИЗАЦИИ
 async function initFirebase(){
   try {
     const {initializeApp} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
@@ -673,7 +673,7 @@ async function initFirebase(){
       const {getAuth, signInAnonymously} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js');
       const auth = getAuth(cloudApp);
       if (!auth.currentUser) { await signInAnonymously(auth); }
-    } catch(e) { console.warn('Auth failed:', e); }
+    } catch(e) { console.warn('Auth failed (возможно, не включена в Firebase):', e); }
     return cloudFns;
   } catch(e) {
     console.error("Firebase Init Error:", e);
@@ -681,24 +681,23 @@ async function initFirebase(){
   }
 }
 
-// userKey — либо deviceId (новые пользователи), либо email (старые). Хэш работает и для того, и для другого.
-async function loadWitness(fns, standId, userKey){
-  const eh = await SK.hashEmail(userKey);
+// Документ возвещателя хранится под необратимым ID (хэш email); старые документы с открытым email переносятся автоматически
+async function loadWitness(fns, standId, email){
+  const eh = await SK.hashEmail(email);
   const ref = fns.doc(cloudDb, 'stands', standId, 'witnesses', eh);
   const snap = await fns.getDoc(ref);
   let data = snap.exists() ? snap.data() : null;
   try{
-    // Миграция старых документов, где ID был открытым email
-    const lref = fns.doc(cloudDb, 'stands', standId, 'witnesses', userKey);
+    const lref = fns.doc(cloudDb, 'stands', standId, 'witnesses', email);
     const ls = await fns.getDoc(lref);
     if(ls.exists()){
       const ld = ls.data();
       if(!data){
         data = {
-          email: await encryptData(userKey),
+          email: await encryptData(email),
           name: await encryptData(await decryptData(ld.name || '')),
           surname: await encryptData(await decryptData(ld.surname || '')),
-          active: ld.active !== false,
+          active: ld.active !== false, consentGiven: !!ld.consentGiven,
           createdAt: ld.createdAt || Date.now(), lastSeen: Date.now()
         };
         await fns.setDoc(ref, data);
@@ -711,36 +710,43 @@ async function loadWitness(fns, standId, userKey){
   return {ref, data};
 }
 
-// РЕГИСТРАЦИЯ: только имя + код стенда
 async function doRegister(){
   const standId = document.getElementById('regStandId').value.trim();
   const name = document.getElementById('regName').value.trim();
+  const surname = document.getElementById('regSurname').value.trim();
+  const email = document.getElementById('regEmail').value.trim().toLowerCase();
   const errEl = document.getElementById('regErr');
   const infoEl = document.getElementById('regInfo');
 
   errEl.textContent=''; infoEl.textContent='';
 
+  const consentEl = document.getElementById('privacyConsent');
+  if (!consentEl || !consentEl.checked) {
+    errEl.textContent = '⚠️ Необходимо согласие на обработку персональных данных';
+    return;
+  }
+
   if(!standId){ errEl.textContent='⚠️ Введите код стенда'; return; }
   if(standId.length<3){ errEl.textContent='⚠️ Слишком короткий код'; return; }
   if(!name){ errEl.textContent='⚠️ Введите имя'; return; }
+  if(!surname){ errEl.textContent='⚠️ Введите фамилию'; return; }
+  if(!email || !email.includes('@')){ errEl.textContent='⚠️ Неверный email'; return; }
   infoEl.textContent='⏳ Регистрация...';
 
   try{
     const fns = await initFirebase();
-    const deviceId = getOrCreateDeviceId();
-    const {ref: witnessRef, data: existing} = await loadWitness(fns, standId, deviceId);
+    const {ref: witnessRef, data: existing} = await loadWitness(fns, standId, email);
     if(existing && existing.active === false){
-      errEl.textContent='❌ Доступ отозван координатором. Обратитесь к нему.';
+      errEl.textContent='❌ Доступ отозван администратором';
       infoEl.textContent='';
       return;
     }
 
-    // Имя и deviceId в облаке хранятся только в зашифрованном виде.
-    // Поле называется email — для совместимости с координаторским приложением;
-    // внутри лежит deviceId, а не email.
+    // имя, фамилия и email хранятся в облаке только в зашифрованном виде
     await fns.setDoc(witnessRef, {
-      email: await encryptData(deviceId),
+      email: await encryptData(email),
       name: await encryptData(name),
+      surname: await encryptData(surname),
       active: true,
       consentGiven: true,
       createdAt: existing ? (existing.createdAt || Date.now()) : Date.now(),
@@ -748,16 +754,17 @@ async function doRegister(){
     }, {merge: true});
 
     localStorage.setItem(LS_STAND, standId);
+    localStorage.setItem(LS_EMAIL, email);
     localStorage.setItem(LS_NAME, name);
-    localStorage.setItem(LS_DEVICE_ID, deviceId);
-    // убираем устаревшие ключи старой версии
-    try{ localStorage.removeItem(LS_EMAIL_OLD); localStorage.removeItem(LS_SURNAME_OLD); }catch(e){}
+    localStorage.setItem(LS_SURNAME, surname);
 
-    currentUser = {deviceId, name};
+    currentUser = {email, name, surname};
     currentStandId = standId;
     isDeactivated = false;
     infoEl.style.color='#22c55e';
     infoEl.textContent='✅ Готово!';
+
+    consentEl.checked = false;
 
     setTimeout(() => {
       startApp();
@@ -774,7 +781,7 @@ async function doRegister(){
 function startApp(){
   document.getElementById('regScreen').style.display='none';
   document.getElementById('mainScreen').style.display='block';
-  document.getElementById('userInfo').textContent = '👤 ' + (currentUser && currentUser.name || '');
+  document.getElementById('userInfo').textContent = '👤 ' + (currentUser && currentUser.name || '') + ' ' + (currentUser && currentUser.surname || '');
   loadDraft();
   renderStandTabs();
   renderCartBar();
@@ -783,10 +790,9 @@ function startApp(){
 
 function logout(){
   localStorage.removeItem(LS_STAND);
+  localStorage.removeItem(LS_EMAIL);
   localStorage.removeItem(LS_NAME);
-  localStorage.removeItem(LS_DEVICE_ID);
-  localStorage.removeItem(LS_EMAIL_OLD);
-  localStorage.removeItem(LS_SURNAME_OLD);
+  localStorage.removeItem(LS_SURNAME);
   localStorage.removeItem(LS_NAMES_JSON);
   localStorage.removeItem(LS_CUR_STAND);
   if(itemsUnsub){ try{ itemsUnsub(); }catch(e){} itemsUnsub=null; }
@@ -797,6 +803,9 @@ function logout(){
   document.getElementById('regInfo').textContent='';
   document.getElementById('regStandId').value='';
   document.getElementById('regName').value='';
+  document.getElementById('regSurname').value='';
+  document.getElementById('regEmail').value='';
+  document.getElementById('privacyConsent').checked = false;
 }
 
 function showDeactivated(){
@@ -806,6 +815,8 @@ function showDeactivated(){
   document.getElementById('regInfo').textContent='';
   document.getElementById('regStandId').value = localStorage.getItem(LS_STAND) || '';
   document.getElementById('regName').value = localStorage.getItem(LS_NAME) || '';
+  document.getElementById('regSurname').value = localStorage.getItem(LS_SURNAME) || '';
+  document.getElementById('regEmail').value = localStorage.getItem(LS_EMAIL) || '';
 }
 
 function cacheItems(){
@@ -827,7 +838,7 @@ function subscribeToItems(){
   const fns = cloudFns;
   const standRef = fns.doc(cloudDb, 'stands', currentStandId);
   itemsUnsub = fns.onSnapshot(standRef, snap => {
-    if(!snap.exists()) return;
+    if(!snap.exists()) return; // не затираем локальную копию
     const data = snap.data();
     if(Array.isArray(data.items)) items = data.items;
     if(data.standNames && typeof data.standNames === 'object'){
@@ -843,7 +854,7 @@ function subscribeToItems(){
 
 function onItemsUpdated(){
   recomputeItemsOnStand();
-  fillDraftMeta();
+  fillDraftMeta();   // записи отчёта НЕ удаляются и не урезаются при обновлении склада
   renderStandTabs();
   renderWizard();
   renderCartBar();
@@ -851,12 +862,8 @@ function onItemsUpdated(){
 
 function recomputeItemsOnStand(){
   itemsOnStand = items.filter(it => {
-    if(REPORTABLE_TYPES.indexOf(getItemType(it)) === -1) return false;
-    const sc = it.standCounts || {};
-    for(let n = 1; n <= 4; n++){
-      if((parseInt(sc[n]) || 0) > 0) return true;
-    }
-    return false;
+    const count = (it.standCounts && parseInt(it.standCounts[currentWitnessStand])) || 0;
+    return count > 0;
   });
 }
 
@@ -869,8 +876,7 @@ function renderStandTabs(){
     let totalOnStand = 0;
     items.forEach(it => { totalOnStand += (it.standCounts && parseInt(it.standCounts[s])) || 0; });
     html += `<button type="button" class="stand-tab ${activeClass}" onclick="selectWitnessStand(${s})">
-      <div>${esc(standNames[s])}</div>
-      <span class="cnt">${totalOnStand > 0 ? totalOnStand + ' шт.' : '—'}</span>
+      🏛️ ${esc(standNames[s])} <span class="cnt">${totalOnStand > 0 ? totalOnStand + ' шт.' : '—'}</span>
     </button>`;
   }
   tabsDiv.innerHTML = html;
@@ -899,11 +905,8 @@ function getAvailableTypes(){
 
 function getReportableItemsForType(type){
   return itemsOnStand
-    .filter(it => getItemType(it) === type)
+    .filter(it => getItemType(it) === type && REPORTABLE_TYPES.indexOf(getItemType(it)) !== -1)
     .sort((a, b) => {
-      const avA = parseInt((a.standCounts || {})[currentWitnessStand]) || 0;
-      const avB = parseInt((b.standCounts || {})[currentWitnessStand]) || 0;
-      if((avA > 0) !== (avB > 0)) return avA > 0 ? -1 : 1;
       const cmpName = getItemName(a).localeCompare(getItemName(b));
       if(cmpName !== 0) return cmpName;
       const cmpLang = (a.lang||'ru').localeCompare(b.lang||'ru');
@@ -927,7 +930,7 @@ function renderWizard(){
 
   const types = getAvailableTypes();
   if(types.length === 0){
-    body.innerHTML = '<div class="card"><div class="wizard-empty">📦 Пока нет журналов или брошюр ни на одной тележке.<br><br>Обратитесь к координатору — литература ещё не назначена.</div></div>';
+    body.innerHTML = '<div class="card"><div class="wizard-empty">📦 На стенде <b>"' + esc(standNames[currentWitnessStand]) + '"</b><br>нет журналов или брошюр для отчёта.</div></div>';
     return;
   }
   if (types.indexOf(currentTypeTab) === -1) currentTypeTab = types[0];
@@ -962,8 +965,7 @@ function renderWizard(){
   } else {
     listHtml = '<div class="report-list">';
     filtered.forEach(it => {
-      const avail = parseInt((it.standCounts || {})[currentWitnessStand]) || 0;
-      const hasStock = avail > 0;
+      const avail = parseInt(it.standCounts[currentWitnessStand]) || 0;
       const name = getItemName(it);
       const theme = getItemTheme(it);
       const extra = getItemExtra(it);
@@ -971,34 +973,25 @@ function renderWizard(){
       const idKey = String(it.id);
       const draftQty = draftQtyFor(idKey);
 
-      listHtml += '<div class="report-card' + (hasStock ? '' : ' out-of-stock') + '">' +
+      listHtml += '<div class="report-card">' +
         '<div class="report-card-head">' +
           '<div style="flex:1;min-width:0">' +
             '<div class="report-card-title">' + esc(name) + '</div>' +
-            '<div class="report-card-lang">🌍 ' + esc(lang) + '</div>' +
             (theme ? '<div class="report-card-theme">' + esc(theme) + '</div>' : '') +
-            (extra ? '<div class="report-card-meta">📅 ' + esc(extra) + '</div>' : '') +
+            '<div class="report-card-meta">🌍 ' + esc(lang) + (extra ? ' · 📅 ' + esc(extra) : '') + '</div>' +
           '</div>' +
           '<div class="report-card-avail">' + avail + ' шт.</div>' +
         '</div>' +
-        (hasStock
-          ? (
-              '<div id="badge-' + idKey + '" class="draft-badge" style="display:' + (draftQty > 0 ? 'inline-block' : 'none') + ';">🛒 В отчёте: <span>' + draftQty + '</span> шт.</div>' +
-              '<div class="add-controls">' +
-                '<input type="number" id="add-qty-' + idKey + '" class="add-qty" value="1" min="1" max="' + avail + '" inputmode="numeric">' +
-                '<button class="add-btn" onclick="addToDraft(\'' + esc(idKey) + '\', \'add-qty-' + idKey + '\')">➕ Добавить в отчёт</button>' +
-              '</div>'
-            )
-          : '<div class="report-card-out-note">Этой литературы сейчас нет на ' + esc(standNames[currentWitnessStand]) + '</div>'
-        ) +
+        '<div id="badge-' + idKey + '" class="draft-badge" style="display:' + (draftQty > 0 ? 'inline-block' : 'none') + ';">🛒 В отчёте: <span>' + draftQty + '</span> шт.</div>' +
+        '<div class="add-controls">' +
+          '<input type="number" id="add-qty-' + idKey + '" class="add-qty" value="1" min="1" max="' + avail + '" inputmode="numeric">' +
+          '<button class="add-btn" onclick="addToDraft(\'' + esc(idKey) + '\', \'add-qty-' + idKey + '\')">➕ Записать</button>' +
+        '</div>' +
       '</div>';
     });
     listHtml += '</div>';
   }
-
-  const step2Html = '<div class="step-title"><span class="step-num">2</span> Что взяли с <span style="color:#06b6d4">' +
-                    esc(standNames[currentWitnessStand]) + '</span>?</div>';
-  body.innerHTML = '<div class="card">' + step2Html + '<div class="type-tabs">' + tabsHtml + '</div>' + searchHtml + listHtml + '</div>';
+  body.innerHTML = '<div class="card"><div class="type-tabs">' + tabsHtml + '</div>' + searchHtml + listHtml + '</div>';
 }
 
 function searchChange(val) {
@@ -1019,24 +1012,23 @@ function addToDraft(id, qtyInputId) {
   if (q < 1) q = 1;
   const it = items.find(x => String(x.id) === String(id));
   if(!it) return;
-  const avail = parseInt((it.standCounts || {})[currentWitnessStand]) || 0;
-  if(avail <= 0){ toast('На ' + standNames[currentWitnessStand] + ' нет этой литературы', 'err', 3000); return; }
+  const avail = parseInt(it.standCounts[currentWitnessStand]) || 0;
   const key = dkey(currentWitnessStand, id);
   const currentInDraft = draft[key] ? (parseInt(draft[key].q) || 0) : 0;
 
   if (currentInDraft + q > avail) {
     q = avail - currentInDraft;
-    if (q <= 0) { toast('На ' + standNames[currentWitnessStand] + ' больше нет этой литературы', 'err', 3000); return; }
-    toast('На ' + standNames[currentWitnessStand] + ' есть только ' + q + ' шт.', 'err', 3000);
+    if (q <= 0) { toast('На стенде больше нет этой литературы', 'err'); return; }
+    toast('Можно добавить только ' + q + ' шт.', 'err');
   }
   draft[key] = Object.assign({s:currentWitnessStand, id:String(id), at:(draft[key] && draft[key].at) || Date.now()}, itemMeta(it), {q: currentInDraft + q});
-  saveDraft();
+  saveDraft();   // сразу в память телефона — переживает выключение экрана и перезапуск
 
   const badge = document.getElementById('badge-' + id);
   if (badge) { badge.style.display = 'inline-block'; badge.querySelector('span').textContent = draft[key].q; }
   qtyEl.value = '1';
   renderCartBar();
-  toast('✓ Добавлено:\n' + standNames[currentWitnessStand] + '\n' + getItemName(it) + ' · ' + langDisplay(it.lang || 'ru') + '\n' + q + ' шт.', 'ok', 3200);
+  toast('Записано: ' + q + ' шт.', 'ok');
 }
 
 function renderCartBar() {
@@ -1074,10 +1066,8 @@ function renderCartList() {
     const extra = e.e || '';
     html += `<div class="cart-item">
         <div style="flex:1; min-width:0;">
-          <div style="font-size:0.9em; color:#06b6d4; font-weight:bold;">🏛️ ${esc(standNames[e.s] || ('Тележка ' + e.s))}</div>
-          <div style="font-weight:bold; font-size:1.02em; line-height:1.3; margin-top:3px;">${esc(e.n || '—')}</div>
-          <div style="font-size:0.95em; color:#c084fc; font-weight:bold; margin-top:3px;">🌍 ${esc(langDisplay(e.l))}</div>
-          ${extra ? '<div style="font-size:0.8em; color:var(--muted); margin-top:3px;">📅 ' + esc(extra) + '</div>' : ''}
+          <div style="font-weight:bold; font-size:0.95em; line-height:1.3;">${esc(e.n || '—')}</div>
+          <div style="font-size:0.8em; color:var(--muted); margin-top:2px;">🏛️ ${esc(standNames[e.s] || ('Стенд ' + e.s))} · 🌍 ${esc(langDisplay(e.l))} ${extra ? '· 📅 ' + esc(extra) : ''}</div>
         </div>
         <div class="cart-qty">
           <button onclick="changeCartQty('${k}', -1)">−</button>
@@ -1094,7 +1084,7 @@ function renderCartList() {
 function changeCartQty(key, delta) {
   const e = draft[key]; if(!e) return;
   const it = items.find(x => String(x.id) === String(e.id));
-  const avail = it ? (parseInt((it.standCounts || {})[e.s]) || 0) : Infinity;
+  const avail = it ? (parseInt(it.standCounts[e.s]) || 0) : Infinity;
   const next = (parseInt(e.q) || 0) + delta;
   if (next <= 0) { delete draft[key]; }
   else if (delta > 0 && next > avail) { toast('На стенде только ' + avail + ' шт.', 'err'); return; }
@@ -1120,9 +1110,22 @@ function removeFromDraft(key) {
   }
 }
 
+var _ccCallback = null;
+function customConfirm(msg, cb, okText){
+  document.getElementById('ccMsg').textContent = msg;
+  document.getElementById('ccOk').textContent = okText || 'OK';
+  document.getElementById('ccOverlay').classList.add('show');
+  _ccCallback = cb;
+}
+function _ccClose(){ document.getElementById('ccOverlay').classList.remove('show'); _ccCallback = null; }
+document.getElementById('ccOk').onclick = function(){ var cb = _ccCallback; _ccClose(); if(cb) cb(); };
+document.getElementById('ccCancel').onclick = _ccClose;
+document.getElementById('ccOverlay').onclick = function(e){ if(e.target === this) _ccClose(); };
+
 function clearCart() {
-  if (!confirm('Точно очистить весь черновик отчёта?')) return;
-  draft = {}; saveDraft(); renderCartBar(); renderWizard(); closeCart(); toast('Черновик очищен');
+  customConfirm('Точно очистить весь черновик отчёта?', function(){
+    draft = {}; saveDraft(); renderCartBar(); renderWizard(); closeCart(); toast('Черновик очищен');
+  });
 }
 
 function loadOutbox(){ try{ return JSON.parse(localStorage.getItem(LS_OUTBOX + currentStandId) || '[]') || []; }catch(e){ return []; } }
@@ -1147,6 +1150,7 @@ function renderOutboxBar(){
     el.textContent = flushing ? '⏳ Отправка отчёта…' : ('⚠️ Отчёт сохранён, но не отправлен (' + pending + ' шт.) — нажмите, чтобы повторить');
   } else el.style.display = 'none';
 }
+// Отправка с повтором: строки отправляются ровно один раз (ID документа постоянный), при обрыве связи ничего не теряется
 async function flushOutbox(){
   if(flushing || isDeactivated || !currentUser || !currentStandId) return;
   const ob = loadOutbox();
@@ -1156,20 +1160,19 @@ async function flushOutbox(){
   let sent = 0, ok = true;
   try{
     const fns = await SK.withTimeout(initFirebase(), 20000);
-    const eh = await SK.hashEmail(currentUser.deviceId);
-    const encUserKey = await encryptData(currentUser.deviceId);
+    const eh = await SK.hashEmail(currentUser.email);
+    const encEmail = await encryptData(currentUser.email);
     for(const en of ob){
       const encName = await encryptData(en.name);
       for(const ln of en.lines){
         if(ln.done) continue;
         const docId = en.batchId + '_' + ln.s + '_' + String(ln.id).replace(/[^A-Za-z0-9]/g, '');
         const ref = fns.doc(cloudDb, 'stands', currentStandId, 'reports', docId);
-        // Поле witnessEmail оставлено для совместимости — внутри лежит зашифрованный deviceId
         await SK.withTimeout(SK.putOnce(cloudDb, fns, ref, {
-          witnessEmail: encUserKey, witnessEh: eh, witnessName: encName,
+          witnessEmail: encEmail, witnessEh: eh, witnessName: encName,
           itemId: ln.id, itemName: ln.n || '—', itemTheme: ln.t || '', itemExtra: ln.e || '',
           itemLang: ln.l || 'ru', itemType: ln.ty || 'Журнал',
-          standNumber: ln.s, standName: standNames[ln.s] || ('Тележка ' + ln.s),
+          standNumber: ln.s, standName: standNames[ln.s] || ('Стенд ' + ln.s),
           qty: ln.q, processed: false, appliedQty: null,
           batchId: en.batchId, shiftEndedAt: en.createdAt,
           createdAt: ln.at || en.createdAt, processedAt: null, note: ''
@@ -1179,7 +1182,7 @@ async function flushOutbox(){
       }
     }
     try{
-      const {ref: wref} = await loadWitness(fns, currentStandId, currentUser.deviceId);
+      const {ref: wref} = await loadWitness(fns, currentStandId, currentUser.email);
       await fns.setDoc(wref, {lastSeen: Date.now()}, {merge: true});
     }catch(e){}
   }catch(e){
@@ -1196,13 +1199,18 @@ async function sendCart() {
   const keys = Object.keys(draft).filter(k => draft[k] && draft[k].q > 0);
   if (keys.length === 0) return;
   let total = 0; keys.forEach(k => total += parseInt(draft[k].q) || 0);
-  if (!confirm('Закончить смену и отправить отчёт?\nВсего: ' + total + ' шт.')) return;
+  customConfirm('Закончить смену и отправить отчёт?\nВсего: ' + total + ' шт.', doSendCart, 'Отправить');
+}
+function doSendCart() {
+  const keys = Object.keys(draft).filter(k => draft[k] && draft[k].q > 0);
+  if (keys.length === 0) return;
   const entry = {
     batchId: 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
     createdAt: Date.now(),
-    name: currentUser.name || '',
+    name: (currentUser.name + ' ' + currentUser.surname).trim(),
     lines: keys.map(k => ({s:draft[k].s, id:draft[k].id, q:draft[k].q, n:draft[k].n, t:draft[k].t, e:draft[k].e, l:draft[k].l, ty:draft[k].ty, at:draft[k].at, done:false}))
   };
+  // сначала в надёжную очередь, потом очищаем черновик — отчёт не может потеряться
   const ob = loadOutbox(); ob.push(entry); saveOutbox(ob);
   draft = {}; saveDraft(); renderCartBar(); closeCart(); renderWizard();
   toast('Отчёт сохранён, отправляется…', 'ok');
@@ -1211,15 +1219,16 @@ async function sendCart() {
 
 async function init(){
   const standId = localStorage.getItem(LS_STAND);
-  const deviceId = getOrCreateDeviceId(); // генерируется один раз и хранится на телефоне
+  const email = localStorage.getItem(LS_EMAIL);
   const savedName = localStorage.getItem(LS_NAME) || '';
+  const savedSurname = localStorage.getItem(LS_SURNAME) || '';
 
-  if(!standId){
+  if(!standId || !email){
     document.getElementById('regScreen').style.display='block';
     return;
   }
 
-  currentUser = {deviceId, name: savedName};
+  currentUser = {email, name: savedName, surname: savedSurname};
   currentStandId = standId;
   const savedStand = parseInt(localStorage.getItem(LS_CUR_STAND));
   if(savedStand >= 1 && savedStand <= 4) currentWitnessStand = savedStand;
@@ -1227,7 +1236,7 @@ async function init(){
     const cached = JSON.parse(localStorage.getItem(LS_NAMES_JSON) || 'null');
     if(cached && typeof cached === 'object'){ for(let n=1; n<=4; n++){ if(cached[n]) standNames[n] = String(cached[n]); } }
   }catch(e){}
-  loadItemsCache();
+  loadItemsCache();      // работает и без интернета
   recomputeItemsOnStand();
   startApp();
   renderOutboxBar();
@@ -1235,20 +1244,22 @@ async function init(){
 
   try{
     const fns = await initFirebase();
-    const {ref: witnessRef, data} = await loadWitness(fns, standId, deviceId);
+    const {ref: witnessRef, data} = await loadWitness(fns, standId, email);
 
     if(data){
       if(data.active === false){ isDeactivated = true; showDeactivated(); return; }
       const decName = await decryptData(data.name);
+      const decSurname = await decryptData(data.surname);
       let changed = false;
       if(decName && decName !== currentUser.name){ currentUser.name = decName; localStorage.setItem(LS_NAME, decName); changed = true; }
-      if(changed){ document.getElementById('userInfo').textContent = '👤 ' + currentUser.name; }
+      if(decSurname && decSurname !== currentUser.surname){ currentUser.surname = decSurname; localStorage.setItem(LS_SURNAME, decSurname); changed = true; }
+      if(changed){ document.getElementById('userInfo').textContent = '👤 ' + currentUser.name + ' ' + currentUser.surname; }
       try{ await fns.setDoc(witnessRef, {lastSeen: Date.now()}, {merge: true}); }catch(e){}
     } else {
       if(savedName){
         try{
           await fns.setDoc(witnessRef, {
-            email: await encryptData(deviceId), name: await encryptData(savedName), active: true,
+            email: await encryptData(email), name: await encryptData(savedName), surname: await encryptData(savedSurname), active: true,
             createdAt: Date.now(), lastSeen: Date.now()
           }, {merge: true});
         }catch(e){}

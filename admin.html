@@ -761,8 +761,18 @@ body.sec-mode .stats{display:none!important}
 // ==========================================
 const SECRET_KEY_STRING = "StandApp_SuperSecret_2026!777";
 
+// Сообщение внутри приложения вместо системного alert() (без адреса сайта)
+function kitNotice(msg){
+  try{
+    var d = document.createElement('div');
+    d.style.cssText = 'position:fixed;top:0;left:0;width:100%;z-index:2147483000;background:#f59e0b;color:#000;padding:14px;text-align:center;font-weight:bold;font-size:0.95em;cursor:pointer';
+    d.textContent = msg + ' (нажмите, чтобы закрыть)';
+    d.onclick = function(){ d.remove(); };
+    (document.body || document.documentElement).appendChild(d);
+  }catch(e){ console.warn(msg); }
+}
 if(typeof crypto === 'undefined' || !crypto.subtle){
-  setTimeout(function(){ if(typeof alert === 'function') alert('⚠️ Шифрование недоступно в этом режиме браузера. Откройте приложение через https:// или как установленное приложение — иначе синхронизация не будет работать (данные без шифрования в облако не отправляются).'); }, 1500);
+  setTimeout(function(){ kitNotice('⚠️ Шифрование недоступно в этом режиме браузера. Откройте приложение через https:// или как установленное приложение — иначе синхронизация не будет работать (данные без шифрования в облако не отправляются).'); }, 1500);
 }
 var SK = (function(){
   var PFX = 'enc1:';
@@ -2923,8 +2933,9 @@ setTimeout(function(){ try{ updateBellBadge(); }catch(e){} }, 300);
 // ==========================================
 // МЕНЮ, ОТДЕЛЬНЫЕ ОКНА РАЗДЕЛОВ И КНОПКИ «+ / −» НА СТЕНДАХ (общий блок Helper и Admin)
 // ==========================================
-// false = кнопки на стенде меняют только количество НА СТЕНДЕ и НЕ уменьшают запас/общее количество
-var STAND_ADJUST_AFFECTS_STOCK = false;
+// «+» на стенде = пополнение стенда ИЗ ЗАПАСА (запас этого издания уменьшается, «Всего» не меняется)
+// На стенде вручную только «+» (сколько НЕ хватало). Уменьшает стенд только отчёт со стенда (приложение отчётов).
+var STAND_PLUS_FROM_STOCK = true;
 var uikCurrent = 'home', uikOpened = null, uikPickStand = 1;
 
 function uikOpen(key, fromPop){
@@ -3009,7 +3020,7 @@ function uikCanCount(quiet){
 function uikStandCtl(it, n){
   if(!uikCanCount(true)) return '';
   var id = String(it.id).replace(/[^0-9.\-]/g, '');
-  return '<div class="ti-ctl"><button type="button" class="sc-btn" onclick="standAdjust(\'' + id + '\',' + n + ',-1)">−</button><button type="button" class="sc-btn plus" onclick="standAdjust(\'' + id + '\',' + n + ',1)">+</button></div>';
+  return '<div class="ti-ctl"><button type="button" class="sc-btn plus" title="Не хватало на стенде" onclick="standAdjust(\'' + id + '\',' + n + ',1)">+</button></div>';
 }
 function uikStandAddBtn(n){
   if(!uikCanCount(true)){
@@ -3021,13 +3032,19 @@ function uikStandAddBtn(n){
 function standAdjust(id, n, d){
   if(!uikCanCount()) return;
   var it = uikFind(id); if(!it) return;
-  var old = stGet(it, n), nv = Math.max(0, Math.min(STAND_MAX, old + d));
+  var old = stGet(it, n), nv = Math.max(0, Math.min(STAND_MAX, old + d)), fromStock = 0;
   if(nv === old){ if(d > 0) toast('Максимум на стенде: ' + STAND_MAX + ' шт.'); return; }
+  if(nv > old && STAND_PLUS_FROM_STOCK){
+    var stock = parseInt(it.qty) || 0;
+    if(stock <= 0){ toast('⚠️ В запасе нет этого издания — сначала увеличьте запас'); return; }
+    if(nv - old > stock){ nv = old + stock; toast('⚠️ В запасе было только ' + stock + ' шт.'); }
+    fromStock = nv - old;
+  }
   if(typeof uikPre === 'function') uikPre(it, n, d);
   var sc = {}; for(var k = 1; k <= 4; k++) sc[k] = stGet(it, k);
   sc[n] = nv; it.standCounts = sc;
-  if(STAND_ADJUST_AFFECTS_STOCK) it.qty = Math.max(0, (parseInt(it.qty) || 0) - (nv - old));
-  uikHist(it, 'stand', nv - old, old, nv, (standNames[n] || ('Стенд ' + n)) + ': ' + old + ' → ' + nv);
+  if(fromStock > 0) it.qty = (parseInt(it.qty) || 0) - fromStock;
+  uikHist(it, 'stand', nv - old, old, nv, (standNames[n] || ('Стенд ' + n)) + ': ' + old + ' → ' + nv + (fromStock > 0 ? ' (не хватало ' + fromStock + ', из запаса −' + fromStock + ')' : ''));
   try{ vibrate(10); }catch(e){}
   uikSave(); uikRender();
 }
@@ -3055,7 +3072,7 @@ function uikRenderPicker(){
     var extra = getItemExtraInfo(it);
     var langTag = (it.lang && it.lang !== 'ru') ? ' · ' + esc(getLangShort(it.lang)) : '';
     return '<div class="pk-row"><div class="pk-info"><div class="pk-name">' + getTypeIcon(it.type) + ' ' + esc(getDisplayName(it)) + '</div>' +
-      '<div class="pk-meta">' + esc(getDisplayCat(it)) + (extra ? ' · ' + esc(extra) : '') + langTag + ' · на этом стенде: <b>' + stGet(it, uikPickStand) + '</b> · всего: <b>' + totalIt(it) + '</b></div></div>' +
+      '<div class="pk-meta">' + esc(getDisplayCat(it)) + (extra ? ' · ' + esc(extra) : '') + langTag + ' · на этом стенде: <b>' + stGet(it, uikPickStand) + '</b> · в запасе: <b>' + (parseInt(it.qty) || 0) + '</b></div></div>' +
       '<input type="number" inputmode="numeric" min="1" value="1" id="pkq-' + id + '">' +
       '<button type="button" onclick="uikPickAdd(\'' + id + '\')">➕</button></div>';
   }).join('') + (list.length > 80 ? '<div class="small" style="text-align:center;padding:8px">Показаны первые 80 — уточните поиск</div>' : '');
@@ -3067,7 +3084,7 @@ function uikPickAdd(id){
   var before = stGet(it, uikPickStand);
   standAdjust(id, uikPickStand, q);
   var after = stGet(uikFind(id), uikPickStand);
-  if(after > before) toast('✅ +' + (after - before) + ' на ' + (standNames[uikPickStand] || ('Стенд ' + uikPickStand)));
+  if(after > before) toast('✅ +' + (after - before) + ' на ' + (standNames[uikPickStand] || ('Стенд ' + uikPickStand)) + ' (не хватало, из запаса)');
   uikRenderPicker();
 }
 var _staleNotified = {};

@@ -86,23 +86,19 @@ button:disabled{opacity:0.5;cursor:not-allowed}
   <div class="reg-box">
     <div class="icon">📤</div>
     <h2>Отчёт о распространении</h2>
-    <div class="desc">Выберите стенд, укажите что и сколько ушло. Отчёт уйдёт координатору.</div>
-    <label>Код стенда (у координатора)</label>
+    <label>Код стенда (у ответственного за тележку)</label>
     <input id="regStandId" placeholder="напр. stand-2026" autocomplete="off">
     <label>Имя</label>
     <input id="regName" placeholder="Иван" autocomplete="given-name">
     <label>Фамилия</label>
     <input id="regSurname" placeholder="Иванов" autocomplete="family-name">
-    <label>Email</label>
-    <input id="regEmail" type="email" placeholder="you@example.com" autocomplete="email">
-    
+
     <div style="margin: 15px 0; text-align: left;">
       <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; color: var(--muted); font-size: 0.85em; font-weight: normal; line-height: 1.4; margin: 0;">
         <input type="checkbox" id="privacyConsent" style="width: auto; margin-top: 3px; flex-shrink: 0;">
-        <span>Я даю согласие на обработку моих персональных данных (Имя, Фамилия, Email) для целей работы приложения.</span>
+        <span>Я даю согласие на обработку моих персональных данных (Имя, Фамилия) для целей работы приложения.</span>
       </label>
     </div>
-
     <button onclick="doRegister()" style="margin-top:0">✓ Войти</button>
     <div class="err" id="regErr"></div>
     <div class="info" id="regInfo"></div>
@@ -710,11 +706,22 @@ async function loadWitness(fns, standId, email){
   return {ref, data};
 }
 
+function getDeviceId(){
+  let id = localStorage.getItem('witness_device_id');
+  if(!id){
+    const r = new Uint8Array(12);
+    try{ crypto.getRandomValues(r); }catch(e){ for(let i=0;i<r.length;i++) r[i] = Math.floor(Math.random()*256); }
+    id = 'dev_' + Array.from(r).map(b => ('0'+b.toString(16)).slice(-2)).join('');
+    localStorage.setItem('witness_device_id', id);
+  }
+  return id;
+}
+
 async function doRegister(){
   const standId = document.getElementById('regStandId').value.trim();
   const name = document.getElementById('regName').value.trim();
   const surname = document.getElementById('regSurname').value.trim();
-  const email = document.getElementById('regEmail').value.trim().toLowerCase();
+  const email = getDeviceId();   // анонимный номер этого телефона вместо email — личные данные не нужны
   const errEl = document.getElementById('regErr');
   const infoEl = document.getElementById('regInfo');
 
@@ -730,7 +737,6 @@ async function doRegister(){
   if(standId.length<3){ errEl.textContent='⚠️ Слишком короткий код'; return; }
   if(!name){ errEl.textContent='⚠️ Введите имя'; return; }
   if(!surname){ errEl.textContent='⚠️ Введите фамилию'; return; }
-  if(!email || !email.includes('@')){ errEl.textContent='⚠️ Неверный email'; return; }
   infoEl.textContent='⏳ Регистрация...';
 
   try{
@@ -742,13 +748,13 @@ async function doRegister(){
       return;
     }
 
-    // имя, фамилия и email хранятся в облаке только в зашифрованном виде
+    // имя и фамилия хранятся в облаке только в зашифрованном виде
     await fns.setDoc(witnessRef, {
       email: await encryptData(email),
       name: await encryptData(name),
       surname: await encryptData(surname),
-      active: true,
       consentGiven: true,
+      active: true,
       createdAt: existing ? (existing.createdAt || Date.now()) : Date.now(),
       lastSeen: Date.now()
     }, {merge: true});
@@ -763,7 +769,6 @@ async function doRegister(){
     isDeactivated = false;
     infoEl.style.color='#22c55e';
     infoEl.textContent='✅ Готово!';
-
     consentEl.checked = false;
 
     setTimeout(() => {
@@ -781,7 +786,7 @@ async function doRegister(){
 function startApp(){
   document.getElementById('regScreen').style.display='none';
   document.getElementById('mainScreen').style.display='block';
-  document.getElementById('userInfo').textContent = '👤 ' + (currentUser && currentUser.name || '') + ' ' + (currentUser && currentUser.surname || '');
+  document.getElementById('userInfo').textContent = ('👤 ' + (currentUser && currentUser.name || '') + ' ' + (currentUser && currentUser.surname || '')).trim();
   loadDraft();
   renderStandTabs();
   renderCartBar();
@@ -804,7 +809,6 @@ function logout(){
   document.getElementById('regStandId').value='';
   document.getElementById('regName').value='';
   document.getElementById('regSurname').value='';
-  document.getElementById('regEmail').value='';
   document.getElementById('privacyConsent').checked = false;
 }
 
@@ -816,7 +820,6 @@ function showDeactivated(){
   document.getElementById('regStandId').value = localStorage.getItem(LS_STAND) || '';
   document.getElementById('regName').value = localStorage.getItem(LS_NAME) || '';
   document.getElementById('regSurname').value = localStorage.getItem(LS_SURNAME) || '';
-  document.getElementById('regEmail').value = localStorage.getItem(LS_EMAIL) || '';
 }
 
 function cacheItems(){
@@ -1253,7 +1256,7 @@ async function init(){
       let changed = false;
       if(decName && decName !== currentUser.name){ currentUser.name = decName; localStorage.setItem(LS_NAME, decName); changed = true; }
       if(decSurname && decSurname !== currentUser.surname){ currentUser.surname = decSurname; localStorage.setItem(LS_SURNAME, decSurname); changed = true; }
-      if(changed){ document.getElementById('userInfo').textContent = '👤 ' + currentUser.name + ' ' + currentUser.surname; }
+      if(changed){ document.getElementById('userInfo').textContent = ('👤 ' + currentUser.name + ' ' + currentUser.surname).trim(); }
       try{ await fns.setDoc(witnessRef, {lastSeen: Date.now()}, {merge: true}); }catch(e){}
     } else {
       if(savedName){

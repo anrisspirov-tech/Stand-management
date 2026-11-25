@@ -78,6 +78,10 @@ button:disabled{opacity:0.5;cursor:not-allowed}
 #ccMsg{white-space:pre-line;margin:6px 0 16px;line-height:1.4}
 .cc-row{display:flex;gap:10px}
 .cc-row button{flex:1;padding:14px;font-size:1em;border-radius:10px;border:0;cursor:pointer}
+.howto{border-color:var(--primary)}
+.howto-head{display:flex;justify-content:space-between;align-items:center;cursor:pointer;color:var(--primary)}
+.howto-step{display:flex;gap:10px;align-items:flex-start;margin-top:10px;line-height:1.4;font-size:0.92em}
+.howto-step span{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--primary);color:var(--primary-text);display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:0.85em}
 </style>
 </head>
 <body>
@@ -115,6 +119,15 @@ button:disabled{opacity:0.5;cursor:not-allowed}
   </div>
   
   <div class="wrap">
+    <div class="card howto" id="howTo">
+      <div class="howto-head" onclick="toggleHowTo()"><b>ℹ️ Как пользоваться</b><span id="howToArrow">▲</span></div>
+      <div id="howToBody">
+        <div class="howto-step"><span>1</span><div>Выберите <b>свой стенд</b> вверху.</div></div>
+        <div class="howto-step"><span>2</span><div>Когда журнал или брошюра ушли — найдите её в списке, укажите <b>сколько штук</b> и нажмите <b>«➕ Записать»</b>.</div></div>
+        <div class="howto-step"><span>3</span><div>Записи <b>сохраняются на телефоне</b>, даже если экран погас или нет интернета.</div></div>
+        <div class="howto-step"><span>4</span><div>В <b>конце смены</b> нажмите «📋 В отчёте» внизу, проверьте список и нажмите <b>«Закончить смену и отправить отчёт»</b>.</div></div>
+      </div>
+    </div>
     <div class="card">
       <label>🏛️ Выберите стенд</label>
       <div class="stand-tabs" id="standTabs"></div>
@@ -706,6 +719,14 @@ async function loadWitness(fns, standId, email){
   return {ref, data};
 }
 
+function toggleHowTo(force){
+  var body = document.getElementById('howToBody'), arrow = document.getElementById('howToArrow'); if(!body) return;
+  var hide = (force !== undefined) ? force : (body.style.display !== 'none');
+  body.style.display = hide ? 'none' : 'block';
+  if(arrow) arrow.textContent = hide ? '▼' : '▲';
+  try{ localStorage.setItem('witness_howto_hidden', hide ? '1' : ''); }catch(e){}
+}
+
 function getDeviceId(){
   let id = localStorage.getItem('witness_device_id');
   if(!id){
@@ -791,6 +812,7 @@ function startApp(){
   renderStandTabs();
   renderCartBar();
   renderWizard();
+  try{ toggleHowTo(localStorage.getItem('witness_howto_hidden') === '1'); }catch(e){}
 }
 
 function logout(){

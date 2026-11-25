@@ -3369,7 +3369,7 @@ function renderWitnessesUI(){
     return '<div class="user-row" style="'+(active?'':'opacity:0.55')+'">'+
       '<div style="flex:1;min-width:0">'+
         '<div class="uname">👤 '+esc(w.name||'')+' '+esc(w.surname||'')+' '+status+'</div>'+
-        '<div class="small">'+esc(w.email||'')+' · был(а): '+esc(last)+'</div>'+
+        '<div class="small">'+((w.email && String(w.email).indexOf('@')>=0) ? esc(w.email)+' · ' : '')+'был(а): '+esc(last)+'</div>'+
       '</div>'+
       '<div style="display:flex;gap:4px">'+actions+'</div>'+
     '</div>';
@@ -3391,7 +3391,7 @@ async function saveEditWitness() {
   if(!_editingWitnessEmail) return;
   var name = document.getElementById('editWitnessName').value.trim();
   var surname = document.getElementById('editWitnessSurname').value.trim();
-  if(!name || !surname) { toast('⚠️ Имя и фамилия не могут быть пустыми'); return; }
+  if(!name) { toast('⚠️ Имя не может быть пустым'); return; }
   try{
     const {updateDoc, doc: fbDoc} = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
     const encName = await encryptData(name);
